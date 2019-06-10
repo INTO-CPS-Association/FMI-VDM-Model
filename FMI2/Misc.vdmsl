@@ -1,0 +1,53 @@
+
+functions
+
+	-- These defaults may not be needed, as they are implicit in the isValidSV function.
+
+	defaultInitial: ScalarVariable -> [Initial]
+	defaultInitial(sv) ==
+		cases defaultCausality(sv):
+			<parameter> ->
+				cases sv.variability:
+					<fixed>, <tunable> -> <exact>,
+					others -> undefined
+				end,
+
+			<calculatedParameter> ->
+				cases sv.variability:
+					<fixed>, <tunable> -> <calculated>,
+					others -> undefined
+				end,
+
+			<input> ->
+				cases sv.variability:
+					<discrete>, <continuous> -> nil,	-- No inital value?
+					others -> undefined
+				end,
+
+			<output> ->
+				cases sv.variability:
+					<constant> -> <exact>,
+					<discrete>, <continuous> -> <calculated>,
+					others -> undefined
+				end,
+
+			<local> ->
+				cases sv.variability:
+					<constant> -> <exact>,
+					<fixed>, <tunable> -> <calculated>,
+					<discrete>, <continuous> -> <calculated>,
+					others -> undefined
+				end,
+
+			<independent> ->
+				cases sv.variability:
+					<continuous> -> nil,	-- No inital value?
+					others -> undefined
+				end
+		end;
+
+	defaultCausality: ScalarVariable -> Causality
+	defaultCausality(sv) ==
+		if sv.causality = nil
+		then <local>
+		else sv.causality;

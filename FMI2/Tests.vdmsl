@@ -1,0 +1,138 @@
+/**
+ * Various model tests
+ */
+traces
+	/**
+	 * Test the ScalarInvariant invariant function with all possible inputs - should return true/false (total)
+	 */
+	SVInvariantTotal:
+		let c : [Causality] in
+		let v : [Variability] in
+		let i : [Initial] in
+		let s in set {1.234, nil} in
+			isValidSV(c, v, i, mk_Real(nil, nil, nil, nil, nil, s, nil));
+
+functions
+	/**
+	 * Test the "positive" ScalarVariable invariants for table on p48.
+	 */
+	testCausalityVariabilityInitial: () +> bool
+	testCausalityVariabilityInitial() ==
+		let nilv   = mk_Real(nil, nil, nil, nil, nil, nil, nil),
+		    startv = mk_Real(nil, nil, nil, nil, nil, 1.0, nil)
+		in
+			forall causality : Causality &
+				forall variability : Variability &
+					cases causality:
+						<parameter> ->
+							cases variability:
+								<fixed>, <tunable> ->
+									isValidSV(causality, variability, <exact>, startv),
+								others -> true
+							end,
+
+						<calculatedParameter> ->
+							cases variability:
+								<fixed>, <tunable> ->
+									isValidSV(causality, variability, <calculated>, nilv) and
+									isValidSV(causality, variability, <approx>, startv),
+								others -> true
+							end,
+
+						<input> ->
+							cases variability:
+								<discrete>, <continuous> ->
+									isValidSV(causality, variability, nil, nilv) and
+									isValidSV(causality, variability, nil, nilv),
+								others -> true
+							end,
+
+						<output> ->
+							cases variability:
+								<constant> ->
+									isValidSV(causality, variability, <exact>, startv),
+								<discrete>, <continuous> ->
+									isValidSV(causality, variability, <calculated>, nilv) and
+									isValidSV(causality, variability, <approx>, startv) and
+									isValidSV(causality, variability, <exact>, startv),
+								others -> true
+							end,
+
+						<local> ->
+							cases variability:
+								<constant> ->
+									isValidSV(causality, variability, <exact>, startv),
+								<fixed>, <tunable> ->
+									isValidSV(causality, variability, <calculated>, nilv) and
+									isValidSV(causality, variability, <approx>, startv),
+								<discrete>, <continuous> ->
+									isValidSV(causality, variability, <calculated>, nilv) and
+									isValidSV(causality, variability, <approx>, startv) and
+									isValidSV(causality, variability, <exact>, startv),
+								others -> true
+							end,
+
+						<independent> ->
+							true	-- No explicit cases to test
+					end;
+
+	/**
+	 * Test the "negative" ScalarVariable invariants for table on p48, where initial is nil.
+	 */
+	testCausalityVariabilityInitialNil: () +> bool
+	testCausalityVariabilityInitialNil() ==
+		let nilv   = mk_Real(nil, nil, nil, nil, nil, nil, nil)	in
+			forall causality : Causality &
+				forall variability : Variability &
+					cases causality:
+						<parameter> ->
+							cases variability:
+								<constant>, <discrete>, <continuous> ->
+									forall initial : Initial &
+										not isValidSV(causality, variability, initial, nilv),
+								others -> true
+							end,
+
+						<calculatedParameter> ->
+							cases variability:
+								<constant>, <discrete>, <continuous> ->
+									forall initial : Initial &
+										not isValidSV(causality, variability, initial, nilv),
+								others -> true
+							end,
+
+						<input> ->
+							cases variability:
+								<constant>, <fixed>, <tunable> ->
+									forall initial : Initial &
+										not isValidSV(causality, variability, initial, nilv),
+								others -> true
+							end,
+
+						<output> ->
+							cases variability:
+								<fixed>, <tunable> ->
+									forall initial : Initial &
+										not isValidSV(causality, variability, initial, nilv),
+								others -> true
+							end,
+
+						<local> ->
+							true,
+
+						<independent> ->
+							cases variability:
+								<continuous> ->
+									forall initial : Initial &
+										not isValidSV(causality, variability, initial, nilv),
+								others -> true
+							end
+					end;
+
+	tests: () +> set of bool
+	tests() ==
+	{
+		testCausalityVariabilityInitial(),
+		testCausalityVariabilityInitialNil()
+	}
+	post RESULT = {true};

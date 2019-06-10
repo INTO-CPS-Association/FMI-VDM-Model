@@ -1,0 +1,34 @@
+/**
+ * Definitions relating to section 2.2.3 of FMI2, TypeDefinitions/SimpleType
+ */
+
+types
+	RealType ::
+		min			: [real]
+		max			: [real]
+		nominal		: [real]
+		unbounded	: [bool]
+	inv r ==
+		r.max <> nil and r.min <> nil => r.max >= r.min;
+
+	IntegerType ::
+		min			: [int]
+		max			: [int]
+	inv i ==
+		i.max <> nil and i.min <> nil => i.max >= i.min;
+
+	BooleanType ::
+		;
+
+	StringType ::
+		;
+
+	Item ::
+		name		: seq1 of char
+		tag			: int;
+
+	EnumerationType ::
+		items		: seq1 of Item
+	inv e ==
+		card { t | t in set { i.tag | i in seq e.items } } = len e.items;
+

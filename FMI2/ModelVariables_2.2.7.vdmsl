@@ -1,0 +1,135 @@
+/**
+ * Definitions relating to section 2.2.7 of FMI2, ScalarVariables
+ */
+types
+	Causality	= <parameter> | <calculatedParameter> | <input> | <output> | <local> | <independent>;
+
+	Variability	= <constant> | <fixed> | <tunable> | <discrete> | <continuous>;
+
+	Initial		= <exact> | <approx> | <calculated>;
+
+	Real ::
+		declaredType	: [RealType]
+		min				: [real]
+		max				: [real]
+		nominal			: [real]
+		unbounded		: [bool]
+		start			: [real]
+		derivative		: [bool]
+	inv r ==
+		let min = if r.min <> nil then r.min
+				  else if r.declaredType <> nil then r.declaredType.min
+				  else nil,
+			max = if r.max <> nil then r.max
+				  else if r.declaredType <> nil then r.declaredType.max
+				  else nil
+		in
+			(max <> nil and min <> nil => max >= min)
+			and r.start <> nil =>
+				(min <> nil => min <= r.start) and
+				(max <> nil => max >= r.start);
+
+	Integer ::
+		declaredType	: [IntegerType]
+		min				: [int]
+		max				: [int]
+		start			: [int]
+	inv i ==
+		let min = if i.min <> nil then i.min
+				  else if i.declaredType <> nil then i.declaredType.min
+				  else nil,
+			max = if i.max <> nil then i.max
+				  else if i.declaredType <> nil then i.declaredType.max
+				  else nil
+		in
+			(max <> nil and min <> nil => max >= min)
+			and i.start <> nil =>
+				(min <> nil => min <= i.start) and
+				(max <> nil => max >= i.start);
+
+	Boolean ::
+		declaredType	: [BooleanType]
+		start			: [bool];
+
+	String ::
+		declaredType	: [StringType]
+		start			: [seq1 of char];
+
+	Enumeration ::
+		declaredType	: EnumerationType	-- Note, not optional
+		min				: [int]
+		max				: [int]
+		start			: [int]
+	inv e ==
+		-- No overrides of the EnumerationType here, unlike Real/Integer
+		(e.max <> nil and e.min <> nil => e.max >= e.min)
+		and e.start <> nil =>
+			(e.min <> nil => e.min <= e.start) and
+			(e.max <> nil => e.max >= e.start);
+
+	Variable = Real | Integer | Boolean | String | Enumeration;
+
+	ScalarVariable ::
+		-- attributes
+		name		: seq1 of char
+		causality	: [Causality]
+		variability	: [Variability]
+		initial		: [Initial]
+
+		-- elements
+		variable	: Variable
+
+	inv sv ==
+		isValidSV(sv.causality, sv.variability, sv.initial, sv.variable);
+
+functions
+	isValidSV: [Causality] * [Variability] * [Initial] * Variable +> bool
+	isValidSV(causality, variability, initial, variable) ==
+		cases causality:		-- Table on p46
+			<parameter> ->
+				variability in set {<fixed>, <tunable>} and
+				initial in set {<exact>, nil},
+
+			<calculatedParameter> ->
+				variability in set {<fixed>, <tunable>} and
+				initial in set {<approx>, <calculated>, nil},
+
+			<input> ->
+				initial = nil,
+
+			<independent> ->
+				variability = <continuous> and
+				is_Real(variable) and variable.start = nil and
+				initial = nil,
+
+			<local>, <output>, nil ->		-- Default causality is local
+				true
+		end
+
+		and	cases variability:	-- Table on p46
+			<constant> ->
+				causality in set {<output>, <local>},
+
+			<fixed>, <tunable> ->
+				causality in set {<parameter>, <calculatedParameter>, <local>},
+
+			<discrete> ->
+				causality in set {<input>, <output>, <local>, <independent>},
+
+			<continuous>, nil ->			-- Default variability is continuous
+				is_Real(variable) and
+				causality in set {<input>, <output>, <local>, <independent>},
+
+			nil -> true
+		end
+
+		and cases initial:	-- Table on p47
+			<exact>, <approx> ->
+				variable.start <> nil,
+
+			<calculated> ->
+				variable.start = nil,
+
+			nil -> true
+		end;
+
