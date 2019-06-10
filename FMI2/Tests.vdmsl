@@ -4,17 +4,30 @@
 traces
 	/**
 	 * Test the ScalarInvariant invariant function with all possible inputs - should return true/false (total)
+	 * for every combination. Variable types are tested with "start" defined and undefined.
 	 */
 	SVInvariantTotal:
 		let c : [Causality] in
 		let v : [Variability] in
 		let i : [Initial] in
-		let s in set {1.234, nil} in
-			isValidSV(c, v, i, mk_Real(nil, nil, nil, nil, nil, s, nil));
+		let s in set
+		{
+			mk_Real(nil, nil, nil, nil, nil, nil, nil),
+			mk_Real(nil, nil, nil, nil, nil, 1.23, nil),
+			mk_Integer(nil, nil, nil, nil),
+			mk_Integer(nil, nil, nil, 123),
+			mk_Boolean(nil, nil),
+			mk_Boolean(nil, true),
+			mk_String(nil, nil),
+			mk_String(nil, "123")
+		}
+		in
+			isValidSV(c, v, i, s);
 
 functions
 	/**
-	 * Test the "positive" ScalarVariable invariants for table on p48.
+	 * Test the "positive" ScalarVariable invariants for table on p48, where the SV is valid
+	 * for particular "initial" values, given a combination of causality and variability.
 	 */
 	testCausalityVariabilityInitial: () +> bool
 	testCausalityVariabilityInitial() ==
@@ -42,7 +55,6 @@ functions
 						<input> ->
 							cases variability:
 								<discrete>, <continuous> ->
-									isValidSV(causality, variability, nil, nilv) and
 									isValidSV(causality, variability, nil, nilv),
 								others -> true
 							end,
@@ -68,8 +80,8 @@ functions
 								<discrete>, <continuous> ->
 									isValidSV(causality, variability, <calculated>, nilv) and
 									isValidSV(causality, variability, <approx>, startv) and
-									isValidSV(causality, variability, <exact>, startv),
-								others -> true
+									isValidSV(causality, variability, <exact>, startv)
+								-- No others needed
 							end,
 
 						<independent> ->
@@ -77,11 +89,12 @@ functions
 					end;
 
 	/**
-	 * Test the "negative" ScalarVariable invariants for table on p48, where initial is nil.
+	 * Test the "negative" ScalarVariable invariants for table on p48, where initial is undefined for
+	 * a given combination of causality and variability - ie. isValidSV is false for every initial type.
 	 */
 	testCausalityVariabilityInitialNil: () +> bool
 	testCausalityVariabilityInitialNil() ==
-		let nilv   = mk_Real(nil, nil, nil, nil, nil, nil, nil)	in
+		let nilv = mk_Real(nil, nil, nil, nil, nil, nil, nil)	in
 			forall causality : Causality &
 				forall variability : Variability &
 					cases causality:
@@ -129,6 +142,9 @@ functions
 							end
 					end;
 
+	/**
+	 * Run all tests and check that they pass.
+	 */
 	tests: () +> set of bool
 	tests() ==
 	{
