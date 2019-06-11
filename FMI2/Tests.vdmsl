@@ -26,7 +26,7 @@ traces
 
 functions
 	/**
-	 * Test the "positive" ScalarVariable invariants for table on p48, where the SV is valid
+	 * Test the ScalarVariable invariant for the table on p48, where the SV is valid or not
 	 * for particular "initial" values, given a combination of causality and variability.
 	 */
 	testCausalityVariabilityInitial: () +> bool
@@ -40,106 +40,78 @@ functions
 						<parameter> ->
 							cases variability:
 								<fixed>, <tunable> ->
-									isValidSV(causality, variability, <exact>, startv),
-								others -> true
+									isValidSV(causality, variability, <exact>, startv) and
+									not isValidSV(causality, variability, <approx>, nilv) and
+									not isValidSV(causality, variability, <calculated>, nilv),
+
+								<constant>, <discrete>, <continuous> ->
+									forall initial : Initial &
+										not isValidSV(causality, variability, initial, nilv)
 							end,
 
 						<calculatedParameter> ->
 							cases variability:
 								<fixed>, <tunable> ->
 									isValidSV(causality, variability, <calculated>, nilv) and
-									isValidSV(causality, variability, <approx>, startv),
-								others -> true
+									isValidSV(causality, variability, <approx>, startv) and
+									not isValidSV(causality, variability, <exact>, nilv),
+
+								<constant>, <discrete>, <continuous> ->
+									forall initial : Initial &
+										not isValidSV(causality, variability, initial, nilv)
 							end,
 
 						<input> ->
 							cases variability:
 								<discrete>, <continuous> ->
-									isValidSV(causality, variability, nil, nilv),
-								others -> true
+									isValidSV(causality, variability, nil, nilv) and
+									not isValidSV(causality, variability, <calculated>, nilv) and
+									not isValidSV(causality, variability, <approx>, nilv) and
+									not isValidSV(causality, variability, <exact>, nilv),
+
+								<constant>, <fixed>, <tunable> ->
+									forall initial : Initial &
+										not isValidSV(causality, variability, initial, nilv)
 							end,
 
 						<output> ->
 							cases variability:
 								<constant> ->
-									isValidSV(causality, variability, <exact>, startv),
+									isValidSV(causality, variability, <exact>, startv) and
+									not isValidSV(causality, variability, <calculated>, nilv) and
+									not isValidSV(causality, variability, <approx>, nilv),
+
 								<discrete>, <continuous> ->
 									isValidSV(causality, variability, <calculated>, nilv) and
 									isValidSV(causality, variability, <approx>, startv) and
 									isValidSV(causality, variability, <exact>, startv),
-								others -> true
+
+								<fixed>, <tunable> ->
+									forall initial : Initial &
+										not isValidSV(causality, variability, initial, nilv)
 							end,
 
 						<local> ->
 							cases variability:
 								<constant> ->
-									isValidSV(causality, variability, <exact>, startv),
+									isValidSV(causality, variability, <exact>, startv) and
+									not isValidSV(causality, variability, <calculated>, nilv) and
+									not isValidSV(causality, variability, <approx>, nilv),
+
 								<fixed>, <tunable> ->
 									isValidSV(causality, variability, <calculated>, nilv) and
-									isValidSV(causality, variability, <approx>, startv),
+									isValidSV(causality, variability, <approx>, startv) and
+									not isValidSV(causality, variability, <exact>, nilv),
+
 								<discrete>, <continuous> ->
 									isValidSV(causality, variability, <calculated>, nilv) and
 									isValidSV(causality, variability, <approx>, startv) and
 									isValidSV(causality, variability, <exact>, startv)
-								-- No others needed
 							end,
 
 						<independent> ->
-							true	-- No explicit cases to test
-					end;
-
-	/**
-	 * Test the "negative" ScalarVariable invariants for table on p48, where initial is undefined for
-	 * a given combination of causality and variability - ie. isValidSV is false for every initial type.
-	 */
-	testCausalityVariabilityInitialNil: () +> bool
-	testCausalityVariabilityInitialNil() ==
-		let nilv = mk_Real(nil, nil, nil, nil, nil, nil, nil)	in
-			forall causality : Causality &
-				forall variability : Variability &
-					cases causality:
-						<parameter> ->
-							cases variability:
-								<constant>, <discrete>, <continuous> ->
-									forall initial : Initial &
-										not isValidSV(causality, variability, initial, nilv),
-								others -> true
-							end,
-
-						<calculatedParameter> ->
-							cases variability:
-								<constant>, <discrete>, <continuous> ->
-									forall initial : Initial &
-										not isValidSV(causality, variability, initial, nilv),
-								others -> true
-							end,
-
-						<input> ->
-							cases variability:
-								<constant>, <fixed>, <tunable> ->
-									forall initial : Initial &
-										not isValidSV(causality, variability, initial, nilv),
-								others -> true
-							end,
-
-						<output> ->
-							cases variability:
-								<fixed>, <tunable> ->
-									forall initial : Initial &
-										not isValidSV(causality, variability, initial, nilv),
-								others -> true
-							end,
-
-						<local> ->
-							true,
-
-						<independent> ->
-							cases variability:
-								<continuous> ->
-									forall initial : Initial &
-										not isValidSV(causality, variability, initial, nilv),
-								others -> true
-							end
+							forall initial : Initial &
+								not isValidSV(causality, variability, initial, nilv)
 					end;
 
 	/**
@@ -148,7 +120,6 @@ functions
 	tests: () +> set of bool
 	tests() ==
 	{
-		testCausalityVariabilityInitial(),
-		testCausalityVariabilityInitialNil()
+		testCausalityVariabilityInitial()
 	}
 	post RESULT = {true};

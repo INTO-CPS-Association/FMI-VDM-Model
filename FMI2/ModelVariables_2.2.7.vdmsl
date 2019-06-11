@@ -128,7 +128,8 @@ functions
 				variable.start <> nil,
 
 			<calculated> ->
-				variable.start = nil,
+				variable.start = nil
+				and variability <> <constant>,
 
 			nil -> true
 		end;
