@@ -69,9 +69,11 @@ types
 
 	Variable = Real | Integer | Boolean | String | Enumeration;
 
+	VarName = seq1 of char;		-- Has a syntax defined in section 2.2.9, p64
+
 	ScalarVariable ::
 		-- attributes
-		name		: seq1 of char
+		name		: VarName
 		causality	: [Causality]
 		variability	: [Variability]
 		initial		: [Initial]

@@ -32,3 +32,6 @@ types
 	inv e ==
 		card { t | t in set { i.tag | i in seq e.items } } = len e.items;
 
+	SimpleType ::
+		name		: seq1 of char
+		type		: RealType | IntegerType | BooleanType | StringType | EnumerationType;

@@ -1,0 +1,32 @@
+/**
+ * Definitions relating to the top level FMU model description.
+ */
+types
+	FMIModelDescription ::
+		typeDefinitions		: set of SimpleType			-- May be empty set
+		modelVariables		: seq of ScalarVariable		-- May be empty seq
+		modelStructure		: ModelStructure
+
+	inv m ==
+		-- All model structure variables must be declared in model variables
+		checkNames(len m.modelVariables, m.modelStructure.outputs)
+		and checkNames(len m.modelVariables, m.modelStructure.derivatives)
+		and checkNames(len m.modelVariables, m.modelStructure.initialUnknowns)
+
+		-- Model structure outputs contain every model variable "output"
+		and (let outputNames = { v | v in set inds m.modelVariables & m.modelVariables(v).causality = <output> },
+			declNames = { u.index | u in seq m.modelStructure.outputs } in
+			declNames = outputNames)
+
+		-- InitalUnknowns must be input/exact or independent variables
+		and (m.modelStructure.initialUnknowns <> nil =>
+			forall index in set { u.index | u in seq m.modelStructure.initialUnknowns } &
+				index <= len m.modelVariables
+				and (m.modelVariables(index).initial in set { <input>, <exact> }
+					or m.modelVariables(index).causality = <independent> ));
+
+functions
+	checkNames: nat1 * [seq1 of Unknown] +> bool
+	checkNames(vars, unknowns) ==
+		unknowns <> nil =>
+			card { u.index | u in seq unknowns } <= vars;
