@@ -15,14 +15,16 @@ types
 
 		-- Model structure outputs contain every model variable "output"
 		and (let outputIndexes = { v | v in set inds m.modelVariables & m.modelVariables(v).causality = <output> },
-			declIndexes = { u.index | u in seq m.modelStructure.outputs } in
-			declIndexes = outputIndexes)
+				 structIndexes = { u.index | u in seq m.modelStructure.outputs }
+			 in
+				 structIndexes = outputIndexes)
 
-		-- InitalUnknowns must be input/exact or independent variables
+		-- InitalUnknowns must be input+exact or independent variables
 		and (m.modelStructure.initialUnknowns <> nil =>
 			forall index in set { u.index | u in seq m.modelStructure.initialUnknowns } &
-				m.modelVariables(index).initial in set { <input>, <exact> }
-				or m.modelVariables(index).causality = <independent> );
+				let sv = m.modelVariables(index) in
+					( sv.causality = <input> and sv.initial = <exact> ) 
+					or sv.causality = <independent> );
 
 functions
 	checkIndexes: nat1 * [seq1 of Unknown] +> bool
