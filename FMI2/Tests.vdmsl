@@ -41,7 +41,7 @@ functions
 							cases variability:
 								<fixed>, <tunable> ->
 									isValidSV(causality, variability, <exact>, startv) and
-									not isValidSV(causality, variability, <approx>, nilv) and
+									not isValidSV(causality, variability, <approx>, startv) and
 									not isValidSV(causality, variability, <calculated>, nilv),
 
 								<constant>, <discrete>, <continuous> ->
@@ -66,7 +66,7 @@ functions
 								<discrete>, <continuous> ->
 									isValidSV(causality, variability, nil, nilv) and
 									not isValidSV(causality, variability, <calculated>, nilv) and
-									not isValidSV(causality, variability, <approx>, nilv) and
+									not isValidSV(causality, variability, <approx>, startv) and
 									not isValidSV(causality, variability, <exact>, nilv),
 
 								<constant>, <fixed>, <tunable> ->
@@ -79,12 +79,12 @@ functions
 								<constant> ->
 									isValidSV(causality, variability, <exact>, startv) and
 									not isValidSV(causality, variability, <calculated>, nilv) and
-									not isValidSV(causality, variability, <approx>, nilv),
+									not isValidSV(causality, variability, <approx>, startv),
 
 								<discrete>, <continuous> ->
 									isValidSV(causality, variability, <calculated>, nilv) and
-									isValidSV(causality, variability, <approx>, startv) and
-									isValidSV(causality, variability, <exact>, startv),
+									isValidSV(causality, variability, <exact>, startv)
+									and not isValidSV(causality, variability, <approx>, startv),
 
 								<fixed>, <tunable> ->
 									forall initial : Initial &
@@ -96,7 +96,7 @@ functions
 								<constant> ->
 									isValidSV(causality, variability, <exact>, startv) and
 									not isValidSV(causality, variability, <calculated>, nilv) and
-									not isValidSV(causality, variability, <approx>, nilv),
+									not isValidSV(causality, variability, <approx>, startv),
 
 								<fixed>, <tunable> ->
 									isValidSV(causality, variability, <calculated>, nilv) and

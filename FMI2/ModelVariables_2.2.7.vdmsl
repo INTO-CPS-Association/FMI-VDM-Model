@@ -87,52 +87,131 @@ types
 functions
 	isValidSV: [Causality] * [Variability] * [Initial] * Variable +> bool
 	isValidSV(causality, variability, initial, variable) ==
-		cases causality:		-- Table on p46
+		let eCausality = effectiveCausality(causality),
+			eVariability = effectiveVariability(variability),
+			eInitial = effectiveInitial(initial, eCausality, eVariability)
+		in
+			-- Table on p46 defining causality, and p49 defining combinations
+			cases eCausality:
+				<parameter> ->
+					eVariability in set {<fixed>, <tunable>}
+					and eInitial = <exact>,
+
+				<calculatedParameter> ->
+					eVariability in set {<fixed>, <tunable>}
+					and eInitial in set {<approx>, <calculated>},
+
+				<input> ->
+					eVariability in set {<discrete>, <continuous>}
+					and eInitial = nil,
+
+				<independent> ->
+					eVariability = <continuous>
+					and eInitial = nil
+					and is_Real(variable)
+					and variable.start = nil,
+
+				<output> ->
+					eVariability in set {<constant>, <discrete>, <continuous>}
+					and eInitial in set {<exact>, <calculated>},
+
+				<local> ->
+					true
+			end
+
+			-- Table on p46 defining variability, and p49 defining combinations
+			and	cases eVariability:
+				<constant> ->
+					eCausality in set {<output>, <local>},
+
+				<fixed>, <tunable> ->
+					eCausality in set {<parameter>, <calculatedParameter>, <local>},
+
+				<discrete> ->
+					eCausality in set {<input>, <output>, <local>},
+
+				<continuous> ->
+					eCausality in set {<input>, <output>, <local>, <independent>}
+					and is_Real(variable)
+			end
+
+			-- Table on p47 defining initial
+			and (initial <> nil =>
+				eCausality not in set {<input>, <independent>})
+
+			-- Table on p47 defining initial
+			and cases eInitial:
+				<exact> ->
+					variable.start <> nil,
+
+				<approx> ->
+					variable.start <> nil
+					and variability <> <constant>,
+
+				<calculated> ->
+					variable.start = nil
+					and variability <> <constant>,
+
+				nil ->		-- Note that eInitial can be nil (undefined in table on p48)
+					true	-- Tests on eInitial above are sufficient
+			end;
+
+	/**
+	 * The default value for initial, defined by the (effective) values of causality and
+	 * variability, via the table on p48/49.
+	 */ 
+	effectiveInitial: [Initial] * Causality * Variability -> [Initial]
+	effectiveInitial(i, eCausality, eVariability) ==
+		if i <> nil
+		then i
+		else cases eCausality:
 			<parameter> ->
-				variability in set {<fixed>, <tunable>} and
-				initial in set {<exact>, nil},
+				cases eVariability:
+					<fixed>, <tunable> -> <exact>,
+					others -> nil
+				end,
 
 			<calculatedParameter> ->
-				variability in set {<fixed>, <tunable>} and
-				initial in set {<approx>, <calculated>, nil},
+				cases eVariability:
+					<fixed>, <tunable> -> <calculated>,
+					others -> nil
+				end,
 
 			<input> ->
-				initial = nil,
+				cases eVariability:
+					<discrete>, <continuous> -> nil,
+					others -> nil
+				end,
+
+			<output> ->
+				cases eVariability:
+					<constant> -> <exact>,
+					<discrete>, <continuous> -> <calculated>,
+					others -> nil
+				end,
+
+			<local> ->
+				cases eVariability:
+					<constant> -> <exact>,
+					<fixed>, <tunable> -> <calculated>,
+					<discrete>, <continuous> -> <calculated>
+				end,
 
 			<independent> ->
-				variability = <continuous> and
-				is_Real(variable) and variable.start = nil and
-				initial = nil,
-
-			<local>, <output>, nil ->		-- Default causality is local
-				true
-		end
-
-		and	cases variability:	-- Table on p46
-			<constant> ->
-				causality in set {<output>, <local>},
-
-			<fixed>, <tunable> ->
-				causality in set {<parameter>, <calculatedParameter>, <local>},
-
-			<discrete> ->
-				causality in set {<input>, <output>, <local>, <independent>},
-
-			<continuous>, nil ->			-- Default variability is continuous
-				is_Real(variable) and
-				causality in set {<input>, <output>, <local>, <independent>},
-
-			nil -> true
-		end
-
-		and cases initial:	-- Table on p47
-			<exact>, <approx> ->
-				variable.start <> nil,
-
-			<calculated> ->
-				variable.start = nil
-				and variability <> <constant>,
-
-			nil -> true
+				cases eVariability:
+					<continuous> -> nil,
+					others -> nil
+				end
 		end;
 
+	effectiveCausality: [Causality] -> Causality
+	effectiveCausality(c) ==
+		if c = nil
+		then <local>
+		else c;
+
+	effectiveVariability: [Variability] -> Variability
+	effectiveVariability(v) ==
+		if v = nil
+		then <continuous>
+		else v;
