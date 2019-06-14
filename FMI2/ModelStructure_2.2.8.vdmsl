@@ -22,10 +22,10 @@ types
 		derivatives			: [seq1 of Unknown]
 		initialUnknowns		: [seq1 of Unknown]
 	inv ms ==
-		duplicateCheck(ms.outputs) and
-		duplicateCheck(ms.derivatives) and
-		duplicateCheck(ms.initialUnknowns) and
-		(ms.initialUnknowns <> nil =>
+		duplicateCheck(ms.outputs)
+		and	duplicateCheck(ms.derivatives)
+		and duplicateCheck(ms.initialUnknowns)
+		and (ms.initialUnknowns <> nil =>
 			forall iu in seq ms.initialUnknowns &
 				{ k | k in seq iu.dependenciesKind } subset { <dependent>, <constant> });
 

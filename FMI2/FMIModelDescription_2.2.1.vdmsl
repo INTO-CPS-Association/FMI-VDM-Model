@@ -38,7 +38,15 @@ types
 			forall index in set { u.index | u in seq m.modelStructure.initialUnknowns } &
 				let sv = m.modelVariables(index) in
 					( sv.causality = <input> and sv.initial = <exact> ) 
-					or sv.causality = <independent> );
+					or sv.causality = <independent> )
+
+		-- Derivatives must refer to variables that are Real and define the "derivative" variable
+		and (m.modelStructure.derivatives <> nil =>
+			forall index in set { u.index | u in seq m.modelStructure.derivatives } &
+				let sv = m.modelVariables(index) in
+					is_Real(sv.variable)
+					and sv.variable.derivative <> nil
+					and sv.variable.derivative <= len m.modelVariables);
 
 functions
 	checkIndexes: nat1 * [seq1 of Unknown] +> bool

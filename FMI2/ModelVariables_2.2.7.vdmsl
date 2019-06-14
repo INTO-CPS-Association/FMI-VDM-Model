@@ -18,7 +18,7 @@ types
 		nominal			: [real]
 		unbounded		: [bool]
 		start			: [real]
-		derivative		: [bool]
+		derivative		: [nat1]
 	inv r ==
 		let min = if r.min <> nil then r.min
 				  else if r.declaredType <> nil then r.declaredType.min
