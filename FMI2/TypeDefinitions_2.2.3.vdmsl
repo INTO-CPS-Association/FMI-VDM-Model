@@ -1,9 +1,8 @@
 /**
- * Definitions relating to section 2.2.3 of FMI2, TypeDefinitions/SimpleType
+ * 2.2.3 Definition of Types (TypeDefinitions)
  */
-
 types
-	RealType ::
+	RealType ::					-- XSD p39
 		min			: [real]
 		max			: [real]
 		nominal		: [real]
@@ -11,7 +10,7 @@ types
 	inv r ==
 		r.max <> nil and r.min <> nil => r.max >= r.min;
 
-	IntegerType ::
+	IntegerType ::				-- XSD p39
 		min			: [int]
 		max			: [int]
 	inv i ==
@@ -23,15 +22,20 @@ types
 	StringType ::
 		;
 
+	-- Items of an enumeration as a sequence of "name" and "value" pairs. The
+	-- values can be any integer number, but must be unique within the same
+	-- enumeration (in order that the mapping between "name" and "value" is
+	-- bijective). An Enumeration element must have at least one Item.
+
 	Item ::
 		name		: seq1 of char
-		tag			: int;
+		value		: int;
 
-	EnumerationType ::
+	EnumerationType ::			-- XSD p39
 		items		: seq1 of Item
 	inv e ==
-		card { t | t in set { i.tag | i in seq e.items } } = len e.items;
+		card { t | t in set { i.value | i in seq e.items } } = len e.items;
 
-	SimpleType ::
+	SimpleType ::		-- XSD p38
 		name		: seq1 of char
 		type		: RealType | IntegerType | BooleanType | StringType | EnumerationType;

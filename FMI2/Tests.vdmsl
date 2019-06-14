@@ -4,7 +4,7 @@
 traces
 	/**
 	 * Test the ScalarInvariant invariant function with all possible inputs - should return true/false (total)
-	 * for every combination. Variable types are tested with "start" defined and undefined.
+	 * for every combination. Variable types are tested with "start" both defined and undefined.
 	 */
 	SVInvariantTotal:
 		let c : [Causality] in

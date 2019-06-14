@@ -1,14 +1,25 @@
 /**
- * Definitions relating to the top level FMU model description.
+ * 2.2.1 Definition of an FMU (fmiModelDescription)
  */
 types
+	-- XSD definition on p25
 	FMIModelDescription ::
-		typeDefinitions		: set of SimpleType			-- May be empty set
-		modelVariables		: seq of ScalarVariable		-- May be empty seq
-		modelStructure		: ModelStructure
+		-- A global list of type definitions that are utilized in "ModelVariables"
+		typeDefinitions		: set of SimpleType			-- XSD p38
+
+		-- The central FMU data structure defining all variables of the FMU that
+		-- Are visible/accessible via the FMU functions.
+		modelVariables		: seq of ScalarVariable		-- XSD p44
+
+		-- Defines the structure of the model. Especially, the ordered lists of
+		-- outputs, continuous-time states and initial unknowns (the unknowns
+		-- during Initialization Mode) are defined here. Furthermore, the
+		-- dependency of the unkowns from the knowns can be optionally
+		-- defined.
+		modelStructure		: ModelStructure			-- XSD p56
 
 	inv m ==
-		-- All model structure variables must be declared in model variables
+		-- All modelStructure variables must be declared in modelVariables
 		checkIndexes(len m.modelVariables, m.modelStructure.outputs)
 		and checkIndexes(len m.modelVariables, m.modelStructure.derivatives)
 		and checkIndexes(len m.modelVariables, m.modelStructure.initialUnknowns)
@@ -16,7 +27,7 @@ types
 		-- At most one variable can be <independent>
 		and card { i | i in seq m.modelVariables & i.causality = <independent> } <= 1
 
-		-- Model structure outputs contain every model variable "output"
+		-- Model structure outputs contain every model variable of "output" causality
 		and (let outputIndexes = { v | v in set inds m.modelVariables & m.modelVariables(v).causality = <output> },
 				 structIndexes = { u.index | u in seq m.modelStructure.outputs }
 			 in

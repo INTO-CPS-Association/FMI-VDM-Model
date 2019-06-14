@@ -1,14 +1,17 @@
 /**
- * Definitions relating to section 2.2.7 of FMI2, ScalarVariables
+ * 2.2.7 Definition of Model Variables (ModelVariables)
  */
 types
+	-- XSD p45, description p46
 	Causality	= <parameter> | <calculatedParameter> | <input> | <output> | <local> | <independent>;
 
+	-- XSD p45, description p46
 	Variability	= <constant> | <fixed> | <tunable> | <discrete> | <continuous>;
 
+	-- XSD p45, description p46
 	Initial		= <exact> | <approx> | <calculated>;
 
-	Real ::
+	Real ::		-- XSD p52
 		declaredType	: [RealType]
 		min				: [real]
 		max				: [real]
@@ -29,7 +32,7 @@ types
 				(min <> nil => min <= r.start) and
 				(max <> nil => max >= r.start);
 
-	Integer ::
+	Integer ::	-- XSD p52
 		declaredType	: [IntegerType]
 		min				: [int]
 		max				: [int]
@@ -47,15 +50,15 @@ types
 				(min <> nil => min <= i.start) and
 				(max <> nil => max >= i.start);
 
-	Boolean ::
+	Boolean ::		-- XSD p53
 		declaredType	: [BooleanType]
 		start			: [bool];
 
-	String ::
+	String ::		-- XSD p53
 		declaredType	: [StringType]
 		start			: [seq1 of char];
 
-	Enumeration ::
+	Enumeration ::	-- XSD p53
 		declaredType	: EnumerationType	-- Note, not optional
 		min				: [int]
 		max				: [int]
@@ -71,7 +74,7 @@ types
 
 	VarName = seq1 of char;		-- Has a syntax defined in section 2.2.9, p64
 
-	ScalarVariable ::
+	ScalarVariable ::			-- XSD p44
 		-- attributes
 		name		: VarName
 		causality	: [Causality]
@@ -85,6 +88,9 @@ types
 		isValidSV(sv.causality, sv.variability, sv.initial, sv.variable);
 
 functions
+	/**
+	 * Rules defined in the table on p49.
+	 */
 	isValidSV: [Causality] * [Variability] * [Initial] * Variable +> bool
 	isValidSV(causality, variability, initial, variable) ==
 		let eCausality = effectiveCausality(causality),
