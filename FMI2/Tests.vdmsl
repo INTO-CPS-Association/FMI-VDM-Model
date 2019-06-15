@@ -114,6 +114,61 @@ functions
 								not isValidSV(causality, variability, initial, nilv)
 					end;
 
+values
+--	test: () +> bool
+--	test() ==
+--	isValidModelDescription
+
+	/**
+	 * This test model is based on the example on p62
+	 */
+	model = mk_FMIModelDescription
+	(
+		-- TypeDefinitions
+		{
+			mk_SimpleType("Real-1-10",		mk_RealType(1, 10, nil, nil)),
+			mk_SimpleType("Real-Positive",	mk_RealType(0, nil, nil, nil)),
+			mk_SimpleType("Real-Undefined",	mk_RealType(nil, nil, nil, nil))
+		},
+
+		-- ScalarVariables
+		[
+			mk_ScalarVariable("p",			<parameter>, <fixed>,	nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil)),	-- 1
+			mk_ScalarVariable("u1",			<input>, <continuous>,	nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil)),	-- 2
+			mk_ScalarVariable("u2",			<input>, <continuous>,	nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil)),	-- 3
+			mk_ScalarVariable("u3",			<input>, <discrete>,	nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil)),	-- 4
+			mk_ScalarVariable("x1",			<local>, <continuous>,	nil, mk_Real("Real-Undefined", 0, 10, nil, nil, nil, nil)),	-- 5
+			mk_ScalarVariable("x2",			<input>, <continuous>,	<exact>, mk_Real("Real-Undefined", 0, 10, nil, nil, nil, nil)),	-- 6
+			mk_ScalarVariable("x3",			<input>, <continuous>,	<exact>, mk_Real("Real-Undefined", 0, 10, nil, nil, nil, nil)),	-- 7
+			mk_ScalarVariable("der(x1)",	<parameter>, <fixed>,	nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil)),	-- 8
+			mk_ScalarVariable("der(x2)",	<parameter>, <fixed>,	nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil)),	-- 9
+			mk_ScalarVariable("der(x3)",	<parameter>, <fixed>,	nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil)),	-- 10
+			mk_ScalarVariable("y",			<output>, <continuous>,	nil, mk_Real("Real-Positive", 0, 10, nil, nil, nil, nil))	-- 11
+		],
+
+		mk_ModelStructure
+		(
+			-- Outputs
+			[
+				mk_Unknown(11,	[6, 7], nil)
+			],
+			-- Derivatives
+			[
+				mk_Unknown(8,	[6], nil),
+				mk_Unknown(9,	[2, 4, 5, 6], [<constant>, <constant>, <dependent>, <fixed>]),
+				mk_Unknown(10,	[2, 3, 4, 5, 6], nil)
+			],
+			-- InitialUnknowns
+			[
+				mk_Unknown(6,	[2, 4, 5], nil),
+				mk_Unknown(7,	[2, 4, 5, 11], nil),
+				mk_Unknown(8,	nil, nil),
+				mk_Unknown(10,	nil, nil)
+			]
+		)
+	);
+
+functions
 	/**
 	 * Run all tests and check that they pass.
 	 */
