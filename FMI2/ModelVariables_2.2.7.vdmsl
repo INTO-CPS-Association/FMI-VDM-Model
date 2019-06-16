@@ -207,3 +207,12 @@ functions
 		if v = nil
 		then <continuous>
 		else v;
+
+	/**
+	 * Return the ScalarVariables from a list which are continuous-time states
+	 */
+	continuousTimeStates: seq of ScalarVariable -> set of ScalarVariable
+	continuousTimeStates(svs) ==
+		{ sv | sv in seq svs &
+			is_Real(sv.variable)
+			and sv.variability = <continuous> };	-- Sufficient?

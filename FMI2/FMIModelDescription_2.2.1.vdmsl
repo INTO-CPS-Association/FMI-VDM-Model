@@ -42,25 +42,53 @@ functions
 		and card { i | i in seq modelVariables & i.causality = <independent> } <= 1
 
 		-- Model structure outputs contain every model variable of "output" causality
-		and (let outputIndexes = { v | v in set inds modelVariables & modelVariables(v).causality = <output> },
-				 structIndexes = { u.index | u in seq modelStructure.outputs }
-			 in
-				 structIndexes = outputIndexes)
+		and (let outputIndexes = { v | v in set inds modelVariables & modelVariables(v).causality = <output> } in
+			 	if outputIndexes <> {}
+			 	then
+			 		modelStructure.outputs <> nil
+			 		and { u.index | u in seq modelStructure.outputs } = outputIndexes
+			 	else
+			 		modelStructure.outputs = nil)
 
-		-- InitalUnknowns must be <input> + <exact> or <independent> variables
-		and (modelStructure.initialUnknowns <> nil =>
-			forall index in set { u.index | u in seq modelStructure.initialUnknowns } &
-				let sv = modelVariables(index) in
-					( sv.causality = <input> and sv.initial = <exact> ) 
-					or sv.causality = <independent> )
+		-- Derivatives must refer to all variables that are Real which define the "derivative" variable
+		and (let rdis = { v | v in set inds modelVariables &
+				modelVariables(v).variable.derivative <> nil
+				and is_Real(modelVariables(v).variable) }
+			in
+			 	if rdis <> {}
+			 	then
+			 		modelStructure.derivatives <> nil
+			 		and let dis = { u.index | u in seq modelStructure.derivatives } in
+			 			dis = rdis
+			 			and forall i in set dis & i <= len modelVariables
+			 	else
+			 		modelStructure.derivatives = nil)
 
-		-- Derivatives must refer to variables that are Real and define the "derivative" variable
-		and (modelStructure.derivatives <> nil =>
-			forall index in set { u.index | u in seq modelStructure.derivatives } &
-				let sv = modelVariables(index) in
-					is_Real(sv.variable)
-					and sv.variable.derivative <> nil
-					and sv.variable.derivative <= len modelVariables);
+		-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
+		-- all continuous-time states and derivatives that are approx/calculated
+		-- And the list must be in ascending index order
+		and (let svs = { svi | svi in set inds modelVariables &
+				let sv = modelVariables(svi),
+					eInitial = effectiveInitial(sv.initial, sv.causality, sv.variability)
+				in
+					(sv.causality = <output> and eInitial in set { <approx>, <calculated> })
+					or sv.causality = <calculatedParameter>
+					or (sv in set continuousTimeStates(modelVariables) and eInitial in set { <approx>, <calculated> })
+					or svi in set { u.index | u in seq modelStructure.derivatives &
+						let dv = modelVariables(u.index),
+							ei = effectiveInitial(dv.initial, dv.causality, dv.variability)
+						in
+							ei in set { <approx>, <calculated> } } }
+			in
+			 	if svs <> {}
+			 	then
+			 		let iu = modelStructure.initialUnknowns in
+			 			iu <> nil
+			 			and { u.index | u in seq iu } = svs
+			 			and forall i in set inds iu &
+			 				i = len iu or iu(i).index < iu(i+1).index
+			 	else
+			 		modelStructure.initialUnknowns = nil);
 
 	/**
 	 * Check that a variable index is within range
