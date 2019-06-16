@@ -136,7 +136,7 @@ functions
 									is_Real(sv.variable)
 
 									-- And any start value matches the calculated min/max
-									and sv.variable.start <> nil =>
+									and (sv.variable.start <> nil =>
 										let min = if sv.variable.min <> nil then sv.variable.min
 												  else if dmin <> nil then dmin
 												  else nil,
@@ -146,14 +146,14 @@ functions
 										in
 											(max <> nil and min <> nil => max >= min)
 											and (min <> nil => min <= sv.variable.start)
-											and	(max <> nil => max >= sv.variable.start),
+											and	(max <> nil => max >= sv.variable.start)),
 
 								mk_IntegerType(dmin, dmax) ->
 									-- The named definition is the right type
 									is_Integer(sv.variable)
 
 									-- And any start value matches the calculated min/max
-									and sv.variable.start <> nil =>
+									and (sv.variable.start <> nil =>
 										let min = if sv.variable.min <> nil then sv.variable.min
 												  else if dmin <> nil then dmin
 												  else nil,
@@ -163,7 +163,7 @@ functions
 										in
 											(max <> nil and min <> nil => max >= min)
 											and (min <> nil => min <= sv.variable.start)
-											and	(max <> nil => max >= sv.variable.start),
+											and	(max <> nil => max >= sv.variable.start)),
 
 								mk_BooleanType() ->
 									is_Boolean(sv.variable),
