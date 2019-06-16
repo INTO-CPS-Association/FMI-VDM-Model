@@ -51,10 +51,12 @@ functions
 			and typeCheck(eModelVariables, typeDefinitions)
 
 			-- At most one variable can be <independent>
-			and card { i | i in seq eModelVariables & i.causality = <independent> } <= 1
+			and card { sv | sv in seq eModelVariables & sv.causality = <independent> } <= 1
 
 			-- Model structure outputs contain every model variable of "output" causality
-			and (let outputIndexes = { v | v in set inds eModelVariables & eModelVariables(v).causality = <output> } in
+			and (let outputIndexes = { svi | svi in set inds eModelVariables &
+					eModelVariables(svi).causality = <output> }
+				 in
 				 	if outputIndexes <> {}
 				 	then
 				 		modelStructure.outputs <> nil
@@ -63,23 +65,23 @@ functions
 				 		modelStructure.outputs = nil)
 
 			-- Derivatives must refer to all variables that are Real which define the "derivative" variable
-			and (let rdis = { v | v in set inds eModelVariables &
-					eModelVariables(v).variable.derivative <> nil
-					and is_Real(eModelVariables(v).variable) }
-				in
-				 	if rdis <> {}
+			and (let derivativeIndexes = { svi | svi in set inds eModelVariables &
+					eModelVariables(svi).variable.derivative <> nil
+					and is_Real(eModelVariables(svi).variable) }
+				 in
+				 	if derivativeIndexes <> {}
 				 	then
 				 		modelStructure.derivatives <> nil
-				 		and let dis = { u.index | u in seq modelStructure.derivatives } in
-				 			dis = rdis
-				 			and forall i in set dis & i <= len eModelVariables
+				 		and let structIndexes = { u.index | u in seq modelStructure.derivatives } in
+				 			structIndexes = derivativeIndexes
+				 			and forall i in set structIndexes & i <= len eModelVariables
 				 	else
 				 		modelStructure.derivatives = nil)
 
 			-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
 			-- all continuous-time states and derivatives that are approx/calculated
 			-- And the list must be in ascending index order
-			and (let svs = { svi | svi in set inds eModelVariables &
+			and (let initIndexes = { svi | svi in set inds eModelVariables &
 					let sv = eModelVariables(svi) in
 						(sv.causality = <output>
 							and sv.initial in set { <approx>, <calculated> })
@@ -94,13 +96,13 @@ functions
 								let dv = eModelVariables(u.index) in 
 									dv.initial in set { <approx>, <calculated> } } ) }
 				in
-				 	if svs <> {}
+				 	if initIndexes <> {}
 				 	then
-				 		let iu = modelStructure.initialUnknowns in
-				 			iu <> nil
-				 			and { u.index | u in seq iu } = svs
-				 			and forall i in set inds iu &
-				 				i = len iu or iu(i).index < iu(i+1).index
+				 		let ius = modelStructure.initialUnknowns in
+				 			ius <> nil
+				 			and { u.index | u in seq ius } = initIndexes
+				 			and forall i in set inds ius &
+				 				i = len ius or ius(i).index < ius(i+1).index
 				 	else
 				 		modelStructure.initialUnknowns = nil);
 
@@ -118,57 +120,57 @@ functions
 	 */
 	typeCheck: seq of ScalarVariable * set of SimpleType +> bool
 	typeCheck(variables, typedefs) ==
-		forall v in seq variables &
-			let dname = v.variable.declaredType in
+		forall sv in seq variables &
+			let dname = sv.variable.declaredType in
 				dname <> nil =>
-					let simpleTypes = { td | td in set typedefs & td.name = dname } in
+					let matchingTypes = { td | td in set typedefs & td.name = dname } in
 						-- Only one type name should match
-						card simpleTypes = 1
+						card matchingTypes = 1
 
 						-- The match is the same type as the ScalarVariable type and for numerics,
 						-- any start value is within the (perhaps overridden) min/max. 
-						and let {simpleType} = simpleTypes in
+						and let { simpleType } = matchingTypes in
 							cases simpleType.type:
 								mk_RealType(dmin, dmax, -, -) ->
 									-- The named definition is the right type
-									is_Real(v.variable)
+									is_Real(sv.variable)
 
 									-- And any start value matches the calculated min/max
-									and v.variable.start <> nil =>
-										let min = if v.variable.min <> nil then v.variable.min
+									and sv.variable.start <> nil =>
+										let min = if sv.variable.min <> nil then sv.variable.min
 												  else if dmin <> nil then dmin
 												  else nil,
-											max = if v.variable.max <> nil then v.variable.max
+											max = if sv.variable.max <> nil then sv.variable.max
 												  else if dmax <> nil then dmax
 												  else nil
 										in
 											(max <> nil and min <> nil => max >= min)
-											and (min <> nil => min <= v.variable.start)
-											and	(max <> nil => max >= v.variable.start),
+											and (min <> nil => min <= sv.variable.start)
+											and	(max <> nil => max >= sv.variable.start),
 
 								mk_IntegerType(dmin, dmax) ->
 									-- The named definition is the right type
-									is_Integer(v.variable)
+									is_Integer(sv.variable)
 
 									-- And any start value matches the calculated min/max
-									and v.variable.start <> nil =>
-										let min = if v.variable.min <> nil then v.variable.min
+									and sv.variable.start <> nil =>
+										let min = if sv.variable.min <> nil then sv.variable.min
 												  else if dmin <> nil then dmin
 												  else nil,
-											max = if v.variable.max <> nil then v.variable.max
+											max = if sv.variable.max <> nil then sv.variable.max
 												  else if dmax <> nil then dmax
 												  else nil
 										in
 											(max <> nil and min <> nil => max >= min)
-											and (min <> nil => min <= v.variable.start)
-											and	(max <> nil => max >= v.variable.start),
+											and (min <> nil => min <= sv.variable.start)
+											and	(max <> nil => max >= sv.variable.start),
 
 								mk_BooleanType() ->
-									is_Boolean(v.variable),
+									is_Boolean(sv.variable),
 
 								mk_StringType() ->
-									is_String(v.variable),
+									is_String(sv.variable),
 
 								mk_EnumerationType(-) ->
-									is_Enumeration(v.variable)
+									is_Enumeration(sv.variable)
 							end;
