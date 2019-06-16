@@ -1,0 +1,50 @@
+/**
+ * The model definition for the Spring Mass Damper example in section 4.3.2 on p111
+ */
+values
+values
+--	test: () +> bool
+--	test() ==
+--	isValidModelDescription
+
+	springMassDamper = mk_FMIModelDescription
+	(
+		-- TypeDefinitions
+		{
+			mk_SimpleType("Modelica.SIunits.Inertia",			mk_RealType(0, nil, nil, nil)),
+			mk_SimpleType("Modelica.SIunits.Torque",			mk_RealType(nil, nil, nil, nil)),
+			mk_SimpleType("Modelica.SIunits.AngularVelocity",	mk_RealType(nil, nil, nil, nil)),
+			mk_SimpleType("Modelica.SIunits.Angle",				mk_RealType(nil, nil, nil, nil))
+		},
+
+		-- ScalarVariables
+		[
+/* 1 */		mk_ScalarVariable("inertial.J", <parameter>, <fixed>, nil,
+					mk_Real("Modelica.SIunits.Inertia", nil, nil, nil, nil, 1, nil)),
+
+/* 2 */		mk_ScalarVariable("torque.tau", <input>, nil, nil,
+					mk_Real("Modelica.SIunits.Torque", nil, nil, nil, nil, 0, nil)),
+
+/* 3 */		mk_ScalarVariable("inertial.phi", <output>, nil, nil,
+					mk_Real("Modelica.SIunits.Angle", nil, nil, nil, nil, nil, nil)),
+
+/* 4 */		mk_ScalarVariable("inertial.w", <output>, nil, nil,
+					mk_Real("Modelica.SIunits.AngularVelocity", nil, nil, nil, nil, nil, nil))
+		],
+
+		mk_ModelStructure
+		(
+			-- Outputs
+			[
+				mk_Unknown(3, nil, nil),
+				mk_Unknown(4, nil, nil)
+			],
+			-- Derivatives
+			nil,
+			-- InitialUnknowns
+			[
+				mk_Unknown(3, nil, nil),
+				mk_Unknown(4, nil, nil)
+			]
+		)
+	);
