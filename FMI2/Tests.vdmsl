@@ -84,7 +84,7 @@ functions
 								<discrete>, <continuous> ->
 									isValidSV(causality, variability, <calculated>, nilv) and
 									isValidSV(causality, variability, <exact>, startv)
-									and not isValidSV(causality, variability, <approx>, startv),
+									and isValidSV(causality, variability, <approx>, startv),
 
 								<fixed>, <tunable> ->
 									forall initial : Initial &

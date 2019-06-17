@@ -39,36 +39,53 @@ functions
 				| sv in seq modelVariables
 			]
 		in
-			-- Type definitions are unique by name
-			card { t.name | t in set typeDefinitions } = card typeDefinitions
-
-			-- All modelStructure variables must be declared in modelVariables
-			and checkIndexes(len eModelVariables, modelStructure.outputs)
-			and checkIndexes(len eModelVariables, modelStructure.derivatives)
-			and checkIndexes(len eModelVariables, modelStructure.initialUnknowns)
-
-			-- All modelVariable declaredTypes must match the typeDefinitions
-			and typeCheck(eModelVariables, typeDefinitions)
-
-			-- At most one variable can be <independent>
-			and card { sv | sv in seq eModelVariables & sv.causality = <independent> } <= 1
-
-			-- Model structure outputs contain every model variable of "output" causality
-			and (let outputIndexes = { svi | svi in set inds eModelVariables &
+			(
+				-- Type definitions are unique by name
+				-- @OnFail("Type definitions are not unique")
+				(card { t.name | t in set typeDefinitions } = card typeDefinitions)
+			)
+			and
+			(
+				-- All modelStructure variables must be declared in modelVariables
+				-- @OnFail("Model structure indexes do not match model variables")
+				checkIndexes(len eModelVariables, modelStructure.outputs)
+				and checkIndexes(len eModelVariables, modelStructure.derivatives)
+				and checkIndexes(len eModelVariables, modelStructure.initialUnknowns)
+			)
+			and
+			(
+				-- All modelVariable declaredTypes must match the typeDefinitions
+				-- @OnFail("Typecheck of model variables against type definitions failed")
+				typeCheck(eModelVariables, typeDefinitions)
+			)
+			and
+			(
+				-- At most one variable can be <independent>
+				-- @OnFail("Must be at most one independent variable")
+				(card { sv | sv in seq eModelVariables & sv.causality = <independent> } <= 1)
+			)
+			and
+			(
+				-- Model structure outputs contain every model variable of "output" causality
+				-- @OnFail("Model structure does not contain every <output> variable")
+				let outputIndexes = { svi | svi in set inds eModelVariables &
 					eModelVariables(svi).causality = <output> }
-				 in
+				in
 				 	if outputIndexes <> {}
 				 	then
 				 		modelStructure.outputs <> nil
 				 		and { u.index | u in seq modelStructure.outputs } = outputIndexes
 				 	else
-				 		modelStructure.outputs = nil)
-
-			-- Derivatives must refer to all variables that are Real which define the "derivative" variable
-			and (let derivativeIndexes = { svi | svi in set inds eModelVariables &
-					eModelVariables(svi).variable.derivative <> nil
-					and is_Real(eModelVariables(svi).variable) }
-				 in
+				 		modelStructure.outputs = nil
+			)
+			and
+			(
+				-- Derivatives must refer to all variables that are Real which define the "derivative" variable
+				-- @OnFail("Derivative section does not refer to Real/derivative variable")
+				let derivativeIndexes = { svi | svi in set inds eModelVariables &
+					is_Real(eModelVariables(svi).variable)
+					and eModelVariables(svi).variable.derivative <> nil }
+				in
 				 	if derivativeIndexes <> {}
 				 	then
 				 		modelStructure.derivatives <> nil
@@ -76,12 +93,15 @@ functions
 				 			structIndexes = derivativeIndexes
 				 			and forall i in set structIndexes & i <= len eModelVariables
 				 	else
-				 		modelStructure.derivatives = nil)
-
-			-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
-			-- all continuous-time states and derivatives that are approx/calculated
-			-- And the list must be in ascending index order
-			and (let initIndexes = { svi | svi in set inds eModelVariables &
+				 		modelStructure.derivatives = nil
+			)
+			and
+			(
+				-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
+				-- all continuous-time states and derivatives that are approx/calculated
+				-- And the list must be in ascending index order
+				-- @OnFail("InitialUnknowns are invalid")
+				let initIndexes = { svi | svi in set inds eModelVariables &
 					let sv = eModelVariables(svi) in
 						(sv.causality = <output>
 							and sv.initial in set { <approx>, <calculated> })
@@ -99,12 +119,20 @@ functions
 				 	if initIndexes <> {}
 				 	then
 				 		let ius = modelStructure.initialUnknowns in
-				 			ius <> nil
-				 			and { u.index | u in seq ius } = initIndexes
-				 			and forall i in set inds ius &
-				 				i = len ius or ius(i).index < ius(i+1).index
+				 			ius <> nil and
+				 			(
+				 				-- @OnFail("InitialUnknowns not as expected: %s", initIndexes)
+				 				{ u.index | u in seq ius } = initIndexes
+				 			)
+				 			and
+				 			(
+				 				--@OnFail("InitialUnknowns are not sorted")
+				 				 forall i in set inds ius &
+				 					i = len ius or ius(i).index < ius(i+1).index
+				 			)
 				 	else
-				 		modelStructure.initialUnknowns = nil);
+				 		modelStructure.initialUnknowns = nil
+			);
 
 	/**
 	 * Check that a variable index is within range
@@ -125,7 +153,8 @@ functions
 				dname <> nil =>
 					let matchingTypes = { td | td in set typedefs & td.name = dname } in
 						-- Only one type name should match
-						card matchingTypes = 1
+						-- @OnFail("Typedefs have multiple matching names")
+						(card matchingTypes = 1)
 
 						-- The match is the same type as the ScalarVariable type and for numerics,
 						-- any start value is within the (perhaps overridden) min/max. 
@@ -133,7 +162,8 @@ functions
 							cases simpleType.type:
 								mk_RealType(dmin, dmax, -, -) ->
 									-- The named definition is the right type
-									is_Real(sv.variable)
+									-- @OnFail("RealType not referenced by Real variable %s", sv.variable)
+									(is_Real(sv.variable))
 
 									-- And any start value matches the calculated min/max
 									and (sv.variable.start <> nil =>
@@ -144,13 +174,15 @@ functions
 												  else if dmax <> nil then dmax
 												  else nil
 										in
+											-- @OnFail("Calculated min/max does not match start %s", sv.variable.start)
 											(max <> nil and min <> nil => max >= min)
 											and (min <> nil => min <= sv.variable.start)
 											and	(max <> nil => max >= sv.variable.start)),
 
 								mk_IntegerType(dmin, dmax) ->
 									-- The named definition is the right type
-									is_Integer(sv.variable)
+									-- @OnFail("IntegerType not referenced by Integer variable %s", sv.variable)
+									(is_Integer(sv.variable))
 
 									-- And any start value matches the calculated min/max
 									and (sv.variable.start <> nil =>
@@ -161,16 +193,20 @@ functions
 												  else if dmax <> nil then dmax
 												  else nil
 										in
+											-- @OnFail("Calculated min/max does not match start %s", sv.variable.start)
 											(max <> nil and min <> nil => max >= min)
 											and (min <> nil => min <= sv.variable.start)
 											and	(max <> nil => max >= sv.variable.start)),
 
 								mk_BooleanType() ->
+									-- @OnFail("BooleanType not referenced by Boolean variable %s", sv.variable)
 									is_Boolean(sv.variable),
 
 								mk_StringType() ->
+									-- @OnFail("StringType not referenced by String variable %s", sv.variable)
 									is_String(sv.variable),
 
 								mk_EnumerationType(-) ->
+									-- @OnFail("EnumerationType not referenced by Enumeration variable %s", sv.variable)
 									is_Enumeration(sv.variable)
 							end;
