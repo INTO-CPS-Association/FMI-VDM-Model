@@ -39,35 +39,35 @@ functions
 				| sv in seq modelVariables
 			]
 		in
+			-- Type definitions are unique by name
+			-- @OnFail("Type definitions are not unique")
 			(
-				-- Type definitions are unique by name
-				-- @OnFail("Type definitions are not unique")
-				(card { t.name | t in set typeDefinitions } = card typeDefinitions)
+				card { t.name | t in set typeDefinitions } = card typeDefinitions
 			)
 			and
+			-- All modelStructure variables must be declared in modelVariables
+			-- @OnFail("Model structure indexes do not match model variables")
 			(
-				-- All modelStructure variables must be declared in modelVariables
-				-- @OnFail("Model structure indexes do not match model variables")
 				checkIndexes(len eModelVariables, modelStructure.outputs)
 				and checkIndexes(len eModelVariables, modelStructure.derivatives)
 				and checkIndexes(len eModelVariables, modelStructure.initialUnknowns)
 			)
 			and
+			-- All modelVariable declaredTypes must match the typeDefinitions
+			-- @OnFail("Typecheck of model variables against type definitions failed")
 			(
-				-- All modelVariable declaredTypes must match the typeDefinitions
-				-- @OnFail("Typecheck of model variables against type definitions failed")
 				typeCheck(eModelVariables, typeDefinitions)
 			)
 			and
+			-- At most one variable can be <independent>
+			-- @OnFail("Must be at most one independent variable")
 			(
-				-- At most one variable can be <independent>
-				-- @OnFail("Must be at most one independent variable")
-				(card { sv | sv in seq eModelVariables & sv.causality = <independent> } <= 1)
+				card { sv | sv in seq eModelVariables & sv.causality = <independent> } <= 1
 			)
 			and
+			-- Model structure outputs contain every model variable of "output" causality
+			-- @OnFail("Model structure does not contain every <output> variable")
 			(
-				-- Model structure outputs contain every model variable of "output" causality
-				-- @OnFail("Model structure does not contain every <output> variable")
 				let outputIndexes = { svi | svi in set inds eModelVariables &
 					eModelVariables(svi).causality = <output> }
 				in
@@ -79,9 +79,9 @@ functions
 				 		modelStructure.outputs = nil
 			)
 			and
+			-- Derivatives must refer to all variables that are Real which define the "derivative" variable
+			-- @OnFail("Derivative section does not refer to Real/derivative variable")
 			(
-				-- Derivatives must refer to all variables that are Real which define the "derivative" variable
-				-- @OnFail("Derivative section does not refer to Real/derivative variable")
 				let derivativeIndexes = { svi | svi in set inds eModelVariables &
 					is_Real(eModelVariables(svi).variable)
 					and eModelVariables(svi).variable.derivative <> nil }
@@ -96,10 +96,10 @@ functions
 				 		modelStructure.derivatives = nil
 			)
 			and
+			-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
+			-- all continuous-time states and derivatives that are approx/calculated
+			-- And the list must be in ascending index order
 			(
-				-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
-				-- all continuous-time states and derivatives that are approx/calculated
-				-- And the list must be in ascending index order
 				let initIndexes = { svi | svi in set inds eModelVariables &
 					let sv = eModelVariables(svi) in
 						(sv.causality = <output>
@@ -116,26 +116,28 @@ functions
 									dv.initial in set { <approx>, <calculated> } } ) }
 				in
 					-- @OnFail("InitialUnknowns are invalid")
-				 	if initIndexes <> {}
-				 	then
-				 		let ius = modelStructure.initialUnknowns in
-				 			(
+					(
+					 	if initIndexes <> {}
+					 	then
+					 		let ius = modelStructure.initialUnknowns in
 				 				-- @OnFail("InitialUnknowns should be defined: %s", initIndexes)
-				 				ius <> nil
-				 			)
-				 			and
-				 			(
+				 				(
+					 				ius <> nil
+					 			)
+					 			and
 				 				-- @OnFail("InitialUnknowns not as expected: %s", initIndexes)
-				 				({ u.index | u in seq ius } = initIndexes)
-				 			)
-				 			and
-				 			(
+				 				(
+				 					{ u.index | u in seq ius } = initIndexes
+				 				)
+					 			and
 				 				--@OnFail("InitialUnknowns are not sorted: %s", ius)
-				 				 forall i in set inds ius &
-				 					i = len ius or ius(i).index < ius(i+1).index
-				 			)
-				 	else
-				 		modelStructure.initialUnknowns = nil
+				 				(
+					 				 forall i in set inds ius &
+					 					i = len ius or ius(i).index < ius(i+1).index
+					 			)
+					 	else
+					 		modelStructure.initialUnknowns = nil
+				 	)
 			);
 
 	/**
@@ -204,13 +206,13 @@ functions
 
 								mk_BooleanType() ->
 									-- @OnFail("BooleanType not referenced by Boolean variable %s", sv.variable)
-									is_Boolean(sv.variable),
+									(is_Boolean(sv.variable)),
 
 								mk_StringType() ->
 									-- @OnFail("StringType not referenced by String variable %s", sv.variable)
-									is_String(sv.variable),
+									(is_String(sv.variable)),
 
 								mk_EnumerationType(-) ->
 									-- @OnFail("EnumerationType not referenced by Enumeration variable %s", sv.variable)
-									is_Enumeration(sv.variable)
+									(is_Enumeration(sv.variable))
 							end;

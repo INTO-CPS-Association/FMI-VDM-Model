@@ -22,11 +22,11 @@ types
 	inv r ==
 		(r.max <> nil and r.min <> nil =>
 			--@OnFail("Real min %s is not <= max %s", r.min, r.max)
-			r.max >= r.min)
+			(r.max >= r.min))
 		and	(r.start <> nil =>
 			--@OnFail("Real start %s is not within min %s/max %s", r.start, r.min, r.max)
-			(r.min <> nil => r.min <= r.start) and
-			(r.max <> nil => r.max >= r.start));
+			((r.min <> nil => r.min <= r.start) and
+			 (r.max <> nil => r.max >= r.start)));
 
 	Integer ::	-- XSD p52
 		declaredType	: [seq1 of char]
@@ -36,11 +36,11 @@ types
 	inv i ==
 		(i.max <> nil and i.min <> nil =>
 			--@OnFail("Integer min %s is not <= max %s", i.min, i.max)
-			i.max >= i.min)
+			(i.max >= i.min))
 		and	(i.start <> nil =>
 			--@OnFail("Integer start %s is not within min %s/max %s", i.start, i.min, i.max)
-			(i.min <> nil => i.min <= i.start) and
-			(i.max <> nil => i.max >= i.start));
+			((i.min <> nil => i.min <= i.start) and
+			 (i.max <> nil => i.max >= i.start)));
 
 	Boolean ::		-- XSD p53
 		declaredType	: [seq1 of char]
@@ -58,11 +58,11 @@ types
 	inv e ==
 		(e.max <> nil and e.min <> nil =>
 			--@OnFail("Enum min %s is not <= max %s", e.min, e.max)
-			e.max >= e.min)
+			(e.max >= e.min))
 		and	(e.start <> nil =>
 			--@OnFail("Enum start %s is not within min %s/max %s", e.start, e.min, e.max)
-			(e.min <> nil => e.min <= e.start) and
-			(e.max <> nil => e.max >= e.start));
+			((e.min <> nil => e.min <= e.start) and
+			 (e.max <> nil => e.max >= e.start)));
 
 	Variable = Real | Integer | Boolean | String | Enumeration;
 
@@ -93,72 +93,78 @@ functions
 		in
 			-- Table on p46 defining causality, and p49 defining combinations
 			-- @OnFail("Causality %s fails", eCausality)
-			cases eCausality:
-				<parameter> ->
-					eVariability in set {<fixed>, <tunable>}
-					and eInitial = <exact>,
+			(
+				cases eCausality:
+					<parameter> ->
+						eVariability in set {<fixed>, <tunable>}
+						and eInitial = <exact>,
 
-				<calculatedParameter> ->
-					eVariability in set {<fixed>, <tunable>}
-					and eInitial in set {<approx>, <calculated>},
+					<calculatedParameter> ->
+						eVariability in set {<fixed>, <tunable>}
+						and eInitial in set {<approx>, <calculated>},
 
-				<input> ->
-					eVariability in set {<discrete>, <continuous>}
-					and eInitial = nil,
+					<input> ->
+						eVariability in set {<discrete>, <continuous>}
+						and eInitial = nil,
 
-				<independent> ->
-					eVariability = <continuous>
-					and eInitial = nil
-					and is_Real(variable)
-					and variable.start = nil,
+					<independent> ->
+						eVariability = <continuous>
+						and eInitial = nil
+						and is_Real(variable)
+						and variable.start = nil,
 
-				<output> ->
-					eVariability in set {<constant>, <discrete>, <continuous>}
-					and eInitial in set {<exact>, <approx>, <calculated>},
+					<output> ->
+						eVariability in set {<constant>, <discrete>, <continuous>}
+						and eInitial in set {<exact>, <approx>, <calculated>},
 
-				<local> ->
-					true
-			end
-
+					<local> ->
+						true
+				end
+			)
 			-- Table on p46 defining variability, and p49 defining combinations
 			-- @OnFail("Variability %s fails", eVariability)
-			and	cases eVariability:
-				<constant> ->
-					eCausality in set {<output>, <local>},
+			and
+			(
+				cases eVariability:
+					<constant> ->
+						eCausality in set {<output>, <local>},
 
-				<fixed>, <tunable> ->
-					eCausality in set {<parameter>, <calculatedParameter>, <local>},
+					<fixed>, <tunable> ->
+						eCausality in set {<parameter>, <calculatedParameter>, <local>},
 
-				<discrete> ->
-					eCausality in set {<input>, <output>, <local>},
+					<discrete> ->
+						eCausality in set {<input>, <output>, <local>},
 
-				<continuous> ->
-					eCausality in set {<input>, <output>, <local>, <independent>}
-					and is_Real(variable)
-			end
-
+					<continuous> ->
+						eCausality in set {<input>, <output>, <local>, <independent>}
+						and is_Real(variable)
+				end
+			)
 			-- Table on p47 defining initial
 			and (initial <> nil =>
 				-- @OnFail("Initial %s fails", initial)
-				eCausality not in set {<input>, <independent>})
+				(eCausality not in set {<input>, <independent>}))
 
 			-- Table on p47 defining initial
 			-- @OnFail("Initial %s fails", eInitial)
-			and cases eInitial:
-				<exact> ->
-					variable.start <> nil,
+			and
+			(
+				cases eInitial:
+					<exact> ->
+						variable.start <> nil,
 
-				<approx> ->
-					variable.start <> nil
-					and variability <> <constant>,
+					<approx> ->
+						variable.start <> nil
+						and variability <> <constant>,
 
-				<calculated> ->
-					variable.start = nil
-					and variability <> <constant>,
+					<calculated> ->
+						variable.start = nil
+						and variability <> <constant>,
 
-				nil ->		-- Note that eInitial can be nil (undefined in table on p48)
-					true	-- Tests on eInitial above are sufficient
-			end;
+					nil ->		-- Note that eInitial can be nil (undefined in table on p48)
+						true	-- Tests on eInitial above are sufficient
+				end
+			);
 
 	/**
 	 * The default value for initial, defined by the (effective) values of causality and
