@@ -99,6 +99,7 @@ functions
 			-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
 			-- all continuous-time states and derivatives that are approx/calculated
 			-- And the list must be in ascending index order
+			-- @OnFail("InitialUnknowns are invalid")
 			(
 				let initIndexes = { svi | svi in set inds eModelVariables &
 					let sv = eModelVariables(svi) in
@@ -115,29 +116,29 @@ functions
 								let dv = eModelVariables(u.index) in 
 									dv.initial in set { <approx>, <calculated> } } ) }
 				in
-					-- @OnFail("InitialUnknowns are invalid")
-					(
-					 	if initIndexes <> {}
-					 	then
-					 		let ius = modelStructure.initialUnknowns in
-				 				-- @OnFail("InitialUnknowns should be defined: %s", initIndexes)
-				 				(
-					 				ius <> nil
-					 			)
-					 			and
-				 				-- @OnFail("InitialUnknowns not as expected: %s", initIndexes)
-				 				(
-				 					{ u.index | u in seq ius } = initIndexes
-				 				)
-					 			and
-				 				--@OnFail("InitialUnknowns are not sorted: %s", ius)
-				 				(
-					 				 forall i in set inds ius &
-					 					i = len ius or ius(i).index < ius(i+1).index
-					 			)
-					 	else
-					 		modelStructure.initialUnknowns = nil
-				 	)
+				 	if initIndexes <> {}
+				 	then
+				 		let ius = modelStructure.initialUnknowns in
+			 				-- @OnFail("InitialUnknowns should be defined: %s", initIndexes)
+			 				(
+				 				ius <> nil
+				 			)
+				 			and
+			 				-- @OnFail("InitialUnknowns not as expected: %s", initIndexes)
+			 				(
+			 					{ u.index | u in seq ius } = initIndexes
+			 				)
+				 			and
+			 				--@OnFail("InitialUnknowns are not sorted: %s", ius)
+			 				(
+				 				 forall i in set inds ius &
+				 					i = len ius or ius(i).index < ius(i+1).index
+				 			)
+				 	else
+				 		--@OnFail("InitialUnknowns should be empty")
+			 			(
+				 			modelStructure.initialUnknowns = nil
+				 		)
 			);
 
 	/**
@@ -146,7 +147,9 @@ functions
 	checkIndexes: nat1 * [seq1 of Unknown] +> bool
 	checkIndexes(vars, unknowns) ==
 		unknowns <> nil =>
-			forall u in seq unknowns & u.index <= vars;
+			forall u in seq unknowns &
+				-- @OnFail("Index is out of range: %s", u.index)
+				( u.index <= vars );
 
 	/**
 	 * Check that all variables' declaredTypes are defined, that the variables' type match
@@ -160,49 +163,59 @@ functions
 					let matchingTypes = { td | td in set typedefs & td.name = dname } in
 						-- Only one type name should match
 						-- @OnFail("Typedefs have multiple matching names")
-						(card matchingTypes = 1)
-
+						(
+							card matchingTypes = 1
+						)
+						and
 						-- The match is the same type as the ScalarVariable type and for numerics,
 						-- any start value is within the (perhaps overridden) min/max. 
-						and let { simpleType } = matchingTypes in
+						let { simpleType } = matchingTypes in
 							cases simpleType.type:
 								mk_RealType(dmin, dmax, -, -) ->
 									-- The named definition is the right type
 									-- @OnFail("RealType not referenced by Real variable %s", sv.variable)
-									(is_Real(sv.variable))
-
+									(
+										is_Real(sv.variable)
+									)
+									and
 									-- And any start value matches the calculated min/max
-									and (sv.variable.start <> nil =>
-										let min = if sv.variable.min <> nil then sv.variable.min
-												  else if dmin <> nil then dmin
-												  else nil,
-											max = if sv.variable.max <> nil then sv.variable.max
-												  else if dmax <> nil then dmax
-												  else nil
-										in
-											-- @OnFail("Calculated min/max does not match start %s", sv.variable.start)
-											(max <> nil and min <> nil => max >= min)
-											and (min <> nil => min <= sv.variable.start)
-											and	(max <> nil => max >= sv.variable.start)),
+									(
+										sv.variable.start <> nil =>
+											let min = if sv.variable.min <> nil then sv.variable.min
+													  else if dmin <> nil then dmin
+													  else nil,
+												max = if sv.variable.max <> nil then sv.variable.max
+													  else if dmax <> nil then dmax
+													  else nil
+											in
+												-- @OnFail("Calculated min/max does not match start %s", sv.variable.start)
+												(max <> nil and min <> nil => max >= min)
+												and (min <> nil => min <= sv.variable.start)
+												and	(max <> nil => max >= sv.variable.start)
+									),
 
 								mk_IntegerType(dmin, dmax) ->
 									-- The named definition is the right type
 									-- @OnFail("IntegerType not referenced by Integer variable %s", sv.variable)
-									(is_Integer(sv.variable))
-
+									(
+										is_Integer(sv.variable)
+									)
+									and
 									-- And any start value matches the calculated min/max
-									and (sv.variable.start <> nil =>
-										let min = if sv.variable.min <> nil then sv.variable.min
-												  else if dmin <> nil then dmin
-												  else nil,
-											max = if sv.variable.max <> nil then sv.variable.max
-												  else if dmax <> nil then dmax
-												  else nil
-										in
-											-- @OnFail("Calculated min/max does not match start %s", sv.variable.start)
-											(max <> nil and min <> nil => max >= min)
-											and (min <> nil => min <= sv.variable.start)
-											and	(max <> nil => max >= sv.variable.start)),
+									(
+										sv.variable.start <> nil =>
+											let min = if sv.variable.min <> nil then sv.variable.min
+													  else if dmin <> nil then dmin
+													  else nil,
+												max = if sv.variable.max <> nil then sv.variable.max
+													  else if dmax <> nil then dmax
+													  else nil
+											in
+												-- @OnFail("Calculated min/max does not match start %s", sv.variable.start)
+												(max <> nil and min <> nil => max >= min)
+												and (min <> nil => min <= sv.variable.start)
+												and	(max <> nil => max >= sv.variable.start)
+									),
 
 								mk_BooleanType() ->
 									-- @OnFail("BooleanType not referenced by Boolean variable %s", sv.variable)

@@ -23,16 +23,22 @@ types
 		initialUnknowns		: [seq1 of Unknown]
 	inv ms ==
 		-- No duplicate variables
-		duplicateCheck(ms.outputs)
-		and	duplicateCheck(ms.derivatives)
-		and duplicateCheck(ms.initialUnknowns)
-
+		-- @OnFail("Model structure has duplicate variables")
+		(
+			duplicateCheck(ms.outputs)
+			and	duplicateCheck(ms.derivatives)
+			and duplicateCheck(ms.initialUnknowns)
+		)
+		and
 		-- initialUnknowns can only be dependent or constant kind, if explicit
-		and (ms.initialUnknowns <> nil =>
-			forall iu in seq ms.initialUnknowns &
-				iu.dependenciesKind <> nil =>
-					forall dk in seq iu.dependenciesKind &
-						 dk in set { <dependent>, <constant>, nil });
+		-- @OnFail("InitialUnknowns are not dependent or constant")
+		(
+			ms.initialUnknowns <> nil =>
+				forall iu in seq ms.initialUnknowns &
+					iu.dependenciesKind <> nil =>
+						forall dk in seq iu.dependenciesKind &
+							 dk in set { <dependent>, <constant>, nil }
+		);
 
 functions
 	duplicateCheck: [seq1 of Unknown] +> bool

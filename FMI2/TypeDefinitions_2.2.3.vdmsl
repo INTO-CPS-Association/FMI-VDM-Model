@@ -8,13 +8,15 @@ types
 		nominal		: [real]
 		unbounded	: [bool]
 	inv r ==
-		r.max <> nil and r.min <> nil => r.max >= r.min;
+		-- @OnFail("RealType min not <= max")
+		( r.max <> nil and r.min <> nil => r.max >= r.min );
 
 	IntegerType ::				-- XSD p39
 		min			: [int]
 		max			: [int]
 	inv i ==
-		i.max <> nil and i.min <> nil => i.max >= i.min;
+		-- @OnFail("IntegerType min not <= max")
+		( i.max <> nil and i.min <> nil => i.max >= i.min );
 
 	BooleanType ::
 		;
@@ -34,7 +36,8 @@ types
 	EnumerationType ::			-- XSD p39
 		items		: seq1 of Item
 	inv e ==
-		card { t | t in set { i.value | i in seq e.items } } = len e.items;
+		-- @OnFail("EnumerationType item values are not unique")
+		( card { t | t in set { i.value | i in seq e.items } } = len e.items );
 
 	SimpleType ::		-- XSD p38
 		name		: seq1 of char

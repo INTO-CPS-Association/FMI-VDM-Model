@@ -121,9 +121,9 @@ functions
 						true
 				end
 			)
+			and
 			-- Table on p46 defining variability, and p49 defining combinations
 			-- @OnFail("Variability %s fails", eVariability)
-			and
 			(
 				cases eVariability:
 					<constant> ->
@@ -140,14 +140,16 @@ functions
 						and is_Real(variable)
 				end
 			)
+			and
 			-- Table on p47 defining initial
-			and (initial <> nil =>
-				-- @OnFail("Initial %s fails", initial)
-				(eCausality not in set {<input>, <independent>}))
-
+			-- @OnFail("Initial %s fails", initial)
+			(
+				initial <> nil =>
+					(eCausality not in set {<input>, <independent>})
+			)
+			and
 			-- Table on p47 defining initial
 			-- @OnFail("Initial %s fails", eInitial)
-			and
 			(
 				cases eInitial:
 					<exact> ->
