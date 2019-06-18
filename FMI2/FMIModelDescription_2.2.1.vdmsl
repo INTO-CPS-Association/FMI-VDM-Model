@@ -100,7 +100,6 @@ functions
 				-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
 				-- all continuous-time states and derivatives that are approx/calculated
 				-- And the list must be in ascending index order
-				-- @OnFail("InitialUnknowns are invalid")
 				let initIndexes = { svi | svi in set inds eModelVariables &
 					let sv = eModelVariables(svi) in
 						(sv.causality = <output>
@@ -116,17 +115,22 @@ functions
 								let dv = eModelVariables(u.index) in 
 									dv.initial in set { <approx>, <calculated> } } ) }
 				in
+					-- @OnFail("InitialUnknowns are invalid")
 				 	if initIndexes <> {}
 				 	then
 				 		let ius = modelStructure.initialUnknowns in
-				 			ius <> nil and
 				 			(
-				 				-- @OnFail("InitialUnknowns not as expected: %s", initIndexes)
-				 				{ u.index | u in seq ius } = initIndexes
+				 				-- @OnFail("InitialUnknowns should be defined: %s", initIndexes)
+				 				ius <> nil
 				 			)
 				 			and
 				 			(
-				 				--@OnFail("InitialUnknowns are not sorted")
+				 				-- @OnFail("InitialUnknowns not as expected: %s", initIndexes)
+				 				({ u.index | u in seq ius } = initIndexes)
+				 			)
+				 			and
+				 			(
+				 				--@OnFail("InitialUnknowns are not sorted: %s", ius)
 				 				 forall i in set inds ius &
 				 					i = len ius or ius(i).index < ius(i+1).index
 				 			)

@@ -30,7 +30,9 @@ types
 		-- initialUnknowns can only be dependent or constant kind, if explicit
 		and (ms.initialUnknowns <> nil =>
 			forall iu in seq ms.initialUnknowns &
-				iu.dependenciesKind in set { <dependent>, <constant>, nil });
+				iu.dependenciesKind <> nil =>
+					forall dk in seq iu.dependenciesKind &
+						 dk in set { <dependent>, <constant>, nil });
 
 functions
 	duplicateCheck: [seq1 of Unknown] +> bool
