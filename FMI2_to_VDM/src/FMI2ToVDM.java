@@ -43,7 +43,7 @@ public class FMI2ToVDM
 			System.out.println(" */");
 
 			System.out.println("-- functions");
-			System.out.println("-- " + args[1] + "() +> bool");
+			System.out.println("-- " + args[1] + ": () +> bool");
 			System.out.println("-- " + args[1] + "() ==");
 			System.out.println("-- \tisValidModelDescription");
 
