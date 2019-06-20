@@ -229,10 +229,12 @@ functions
 		else v;
 
 	/**
-	 * Return the ScalarVariables from a list which are continuous-time states
+	 * Return the ScalarVariables from a list which are continuous-time states, defined to be
+	 * variables which are the derivative of some other variable.
 	 */
 	continuousTimeStates: seq of ScalarVariable -> set of ScalarVariable
 	continuousTimeStates(svs) ==
 		{ sv | sv in seq svs &
 			is_Real(sv.variable)
-			and sv.variability = <continuous> };	-- Sufficient?
+			and sv.variability = <continuous> 
+			and sv.variable.derivative <> nil};
