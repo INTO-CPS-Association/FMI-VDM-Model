@@ -237,4 +237,4 @@ functions
 		{ sv | sv in seq svs &
 			is_Real(sv.variable)
 			and sv.variability = <continuous> 
-			and sv.variable.derivative <> nil};
+			and sv.variable.derivative <> nil };
