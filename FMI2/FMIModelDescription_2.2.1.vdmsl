@@ -27,7 +27,7 @@ functions
 	 */
 	isValidModelDescription: set of SimpleType * seq of ScalarVariable * ModelStructure +> bool
 	isValidModelDescription(typeDefinitions, modelVariables, modelStructure) ==
-		-- First fill in effective fields for model variables
+		-- First fill in effective values for model variables' missing attributes
 		let eModelVariables =
 			[
 				let ec = effectiveCausality(sv.causality),
