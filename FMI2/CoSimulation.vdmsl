@@ -3,14 +3,14 @@
  */
 types
 	FMUVariable ::
-		fmuIndex	: nat1		-- Index into CoSimulation.fmus
-		svIndex		: nat1;		-- Index into FMU.modelVariables
+		fmuIndex		: nat1		-- Index into CoSimulation.fmus
+		svIndex			: nat1;		-- Index into FMU.modelVariables
 
 	ConnectionMap = map FMUVariable to set of FMUVariable;
 
 	CoSimulation ::
-		fmus		: seq1 of FMIModelDescription
-		connections	: ConnectionMap		-- Outputs mapped to inputs
+		fmus			: seq1 of FMIModelDescription
+		connections		: ConnectionMap		-- Inter-FMU, outputs mapped to inputs
 	inv cs ==
 		isValidCoSimulation(cs.fmus, cs.connections);
 
@@ -23,41 +23,68 @@ functions
 		let maxFMU = len fmus in
 			-- Inputs are valid
 			(
-				forall input in set dom connections &
-					-- @OnFail("Illegal FMU index: %s", input.fmuIndex)
-					( input.fmuIndex <= maxFMU )
-					-- @OnFail("Illegal SV index: %s", input.svIndex)
-					and ( input.svIndex < len fmus(input.fmuIndex).modelVariables )
-					-- @OnFail("Variable for FMU %s, SV %s is not an input", input.fmuIndex, input.svIndex)
-					and ( fmus(input.fmuIndex).modelVariables(input.svIndex).causality = <input>)
+				forall source in set dom connections &
+					-- @OnFail("Illegal FMU index: %s", source.fmuIndex)
+					( source.fmuIndex <= maxFMU )
+					-- @OnFail("Illegal SV index: %s", source.svIndex)
+					and ( source.svIndex < len fmus(source.fmuIndex).modelVariables )
+					-- @OnFail("Source (FMU %s, SV %s) is not an output", source.fmuIndex, source.svIndex)
+					and ( fmus(source.fmuIndex).modelVariables(source.svIndex).causality = <output>)
 			)
 			and
 			-- Outputs are valid
 			(
-				forall output in set dunion rng connections &
-					-- @OnFail("Illegal FMU index: %s", output.fmuIndex)
-					( output.fmuIndex <= maxFMU )
-					-- @OnFail("Illegal SV index: %s", output.svIndex)
-					and ( output.svIndex < len fmus(output.fmuIndex).modelVariables )
-					-- @OnFail("Variable for FMU %s, SV %s is not an input", output.fmuIndex, output.svIndex)
-					and ( fmus(output.fmuIndex).modelVariables(output.svIndex).causality = <output>)
+				forall dest in set dunion rng connections &
+					-- @OnFail("Illegal FMU index: %s", dest.fmuIndex)
+					( dest.fmuIndex <= maxFMU )
+					-- @OnFail("Illegal SV index: %s", dest.svIndex)
+					and ( dest.svIndex < len fmus(dest.fmuIndex).modelVariables )
+					-- @OnFail("Destination (FMU %s, SV %s) is not an input", dest.fmuIndex, dest.svIndex)
+					and ( fmus(dest.fmuIndex).modelVariables(dest.svIndex).causality = <input>)
 			)
 			and
-			-- Connections are inter-FMU, not intra-FMU
+			-- All connections are inter-FMU, not intra-FMU
 			(
 				forall v1 in set dom connections &
 					forall v2 in set connections(v1) &
 						v1.fmuIndex <> v2.fmuIndex
 			);
 
-functions
 	/**
 	 * Given an FMU description and its CoSimulation index, produce a map of its internal
 	 * connections - that is, its input-output dependencies.
 	 */
-	internalConnections: FMIModelDescription * nat1 -> ConnectionMap
-	internalConnections(fmu, fmuIndex) ==
-		is not yet specified
+	fmuInternalConnections: FMIModelDescription * nat1 -> ConnectionMap
+	fmuInternalConnections(fmu, fmuIndex) ==
+		let ctvars = continuousTimeStates(fmu.modelVariables),
+
+			allKnowns = [ i | i in set inds fmu.modelVariables &
+				let sv = fmu.modelVariables(i) in
+					sv.causality = <input> or sv in set ctvars ],
+
+			eOutputs =
+				if fmu.modelStructure.outputs = nil
+				then []		-- No outputs??
+				else
+				[
+					if output.dependencies = nil
+					then mu(output, dependencies |-> allKnowns)		-- Nil dependencies means all knowns
+					else output
+
+					| output in seq fmu.modelStructure.outputs
+				]
+		in
+		{
+			-- Each entry maps a source to all of the outputs that have the source as a dependency.
+			mk_FMUVariable(fmuIndex, source) |->
+				{ mk_FMUVariable(fmuIndex, output.index)
+					| output in seq eOutputs
+					& source in set elems output.dependencies }
+
+			-- The set of sources (dependencies) of all the outputs.
+			| source in set
+				dunion { elems output.dependencies | output in seq eOutputs } 
+		}
 	post
 		(forall v in set dom RESULT &
 			v.fmuIndex = fmuIndex and v.svIndex <= len fmu.modelVariables)
@@ -69,13 +96,13 @@ functions
 	 * Given a CoSimulation and its full connectivity map, decide whether the CoSimulation
 	 * has any algebraic loops.
 	 */
-	hasLoops: CoSimulation * ConnectionMap * set of FMUVariable * FMUVariable -> bool
-	hasLoops(simulation, connectedTo, reached, active) ==
+	hasLoops: ConnectionMap * set of FMUVariable * FMUVariable -> bool
+	hasLoops(connectedTo, reached, active) ==
 		if active not in set dom connectedTo
 		then false	-- Reached the end of this path
 		else
 			forall next in set connectedTo(active) &
 				next in set reached		-- A loop!
-				or hasLoops(simulation, connectedTo, reached union {next}, next)
+				or hasLoops(connectedTo, reached union {next}, next)
 	measure is not yet specified;
 
