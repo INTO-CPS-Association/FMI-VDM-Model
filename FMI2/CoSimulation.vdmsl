@@ -1,13 +1,26 @@
 /**
- * Definitions that support a co-simulation setup.
+ * Definitions that describe a co-simulation setup.
  */
 types
+	/**
+	 * A FMUVariable identifies a unique variable in a CoSimulation, indexing both
+	 * the FMU and the modelVariable within it.
+	 */
 	FMUVariable ::
 		fmuIndex		: nat1		-- Index into CoSimulation.fmus
-		svIndex			: nat1;		-- Index into FMU.modelVariables
+		svIndex			: nat1;		-- Index into fmus(fmuIndex).modelVariables
 
+	/**
+	 * A connection map links FMUVariables to record their dependencies. Each variable
+	 * source is mapped to the (possibly empty) set of destination variables that
+	 * depend on it.
+	 */
 	ConnectionMap = map FMUVariable to set of FMUVariable;
 
+	/**
+	 * A CoSimulation is a set of FMUs (ordered, so they can be identified by index)
+	 * and a connection map linking their inputs and outputs.
+	 */
 	CoSimulation ::
 		fmus			: seq1 of FMIModelDescription
 		connections		: ConnectionMap		-- Inter-FMU, outputs mapped to inputs
@@ -21,7 +34,7 @@ functions
 	isValidCoSimulation: seq1 of FMIModelDescription * ConnectionMap +> bool
 	isValidCoSimulation(fmus, connections) ==
 		let maxFMU = len fmus in
-			-- Inputs are valid
+			-- Connection inputs are valid indexes and types
 			(
 				forall source in set dom connections &
 					-- @OnFail("Illegal FMU index: %s", source.fmuIndex)
@@ -32,7 +45,7 @@ functions
 					and ( fmus(source.fmuIndex).modelVariables(source.svIndex).causality = <output>)
 			)
 			and
-			-- Outputs are valid
+			-- Connection outputs are valid indexes and types
 			(
 				forall dest in set dunion rng connections &
 					-- @OnFail("Illegal FMU index: %s", dest.fmuIndex)
@@ -47,50 +60,69 @@ functions
 			(
 				forall v1 in set dom connections &
 					forall v2 in set connections(v1) &
-						v1.fmuIndex <> v2.fmuIndex
+						-- @OnFail("Connection %s to %s is not intra-FMU", v1, v2)
+						(v1.fmuIndex <> v2.fmuIndex)
 			)
-			-- Inter-FMU connections are point to point, not 1:n or n:1
+			-- Inter-FMU connections are 1:1, not 1:n or n:1
+			-- @OnFail("Inter-FMU connections are not 1:1")
 			and
 			(
+				-- No destination variable is mapped more than once
 				card dunion { vs | vs in set rng connections } = card rng connections
 				and
+				-- Every source maps to one destination 
 				forall vs in set rng connections & card vs = 1
+			)
+			-- All inputs and outputs from each FMU are mapped (possibly to an empty set)
+			-- @OnFail("Not every input and output variable is mapped")
+			and
+			(
+				forall f in set inds fmus &
+					let svs = fmus(f).modelVariables,
+
+						iov = { mk_FMUVariable(f, v) |
+								v in set inds svs &
+								svs(v).causality in set { <input>, <output> } }
+					in
+						forall v in set iov &
+							-- @OnFail("Variable %s is not in connection map", v)
+							(v in set dom connections)
 			);
 
 	/**
 	 * Given an FMU description and its CoSimulation index, produce a map of its internal
-	 * connections - that is, its input-output dependencies.
+	 * connections - that is, its internal input-output dependencies.
 	 */
-	fmuInternalConnections: FMIModelDescription * nat1 -> ConnectionMap
-	fmuInternalConnections(fmu, fmuIndex) ==
+	fmuInternalConnections: FMIModelDescription * nat1 * bool -> ConnectionMap
+	fmuInternalConnections(fmu, fmuIndex, initialization) ==
 		let ctvars = continuousTimeStates(fmu.modelVariables),
 
 			allKnowns = [ i | i in set inds fmu.modelVariables &
 				let sv = fmu.modelVariables(i) in
 					sv.causality = <input> or sv in set ctvars ],
 
-			eOutputs =
-				if fmu.modelStructure.outputs = nil
-				then []		-- No outputs??
-				else
-				[
-					if output.dependencies = nil
-					then mu(output, dependencies |-> allKnowns)		-- Nil dependencies means all knowns
-					else output
+			eUnknowns =		-- effective unknowns (correct for blank entries)
+			[
+				if unknown.dependencies = nil
+				then mu(unknown, dependencies |-> allKnowns)	-- Nil dependencies means all knowns
+				else unknown
 
-					| output in seq fmu.modelStructure.outputs		-- Also derivatives? When initialUnknowns?
-				]
+				| unknown in seq if initialization
+								 then nilSeq[Unknown](fmu.modelStructure.initialUnknowns)
+								 else nilSeq[Unknown](fmu.modelStructure.outputs) ^
+								 	  nilSeq[Unknown](fmu.modelStructure.derivatives)
+			]
 		in
 		{
-			-- Each entry maps a source to all of the outputs that have the source as a dependency.
+			-- Each entry maps a source to all of the unknowns that have the source as a dependency.
 			mk_FMUVariable(fmuIndex, source) |->
-				{ mk_FMUVariable(fmuIndex, output.index)
-					| output in seq eOutputs
-					& source in set elems output.dependencies }
+				{ mk_FMUVariable(fmuIndex, unknown.index)
+					| unknown in seq eUnknowns
+					& source in set elems unknown.dependencies }
 
 			-- The set of sources (dependencies) of all the outputs.
 			| source in set
-				dunion { elems output.dependencies | output in seq eOutputs } 
+				dunion { elems unknown.dependencies | unknown in seq eUnknowns } 
 		}
 	post
 		(forall v in set dom RESULT &
@@ -101,25 +133,28 @@ functions
 
 	/**
 	 * Given a CoSimulation and its full connectivity map, decide whether the CoSimulation
-	 * has any algebraic loops.
+	 * has any algebraic loops. See the hasLoops function below.
 	 */
 	hasLoops2: ConnectionMap * set of FMUVariable * FMUVariable -> bool
 	hasLoops2(fullMap, reached, active) ==
-		if active not in set dom fullMap
-		then false	-- Reached the end of this path
+		if fullMap(active) = {}
+		then false	-- Reached the end of this path, no dependencies on active
 		else
 			forall next in set fullMap(active) &
-				next in set reached		-- A loop! Test for a fixed-point in the reached set here?
+				next in set reached		-- Test for a fixed-point in the reached set here => OK?
 				or hasLoops2(fullMap, reached union {next}, next)
 	measure is not yet specified;
 
 	/**
-	 * Construct the full connection map for a CoSimulation and check for loops.
+	 * Construct the full connection map for a CoSimulation and check for loops. The full connection
+	 * map is created from the CoSim connections, plus the generated internal connection maps for
+	 * each FMU.
 	 */
-	hasLoops: CoSimulation +> bool
-	hasLoops(cosim) ==
-		let fullMap = merge { fmuInternalConnections(cosim.fmus(i), i) | i in set inds cosim.fmus },
-			starts = { v | v in set dom cosim.connections }
+	hasLoops: CoSimulation * bool +> bool
+	hasLoops(cosim, initialization) ==
+		let fullMap = cosim.connections munion 
+			merge { fmuInternalConnections(cosim.fmus(i), i, initialization) | i in set inds cosim.fmus },
+			starts = { v | v in set dom cosim.connections }		-- Where to start?
 		in
 			exists input in set starts &
 				hasLoops2(fullMap, {}, input);

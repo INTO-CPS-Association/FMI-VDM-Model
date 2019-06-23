@@ -2,4 +2,10 @@
  * Miscellaneous support functions, not related to a specific section of the FMI spec.
  */
 functions
+	nilSeq[@T]: [seq of @T] +> seq of @T
+	nilSeq(s) ==
+		if s = nil then [] else s;
 
+	nilSet[@T]: [set of @T] +> set of @T
+	nilSet(s) ==
+		if s = nil then {} else s;
