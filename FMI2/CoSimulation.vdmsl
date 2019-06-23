@@ -48,6 +48,13 @@ functions
 				forall v1 in set dom connections &
 					forall v2 in set connections(v1) &
 						v1.fmuIndex <> v2.fmuIndex
+			)
+			-- Inter-FMU connections are point to point, not 1:n or n:1
+			and
+			(
+				card dunion { vs | vs in set rng connections } = card rng connections
+				and
+				forall vs in set rng connections & card vs = 1
 			);
 
 	/**
@@ -71,7 +78,7 @@ functions
 					then mu(output, dependencies |-> allKnowns)		-- Nil dependencies means all knowns
 					else output
 
-					| output in seq fmu.modelStructure.outputs
+					| output in seq fmu.modelStructure.outputs		-- Also derivatives? When initialUnknowns?
 				]
 		in
 		{
@@ -96,13 +103,23 @@ functions
 	 * Given a CoSimulation and its full connectivity map, decide whether the CoSimulation
 	 * has any algebraic loops.
 	 */
-	hasLoops: ConnectionMap * set of FMUVariable * FMUVariable -> bool
-	hasLoops(connectedTo, reached, active) ==
-		if active not in set dom connectedTo
+	hasLoops2: ConnectionMap * set of FMUVariable * FMUVariable -> bool
+	hasLoops2(fullMap, reached, active) ==
+		if active not in set dom fullMap
 		then false	-- Reached the end of this path
 		else
-			forall next in set connectedTo(active) &
-				next in set reached		-- A loop!
-				or hasLoops(connectedTo, reached union {next}, next)
+			forall next in set fullMap(active) &
+				next in set reached		-- A loop! Test for a fixed-point in the reached set here?
+				or hasLoops2(fullMap, reached union {next}, next)
 	measure is not yet specified;
 
+	/**
+	 * Construct the full connection map for a CoSimulation and check for loops.
+	 */
+	hasLoops: CoSimulation +> bool
+	hasLoops(cosim) ==
+		let fullMap = merge { fmuInternalConnections(cosim.fmus(i), i) | i in set inds cosim.fmus },
+			starts = { v | v in set dom cosim.connections }
+		in
+			exists input in set starts &
+				hasLoops2(fullMap, {}, input);
