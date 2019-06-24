@@ -78,7 +78,8 @@ functions
 		and	(start <> nil =>
 			--@OnFail("start %s is not within min %s/max %s", start, min, max)
 			((min <> nil => min <= start) and
-			 (max <> nil => max >= start)));
+			 (max <> nil => max >= start)))
+	pre is_(min, [real]) and is_(max, [real]) and is_(start, [real]);	-- Numerics
 
 	/**
 	 * ScalarVariable invariant. Rules defined in the table on p49.
