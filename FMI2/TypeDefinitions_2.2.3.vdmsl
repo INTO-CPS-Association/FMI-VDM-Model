@@ -36,8 +36,11 @@ types
 	EnumerationType ::			-- XSD p39
 		items		: seq1 of Item
 	inv e ==
-		-- @OnFail("EnumerationType item values are not unique")
-		( card { t | t in set { i.value | i in seq e.items } } = len e.items );
+		-- @OnFail("EnumerationType item values do not form a bijection")
+		(
+			card { i.name | i in seq e.items } = len e.items
+			and	card { i.value | i in seq e.items } = len e.items
+		);
 
 	SimpleType ::		-- XSD p38
 		name		: seq1 of char

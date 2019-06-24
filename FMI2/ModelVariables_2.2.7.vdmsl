@@ -20,13 +20,8 @@ types
 		start			: [real]
 		derivative		: [nat1]
 	inv r ==
-		(r.max <> nil and r.min <> nil =>
-			--@OnFail("Real min %s is not <= max %s", r.min, r.max)
-			(r.max >= r.min))
-		and	(r.start <> nil =>
-			--@OnFail("Real start %s is not within min %s/max %s", r.start, r.min, r.max)
-			((r.min <> nil => r.min <= r.start) and
-			 (r.max <> nil => r.max >= r.start)));
+		-- Check that max > min and min < start < max, if defined
+		isInRange[real](r.min, r.max, r.start);
 
 	Integer ::	-- XSD p52
 		declaredType	: [seq1 of char]
@@ -34,13 +29,8 @@ types
 		max				: [int]
 		start			: [int]
 	inv i ==
-		(i.max <> nil and i.min <> nil =>
-			--@OnFail("Integer min %s is not <= max %s", i.min, i.max)
-			(i.max >= i.min))
-		and	(i.start <> nil =>
-			--@OnFail("Integer start %s is not within min %s/max %s", i.start, i.min, i.max)
-			((i.min <> nil => i.min <= i.start) and
-			 (i.max <> nil => i.max >= i.start)));
+		-- Check that max > min and min < start < max, if defined
+		isInRange[int](i.min, i.max, i.start);
 
 	Boolean ::		-- XSD p53
 		declaredType	: [seq1 of char]
@@ -56,13 +46,8 @@ types
 		max				: [int]
 		start			: [int]
 	inv e ==
-		(e.max <> nil and e.min <> nil =>
-			--@OnFail("Enum min %s is not <= max %s", e.min, e.max)
-			(e.max >= e.min))
-		and	(e.start <> nil =>
-			--@OnFail("Enum start %s is not within min %s/max %s", e.start, e.min, e.max)
-			((e.min <> nil => e.min <= e.start) and
-			 (e.max <> nil => e.max >= e.start)));
+		-- Check that max > min and min < start < max, if defined
+		isInRange[int](e.min, e.max, e.start);
 
 	Variable = Real | Integer | Boolean | String | Enumeration;
 
@@ -83,7 +68,20 @@ types
 
 functions
 	/**
-	 * Rules defined in the table on p49.
+	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
+	 */
+	isInRange[@T]: [@T] * [@T] * [@T] +> bool
+	isInRange(min, max, start) ==
+		(max <> nil and min <> nil =>
+			--@OnFail("min %s is not <= max %s", min, max)
+			(max >= min))
+		and	(start <> nil =>
+			--@OnFail("start %s is not within min %s/max %s", start, min, max)
+			((min <> nil => min <= start) and
+			 (max <> nil => max >= start)));
+
+	/**
+	 * ScalarVariable invariant. Rules defined in the table on p49.
 	 */
 	isValidSV: [Causality] * [Variability] * [Initial] * Variable +> bool
 	isValidSV(causality, variability, initial, variable) ==
