@@ -40,7 +40,7 @@ functions
 					-- @OnFail("Illegal FMU index: %s", source.fmuIndex)
 					( source.fmuIndex <= maxFMU )
 					-- @OnFail("Illegal SV index: %s", source.svIndex)
-					and ( source.svIndex < len fmus(source.fmuIndex).modelVariables )
+					and ( source.svIndex <= len fmus(source.fmuIndex).modelVariables )
 					-- @OnFail("Source (FMU %s, SV %s) is not an output", source.fmuIndex, source.svIndex)
 					and ( fmus(source.fmuIndex).modelVariables(source.svIndex).causality = <output>)
 			)
@@ -51,7 +51,7 @@ functions
 					-- @OnFail("Illegal FMU index: %s", dest.fmuIndex)
 					( dest.fmuIndex <= maxFMU )
 					-- @OnFail("Illegal SV index: %s", dest.svIndex)
-					and ( dest.svIndex < len fmus(dest.fmuIndex).modelVariables )
+					and ( dest.svIndex <= len fmus(dest.fmuIndex).modelVariables )
 					-- @OnFail("Destination (FMU %s, SV %s) is not an input", dest.fmuIndex, dest.svIndex)
 					and ( fmus(dest.fmuIndex).modelVariables(dest.svIndex).causality = <input>)
 			)
@@ -68,23 +68,23 @@ functions
 			and
 			(
 				-- No destination variable is mapped more than once
-				card dunion { vs | vs in set rng connections } = card rng connections
+				card dunion { vs | vs in set rng connections } = count[FMUVariable](rng connections)
 				and
-				-- Every source maps to one destination 
-				forall vs in set rng connections & card vs = 1
+				-- Every source maps to at most one destination 
+				forall vs in set rng connections & card vs <= 1
 			)
-			-- All inputs and outputs from each FMU are mapped (possibly to an empty set)
-			-- @OnFail("Not every input and output variable is mapped")
+			-- All outputs from each FMU are mapped (possibly to an empty set)
+			-- @OnFail("Not every output variable is mapped")
 			and
 			(
 				forall f in set inds fmus &
 					let svs = fmus(f).modelVariables,
 
-						iov = { mk_FMUVariable(f, v) |
+						ov = { mk_FMUVariable(f, v) |
 								v in set inds svs &
-								svs(v).causality in set { <input>, <output> } }
+								svs(v).causality = <output> }
 					in
-						forall v in set iov &
+						forall v in set ov &
 							-- @OnFail("Variable %s is not in connection map", v)
 							(v in set dom connections)
 			);
@@ -120,7 +120,7 @@ functions
 					| unknown in seq eUnknowns
 					& source in set elems unknown.dependencies }
 
-			-- The set of sources (dependencies) of all the outputs.
+			-- The set of sources (dependencies) of all the unknowns.
 			| source in set
 				dunion { elems unknown.dependencies | unknown in seq eUnknowns } 
 		}
@@ -142,6 +142,7 @@ functions
 		else
 			forall next in set fullMap(active) &
 				next in set reached		-- Test for a fixed-point in the reached set here => OK?
+				-- @Printf("Reached %s, next %s\n", reached, next)
 				or hasLoops2(fullMap, reached union {next}, next)
 	measure is not yet specified;
 

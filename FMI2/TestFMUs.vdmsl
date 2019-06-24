@@ -1,0 +1,56 @@
+/**
+ * FMUs to test CoSimulation and functions for loop searching.
+ */
+values
+	FMU1 = mk_FMIModelDescription
+	(
+		{},
+
+		[
+			mk_ScalarVariable("A", <input>, nil, nil,
+					mk_Real(nil, nil, nil, nil, nil, 0, nil)),
+			mk_ScalarVariable("B", <output>, nil, nil,
+					mk_Real(nil, nil, nil, nil, nil, nil, nil))
+		],
+
+		mk_ModelStructure
+		(
+			[ mk_Unknown(2, [1], [<dependent>]) ],		-- B depends on A
+			nil,
+			[ mk_Unknown(2, [1], [<dependent>]) ]		-- B depends on A
+		)
+	);
+
+	FMU2 = mk_FMIModelDescription
+	(
+		{},
+
+		[
+			mk_ScalarVariable("C", <input>, nil, nil,
+					mk_Real(nil, nil, nil, nil, nil, 0, nil)),
+			mk_ScalarVariable("D", <output>, nil, nil,
+					mk_Real(nil, nil, nil, nil, nil, nil, nil))
+		],
+
+		mk_ModelStructure
+		(
+			[ mk_Unknown(2, [1], [<dependent>]) ],		-- D depends on C
+			nil,
+			[ mk_Unknown(2, [1], [<dependent>]) ]		-- D depends on C
+		)
+	);
+
+	COSIM = mk_CoSimulation
+	(
+		[ FMU1, FMU2 ],
+
+		{
+			mk_FMUVariable(1, 2) |-> { mk_FMUVariable(2, 1) },	-- FMU1.B -> FMU2.C
+			mk_FMUVariable(2, 2) |-> { mk_FMUVariable(1, 1) }	-- FMU2.C -> FMU1.A (loop!)
+		}
+	)
+
+functions
+	test: () -> bool
+	test() ==
+		hasLoops(COSIM, false);

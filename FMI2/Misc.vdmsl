@@ -9,3 +9,11 @@ functions
 	nilSet[@T]: [set of @T] +> set of @T
 	nilSet(s) ==
 		if s = nil then {} else s;
+
+	count[@T]: set of set of @T +> nat
+	count(s) ==
+		if s = {}
+		then 0
+		else let e in set s in
+			card e + count[@T](s \ {e})
+	measure card s;
