@@ -20,7 +20,7 @@ types
 		start			: [real]
 		derivative		: [nat1]
 	inv r ==
-		-- Check that max > min and min < start < max, if defined
+		-- Check that max >= min and min <= start <= max, if defined
 		isInRange[real](r.min, r.max, r.start);
 
 	Integer ::	-- XSD p52
@@ -29,7 +29,7 @@ types
 		max				: [int]
 		start			: [int]
 	inv i ==
-		-- Check that max > min and min < start < max, if defined
+		-- Check that max >= min and min <= start <= max, if defined
 		isInRange[int](i.min, i.max, i.start);
 
 	Boolean ::		-- XSD p53
@@ -46,7 +46,7 @@ types
 		max				: [int]
 		start			: [int]
 	inv e ==
-		-- Check that max > min and min < start < max, if defined
+		-- Check that max >= min and min <= start <= max, if defined
 		isInRange[int](e.min, e.max, e.start);
 
 	Variable = Real | Integer | Boolean | String | Enumeration;
@@ -79,7 +79,7 @@ functions
 			--@OnFail("start %s is not within min %s/max %s", start, min, max)
 			((min <> nil => min <= start) and
 			 (max <> nil => max >= start)))
-	pre is_(min, [real]) and is_(max, [real]) and is_(start, [real]);	-- Numerics
+	pre is_(min, [real]) and is_(max, [real]) and is_(start, [real]);	-- ie. numerics
 
 	/**
 	 * ScalarVariable invariant. Rules defined in the table on p49.
