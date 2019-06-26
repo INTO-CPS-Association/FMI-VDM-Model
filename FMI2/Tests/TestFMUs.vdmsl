@@ -47,7 +47,9 @@ values
 		{
 			mk_FMUVariable(1, 2) |-> { mk_FMUVariable(2, 1) },	-- FMU1.B -> FMU2.C
 			mk_FMUVariable(2, 2) |-> { mk_FMUVariable(1, 1) }	-- FMU2.C -> FMU1.A (loop!)
-		}
+		},
+
+		{ |-> }
 	)
 
 functions

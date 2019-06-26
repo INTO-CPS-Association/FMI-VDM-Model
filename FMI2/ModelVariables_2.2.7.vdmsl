@@ -51,6 +51,8 @@ types
 
 	Variable = Real | Integer | Boolean | String | Enumeration;
 
+	Value = real | int | seq of char | bool;
+
 	VarName = seq1 of char;		-- Has a syntax defined in section 2.2.9, p64
 
 	ScalarVariable ::			-- XSD p44

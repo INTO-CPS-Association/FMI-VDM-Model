@@ -24,15 +24,16 @@ types
 	CoSimulation ::
 		fmus			: seq1 of FMIModelDescription
 		connections		: ConnectionMap		-- Inter-FMU, outputs mapped to inputs
+		parameters		: map FMUVariable to Value
 	inv cs ==
-		isValidCoSimulation(cs.fmus, cs.connections);
+		isValidCoSimulation(cs.fmus, cs.connections, cs.parameters);
 
 functions
 	/**
 	 * The type invariant for CoSimulation.
 	 */
-	isValidCoSimulation: seq1 of FMIModelDescription * ConnectionMap +> bool
-	isValidCoSimulation(fmus, connections) ==
+	isValidCoSimulation: seq1 of FMIModelDescription * ConnectionMap * map FMUVariable to Value +> bool
+	isValidCoSimulation(fmus, connections, parameters) ==
 		let maxFMU = len fmus in
 			-- Connection inputs are valid indexes and types
 			(
@@ -54,6 +55,17 @@ functions
 					and ( dest.svIndex <= len fmus(dest.fmuIndex).modelVariables )
 					-- @OnFail("Destination (FMU %s, SV %s) is not an input", dest.fmuIndex, dest.svIndex)
 					and ( fmus(dest.fmuIndex).modelVariables(dest.svIndex).causality = <input>)
+			)
+			-- Parameters are valid indexes and types
+			and
+			(
+				forall param in set dom parameters &
+					-- @OnFail("Illegal FMU index: %s", param.fmuIndex)
+					( param.fmuIndex <= maxFMU )
+					-- @OnFail("Illegal SV index: %s", param.svIndex)
+					and ( param.svIndex <= len fmus(param.fmuIndex).modelVariables )
+					-- @OnFail("Source (FMU %s, SV %s) is not a parameter", param.fmuIndex, param.svIndex)
+					and ( fmus(param.fmuIndex).modelVariables(param.svIndex).causality = <parameter>)
 			)
 			and
 			-- All connections are inter-FMU, not intra-FMU

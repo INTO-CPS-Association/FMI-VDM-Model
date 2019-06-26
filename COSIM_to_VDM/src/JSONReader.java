@@ -5,7 +5,7 @@ import java.math.BigInteger;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +19,7 @@ public class JSONReader {
     public static final int CURRENT = 1;
     public static final int NEXT = 2;
 
-    private static Map<Character, Character> escapes = new HashMap<Character, Character>();
+    private static Map<Character, Character> escapes = new TreeMap<Character, Character>();
     static {
         escapes.put(new Character('"'), new Character('"'));
         escapes.put(new Character('\\'), new Character('\\'));
@@ -106,7 +106,7 @@ public class JSONReader {
     }
     
     private Object object() {
-        Map<Object, Object> ret = new HashMap<Object, Object>();
+        Map<Object, Object> ret = new TreeMap<Object, Object>();
         Object key = read();
         while (token != OBJECT_END) {
             read(); // should be a colon

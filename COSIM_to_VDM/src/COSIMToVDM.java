@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,6 +68,15 @@ public class COSIMToVDM
 			else
 			{
 				error("Configuration does not define connections");
+			}
+			
+			if (map.containsKey("parameters"))
+			{
+				processParameters(map.get("parameters"));
+			}
+			else
+			{
+				error("Configuration does not define parameters");
 			}
 		}
 		else
@@ -158,7 +166,7 @@ public class COSIMToVDM
 				sep = ",\n\n";
 			}
 	
-			System.out.println("\n\t}");
+			System.out.println("\n\t},\n");
 		}
 		else
 		{
@@ -166,6 +174,24 @@ public class COSIMToVDM
 		}
 	}
 	
+	private static void processParameters(Object object)
+	{
+		if (object instanceof Map<?,?>)
+		{
+			Map<String, Object> map = (Map<String, Object>) object;
+			System.out.println("\t-- Parameters\n\t{");
+			String sep = "";
+			
+			for (String source: map.keySet())
+			{
+				System.out.print(sep + "\t\t" + fmuVariable(source) + " |-> " + map.get(source));
+				sep = ",\n";
+			}
+	
+			System.out.println("\n\t}");
+		}
+	}
+
 	private static String fmuVariable(String varname)
 	{
 		int fmui = fmuIndexOf(varname).getValue();
