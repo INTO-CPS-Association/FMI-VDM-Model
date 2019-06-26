@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -76,8 +77,9 @@ public class COSIMToVDM
 		}
 	}
 	
-	private static Map<String, Integer> FMUIndex = new HashMap<String, Integer>();
-	private static Map<Integer, String> FMUspec = new HashMap<Integer, String>();
+	private static Map<String, Integer> FMURoot = new TreeMap<String, Integer>();
+	private static Map<String, Integer> FMUIndex = new TreeMap<String, Integer>();
+	private static Map<Integer, String> FMUspec = new TreeMap<Integer, String>();
 
 	private static void processFMUs(Object object)
 	{
@@ -90,9 +92,9 @@ public class COSIMToVDM
 			
 			for (String fmu: map.keySet())
 			{
+				FMURoot.put(fmu, ++index);							// eg. "{wt}" = 1
+				
 				String raw = fmu.substring(1, fmu.length() - 1);	// eg. "wt"
-				String instance = fmu + "." + raw + "Instance";		// eg. "{wt}.wtInstance"
-				FMUIndex.put(instance, ++index);
 				FMUspec.put(index, raw + ".vdmsl");					// eg. "wt.vdmsl"
 				
 				System.out.print(sep + "\t\t" + raw );
@@ -115,25 +117,41 @@ public class COSIMToVDM
 			System.out.println("\t-- Connections\n\t{");
 			String sep = "";
 			
+			// Collect unique FMU stems first
+			for (String source: map.keySet())
+			{
+				String[] parts = source.split("\\.");
+				String key = (parts.length > 1 ? parts[0] + "." + parts[1] : parts[0]);
+				
+				if (!FMUIndex.containsKey(key))
+				{
+					FMUIndex.put(key, FMURoot.get(parts[0]));
+				}
+
+				List<String> list = (List<String>)map.get(source);
+				
+				for (String name: list)
+				{
+					parts = name.split("\\.");
+					key = (parts.length > 1 ? parts[0] + "." + parts[1] : parts[0]);
+					
+					if (!FMUIndex.containsKey(key))
+					{
+						FMUIndex.put(key, FMURoot.get(parts[0]));
+					}
+				}
+			}
+			
 			for (String source: map.keySet())
 			{
 				System.out.println(sep + "\t\t" + fmuVariable(source) + " |->\n\t\t{");
-				Object dest = map.get(source);
+				List<String> list = (List<String>)map.get(source);
+				String sep2 = "";
 				
-				if (dest instanceof List)
+				for (String name: list)
 				{
-					List<String> list = (List<String>) dest;
-					String sep2 = "";
-					
-					for (String name: list)
-					{
-						System.out.println(sep2 + "\t\t\t" + fmuVariable(name));
-						sep2 = ",\n";
-					}
-				}
-				else
-				{
-					error("Connection set is not a list");
+					System.out.println(sep2 + "\t\t\t" + fmuVariable(name));
+					sep2 = ",\n";
 				}
 				
 				System.out.print("\t\t}");
