@@ -57,12 +57,17 @@ functions
 					isValidScalarVariable(sv.causality, sv.variability, sv.initial, sv.variable)
 			),
 
-			-- All modelStructure variables must be declared in modelVariables
-			-- @OnFail("Model structure indexes do not match model variables")
+			-- All scalar variables are valid
+			-- @OnFail("ScalarVariables are invalid")
 			(
-				checkIndexes(len eModelVariables, md.modelStructure.outputs)
-				and checkIndexes(len eModelVariables, md.modelStructure.derivatives)
-				and checkIndexes(len eModelVariables, md.modelStructure.initialUnknowns)
+				forall sv in seq md.modelVariables &
+					isValidScalarVariable(sv.causality, sv.variability, sv.initial, sv.variable)
+			),
+
+			-- The modelStructure is valid
+			-- @OnFail("Model structure invalid")
+			(
+				isValidModelStructure(md.modelStructure)
 			),
 
 			-- All modelVariable declaredTypes must match the typeDefinitions

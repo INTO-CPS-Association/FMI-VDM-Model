@@ -57,8 +57,13 @@ types
 		variable	: Variable;
 
 functions
-	isValidValue: Variable +> bool
-	isValidValue(value) ==
+	/**
+	 * Validate a Variable.
+	 */
+	isValidVariable: Variable +> bool
+	isValidVariable(value) ==
+	-- @OnFail("Variable is invalid")
+	(
 		cases value:
 			mk_Real(-, min, max, -, -, start, -) ->
 				isInRange[real](min, max, start),
@@ -70,7 +75,8 @@ functions
 				isInRange[real](min, max, start),
 
 			others -> true		-- String, Boolean
-		end;
+		end
+	);
 
 
 	/**
@@ -172,6 +178,12 @@ functions
 					nil ->		-- Note that eInitial can be nil (undefined in table on p48)
 						true	-- Tests on eInitial above are sufficient
 				end
+			),
+
+			-- And the Variable itself is valid
+			-- @OnFail("Invalid variable value")
+			(
+				isValidVariable(variable)
 			)
 		} = {true};
 

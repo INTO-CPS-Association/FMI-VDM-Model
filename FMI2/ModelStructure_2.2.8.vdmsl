@@ -16,19 +16,23 @@ types
 		initialUnknowns		: [seq1 of Unknown];
 
 functions
-	duplicateCheck: [seq1 of Unknown] +> bool
-	duplicateCheck(su) ==
-		su <> nil => let indexes = [ u.index | u in seq su ]
-			in len indexes = card elems indexes;
-
+	/**
+	 * Validate an Unknown structure in isolation.
+	 */
 	isValidUnknown: Unknown +> bool
 	isValidUnknown(u) ==
+	-- @OnFail("Invalid Unknown dependencies/kinds")
+	(
 		if u.dependencies <> nil
 		then u.dependenciesKind <> nil =>
 			len u.dependencies = len u.dependenciesKind			-- Matching lists
 			and len u.dependencies = card elems u.dependencies	-- No duplicates
-		else u.dependenciesKind = nil;
+		else u.dependenciesKind = nil
+	);
 
+	/**
+	 * Validation of a ModelStructure.
+	 */
 	isValidModelStructure: ModelStructure +> bool
 	isValidModelStructure(ms) ==
 	{
@@ -59,4 +63,8 @@ functions
 							 dk in set { <dependent>, <constant>, nil }
 		)
 	} = {true};
-	
+
+	duplicateCheck: [seq1 of Unknown] +> bool
+	duplicateCheck(su) ==
+		su <> nil => let indexes = [ u.index | u in seq su ]
+			in len indexes = card elems indexes;
