@@ -8,40 +8,55 @@ types
 	Unknown ::			-- XSD p57
 		index				: nat1
 		dependencies		: [seq of nat1]
-		dependenciesKind	: [seq of DependencyKind]
-	inv u ==
-		if u.dependencies <> nil
-		then u.dependenciesKind <> nil =>
-			len u.dependencies = len u.dependenciesKind			-- Matching lists
-			and len u.dependencies = card elems u.dependencies	-- No duplicates
-		else u.dependenciesKind = nil;
-
+		dependenciesKind	: [seq of DependencyKind];
 
 	ModelStructure ::	-- XSD p56
 		outputs				: [seq1 of Unknown]
 		derivatives			: [seq1 of Unknown]
-		initialUnknowns		: [seq1 of Unknown]
-	inv ms ==
-		-- No duplicate variables
-		-- @OnFail("Model structure has duplicate variables")
-		(
-			duplicateCheck(ms.outputs)
-			and	duplicateCheck(ms.derivatives)
-			and duplicateCheck(ms.initialUnknowns)
-		)
-		and
-		-- initialUnknowns can only be dependent or constant kind, if explicit
-		-- @OnFail("InitialUnknowns are not dependent or constant")
-		(
-			ms.initialUnknowns <> nil =>
-				forall iu in seq ms.initialUnknowns &
-					iu.dependenciesKind <> nil =>
-						forall dk in seq iu.dependenciesKind &
-							 dk in set { <dependent>, <constant>, nil }
-		);
+		initialUnknowns		: [seq1 of Unknown];
 
 functions
 	duplicateCheck: [seq1 of Unknown] +> bool
 	duplicateCheck(su) ==
 		su <> nil => let indexes = [ u.index | u in seq su ]
 			in len indexes = card elems indexes;
+
+	isValidUnknown: Unknown +> bool
+	isValidUnknown(u) ==
+		if u.dependencies <> nil
+		then u.dependenciesKind <> nil =>
+			len u.dependencies = len u.dependenciesKind			-- Matching lists
+			and len u.dependencies = card elems u.dependencies	-- No duplicates
+		else u.dependenciesKind = nil;
+
+	isValidModelStructure: ModelStructure +> bool
+	isValidModelStructure(ms) ==
+	{
+		-- All Unknowns are valid
+		-- @OnFail("ModelStructure has invalid unknowns")
+		(
+			forall list in set {ms.outputs, ms.derivatives, ms.initialUnknowns} &
+				list <> nil =>
+					forall u in seq list &
+						isValidUnknown(u)
+		),
+
+		-- No duplicate variables
+		-- @OnFail("Model structure has duplicate variables")
+		(
+			duplicateCheck(ms.outputs)
+			and	duplicateCheck(ms.derivatives)
+			and duplicateCheck(ms.initialUnknowns)
+		),
+
+		-- initialUnknowns can only be dependent or constant kind, if explicit
+		-- @OnFail("InitialUnknowns are not of kind dependent or constant")
+		(
+			ms.initialUnknowns <> nil =>
+				forall iu in seq ms.initialUnknowns &
+					iu.dependenciesKind <> nil =>
+						forall dk in seq iu.dependenciesKind &
+							 dk in set { <dependent>, <constant>, nil }
+		)
+	} = {true};
+	

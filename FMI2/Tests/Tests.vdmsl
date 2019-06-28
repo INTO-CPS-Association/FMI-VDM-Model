@@ -22,7 +22,7 @@ traces
 			mk_String(nil, "123")
 		}
 		in
-			isValidSV(c, v, i, s);
+			isValidScalarVariable(c, v, i, s);
 
 functions
 	/**
@@ -40,78 +40,78 @@ functions
 						<parameter> ->
 							cases variability:
 								<fixed>, <tunable> ->
-									isValidSV(causality, variability, <exact>, startv) and
-									not isValidSV(causality, variability, <approx>, startv) and
-									not isValidSV(causality, variability, <calculated>, nilv),
+									isValidScalarVariable(causality, variability, <exact>, startv) and
+									not isValidScalarVariable(causality, variability, <approx>, startv) and
+									not isValidScalarVariable(causality, variability, <calculated>, nilv),
 
 								<constant>, <discrete>, <continuous> ->
 									forall initial : Initial &
-										not isValidSV(causality, variability, initial, nilv)
+										not isValidScalarVariable(causality, variability, initial, nilv)
 							end,
 
 						<calculatedParameter> ->
 							cases variability:
 								<fixed>, <tunable> ->
-									isValidSV(causality, variability, <calculated>, nilv) and
-									isValidSV(causality, variability, <approx>, startv) and
-									not isValidSV(causality, variability, <exact>, nilv),
+									isValidScalarVariable(causality, variability, <calculated>, nilv) and
+									isValidScalarVariable(causality, variability, <approx>, startv) and
+									not isValidScalarVariable(causality, variability, <exact>, nilv),
 
 								<constant>, <discrete>, <continuous> ->
 									forall initial : Initial &
-										not isValidSV(causality, variability, initial, nilv)
+										not isValidScalarVariable(causality, variability, initial, nilv)
 							end,
 
 						<input> ->
 							cases variability:
 								<discrete>, <continuous> ->
-									isValidSV(causality, variability, nil, nilv) and
-									not isValidSV(causality, variability, <calculated>, nilv) and
-									not isValidSV(causality, variability, <approx>, startv) and
-									not isValidSV(causality, variability, <exact>, nilv),
+									isValidScalarVariable(causality, variability, nil, nilv) and
+									not isValidScalarVariable(causality, variability, <calculated>, nilv) and
+									not isValidScalarVariable(causality, variability, <approx>, startv) and
+									not isValidScalarVariable(causality, variability, <exact>, nilv),
 
 								<constant>, <fixed>, <tunable> ->
 									forall initial : Initial &
-										not isValidSV(causality, variability, initial, nilv)
+										not isValidScalarVariable(causality, variability, initial, nilv)
 							end,
 
 						<output> ->
 							cases variability:
 								<constant> ->
-									isValidSV(causality, variability, <exact>, startv) and
-									not isValidSV(causality, variability, <calculated>, nilv) and
-									not isValidSV(causality, variability, <approx>, startv),
+									isValidScalarVariable(causality, variability, <exact>, startv) and
+									not isValidScalarVariable(causality, variability, <calculated>, nilv) and
+									not isValidScalarVariable(causality, variability, <approx>, startv),
 
 								<discrete>, <continuous> ->
-									isValidSV(causality, variability, <calculated>, nilv) and
-									isValidSV(causality, variability, <exact>, startv)
-									and isValidSV(causality, variability, <approx>, startv),
+									isValidScalarVariable(causality, variability, <calculated>, nilv) and
+									isValidScalarVariable(causality, variability, <exact>, startv)
+									and isValidScalarVariable(causality, variability, <approx>, startv),
 
 								<fixed>, <tunable> ->
 									forall initial : Initial &
-										not isValidSV(causality, variability, initial, nilv)
+										not isValidScalarVariable(causality, variability, initial, nilv)
 							end,
 
 						<local> ->
 							cases variability:
 								<constant> ->
-									isValidSV(causality, variability, <exact>, startv) and
-									not isValidSV(causality, variability, <calculated>, nilv) and
-									not isValidSV(causality, variability, <approx>, startv),
+									isValidScalarVariable(causality, variability, <exact>, startv) and
+									not isValidScalarVariable(causality, variability, <calculated>, nilv) and
+									not isValidScalarVariable(causality, variability, <approx>, startv),
 
 								<fixed>, <tunable> ->
-									isValidSV(causality, variability, <calculated>, nilv) and
-									isValidSV(causality, variability, <approx>, startv) and
-									not isValidSV(causality, variability, <exact>, nilv),
+									isValidScalarVariable(causality, variability, <calculated>, nilv) and
+									isValidScalarVariable(causality, variability, <approx>, startv) and
+									not isValidScalarVariable(causality, variability, <exact>, nilv),
 
 								<discrete>, <continuous> ->
-									isValidSV(causality, variability, <calculated>, nilv) and
-									isValidSV(causality, variability, <approx>, startv) and
-									isValidSV(causality, variability, <exact>, startv)
+									isValidScalarVariable(causality, variability, <calculated>, nilv) and
+									isValidScalarVariable(causality, variability, <approx>, startv) and
+									isValidScalarVariable(causality, variability, <exact>, startv)
 							end,
 
 						<independent> ->
 							forall initial : Initial &
-								not isValidSV(causality, variability, initial, nilv)
+								not isValidScalarVariable(causality, variability, initial, nilv)
 					end;
 
 values
@@ -122,7 +122,7 @@ values
 	/**
 	 * This test model is based on the example on p62
 	 */
-	model = mk_FMIModelDescription
+	example = mk_FMIModelDescription
 	(
 		-- TypeDefinitions
 		{
@@ -174,9 +174,12 @@ functions
 	/**
 	 * Run all tests and check that they pass.
 	 */
-	tests: () +> set of bool
+	tests: () +> seq of bool
 	tests() ==
-	{
-		testCausalityVariabilityInitial()
-	}
-	post RESULT = {true};
+	[
+		testCausalityVariabilityInitial(),
+		isValidModelDescription(example),
+		isValidModelDescription(springMassDamper),
+		isValidCoSimulation(COSIM)
+	]
+	post elems RESULT = {true};

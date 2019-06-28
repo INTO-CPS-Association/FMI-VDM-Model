@@ -24,73 +24,72 @@ types
 	CoSimulation ::
 		fmus			: seq1 of FMIModelDescription
 		connections		: ConnectionMap		-- Inter-FMU, outputs mapped to inputs
-		parameters		: map FMUVariable to Value
-	inv cs ==
-		isValidCoSimulation(cs.fmus, cs.connections, cs.parameters);
+		parameters		: map FMUVariable to Value;
 
 functions
 	/**
 	 * The type invariant for CoSimulation.
 	 */
-	isValidCoSimulation: seq1 of FMIModelDescription * ConnectionMap * map FMUVariable to Value +> bool
-	isValidCoSimulation(fmus, connections, parameters) ==
-		let maxFMU = len fmus in
+	isValidCoSimulation: CoSimulation +> bool
+	isValidCoSimulation(cs) ==
+		let maxFMU = len cs.fmus in
+		{
 			-- Connection inputs are valid indexes and types
 			(
-				forall source in set dom connections &
+				forall source in set dom cs.connections &
 					-- @OnFail("Illegal FMU index: %s", source.fmuIndex)
 					( source.fmuIndex <= maxFMU )
 					-- @OnFail("Illegal SV index: %s", source.svIndex)
-					and ( source.svIndex <= len fmus(source.fmuIndex).modelVariables )
+					and ( source.svIndex <= len cs.fmus(source.fmuIndex).modelVariables )
 					-- @OnFail("Source (FMU %s, SV %s) is not an output", source.fmuIndex, source.svIndex)
-					and ( fmus(source.fmuIndex).modelVariables(source.svIndex).causality = <output>)
-			)
-			and
+					and ( cs.fmus(source.fmuIndex).modelVariables(source.svIndex).causality = <output>)
+			),
+
 			-- Connection outputs are valid indexes and types
 			(
-				forall dest in set dunion rng connections &
+				forall dest in set dunion rng cs.connections &
 					-- @OnFail("Illegal FMU index: %s", dest.fmuIndex)
 					( dest.fmuIndex <= maxFMU )
 					-- @OnFail("Illegal SV index: %s", dest.svIndex)
-					and ( dest.svIndex <= len fmus(dest.fmuIndex).modelVariables )
+					and ( dest.svIndex <= len cs.fmus(dest.fmuIndex).modelVariables )
 					-- @OnFail("Destination (FMU %s, SV %s) is not an input", dest.fmuIndex, dest.svIndex)
-					and ( fmus(dest.fmuIndex).modelVariables(dest.svIndex).causality = <input>)
-			)
+					and ( cs.fmus(dest.fmuIndex).modelVariables(dest.svIndex).causality = <input>)
+			),
+
 			-- Parameters are valid indexes and types
-			and
 			(
-				forall param in set dom parameters &
+				forall param in set dom cs.parameters &
 					-- @OnFail("Illegal FMU index: %s", param.fmuIndex)
 					( param.fmuIndex <= maxFMU )
 					-- @OnFail("Illegal SV index: %s", param.svIndex)
-					and ( param.svIndex <= len fmus(param.fmuIndex).modelVariables )
+					and ( param.svIndex <= len cs.fmus(param.fmuIndex).modelVariables )
 					-- @OnFail("Source (FMU %s, SV %s) is not a parameter", param.fmuIndex, param.svIndex)
-					and ( fmus(param.fmuIndex).modelVariables(param.svIndex).causality = <parameter>)
-			)
-			and
+					and ( cs.fmus(param.fmuIndex).modelVariables(param.svIndex).causality = <parameter>)
+			),
+
 			-- All connections are inter-FMU, not intra-FMU
 			(
-				forall v1 in set dom connections &
-					forall v2 in set connections(v1) &
+				forall v1 in set dom cs.connections &
+					forall v2 in set cs.connections(v1) &
 						-- @OnFail("Connection %s to %s is not intra-FMU", v1, v2)
 						(v1.fmuIndex <> v2.fmuIndex)
-			)
-			-- Inter-FMU connections are 1:1, not 1:n or n:1
+			),
+
+			-- Inter-FMU cs.connections are 1:1, not 1:n or n:1
 			-- @OnFail("Inter-FMU connections are not 1:1")
-			and
 			(
 				-- No destination variable is mapped more than once
-				card dunion { vs | vs in set rng connections } = count[FMUVariable](rng connections)
+				card dunion { vs | vs in set rng cs.connections } = count[FMUVariable](rng cs.connections)
 				and
 				-- Every source maps to at most one destination 
-				forall vs in set rng connections & card vs <= 1
-			)
+				forall vs in set rng cs.connections & card vs <= 1
+			),
+
 			-- All outputs from each FMU are mapped (possibly to an empty set)
 			-- @OnFail("Not every output variable is mapped")
-			and
 			(
-				forall f in set inds fmus &
-					let svs = fmus(f).modelVariables,
+				forall f in set inds cs.fmus &
+					let svs = cs.fmus(f).modelVariables,
 
 						ov = { mk_FMUVariable(f, v) |
 								v in set inds svs &
@@ -98,8 +97,9 @@ functions
 					in
 						forall v in set ov &
 							-- @OnFail("Variable %s is not in connection map", v)
-							(v in set dom connections)
-			);
+							(v in set dom cs.connections)
+			)
+		} = {true};
 
 	/**
 	 * Given an FMU description and its CoSimulation index, produce a map of its internal

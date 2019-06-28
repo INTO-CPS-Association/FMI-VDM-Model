@@ -18,19 +18,13 @@ types
 		nominal			: [real]
 		unbounded		: [bool]
 		start			: [real]
-		derivative		: [nat1]
-	inv r ==
-		-- Check that max >= min and min <= start <= max, if defined
-		isInRange[real](r.min, r.max, r.start);
+		derivative		: [nat1];
 
 	Integer ::	-- XSD p52
 		declaredType	: [seq1 of char]
 		min				: [int]
 		max				: [int]
-		start			: [int]
-	inv i ==
-		-- Check that max >= min and min <= start <= max, if defined
-		isInRange[int](i.min, i.max, i.start);
+		start			: [int];
 
 	Boolean ::		-- XSD p53
 		declaredType	: [seq1 of char]
@@ -44,10 +38,7 @@ types
 		declaredType	: seq1 of char	-- Note, not optional
 		min				: [int]
 		max				: [int]
-		start			: [int]
-	inv e ==
-		-- Check that max >= min and min <= start <= max, if defined
-		isInRange[int](e.min, e.max, e.start);
+		start			: [int];
 
 	Variable = Real | Integer | Boolean | String | Enumeration;
 
@@ -63,12 +54,25 @@ types
 		initial		: [Initial]
 
 		-- elements
-		variable	: Variable
-
-	inv sv ==
-		isValidSV(sv.causality, sv.variability, sv.initial, sv.variable);
+		variable	: Variable;
 
 functions
+	isValidValue: Variable +> bool
+	isValidValue(value) ==
+		cases value:
+			mk_Real(-, min, max, -, -, start, -) ->
+				isInRange[real](min, max, start),
+
+			mk_Integer(-, min, max, start) ->
+				isInRange[real](min, max, start),
+
+			mk_Enumeration(-, min, max, start) ->
+				isInRange[real](min, max, start),
+
+			others -> true		-- String, Boolean
+		end;
+
+
 	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
 	 */
@@ -86,12 +90,13 @@ functions
 	/**
 	 * ScalarVariable invariant. Rules defined in the table on p49.
 	 */
-	isValidSV: [Causality] * [Variability] * [Initial] * Variable +> bool
-	isValidSV(causality, variability, initial, variable) ==
+	isValidScalarVariable: [Causality] * [Variability] * [Initial] * Variable +> bool
+	isValidScalarVariable(causality, variability, initial, variable) ==
 		let eCausality = effectiveCausality(causality),
 			eVariability = effectiveVariability(variability),
 			eInitial = effectiveInitial(initial, eCausality, eVariability)
 		in
+		{
 			-- Table on p46 defining causality, and p49 defining combinations
 			-- @OnFail("Causality %s fails", eCausality)
 			(
@@ -121,8 +126,8 @@ functions
 					<local> ->
 						true
 				end
-			)
-			and
+			),
+
 			-- Table on p46 defining variability, and p49 defining combinations
 			-- @OnFail("Variability %s fails", eVariability)
 			(
@@ -140,15 +145,15 @@ functions
 						eCausality in set {<input>, <output>, <local>, <independent>}
 						and is_Real(variable)
 				end
-			)
-			and
+			),
+
 			-- Table on p47 defining initial
 			-- @OnFail("Initial %s fails", initial)
 			(
 				initial <> nil =>
 					(eCausality not in set {<input>, <independent>})
-			)
-			and
+			),
+
 			-- Table on p47 defining initial
 			-- @OnFail("Initial %s fails", eInitial)
 			(
@@ -167,7 +172,8 @@ functions
 					nil ->		-- Note that eInitial can be nil (undefined in table on p48)
 						true	-- Tests on eInitial above are sufficient
 				end
-			);
+			)
+		} = {true};
 
 	/**
 	 * The default value for initial, defined by the (effective) values of causality and
