@@ -34,6 +34,13 @@ functions
 	isValidCoSimulation(cs) ==
 		let maxFMU = len cs.fmus in
 		{
+			-- The FMUs are valid
+			-- @OnFail("One or more FMUs are invalid")
+			(
+				forall fmu in seq cs.fmus &
+					isValidModelDescription(fmu)
+			),
+
 			-- Connection inputs are valid indexes and types
 			(
 				forall source in set dom cs.connections &
