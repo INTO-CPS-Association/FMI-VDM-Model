@@ -2,20 +2,22 @@
  * 2.2.3 Definition of Types (TypeDefinitions)
  */
 types
-	RealType ::					-- XSD p39
+	RealType ::
 		min			: [real]
 		max			: [real]
 		nominal		: [real]
 		unbounded	: [bool]
 	inv r ==
-		-- @OnFail("RealType min not <= max")
+		-- @OnFail("RealType invalid, XSD p39")
+		-- @OnFail("RealType max %s not >= min %s", r.max, r.min)
 		( r.max <> nil and r.min <> nil => r.max >= r.min );
 
-	IntegerType ::				-- XSD p39
+	IntegerType ::
 		min			: [int]
 		max			: [int]
 	inv i ==
-		-- @OnFail("IntegerType min not <= max")
+		-- @OnFail("RealType invalid, XSD p39")
+		-- @OnFail("IntegerType max %s not >= min %s", r.max, r.min)
 		( i.max <> nil and i.min <> nil => i.max >= i.min );
 
 	BooleanType ::
@@ -33,10 +35,11 @@ types
 		name		: seq1 of char
 		value		: int;
 
-	EnumerationType ::			-- XSD p39
+	EnumerationType ::
 		items		: seq1 of Item
 	inv e ==
-		-- @OnFail("EnumerationType item values do not form a bijection")
+		-- @OnFail("RealType invalid, XSD p39")
+		-- @OnFail("EnumerationType item name/values do not form a bijection")
 		(
 			card { i.name | i in seq e.items } = len e.items
 			and	card { i.value | i in seq e.items } = len e.items
