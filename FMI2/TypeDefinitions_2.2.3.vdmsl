@@ -30,22 +30,20 @@ types
 
 	Type = RealType | IntegerType | BooleanType | StringType | EnumerationType;
 
-	SimpleType ::		-- XSD p38
+	SimpleType ::	-- XSD p38
 		name		: seq1 of char
 		type		: Type;
 
 functions
-	isValidType: Type +> bool
-	isValidType(type) ==
-		cases type:
+	isValidType: SimpleType +> bool
+	isValidType(stype) ==
+		cases stype.type:
 			mk_RealType(min, max, -, -) ->
-				-- @OnFail("Real invalid, XSD p39")
-				-- @OnFail("Real max %s not >= min %s", max, min)
+				-- @OnFail("SimpleType %s, Real max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
 
 			mk_IntegerType(min, max) ->
-				-- @OnFail("Integer invalid, XSD p39")
-				-- @OnFail("Integer max %s not >= min %s", max, min)
+				-- @OnFail("SimpleType %s, Integer max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
 
 			-- Items of an enumeration as a sequence of "name" and "value" pairs. The
@@ -54,8 +52,7 @@ functions
 			-- bijective). An Enumeration element must have at least one Item.
 
 			mk_EnumerationType(items) ->
-				-- @OnFail("Enumeration invalid, XSD p39")
-				-- @OnFail("EnumerationType item name/values do not form a bijection")
+				-- @OnFail("SimpleType %s, EnumerationType item name/values do not form a bijection", stype.name)
 				(
 					card { i.name | i in seq items } = len items
 					and	card { i.value | i in seq items } = len items

@@ -42,9 +42,9 @@ functions
 		{
 			-- Type definitions are vaid
 			(
-				forall type in set md.typeDefinitions &
-					-- @OnFail("%s.TypeDefinition[%s] invalid", md.name, type.name)
-					(isValidType(type.type))
+				forall stype in set md.typeDefinitions &
+					-- @OnFail("%s.TypeDefinition[%s] invalid", md.name, stype.name)
+					(isValidType(stype))
 			),
 
 			-- Type definitions are unique by name
@@ -182,7 +182,7 @@ functions
 								mk_RealType(dmin, dmax, -, -) ->
 								{
 									-- The named definition is the right type
-									-- @OnFail("RealType not referenced by Real variable %s", sv.variable)
+									-- @OnFail("ScalarVariable %s, RealType not referenced by Real variable %s", sv.name, sv.variable)
 									(
 										is_Real(sv.variable)
 									),
@@ -197,7 +197,7 @@ functions
 													  else if dmax <> nil then dmax
 													  else nil
 											in
-												-- @OnFail("Calculated min/max does not match start %s", sv.variable.start)
+												-- @OnFail("ScalarVariable %s, calculated min/max does not match start %s", sv.name, sv.variable.start)
 												(max <> nil and min <> nil => max >= min)
 												and (min <> nil => min <= sv.variable.start)
 												and	(max <> nil => max >= sv.variable.start)
@@ -207,7 +207,7 @@ functions
 								mk_IntegerType(dmin, dmax) ->
 								{
 									-- The named definition is the right type
-									-- @OnFail("IntegerType not referenced by Integer variable %s", sv.variable)
+									-- @OnFail("ScalarVariable %s, IntegerType not referenced by Integer variable %s", sv.name, sv.variable)
 									(
 										is_Integer(sv.variable)
 									),
@@ -222,7 +222,7 @@ functions
 													  else if dmax <> nil then dmax
 													  else nil
 											in
-												-- @OnFail("Calculated min/max does not match start %s", sv.variable.start)
+												-- @OnFail("ScalarVariable %s, calculated min/max does not match start %s", sv.name, sv.variable.start)
 												(max <> nil and min <> nil => max >= min)
 												and (min <> nil => min <= sv.variable.start)
 												and	(max <> nil => max >= sv.variable.start)
@@ -230,15 +230,15 @@ functions
 								} = {true},
 
 								mk_BooleanType() ->
-									-- @OnFail("BooleanType not referenced by Boolean variable %s", sv.variable)
+									-- @OnFail("ScalarVariable %s, BooleanType not referenced by Boolean variable %s", sv.name, sv.variable)
 									(is_Boolean(sv.variable)),
 
 								mk_StringType() ->
-									-- @OnFail("StringType not referenced by String variable %s", sv.variable)
+									-- @OnFail("ScalarVariable %s, StringType not referenced by String variable %s", sv.name, sv.variable)
 									(is_String(sv.variable)),
 
 								mk_EnumerationType(-) ->
-									-- @OnFail("EnumerationType not referenced by Enumeration variable %s", sv.variable)
+									-- @OnFail("ScalarVariable %s, EnumerationType not referenced by Enumeration variable %s", sv.name, sv.variable)
 									(is_Enumeration(sv.variable))
 							end
 					} = {true};
