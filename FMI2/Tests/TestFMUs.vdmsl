@@ -4,6 +4,8 @@
 values
 	FMU1 = mk_FMIModelDescription
 	(
+		"FMU1",
+
 		{},
 
 		[
@@ -23,6 +25,8 @@ values
 
 	FMU2 = mk_FMIModelDescription
 	(
+		"FMU2",
+
 		{},
 
 		[

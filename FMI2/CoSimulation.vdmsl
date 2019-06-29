@@ -18,8 +18,9 @@ types
 	ConnectionMap = map FMUVariable to set of FMUVariable;
 
 	/**
-	 * A CoSimulation is a set of FMUs (ordered, so they can be identified by index)
-	 * and a connection map linking their inputs and outputs.
+	 * A CoSimulation is a set of FMUs (ordered, so they can be identified by index),
+	 * a connection map linking their inputs and outputs and a set of values for
+	 * the various FMU parameters.
 	 */
 	CoSimulation ::
 		fmus			: seq1 of FMIModelDescription
@@ -35,10 +36,10 @@ functions
 		let maxFMU = len cs.fmus in
 		{
 			-- The FMUs are valid
-			-- @OnFail("One or more FMUs are invalid")
 			(
 				forall fmu in seq cs.fmus &
-					isValidModelDescription(fmu)
+					-- @OnFail("FMU %s is invalid", fmu.name)
+					(isValidModelDescription(fmu))
 			),
 
 			-- Connection inputs are valid indexes and types

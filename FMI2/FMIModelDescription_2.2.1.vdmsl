@@ -4,6 +4,9 @@
 types
 	-- XSD definition on p25
 	FMIModelDescription ::
+		-- Just name for now
+		name				: seq of char
+
 		-- A global list of type definitions that are utilized in "ModelVariables"
 		typeDefinitions		: set of SimpleType			-- XSD p38
 
@@ -38,52 +41,45 @@ functions
 		in
 		{
 			-- Type definitions are vaid
-			-- @OnFail("Type definitions are invalid")
 			(
 				forall type in set md.typeDefinitions &
-					isValidType(type.type)
+					-- @OnFail("%s.TypeDefinition[%s] invalid", md.name, type.name)
+					(isValidType(type.type))
 			),
 
 			-- Type definitions are unique by name
-			-- @OnFail("Type definitions are not unique")
+			-- @OnFail("%s.TypeDefinitions are not unique", md.name)
 			(
 				card { t.name | t in set md.typeDefinitions } = card md.typeDefinitions
 			),
 
 			-- All scalar variables are valid
-			-- @OnFail("ScalarVariables are invalid")
 			(
 				forall sv in seq md.modelVariables &
-					isValidScalarVariable(sv.causality, sv.variability, sv.initial, sv.variable)
-			),
-
-			-- All scalar variables are valid
-			-- @OnFail("ScalarVariables are invalid")
-			(
-				forall sv in seq md.modelVariables &
-					isValidScalarVariable(sv.causality, sv.variability, sv.initial, sv.variable)
-			),
-
-			-- The modelStructure is valid
-			-- @OnFail("Model structure invalid")
-			(
-				isValidModelStructure(md.modelStructure)
+					-- @OnFail("%s.ScalarVariables[%s] invalid", md.name, sv.name)
+					(isValidScalarVariable(sv.causality, sv.variability, sv.initial, sv.variable))
 			),
 
 			-- All modelVariable declaredTypes must match the typeDefinitions
-			-- @OnFail("Typecheck of model variables against type definitions failed")
+			-- @OnFail("%s.ScalarVariables, typecheck against type definitions failed", md.name)
 			(
 				typeCheck(eModelVariables, md.typeDefinitions)
 			),
 
 			-- At most one variable can be <independent>
-			-- @OnFail("Must be at most one independent variable")
+			-- @OnFail("%s.ScalarVariables, more than one independent variable", md.name)
 			(
 				card { sv | sv in seq eModelVariables & sv.causality = <independent> } <= 1
 			),
 
+			-- The modelStructure is valid
+			-- @OnFail("%s.ModelStructure invalid", md.name)
+			(
+				isValidModelStructure(md.modelStructure)
+			),
+
 			-- Model structure outputs contain every model variable of "output" causality
-			-- @OnFail("Model structure does not contain every <output> variable")
+			-- @OnFail("%s.ModelStructure does not contain every <output> variable")
 			(
 				let outputIndexes = { svi | svi in set inds eModelVariables &
 					eModelVariables(svi).causality = <output> }
@@ -97,7 +93,7 @@ functions
 			),
 
 			-- Derivatives must refer to all variables that are Real which define the "derivative" variable
-			-- @OnFail("Derivative section does not refer to Real/derivative variable")
+			-- @OnFail("%s.ModelStructure.Derivatives section does not refer to Real/derivative variable")
 			(
 				let derivativeIndexes = { svi | svi in set inds eModelVariables &
 					is_Real(eModelVariables(svi).variable)
@@ -116,7 +112,7 @@ functions
 			-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
 			-- all continuous-time states and derivatives that are approx/calculated
 			-- And the list must be in ascending index order
-			-- @OnFail("InitialUnknowns are invalid")
+			-- @OnFail("%s.ModelStructure.InitialUnknowns are invalid")
 			(
 				let initIndexes = { svi | svi in set inds eModelVariables &
 					let sv = eModelVariables(svi) in
@@ -161,16 +157,6 @@ functions
 				 		)
 			)
 		} = {true};
-
-	/**
-	 * Check that a variable index is within range
-	 */
-	checkIndexes: nat1 * [seq1 of Unknown] +> bool
-	checkIndexes(vars, unknowns) ==
-		unknowns <> nil =>
-			forall u in seq unknowns &
-				-- @OnFail("Index is out of range: %s", u.index)
-				( u.index <= vars );
 
 	/**
 	 * Check that all variables' declaredTypes are defined, that the variables' type match

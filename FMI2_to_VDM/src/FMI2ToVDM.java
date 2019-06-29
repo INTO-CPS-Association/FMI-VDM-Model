@@ -50,6 +50,8 @@ public class FMI2ToVDM
 			System.out.println("values");
 			System.out.println(args[1] + " = mk_FMIModelDescription");
 			System.out.println("(");
+			System.out.println("\t-- Name");
+			System.out.println("\t\"" + args[1] + "\",\n");
 			
 			System.out.println("\t-- TypeDefinitions");
 			System.out.println("\t{");

@@ -8,6 +8,9 @@ values
 
 	springMassDamper = mk_FMIModelDescription
 	(
+		-- Name
+		"MassSpringDamper",
+
 		-- TypeDefinitions
 		{
 			mk_SimpleType("Modelica.SIunits.Inertia",			mk_RealType(0, nil, nil, nil)),

@@ -124,6 +124,8 @@ values
 	 */
 	example = mk_FMIModelDescription
 	(
+		"Example FMU",
+
 		-- TypeDefinitions
 		{
 			mk_SimpleType("Real-1-10",		mk_RealType(1, 10, nil, nil)),
