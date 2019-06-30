@@ -13,7 +13,7 @@ types
 		license						: [seq1 of char]
 		generationTool				: [seq1 of char]
 		generationDateAndTime		: [seq1 of char]
-		variableNamingConvention	: [<FLAT> | <STRUCTURED>]
+		variableNamingConvention	: [<flat> | <structured>]
 		numberOfEventIndicators		: [nat];
 
 
