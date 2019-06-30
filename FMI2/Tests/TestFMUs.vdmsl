@@ -6,6 +6,8 @@ values
 	(
 		mk_ModelAttributes("2.0", "FMU1", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
+		nil,
+
 		{},
 
 		[
@@ -27,6 +29,8 @@ values
 	(
 		mk_ModelAttributes("2.0", "FMU2", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
+		nil,
+
 		{},
 
 		[
@@ -44,7 +48,7 @@ values
 		)
 	);
 
-	COSIM = mk_CoSimulation
+	COSIM = mk_CoSimulationConfig
 	(
 		[ FMU1, FMU2 ],
 

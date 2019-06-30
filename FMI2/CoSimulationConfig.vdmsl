@@ -3,11 +3,11 @@
  */
 types
 	/**
-	 * A FMUVariable identifies a unique variable in a CoSimulation, indexing both
+	 * A FMUVariable identifies a unique variable in a CoSimulationConfig, indexing both
 	 * the FMU and the modelVariable within it.
 	 */
 	FMUVariable ::
-		fmuIndex		: nat1		-- Index into CoSimulation.fmus
+		fmuIndex		: nat1		-- Index into CoSimulationConfig.fmus
 		svIndex			: nat1;		-- Index into fmus(fmuIndex).modelVariables
 
 	/**
@@ -18,11 +18,11 @@ types
 	ConnectionMap = map FMUVariable to set of FMUVariable;
 
 	/**
-	 * A CoSimulation is a set of FMUs (ordered, so they can be identified by index),
+	 * A CoSimulationConfig is a set of FMUs (ordered, so they can be identified by index),
 	 * a connection map linking their inputs and outputs and a set of values for
 	 * the various FMU parameters.
 	 */
-	CoSimulation ::
+	CoSimulationConfig ::
 		fmus			: seq1 of FMIModelDescription
 		connections		: ConnectionMap		-- Inter-FMU, outputs mapped to inputs
 		parameters		: map FMUVariable to Value;
@@ -31,8 +31,8 @@ functions
 	/**
 	 * The type invariant for CoSimulation.
 	 */
-	isValidCoSimulation: CoSimulation +> bool
-	isValidCoSimulation(cs) ==
+	isValidCoSimulationConfig: CoSimulationConfig +> bool
+	isValidCoSimulationConfig(cs) ==
 		let maxFMU = len cs.fmus in
 		{
 			-- The FMUs are valid
@@ -110,7 +110,7 @@ functions
 		} = {true};
 
 	/**
-	 * Given an FMU description and its CoSimulation index, produce a map of its internal
+	 * Given an FMU description and its CoSimulationConfig index, produce a map of its internal
 	 * connections - that is, its internal input-output dependencies.
 	 */
 	fmuInternalConnections: FMIModelDescription * nat1 * bool -> ConnectionMap
@@ -152,7 +152,7 @@ functions
 			v.fmuIndex = fmuIndex and v.svIndex <= len fmu.modelVariables);
 
 	/**
-	 * Given a CoSimulation and its full connectivity map, decide whether the CoSimulation
+	 * Given a CoSimulationConfig and its full connectivity map, decide whether the CoSimulationConfig
 	 * has any algebraic loops. See the hasLoops function below.
 	 */
 	hasLoops2: ConnectionMap * set of FMUVariable * FMUVariable -> bool
@@ -167,11 +167,11 @@ functions
 	measure is not yet specified;
 
 	/**
-	 * Construct the full connection map for a CoSimulation and check for loops. The full connection
+	 * Construct the full connection map for a CoSimulationConfig and check for loops. The full connection
 	 * map is created from the CoSim connections, plus the generated internal connection maps for
 	 * each FMU.
 	 */
-	hasLoops: CoSimulation * bool +> bool
+	hasLoops: CoSimulationConfig * bool +> bool
 	hasLoops(cosim, initialization) ==
 		let fullMap = cosim.connections munion 
 			merge { fmuInternalConnections(cosim.fmus(i), i, initialization) | i in set inds cosim.fmus },

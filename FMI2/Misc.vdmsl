@@ -10,6 +10,14 @@ functions
 	nilSet(s) ==
 		if s = nil then {} else s;
 
+	nilBool: [bool] +> bool
+	nilBool(b) ==
+		if b = nil then false else b;
+
+	nilNat: [nat] +> nat
+	nilNat(n) ==
+		if n = nil then 0 else n;
+
 	count[@T]: set of set of @T +> nat
 	count(s) ==
 		if s = {}

@@ -19,8 +19,11 @@ types
 
 	-- XSD definition on p25
 	FMIModelDescription ::
-		-- Just name for now, tbs ModelAttributes
+		-- The ModelAttributes
 		attributes			: ModelAttributes
+
+		-- ModelExchange or CoSimulation
+		modelType			: [CoSimulation | ModelExchange]
 
 		-- A global list of type definitions that are utilized in "ModelVariables"
 		typeDefinitions		: set of SimpleType			-- XSD p38

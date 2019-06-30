@@ -127,6 +127,9 @@ values
 		-- Attributes
 		mk_ModelAttributes("2.0", "Example FMU", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
+		-- Model Type
+		nil,
+
 		-- TypeDefinitions
 		{
 			mk_SimpleType("Real-1-10",		mk_RealType(1, 10, nil, nil)),
@@ -183,6 +186,6 @@ functions
 		testCausalityVariabilityInitial(),
 		isValidModelDescription(example),
 		isValidModelDescription(springMassDamper),
-		isValidCoSimulation(COSIM)
+		isValidCoSimulationConfig(COSIM)
 	]
 	post elems RESULT = {true};
