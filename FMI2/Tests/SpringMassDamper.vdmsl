@@ -9,7 +9,7 @@ values
 	springMassDamper = mk_FMIModelDescription
 	(
 		-- Name
-		"MassSpringDamper",
+		mk_ModelAttributes("2.0", "MassSpringDamper", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
 		-- TypeDefinitions
 		{

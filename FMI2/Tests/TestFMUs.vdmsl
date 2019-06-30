@@ -4,7 +4,7 @@
 values
 	FMU1 = mk_FMIModelDescription
 	(
-		"FMU1",
+		mk_ModelAttributes("2.0", "FMU1", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
 		{},
 
@@ -25,7 +25,7 @@ values
 
 	FMU2 = mk_FMIModelDescription
 	(
-		"FMU2",
+		mk_ModelAttributes("2.0", "FMU2", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
 		{},
 

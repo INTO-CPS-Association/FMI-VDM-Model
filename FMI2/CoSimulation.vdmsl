@@ -38,7 +38,7 @@ functions
 			-- The FMUs are valid
 			(
 				forall fmu in seq cs.fmus &
-					-- @OnFail("FMU %s is invalid", fmu.name)
+					-- @OnFail("FMU %s is invalid", fmu.attributes.modelName)
 					(isValidModelDescription(fmu))
 			),
 

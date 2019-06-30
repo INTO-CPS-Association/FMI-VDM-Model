@@ -124,7 +124,8 @@ values
 	 */
 	example = mk_FMIModelDescription
 	(
-		"Example FMU",
+		-- Attributes
+		mk_ModelAttributes("2.0", "Example FMU", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
 		-- TypeDefinitions
 		{

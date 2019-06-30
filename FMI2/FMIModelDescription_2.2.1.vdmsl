@@ -2,10 +2,25 @@
  * 2.2.1 Definition of an FMU (fmiModelDescription)
  */
 types
+	ModelAttributes ::
+		fmiVersion					: seq1 of char
+		modelName					: seq1 of char
+		guid						: seq1 of char
+		description					: [seq1 of char]
+		author						: [seq1 of char]
+		version						: [seq1 of char]
+		copyright					: [seq1 of char]
+		license						: [seq1 of char]
+		generationTool				: [seq1 of char]
+		generationDateAndTime		: [seq1 of char]
+		variableNamingConvention	: [<FLAT> | <STRUCTURED>]
+		numberOfEventIndicators		: [nat];
+
+
 	-- XSD definition on p25
 	FMIModelDescription ::
-		-- Just name for now
-		name				: seq of char
+		-- Just name for now, tbs ModelAttributes
+		attributes			: ModelAttributes
 
 		-- A global list of type definitions that are utilized in "ModelVariables"
 		typeDefinitions		: set of SimpleType			-- XSD p38
@@ -22,6 +37,14 @@ types
 		modelStructure		: ModelStructure;			-- XSD p56
 
 functions
+	/**
+	 * Valid description attributes.
+	 */
+	isValidModelAttributes: ModelAttributes +> bool
+	isValidModelAttributes(attrs) ==
+		-- @OnFail("%s model version should be 2.0", attrs.modelName)
+		(attrs.fmiVersion in set { "2", "2.0" });
+
 	/**
 	 * Invariant definition for FMIModelDescription
 	 */
@@ -40,15 +63,20 @@ functions
 			]
 		in
 		{
+			-- Attributes are valid
+			(
+				isValidModelAttributes(md.attributes)
+			),
+
 			-- Type definitions are vaid
 			(
 				forall stype in set md.typeDefinitions &
-					-- @OnFail("%s.TypeDefinition[%s] invalid", md.name, stype.name)
+					-- @OnFail("%s.TypeDefinition[%s] invalid", md.attributes.modelName, stype.name)
 					(isValidType(stype))
 			),
 
 			-- Type definitions are unique by name
-			-- @OnFail("%s.TypeDefinitions are not unique", md.name)
+			-- @OnFail("%s.TypeDefinitions are not unique", md.attributes.modelName)
 			(
 				card { t.name | t in set md.typeDefinitions } = card md.typeDefinitions
 			),
@@ -56,24 +84,24 @@ functions
 			-- All scalar variables are valid
 			(
 				forall sv in seq md.modelVariables &
-					-- @OnFail("%s.ScalarVariables[%s] invalid", md.name, sv.name)
+					-- @OnFail("%s.ScalarVariables[%s] invalid", md.attributes.modelName, sv.name)
 					(isValidScalarVariable(sv.causality, sv.variability, sv.initial, sv.variable))
 			),
 
 			-- All modelVariable declaredTypes must match the typeDefinitions
-			-- @OnFail("%s.ScalarVariables, typecheck against type definitions failed", md.name)
+			-- @OnFail("%s.ScalarVariables, typecheck against type definitions failed", md.attributes.modelName)
 			(
 				typeCheck(eModelVariables, md.typeDefinitions)
 			),
 
 			-- At most one variable can be <independent>
-			-- @OnFail("%s.ScalarVariables, more than one independent variable", md.name)
+			-- @OnFail("%s.ScalarVariables, more than one independent variable", md.attributes.modelName)
 			(
 				card { sv | sv in seq eModelVariables & sv.causality = <independent> } <= 1
 			),
 
 			-- The modelStructure is valid
-			-- @OnFail("%s.ModelStructure invalid", md.name)
+			-- @OnFail("%s.ModelStructure invalid", md.attributes.modelName)
 			(
 				isValidModelStructure(md.modelStructure)
 			),
