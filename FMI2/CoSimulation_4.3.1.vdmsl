@@ -1,0 +1,45 @@
+/**
+ * 4.3.1 Definition of a CoSimulation section of an FMU.
+ */
+types
+	CoSimulation ::
+		modelIdentifier							: seq1 of char
+		needsExecutionTool						: [bool]
+		canHandleVariableCommunicationStepSize	: [bool]
+		canInterpolateInputs					: [bool]
+		maxOutputDerivativeOrder				: [nat]
+		canRunAsynchronuously					: [bool]
+		canBeInstantiatedOnlyOncePerProcess		: [bool]
+		canNotUseMemoryManagementFunctions		: [bool]
+		canGetAndSetFMUstate					: [bool]
+		canSerializeFMUstate					: [bool]
+		providesDirectionalDerivative			: [bool]
+		sourceFiles								: [seq of SourceFile];
+
+	SourceFile ::
+		name : seq1 of char;
+
+functions
+	/**
+	 * Apply defaults to return effective CoSimulation settings.
+	 */
+	effCoSimulation: CoSimulation +> CoSimulation
+	effCoSimulation(cs) ==
+		mk_CoSimulation
+		(
+			cs.modelIdentifier,
+			nilBool(cs.needsExecutionTool),
+			nilBool(cs.canHandleVariableCommunicationStepSize),
+			nilBool(cs.canInterpolateInputs),
+			nilNat(cs.maxOutputDerivativeOrder),
+			nilBool(cs.canRunAsynchronuously),
+			nilBool(cs.canBeInstantiatedOnlyOncePerProcess),
+			nilBool(cs.canNotUseMemoryManagementFunctions),
+			nilBool(cs.canGetAndSetFMUstate),
+			nilBool(cs.canSerializeFMUstate),
+			nilBool(cs.providesDirectionalDerivative),
+			nilSeq[SourceFile](cs.sourceFiles)
+		);
+
+
+

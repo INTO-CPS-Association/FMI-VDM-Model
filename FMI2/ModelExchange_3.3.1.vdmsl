@@ -1,0 +1,31 @@
+/**
+ * 4.3.1 Definition of a ModelExchange section of an FMU.
+ */
+types
+	ModelExchange ::
+		modelIdentifier						: seq1 of char
+		needsExecutionTool					: [bool]
+		completedIntegratorStepNotNeeded	: [bool]
+		canBeInstantiatedOnlyOncePerProcess	: [bool]
+		canNotUseMemoryManagementFunctions	: [bool]
+		canGetAndSetFMUstate				: [bool]
+		canSerializeFMUstate				: [bool]
+		providesDirectionalDerivative		: [bool];
+
+functions
+	/**
+	 * Apply defaults to return effective ModelExchange settings.
+	 */
+	effModelExchange: ModelExchange +> ModelExchange
+	effModelExchange(me) ==
+		mk_ModelExchange
+		(
+			me.modelIdentifier,
+			nilBool(me.needsExecutionTool),
+			nilBool(me.completedIntegratorStepNotNeeded),
+			nilBool(me.canBeInstantiatedOnlyOncePerProcess),
+			nilBool(me.canNotUseMemoryManagementFunctions),
+			nilBool(me.canGetAndSetFMUstate),
+			nilBool(me.canSerializeFMUstate),
+			nilBool(me.providesDirectionalDerivative)
+		);
