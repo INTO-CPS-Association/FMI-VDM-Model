@@ -41,5 +41,12 @@ functions
 			nilSeq[SourceFile](cs.sourceFiles)
 		);
 
+	/**
+	 * Check CoSimulation values.
+	 */
+	isValidCoSimulation: CoSimulation +> bool
+	isValidCoSimulation(-) ==
+		true;
+
 
 

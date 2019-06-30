@@ -29,3 +29,11 @@ functions
 			nilBool(me.canSerializeFMUstate),
 			nilBool(me.providesDirectionalDerivative)
 		);
+
+	/**
+	 * Check ModelExchange values.
+	 */
+	isValidModelExchange: ModelExchange +> bool
+	isValidModelExchange(-) ==
+		true;
+

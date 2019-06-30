@@ -55,6 +55,27 @@ public class FMI2ToVDM
 			modelAttributes(doc.getDocumentElement().getAttributes());
 			System.out.println("\t),\n");
 			
+			System.out.println("\t-- Model Type");
+			NodeList modelTypes = doc.getElementsByTagName("ModelExchange");
+			
+			if (modelTypes.getLength() > 0)
+			{
+				modelExchange((Element)modelTypes.item(0));
+			}
+			else
+			{
+				modelTypes = doc.getElementsByTagName("CoSimulation");
+
+				if (modelTypes.getLength() > 0)
+				{
+					coSimulation((Element)modelTypes.item(0));
+				}
+				else
+				{
+					System.out.println("\tnil,\n");
+				}
+			}
+			
 			System.out.println("\t-- TypeDefinitions");
 			System.out.println("\t{");
 			typeDefinitions(doc.getElementsByTagName("TypeDefinitions"));
@@ -105,6 +126,87 @@ public class FMI2ToVDM
 		System.out.print(",\n\t\t");
 		printRawAttribute(attributes, "numberOfEventIndicators");
 		System.out.println();
+	}
+
+	private static void modelExchange(Element element)
+	{
+		NamedNodeMap attributes = element.getAttributes();
+
+		System.out.println("\tmk_ModelExchange");
+		System.out.println("\t(");
+		System.out.print("\t\t");
+		printStringAttribute(attributes, "modelIdentifier");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "needsExecutionTool");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "completedIntegratorStepNotNeeded");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canBeInstantiatedOnlyOncePerProcess");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canNotUseMemoryManagementFunctions");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canGetAndSetFMUstate");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canSerializeFMUstate");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "providesDirectionalDerivative");
+		System.out.println(",\n\t),\n");
+	}
+
+	private static void coSimulation(Element element)
+	{
+		NamedNodeMap attributes = element.getAttributes();
+
+		System.out.println("\tmk_ModelExchange");
+		System.out.println("\t(");
+		System.out.print("\t\t");
+		printStringAttribute(attributes, "modelIdentifier");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "needsExecutionTool");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canHandleVariableCommunicationStepSize");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canInterpolateInputs");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "maxOutputDerivativeOrder");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canRunAsynchronuously");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canBeInstantiatedOnlyOncePerProcess");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canNotUseMemoryManagementFunctions");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canGetAndSetFMUstate");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "canSerializeFMUstate");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "providesDirectionalDerivative");
+		System.out.print(",\n\t\t");
+		
+		NodeList nodes = element.getElementsByTagName("SourceFiles");
+		
+		if (nodes.getLength() > 0)
+		{
+			Element sourceFiles = (Element) nodes.item(0);
+			NodeList files = sourceFiles.getElementsByTagName("File");
+			System.out.println("[");
+			String sep = "";
+			
+			for (int f=0; f<files.getLength(); f++)
+			{
+				System.out.print(sep + "\t\t\t");
+				sep = ",\n";
+				printStringAttribute(files.item(f).getAttributes(), "name");
+			}
+
+			System.out.println("\n\t\t]");
+		}
+		else
+		{
+			System.out.println("\t\tnil");
+		}
+
+		System.out.println("\t),\n");
 	}
 
 	private static void typeDefinitions(NodeList typeDefs)	// Element list(1)

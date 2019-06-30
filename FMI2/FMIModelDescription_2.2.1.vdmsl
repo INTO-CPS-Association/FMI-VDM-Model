@@ -71,7 +71,16 @@ functions
 				isValidModelAttributes(md.attributes)
 			),
 
-			-- Type definitions are vaid
+			-- Type settings are valid
+			(
+				if is_ModelExchange(md.modelType)
+				then isValidModelExchange(md.modelType)
+				else if is_CoSimulation(md.modelType)
+					then isValidCoSimulation(md.modelType)
+					else true
+			),
+
+			-- Type definitions are valid
 			(
 				forall stype in set md.typeDefinitions &
 					-- @OnFail("%s.TypeDefinition[%s] invalid", md.attributes.modelName, stype.name)
