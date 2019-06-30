@@ -50,18 +50,20 @@ public class FMI2ToVDM
 			System.out.println("values");
 			System.out.println(args[1] + " = mk_FMIModelDescription");
 			System.out.println("(");
-			System.out.println("\t-- Name");
-			System.out.println("\t\"" + args[1] + "\",\n");
+			System.out.println("\tmk_ModelAttributes");
+			System.out.println("\t(");
+			modelAttributes(doc.getDocumentElement().getAttributes());
+			System.out.println("\t),\n");
 			
 			System.out.println("\t-- TypeDefinitions");
 			System.out.println("\t{");
 			typeDefinitions(doc.getElementsByTagName("TypeDefinitions"));
-			System.out.println("\t},");
+			System.out.println("\t},\n");
 			
 			System.out.println("\t-- ModelVariables");
 			System.out.println("\t[");
 			modelVariables(doc.getElementsByTagName("ModelVariables"));
-			System.out.println("\t],");
+			System.out.println("\t],\n");
 			
 			System.out.println("\tmk_ModelStructure");
 			System.out.println("\t(");
@@ -74,6 +76,35 @@ public class FMI2ToVDM
 		{
 			e1.printStackTrace();
 		}
+	}
+
+	private static void modelAttributes(NamedNodeMap attributes)
+	{
+		System.out.print("\t\t");
+		printStringAttribute(attributes, "fmiVersion");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "modelName");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "guid");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "description");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "author");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "version");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "copyright");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "license");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "generationTool");
+		System.out.print(",\n\t\t");
+		printStringAttribute(attributes, "generationDateAndTime");
+		System.out.print(",\n\t\t");
+		printQuoteAttribute(attributes, "variableNamingConvention");
+		System.out.print(",\n\t\t");
+		printRawAttribute(attributes, "numberOfEventIndicators");
+		System.out.println();
 	}
 
 	private static void typeDefinitions(NodeList typeDefs)	// Element list(1)
