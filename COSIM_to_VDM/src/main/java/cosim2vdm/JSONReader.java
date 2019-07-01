@@ -1,5 +1,7 @@
 // package org.stringtree.json;
 
+package cosim2vdm;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.CharacterIterator;

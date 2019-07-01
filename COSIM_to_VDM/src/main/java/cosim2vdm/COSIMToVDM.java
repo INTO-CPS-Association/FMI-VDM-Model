@@ -2,6 +2,8 @@
  * A simple JSON parser to turn INTO-CPS configuration files into VDM-SL
  */
 
+package cosim2vdm;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
