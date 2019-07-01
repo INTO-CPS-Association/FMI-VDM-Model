@@ -76,10 +76,22 @@ public class FMI2ToVDM
 				}
 			}
 			
+			System.out.println("\t-- UnitDefinitions");
+			unitDefinitions(doc.getElementsByTagName("UnitDefinitions"));
+			
 			System.out.println("\t-- TypeDefinitions");
 			System.out.println("\t{");
 			typeDefinitions(doc.getElementsByTagName("TypeDefinitions"));
 			System.out.println("\t},\n");
+			
+			System.out.println("\t-- LogCategories");
+			logCategories(doc.getElementsByTagName("LogCategories"));
+			
+			System.out.println("\t-- DefaultExperiment");
+			defaultExperiment(doc.getElementsByTagName("DefaultExperiment"));
+			
+			System.out.println("\t-- VendorAnnotations");
+			vendorAnnotations(doc.getElementsByTagName("VendorAnnotations"));
 			
 			System.out.println("\t-- ModelVariables");
 			System.out.println("\t[");
@@ -150,7 +162,7 @@ public class FMI2ToVDM
 		printStringAttribute(attributes, "canSerializeFMUstate");
 		System.out.print(",\n\t\t");
 		printStringAttribute(attributes, "providesDirectionalDerivative");
-		System.out.println(",\n\t),\n");
+		System.out.println("\n\t),\n");
 	}
 
 	private static void coSimulation(Element element)
@@ -289,6 +301,166 @@ public class FMI2ToVDM
 			System.out.print(", ");
 			printRawAttribute(attrs, "value");
 			System.out.print(")");
+		}
+	}
+
+	private static void unitDefinitions(NodeList roots)
+	{
+		if (roots.getLength() > 0)
+		{
+			System.out.println("\t[");
+			Element units = (Element) roots.item(0);
+			NodeList unitlist = units.getElementsByTagName("Unit");
+			String sep = "";
+			
+			for (int i=0; i<unitlist.getLength(); i++)
+			{
+				Element unit = (Element) unitlist.item(i);
+				System.out.println(sep + "\t\tmk_Unit\n\t\t(");
+				System.out.print("\t\t\t");
+				printStringAttribute(unit.getAttributes(), "name");
+				System.out.println(", ");
+				
+				if (unit.getElementsByTagName("BaseUnit").getLength() > 0)
+				{
+					Element baseUnit = (Element) unit.getElementsByTagName("BaseUnit").item(0);
+					System.out.print("\t\t\tmk_BaseUnit(");
+					printRawAttribute(baseUnit.getAttributes(), "kg");
+					System.out.print(", ");
+					printRawAttribute(baseUnit.getAttributes(), "m");
+					System.out.print(", ");
+					printRawAttribute(baseUnit.getAttributes(), "s");
+					System.out.print(", ");
+					printRawAttribute(baseUnit.getAttributes(), "A");
+					System.out.print(", ");
+					printRawAttribute(baseUnit.getAttributes(), "K");
+					System.out.print(", ");
+					printRawAttribute(baseUnit.getAttributes(), "mol");
+					System.out.print(", ");
+					printRawAttribute(baseUnit.getAttributes(), "cs");
+					System.out.print(", ");
+					printRawAttribute(baseUnit.getAttributes(), "rad");
+					System.out.print(", ");
+					printRawAttribute(baseUnit.getAttributes(), "factor");
+					System.out.print(", ");
+					printRawAttribute(baseUnit.getAttributes(), "offset");
+					System.out.println("),");
+				}
+				else
+				{
+					System.out.println("\t\t\tnil,");
+				}
+				
+				if (unit.getElementsByTagName("DisplayUnit").getLength() > 0)
+				{
+					NodeList displayUnits = unit.getElementsByTagName("DisplayUnit");
+					System.out.println("\t\t\t[");
+					String sep2 = "";
+
+					for (int j=0; j<displayUnits.getLength(); j++)
+					{
+						Element displayUnit = (Element) displayUnits.item(j);
+						System.out.print(sep2 + "\t\t\t\tmk_DisplayUnit(");
+						printStringAttribute(displayUnit.getAttributes(), "name");
+						System.out.print(", ");
+						printRawAttribute(displayUnit.getAttributes(), "factor");
+						System.out.print(", ");
+						printRawAttribute(displayUnit.getAttributes(), "offset");
+						System.out.print(")");
+						sep2 = ",\n";
+					}
+
+					System.out.println("\n\t\t\t]");
+				}
+				else
+				{
+					System.out.println("\t\t\tnil");
+				}
+				
+				sep = ",\n\n";
+				System.out.print("\t\t)");
+			}
+			
+			System.out.println("\n\t],\n");
+		}
+		else
+		{
+			System.out.println("\tnil,\n");
+		}
+	}
+
+	private static void logCategories(NodeList roots)
+	{
+		if (roots.getLength() > 0)
+		{
+			System.out.println("\t[");
+			Element categories = (Element) roots.item(0);
+			NodeList category = categories.getElementsByTagName("Category");
+			String sep = "";
+			
+			for (int i=0; i<category.getLength(); i++)
+			{
+				Element c = (Element) category.item(i);
+				System.out.print(sep + "\t\tmk_Category(");
+				printStringAttribute(c.getAttributes(), "name");
+				System.out.print(", ");
+				printStringAttribute(c.getAttributes(), "description");
+				System.out.print(")");
+				sep = ",\n";
+			}
+			
+			System.out.println("\n\t],\n");
+		}
+		else
+		{
+			System.out.println("\tnil,\n");
+		}
+	}
+
+	private static void defaultExperiment(NodeList roots)
+	{
+		if (roots.getLength() > 0)
+		{
+			Element experiment = (Element) roots.item(0);
+			System.out.print("\tmk_DefaultExperiment(");
+			printRawAttribute(experiment.getAttributes(), "startTime");
+			System.out.print(", ");
+			printRawAttribute(experiment.getAttributes(), "stopTime");
+			System.out.print(", ");
+			printRawAttribute(experiment.getAttributes(), "tolerance");
+			System.out.print(", ");
+			printRawAttribute(experiment.getAttributes(), "stepSize");
+			System.out.println("),\n");
+		}
+		else
+		{
+			System.out.println("\tnil,\n");
+		}
+	}
+
+	private static void vendorAnnotations(NodeList roots)
+	{
+		if (roots.getLength() > 0)
+		{
+			System.out.println("\t[");
+			Element annotations = (Element) roots.item(0);
+			NodeList tools = annotations.getElementsByTagName("Tool");
+			String sep = "";
+			
+			for (int i=0; i<tools.getLength(); i++)
+			{
+				Element tool = (Element) tools.item(i);
+				System.out.print(sep + "\t\tmk_Tool(");
+				printStringAttribute(tool.getAttributes(), "name");
+				System.out.print(", mk_token(nil)");
+				System.out.print(")");
+				sep = ",\n";
+			}
+			System.out.println("\n\t],\n");
+		}
+		else
+		{
+			System.out.println("\tnil,\n");
 		}
 	}
 
