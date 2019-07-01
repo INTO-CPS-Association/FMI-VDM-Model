@@ -32,7 +32,7 @@ types
 		typeDefinitions		: set of SimpleType			-- XSD p38
 
 		-- Log categories
-		logCategories		: [seq of Category]
+		logCategories		: [seq1 of Category]
 
 		-- Default experiment
 		defaultExperiment	: [DefaultExperiment]
@@ -79,11 +79,13 @@ functions
 		in
 		{
 			-- Attributes are valid
+			-- @OnFail("%s.ModelAttributes invalid", md.attributes.modelName)
 			(
 				isValidModelAttributes(md.attributes)
 			),
 
 			-- Type settings are valid
+			-- @OnFail("%s.modelType invalid", md.attributes.modelName)
 			(
 				if is_ModelExchange(md.modelType)
 				then isValidModelExchange(md.modelType)
@@ -93,6 +95,7 @@ functions
 			),
 
 			-- Unit definitions are valid
+			-- @OnFail("%s.UnitDefinitions invalid", md.attributes.modelName)
 			(
 				isValidUnitDefinitions(md.unitDefinitions)
 			),
@@ -111,16 +114,19 @@ functions
 			),
 
 			-- Log categories are valid
+			-- @OnFail("%s.LogCategories invalid", md.attributes.modelName)
 			(
 				isValidLogCategories(md.logCategories)
 			),
 
 			-- Default experiment is valid
+			-- @OnFail("%s.DefaultExperiment invalid", md.attributes.modelName)
 			(
 				isValidDefaultExperiment(md.defaultExperiment)
 			),
 
 			-- Vendor annotations are valid
+			-- @OnFail("%s.VendorAnnotations invalid", md.attributes.modelName)
 			(
 				isValidVendorAnnotations(md.vendorAnnotations)
 			),
@@ -151,7 +157,7 @@ functions
 			),
 
 			-- Model structure outputs contain every model variable of "output" causality
-			-- @OnFail("%s.ModelStructure does not contain every <output> variable")
+			-- @OnFail("%s.ModelStructure does not contain every <output> variable", md.attributes.modelName)
 			(
 				let outputIndexes = { svi | svi in set inds eModelVariables &
 					eModelVariables(svi).causality = <output> }
@@ -165,7 +171,7 @@ functions
 			),
 
 			-- Derivatives must refer to all variables that are Real which define the "derivative" variable
-			-- @OnFail("%s.ModelStructure.Derivatives section does not refer to Real/derivative variable")
+			-- @OnFail("%s.ModelStructure.Derivatives section does not refer to Real/derivative variable", md.attributes.modelName)
 			(
 				let derivativeIndexes = { svi | svi in set inds eModelVariables &
 					is_Real(eModelVariables(svi).variable)
@@ -184,7 +190,7 @@ functions
 			-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
 			-- all continuous-time states and derivatives that are approx/calculated
 			-- And the list must be in ascending index order
-			-- @OnFail("%s.ModelStructure.InitialUnknowns are invalid")
+			-- @OnFail("%s.ModelStructure.InitialUnknowns are invalid", md.attributes.modelName)
 			(
 				let initIndexes = { svi | svi in set inds eModelVariables &
 					let sv = eModelVariables(svi) in
