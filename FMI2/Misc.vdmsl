@@ -18,6 +18,14 @@ functions
 	nilNat(n) ==
 		if n = nil then 0 else n;
 
+	nilInt: [int] +> int
+	nilInt(n) ==
+		if n = nil then 0 else n;
+
+	nilReal: [real] +> real
+	nilReal(n) ==
+		if n = nil then 0 else n;
+
 	count[@T]: set of set of @T +> nat
 	count(s) ==
 		if s = {}

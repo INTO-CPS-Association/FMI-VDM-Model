@@ -25,6 +25,9 @@ types
 		-- ModelExchange or CoSimulation
 		modelType			: [CoSimulation | ModelExchange]
 
+		-- Unit Definitions
+		unitDefinitions		: seq of Unit
+
 		-- A global list of type definitions that are utilized in "ModelVariables"
 		typeDefinitions		: set of SimpleType			-- XSD p38
 
@@ -78,6 +81,11 @@ functions
 				else if is_CoSimulation(md.modelType)
 					then isValidCoSimulation(md.modelType)
 					else true
+			),
+
+			-- Unit definitions are valid
+			(
+				isValidUnitDefinitions(md.unitDefinitions)
 			),
 
 			-- Type definitions are valid

@@ -8,6 +8,8 @@ values
 
 		nil,
 
+		[],
+
 		{},
 
 		[
@@ -30,6 +32,8 @@ values
 		mk_ModelAttributes("2.0", "FMU2", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
 		nil,
+
+		[],
 
 		{},
 

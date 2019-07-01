@@ -14,6 +14,9 @@ values
 		-- Model type
 		nil,
 
+		-- Unit definitions
+		[],
+
 		-- TypeDefinitions
 		{
 			mk_SimpleType("Modelica.SIunits.Inertia",			mk_RealType(0, nil, nil, nil)),

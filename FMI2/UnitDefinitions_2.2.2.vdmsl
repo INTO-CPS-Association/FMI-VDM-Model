@@ -1,5 +1,56 @@
 /**
  * 2.2.2 Unit Definitions.
  */
+types
+	Unit ::
+		name			: seq1 of char
+		baseUnit		: [BaseUnit]
+		displayUnits	: [seq of DisplayUnit];
 
--- TBS
+	BaseUnit ::
+		kg				: [int]
+		m				: [int]
+		s				: [int]
+		A				: [int]
+		K				: [int]
+		mol				: [int]
+		cd				: [int]
+		rad				: [int]
+		factor			: [real]
+		offset			: [real];
+
+	DisplayUnit ::
+		name			: seq1 of char
+		factor			: [real]
+		offset			: [real];
+
+functions
+	isValidUnitDefinitions: seq of Unit +> bool
+	isValidUnitDefinitions(units) ==
+		-- @OnFail("Unit definition names are not unique")
+		card { unit.name | unit in seq units } = len units;
+
+	effBaseUnit: BaseUnit +> BaseUnit
+	effBaseUnit(b) ==
+		mk_BaseUnit
+		(
+			nilInt(b.kg),
+			nilInt(b.m),
+			nilInt(b.s),
+			nilInt(b.A),
+			nilInt(b.K),
+			nilInt(b.mol),
+			nilInt(b.cd),
+			nilInt(b.rad),
+			if b.factor = nil then 1 else b.factor,
+			nilReal(b.offset)
+		);
+
+	effDisplayUnit: DisplayUnit +> DisplayUnit
+	effDisplayUnit(d) ==
+		mk_DisplayUnit
+		(
+			d.name,
+			if d.factor = nil then 1 else d.factor,
+			nilReal(d.offset)
+		);
