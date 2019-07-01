@@ -31,7 +31,7 @@ cd $(dirname $0)
 
 VAR=model$$
 
-if ! java FMI2ToVDM "$XML" "$VAR" >$VDM
+if ! java fmi2vdm.FMI2ToVDM "$XML" "$VAR" >$VDM
 then
 	echo "Problem converting modelDescription to VDM-SL?"
 	exit 1

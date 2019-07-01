@@ -2,20 +2,18 @@
  * A simple SAX parser to turn FMI2 XML configuration files into VDM-SL.
  */
 
+package fmi2vdm;
+
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 public class FMI2ToVDM
 {
@@ -105,7 +103,7 @@ public class FMI2ToVDM
 			
 			System.out.println(");");
 		}
-		catch (SAXException | ParserConfigurationException | IOException e1)
+		catch (Exception e1)
 		{
 			e1.printStackTrace();
 		}
