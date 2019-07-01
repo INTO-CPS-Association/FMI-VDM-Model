@@ -31,6 +31,15 @@ types
 		-- A global list of type definitions that are utilized in "ModelVariables"
 		typeDefinitions		: set of SimpleType			-- XSD p38
 
+		-- Log categories
+		logCategories		: [seq of Category]
+
+		-- Default experiment
+		defaultExperiment	: [DefaultExperiment]
+
+		-- Vendor annotations
+		vendorAnnotations	: [seq1 of Tool]
+
 		-- The central FMU data structure defining all variables of the FMU that
 		-- Are visible/accessible via the FMU functions.
 		modelVariables		: seq of ScalarVariable		-- XSD p44
@@ -99,6 +108,21 @@ functions
 			-- @OnFail("%s.TypeDefinitions are not unique", md.attributes.modelName)
 			(
 				card { t.name | t in set md.typeDefinitions } = card md.typeDefinitions
+			),
+
+			-- Log categories are valid
+			(
+				isValidLogCategories(md.logCategories)
+			),
+
+			-- Default experiment is valid
+			(
+				isValidDefaultExperiment(md.defaultExperiment)
+			),
+
+			-- Vendor annotations are valid
+			(
+				isValidVendorAnnotations(md.vendorAnnotations)
 			),
 
 			-- All scalar variables are valid

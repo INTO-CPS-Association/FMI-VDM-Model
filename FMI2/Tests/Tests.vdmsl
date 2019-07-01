@@ -140,6 +140,15 @@ values
 			mk_SimpleType("Real-Undefined",	mk_RealType(nil, nil, nil, nil))
 		},
 
+		-- Log categories
+		nil,
+
+		-- Default experiment
+		nil,
+
+		-- Vendor annotations
+		nil,
+
 		-- ScalarVariables
 		[
 			mk_ScalarVariable("p",			<parameter>, <fixed>,		nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil)),	-- 1

@@ -1,5 +1,15 @@
 /**
  * 2.2.6 Vendor Annotations
  */
+types
+	Tool ::
+		name		: seq1 of char
+		annotation	: [token];
 
--- TBS
+functions
+	isValidVendorAnnotations: [seq1 of Tool] +> bool
+	isValidVendorAnnotations(tools) ==
+		tools <> nil =>
+			-- @OnFail("Vendor annotation tool names are not unique")
+			( card { t.name | t in seq tools } = len tools );
+

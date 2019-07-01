@@ -1,5 +1,14 @@
 /**
  * 2.2.4 Log Categories
  */
+types
+	Category ::
+		name			: seq1 of char
+		description		: [seq1 of char];
 
--- TBS
+functions
+	isValidLogCategories: [seq1 of Category] +> bool
+	isValidLogCategories(cats) ==
+		cats <> nil =>
+			-- @OnFail("Log category names are not unique")
+			( card { c.name | c in seq cats } = len cats );

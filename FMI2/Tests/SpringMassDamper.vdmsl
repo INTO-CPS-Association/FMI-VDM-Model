@@ -25,6 +25,15 @@ values
 			mk_SimpleType("Modelica.SIunits.Angle",				mk_RealType(nil, nil, nil, nil))
 		},
 
+		-- Log categories
+		nil,
+
+		-- Default experiment
+		nil,
+
+		-- Vendor annotations
+		nil,
+
 		-- ScalarVariables
 		[
 /* 1 */		mk_ScalarVariable("inertial.J", <parameter>, <fixed>, nil,
