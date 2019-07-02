@@ -26,7 +26,7 @@ types
 		modelType			: [CoSimulation | ModelExchange]
 
 		-- Unit Definitions
-		unitDefinitions		: seq of Unit
+		unitDefinitions		: [seq1 of Unit]
 
 		-- A global list of type definitions that are utilized in "ModelVariables"
 		typeDefinitions		: set of SimpleType			-- XSD p38

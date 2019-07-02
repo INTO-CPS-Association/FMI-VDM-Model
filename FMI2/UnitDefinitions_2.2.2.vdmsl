@@ -25,10 +25,11 @@ types
 		offset			: [real];
 
 functions
-	isValidUnitDefinitions: seq of Unit +> bool
+	isValidUnitDefinitions: [seq1 of Unit] +> bool
 	isValidUnitDefinitions(units) ==
-		-- @OnFail("Unit definition names are not unique")
-		( card { unit.name | unit in seq units } = len units );
+		units <> nil =>
+			-- @OnFail("Unit definition names are not unique")
+			( card { unit.name | unit in seq units } = len units );
 
 	effBaseUnit: BaseUnit +> BaseUnit
 	effBaseUnit(b) ==

@@ -131,7 +131,7 @@ values
 		nil,
 
 		-- Unit definitions
-		[],
+		nil,
 
 		-- TypeDefinitions
 		{
