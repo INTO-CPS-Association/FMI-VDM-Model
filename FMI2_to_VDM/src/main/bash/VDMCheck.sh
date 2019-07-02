@@ -11,8 +11,8 @@ else
 	FMU=$1
 fi
 
-XML=/tmp/zip$$
-VDM=/tmp/vdm$$
+XML=/tmp/model$$.zip
+VDM=/tmp/vdm$$.vdmsl
 trap "rm -f $XML $VDM" EXIT INT
 
 if ! type unzip 2>/dev/null 1>&2
@@ -31,7 +31,7 @@ cd $(dirname $0)
 
 VAR=model$$
 
-if ! java fmi2vdm.FMI2ToVDM "$XML" "$VAR" >$VDM
+if ! java -cp classes fmi2vdm.FMI2ToVDM "$XML" "$VAR" >$VDM
 then
 	echo "Problem converting modelDescription to VDM-SL?"
 	exit 1
