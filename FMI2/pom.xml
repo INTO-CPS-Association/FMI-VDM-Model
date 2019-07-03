@@ -5,10 +5,8 @@
 	<groupId>fmi2</groupId>
 	<artifactId>vdm-model</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<properties>
-		<project.build.outputDirectory>generated</project.build.outputDirectory>
-	</properties>
 	<build>
+		<directory>generated</directory>
 		<plugins>
 			<plugin>
 				<artifactId>maven-clean-plugin</artifactId>
@@ -17,7 +15,6 @@
 					<filesets>
 						<fileset>
 							<directory>generated</directory>
-							<directory>target</directory>
 						</fileset>
 					</filesets>
 				</configuration>
@@ -39,7 +36,6 @@
 									<directory>.</directory>
 									<filtering>false</filtering>
 									<exclude>generated/**</exclude>
-									<exclude>target/**</exclude>
 									<exclude>pom.xml</exclude>
 								</resource>
 							</resources>
@@ -55,6 +51,7 @@
 						<id>default-jar</id>
 						<phase>package</phase>
 						<configuration>
+							<useDefaultManifestFile>true</useDefaultManifestFile>
 							<outputDirectory>generated</outputDirectory>
 							<classesDirectory>generated/sources</classesDirectory>
 							<includes>**/*.vdmsl</includes>
