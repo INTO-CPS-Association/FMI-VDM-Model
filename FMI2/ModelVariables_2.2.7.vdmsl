@@ -103,34 +103,53 @@ functions
 			eInitial = effectiveInitial(initial, eCausality, eVariability)
 		in
 		{
-			-- Table on p46 defining causality, and p49 defining combinations
+			-- Table on p46 defining causality, and p48/49 defining combinations
 			-- @OnFail("Causality %s fails", eCausality)
 			(
 				cases eCausality:
 					<parameter> ->
 						eVariability in set {<fixed>, <tunable>}
-						and eInitial = <exact>,
+						and eInitial = <exact>,		-- (A)
 
 					<calculatedParameter> ->
 						eVariability in set {<fixed>, <tunable>}
-						and eInitial in set {<approx>, <calculated>},
+						and eInitial in set {<approx>, <calculated>},	-- (B)
 
 					<input> ->
 						eVariability in set {<discrete>, <continuous>}
-						and eInitial = nil,
+						and eInitial = nil,		-- (D)
 
 					<independent> ->
 						eVariability = <continuous>
-						and eInitial = nil
+						and eInitial = nil		-- (D)
 						and is_Real(variable)
 						and variable.start = nil,
 
 					<output> ->
-						eVariability in set {<constant>, <discrete>, <continuous>}
-						and eInitial in set {<exact>, <approx>, <calculated>},
+						cases eVariability:
+							<constant> ->
+								eInitial in set {<exact>},	-- (A)
+
+							<discrete>,
+							<continuous> ->
+								eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
+
+							others -> false
+						end,
 
 					<local> ->
-						true
+						cases eVariability:
+							<constant> ->
+								eInitial = <exact>,	-- (A)
+
+							<fixed>,
+							<tunable> ->
+								eInitial in set { <calculated>, <approx> },	-- (B)
+
+							<discrete>,
+							<continuous> ->
+								eInitial in set { <exact>, <approx>, <calculated> } -- (C)
+						end
 				end
 			),
 
