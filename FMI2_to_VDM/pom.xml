@@ -43,7 +43,7 @@
 					<descriptors>
 						<descriptor>assembly.xml</descriptor>
 					</descriptors>
-					<finalName>vdmcheck-${pom.version}</finalName>
+					<finalName>vdmcheck-${project.version}</finalName>
 				</configuration>
 				<executions>
 					<execution>
