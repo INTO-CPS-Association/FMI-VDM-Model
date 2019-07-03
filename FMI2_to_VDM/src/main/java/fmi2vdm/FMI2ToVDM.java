@@ -113,6 +113,13 @@ public class FMI2ToVDM
 	{
 		System.out.print("\t\t");
 		printStringAttribute(attributes, "fmiVersion");
+		
+		if (!attributes.getNamedItem("fmiVersion").getNodeValue().equals("2.0"))
+		{
+			System.err.println("FMU is not FMI v2 format");
+			System.exit(1);
+		}
+		
 		System.out.print(",\n\t\t");
 		printStringAttribute(attributes, "modelName");
 		System.out.print(",\n\t\t");
