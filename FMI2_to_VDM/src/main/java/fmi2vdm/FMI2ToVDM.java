@@ -174,30 +174,30 @@ public class FMI2ToVDM
 	{
 		NamedNodeMap attributes = element.getAttributes();
 
-		System.out.println("\tmk_ModelExchange");
+		System.out.println("\tmk_CoSimulation");
 		System.out.println("\t(");
 		System.out.print("\t\t");
 		printStringAttribute(attributes, "modelIdentifier");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "needsExecutionTool");
+		printRawAttribute(attributes, "needsExecutionTool");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canHandleVariableCommunicationStepSize");
+		printRawAttribute(attributes, "canHandleVariableCommunicationStepSize");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canInterpolateInputs");
+		printRawAttribute(attributes, "canInterpolateInputs");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "maxOutputDerivativeOrder");
+		printRawAttribute(attributes, "maxOutputDerivativeOrder");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canRunAsynchronuously");
+		printRawAttribute(attributes, "canRunAsynchronuously");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canBeInstantiatedOnlyOncePerProcess");
+		printRawAttribute(attributes, "canBeInstantiatedOnlyOncePerProcess");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canNotUseMemoryManagementFunctions");
+		printRawAttribute(attributes, "canNotUseMemoryManagementFunctions");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canGetAndSetFMUstate");
+		printRawAttribute(attributes, "canGetAndSetFMUstate");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canSerializeFMUstate");
+		printRawAttribute(attributes, "canSerializeFMUstate");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "providesDirectionalDerivative");
+		printRawAttribute(attributes, "providesDirectionalDerivative");
 		System.out.print(",\n\t\t");
 		
 		NodeList nodes = element.getElementsByTagName("SourceFiles");
@@ -211,9 +211,10 @@ public class FMI2ToVDM
 			
 			for (int f=0; f<files.getLength(); f++)
 			{
-				System.out.print(sep + "\t\t\t");
+				System.out.print(sep + "\t\t\tmk_SourceFile(");
 				sep = ",\n";
 				printStringAttribute(files.item(f).getAttributes(), "name");
+				System.out.print(")");
 			}
 
 			System.out.println("\n\t\t]");
