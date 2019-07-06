@@ -199,7 +199,6 @@ functions
 	[
 		testCausalityVariabilityInitial(),
 		isValidModelDescription(example),
-		isValidModelDescription(springMassDamper),
-		isValidCoSimulationConfig(COSIM)
+		isValidModelDescription(springMassDamper)
 	]
 	post elems RESULT = {true};

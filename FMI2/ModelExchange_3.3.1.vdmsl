@@ -10,7 +10,8 @@ types
 		canNotUseMemoryManagementFunctions	: [bool]
 		canGetAndSetFMUstate				: [bool]
 		canSerializeFMUstate				: [bool]
-		providesDirectionalDerivative		: [bool];
+		providesDirectionalDerivative		: [bool]
+		sourceFiles							: [seq of SourceFile];
 
 functions
 	/**
@@ -27,7 +28,8 @@ functions
 			nilBool(me.canNotUseMemoryManagementFunctions),
 			nilBool(me.canGetAndSetFMUstate),
 			nilBool(me.canSerializeFMUstate),
-			nilBool(me.providesDirectionalDerivative)
+			nilBool(me.providesDirectionalDerivative),
+			nilSeq[SourceFile](me.sourceFiles)
 		);
 
 	/**

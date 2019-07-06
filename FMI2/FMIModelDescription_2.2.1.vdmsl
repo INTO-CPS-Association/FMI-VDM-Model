@@ -17,39 +17,39 @@ types
 		numberOfEventIndicators		: [nat];
 
 
-	-- XSD definition on p25
+	-- XSD definition in section 2.2.1, p25
 	FMIModelDescription ::
-		-- The ModelAttributes
-		attributes			: ModelAttributes
+		-- The common model attributes
+		attributes			: ModelAttributes			-- XSD 2.2.1, p31
 
 		-- ModelExchange or CoSimulation
-		modelType			: [CoSimulation | ModelExchange]
+		modelType			: [CoSimulation | ModelExchange]	-- XSD 3.3.1, p89 or 4.3.1, p109
 
-		-- Unit Definitions
-		unitDefinitions		: [seq1 of Unit]
+		-- Unit Definitions that are utilized in "ModelVariables"
+		unitDefinitions		: [seq1 of Unit]			-- XSD 2.2.2, p33
 
 		-- A global list of type definitions that are utilized in "ModelVariables"
-		typeDefinitions		: set of SimpleType			-- XSD p38
+		typeDefinitions		: set of SimpleType			-- XSD 2.2.3, p38
 
 		-- Log categories
-		logCategories		: [seq1 of Category]
+		logCategories		: [seq1 of Category]		-- XSD 2.2.4, p42
 
 		-- Default experiment
-		defaultExperiment	: [DefaultExperiment]
+		defaultExperiment	: [DefaultExperiment]		-- XSD 2.2.5, p43
 
 		-- Vendor annotations
-		vendorAnnotations	: [seq1 of Tool]
+		vendorAnnotations	: [seq1 of Tool]			-- XSD 2.2.6, p43
 
 		-- The central FMU data structure defining all variables of the FMU that
 		-- Are visible/accessible via the FMU functions.
-		modelVariables		: seq of ScalarVariable		-- XSD p44
+		modelVariables		: seq of ScalarVariable		-- XSD 2.2.7, p44
 
 		-- Defines the structure of the model. Especially, the ordered lists of
 		-- outputs, continuous-time states and initial unknowns (the unknowns
 		-- during Initialization Mode) are defined here. Furthermore, the
 		-- dependency of the unkowns from the knowns can be optionally
 		-- defined.
-		modelStructure		: ModelStructure;			-- XSD p56
+		modelStructure		: ModelStructure;			-- XSD 2.2.8, p56
 
 functions
 	/**
