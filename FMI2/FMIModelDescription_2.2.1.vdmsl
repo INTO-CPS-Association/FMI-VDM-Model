@@ -23,7 +23,7 @@ types
 		attributes			: ModelAttributes			-- XSD 2.2.1, p31
 
 		-- ModelExchange
-		modelExchange		: [ ModelExchange]			-- XSD 3.3.1, p89
+		modelExchange		: [ModelExchange]			-- XSD 3.3.1, p89
 
 		-- CoSimulation
 		coSimulation		: [CoSimulation ]			-- XSD 4.3.1, p109
