@@ -3,9 +3,15 @@
 # Process an FMI V2 FMU or XML file, and validate the XML structure using the VDM-SL model.
 #
 
+if [ "$1" = "-v" -a $# -gt 2 ]
+then
+	SAVE=$(pwd)/$2
+	shift 2
+fi
+
 if [ $# -ne 1 ]
 then
-	echo "Usage: $0 <FMU or modelDescription.xml file>"
+	echo "Usage: $0 [-v outfile] <FMU or modelDescription.xml file>"
 	exit 1
 else
 	FILE=$1
@@ -57,8 +63,12 @@ then
 	exit 2
 fi
 
-java -cp vdmj-4.3.0.jar:annotations-1.0.0.jar:annotations2-1.0.0.jar \
+java -Xmx1g -cp vdmj-4.3.0.jar:annotations-1.0.0.jar:annotations2-1.0.0.jar \
 	com.fujitsu.vdmj.VDMJ \
 	-vdmsl -q -annotations -e "isValidModelDescription($VAR)" \
 	model $VDM
 
+if [ "$SAVE" ]
+then
+	cp -f $VDM "$SAVE"
+fi

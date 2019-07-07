@@ -53,7 +53,7 @@ public class FMI2ToVDM
 			modelAttributes(doc.getDocumentElement().getAttributes());
 			System.out.println("\t),\n");
 			
-			System.out.println("\t-- Model Type");
+			System.out.println("\t-- Model Exchange");
 			NodeList modelTypes = doc.getElementsByTagName("ModelExchange");
 			
 			if (modelTypes.getLength() > 0)
@@ -62,16 +62,19 @@ public class FMI2ToVDM
 			}
 			else
 			{
-				modelTypes = doc.getElementsByTagName("CoSimulation");
+				System.out.println("\tnil,\n");
+			}
 
-				if (modelTypes.getLength() > 0)
-				{
-					coSimulation((Element)modelTypes.item(0));
-				}
-				else
-				{
-					System.out.println("\tnil,\n");
-				}
+			System.out.println("\t-- Model Co-Simulation");
+			modelTypes = doc.getElementsByTagName("CoSimulation");
+
+			if (modelTypes.getLength() > 0)
+			{
+				coSimulation((Element)modelTypes.item(0));
+			}
+			else
+			{
+				System.out.println("\tnil,\n");
 			}
 			
 			System.out.println("\t-- UnitDefinitions");
@@ -167,7 +170,33 @@ public class FMI2ToVDM
 		printStringAttribute(attributes, "canSerializeFMUstate");
 		System.out.print(",\n\t\t");
 		printStringAttribute(attributes, "providesDirectionalDerivative");
-		System.out.println("\n\t),\n");
+		System.out.print(",\n\t\t");
+		
+		NodeList nodes = element.getElementsByTagName("SourceFiles");
+		
+		if (nodes.getLength() > 0)
+		{
+			Element sourceFiles = (Element) nodes.item(0);
+			NodeList files = sourceFiles.getElementsByTagName("File");
+			System.out.println("[");
+			String sep = "";
+			
+			for (int f=0; f<files.getLength(); f++)
+			{
+				System.out.print(sep + "\t\t\tmk_SourceFile(");
+				sep = ",\n";
+				printStringAttribute(files.item(f).getAttributes(), "name");
+				System.out.print(")");
+			}
+
+			System.out.println("\n\t\t]");
+		}
+		else
+		{
+			System.out.println("\t\tnil");
+		}
+
+		System.out.println("\t),\n");
 	}
 
 	private static void coSimulation(Element element)
