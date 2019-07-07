@@ -35,7 +35,7 @@ functions
 	/**
 	 * Check ModelExchange values.
 	 */
-	isValidModelExchange: ModelExchange +> bool
+	isValidModelExchange: [ModelExchange] +> bool
 	isValidModelExchange(-) ==
 		true;
 

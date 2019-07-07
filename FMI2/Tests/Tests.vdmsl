@@ -129,8 +129,8 @@ values
 		-- Attributes
 		mk_ModelAttributes("2.0", "Example FMU", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
-		-- Model Type
-		nil,
+		-- Model Types
+		nil, nil,
 
 		-- Unit definitions
 		nil,

@@ -11,8 +11,8 @@ values
 		-- Attributes
 		mk_ModelAttributes("2.0", "MassSpringDamper", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
-		-- Model type
-		nil,
+		-- Model types
+		nil, nil,
 
 		-- Unit definitions
 		nil,

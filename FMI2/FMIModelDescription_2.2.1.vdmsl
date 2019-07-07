@@ -22,8 +22,11 @@ types
 		-- The common model attributes
 		attributes			: ModelAttributes			-- XSD 2.2.1, p31
 
-		-- ModelExchange or CoSimulation
-		modelType			: [CoSimulation | ModelExchange]	-- XSD 3.3.1, p89 or 4.3.1, p109
+		-- ModelExchange
+		modelExchange		: [ ModelExchange]			-- XSD 3.3.1, p89
+
+		-- CoSimulation
+		coSimulation		: [CoSimulation ]			-- XSD 4.3.1, p109
 
 		-- Unit Definitions that are utilized in "ModelVariables"
 		unitDefinitions		: [seq1 of Unit]			-- XSD 2.2.2, p33
@@ -84,14 +87,16 @@ functions
 				isValidModelAttributes(md.attributes)
 			),
 
-			-- Type settings are valid
-			-- @OnFail("%s.modelType invalid", md.attributes.modelName)
+			-- Model exchange settings are valid
+			-- @OnFail("%s.modelExchange invalid", md.attributes.modelName)
 			(
-				if is_ModelExchange(md.modelType)
-				then isValidModelExchange(md.modelType)
-				else if is_CoSimulation(md.modelType)
-					then isValidCoSimulation(md.modelType)
-					else true
+				isValidModelExchange(md.modelExchange)
+			),
+
+			-- Co-simulation settings are valid
+			-- @OnFail("%s.coSimulation invalid", md.attributes.modelName)
+			(
+				isValidCoSimulation(md.coSimulation)
 			),
 
 			-- Unit definitions are valid

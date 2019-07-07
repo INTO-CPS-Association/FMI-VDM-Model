@@ -44,7 +44,7 @@ functions
 	/**
 	 * Check CoSimulation values.
 	 */
-	isValidCoSimulation: CoSimulation +> bool
+	isValidCoSimulation: [CoSimulation] +> bool
 	isValidCoSimulation(-) ==
 		true;
 
