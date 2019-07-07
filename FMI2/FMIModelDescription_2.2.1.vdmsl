@@ -47,7 +47,7 @@ types
 		-- Defines the structure of the model. Especially, the ordered lists of
 		-- outputs, continuous-time states and initial unknowns (the unknowns
 		-- during Initialization Mode) are defined here. Furthermore, the
-		-- dependency of the unkowns from the knowns can be optionally
+		-- dependency of the unknowns from the knowns can be optionally
 		-- defined.
 		modelStructure		: ModelStructure;			-- XSD 2.2.8, p56
 
@@ -133,6 +133,9 @@ functions
 
 			-- All scalar variables are valid
 			(
+				-- @OnFail("%s.ScalarVariable names not unique", md.attributes.modelName)
+				( card { sv.name | sv in seq md.modelVariables } = len md.modelVariables )
+				and
 				forall sv in seq md.modelVariables &
 					-- @OnFail("%s.ScalarVariables[%s] invalid", md.attributes.modelName, sv.name)
 					(isValidScalarVariable(sv.causality, sv.variability, sv.initial, sv.variable))
@@ -221,7 +224,7 @@ functions
 			 					ius <> nil => { u.index | u in seq ius } = initIndexes
 			 				),
 
-			 				--@OnFail("InitialUnknowns are not sorted: %s", ius)
+			 				-- @OnFail("InitialUnknowns are not sorted: %s", ius)
 			 				(
 			 					ius <> nil => 
 					 				 forall i in set inds ius &
@@ -229,7 +232,7 @@ functions
 				 			)
 				 		} = {true}
 				 	else
-				 		--@OnFail("InitialUnknowns should be empty")
+				 		-- @OnFail("InitialUnknowns should be empty")
 			 			(
 				 			md.modelStructure.initialUnknowns = nil
 				 		)

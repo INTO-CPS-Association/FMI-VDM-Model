@@ -46,7 +46,7 @@ types
 
 	VarName = seq1 of char;		-- Has a syntax defined in section 2.2.9, p64
 
-	ScalarVariable ::			-- XSD p44
+	ScalarVariable ::			-- XSD 2.2.7, p44
 		-- attributes
 		name		: VarName
 		causality	: [Causality]
