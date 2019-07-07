@@ -64,6 +64,10 @@ functions
 		)
 	} = {true};
 
+
+	/**
+	 * Check for duplicate indexes in a sequence of Unknowns.
+	 */
 	duplicateCheck: [seq1 of Unknown] +> bool
 	duplicateCheck(su) ==
 		su <> nil => let indexes = [ u.index | u in seq su ]
