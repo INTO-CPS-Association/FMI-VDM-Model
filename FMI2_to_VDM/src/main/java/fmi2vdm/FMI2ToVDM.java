@@ -81,9 +81,7 @@ public class FMI2ToVDM
 			unitDefinitions(doc.getElementsByTagName("UnitDefinitions"));
 			
 			System.out.println("\t-- TypeDefinitions");
-			System.out.println("\t{");
 			typeDefinitions(doc.getElementsByTagName("TypeDefinitions"));
-			System.out.println("\t},\n");
 			
 			System.out.println("\t-- LogCategories");
 			logCategories(doc.getElementsByTagName("LogCategories"));
@@ -260,6 +258,7 @@ public class FMI2ToVDM
 	{
 		if (typeDefs.getLength() > 0)
 		{
+			System.out.println("\t{");
 			Element root = (Element) typeDefs.item(0);
 			NodeList simpleTypes = root.getElementsByTagName("SimpleType");
 			String sep = "";
@@ -278,7 +277,11 @@ public class FMI2ToVDM
 				System.out.print(")");
 			}
 			
-			System.out.println();
+			System.out.println("\t},\n");
+		}
+		else
+		{
+			System.out.println("\tnil,\n");
 		}
 	}
 
@@ -499,6 +502,32 @@ public class FMI2ToVDM
 		}
 	}
 
+	private static void printAnnotations(NodeList roots)
+	{
+		if (roots.getLength() > 0)
+		{
+			System.out.print("[");
+			Element annotations = (Element) roots.item(0);
+			NodeList tools = annotations.getElementsByTagName("Tool");
+			String sep = "";
+			
+			for (int i=0; i<tools.getLength(); i++)
+			{
+				Element tool = (Element) tools.item(i);
+				System.out.print(sep + "mk_Tool(");
+				printStringAttribute(tool.getAttributes(), "name");
+				System.out.print(", mk_token(\"" + tool.getTextContent() + "\")");
+				System.out.print(")");
+				sep = ", ";
+			}
+			System.out.print("]");
+		}
+		else
+		{
+			System.out.print("nil");
+		}
+	}
+
 	private static void modelVariables(NodeList modelVariables)		// Element list(1)
 	{
 		if (modelVariables.getLength() > 0)
@@ -524,6 +553,8 @@ public class FMI2ToVDM
 				printQuoteAttribute(attrs, "initial");
 				System.out.print(", ");
 				printVariable(scalarVariable);
+				System.out.print(", ");
+				printAnnotations(scalarVariable.getElementsByTagName("Annotations"));
 				System.out.print(")");
 			}
 			
