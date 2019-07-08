@@ -3,6 +3,11 @@
  */
 types
 	/**
+	 * A Value is a variable value of type, real, int, String or boolean
+	 */
+	Value = real | int | seq of char | bool;
+
+	/**
 	 * A FMUVariable identifies a unique variable in a CoSimulationConfig, indexing both
 	 * the FMU and the modelVariable within it.
 	 */
