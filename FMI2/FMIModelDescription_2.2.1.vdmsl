@@ -106,6 +106,7 @@ functions
 			),
 
 			-- Type definitions are valid
+			-- @OnFail("%s.TypeDefinitions invalid", md.attributes.modelName)
 			(
 				isValidTypeDefinitions(md.typeDefinitions)
 			),
@@ -251,9 +252,9 @@ functions
 	 * Check that all variables' declaredTypes are defined, that the variables' type match
 	 * the declared type and the min/max of numeric types are compatible with the start value.
 	 */
-	typeCheck: [seq1 of ScalarVariable] * [set1 of SimpleType] +> bool
+	typeCheck: seq1 of ScalarVariable * [set1 of SimpleType] +> bool
 	typeCheck(variables, typedefs) ==
-		forall sv in seq nilSeq[ScalarVariable](variables) &
+		forall sv in seq variables &
 			let dname = sv.variable.declaredType in
 				dname <> nil =>
 					let matchingTypes = { td | td in set nilSet[SimpleType](typedefs) & td.name = dname } in

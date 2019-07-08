@@ -70,5 +70,6 @@ functions
 	 */
 	duplicateCheck: [seq1 of Unknown] +> bool
 	duplicateCheck(su) ==
-		su <> nil => let indexes = [ u.index | u in seq su ]
-			in len indexes = card elems indexes;
+		su <> nil =>
+			let indexes = [ u.index | u in seq su ] in
+				len indexes = card elems indexes;

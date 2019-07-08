@@ -45,8 +45,8 @@ functions
 	 * Check CoSimulation values.
 	 */
 	isValidCoSimulation: [CoSimulation] +> bool
-	isValidCoSimulation(-) ==
-		true;
-
-
-
+	isValidCoSimulation(cs) ==
+		cs <> nil =>
+			cs.sourceFiles <> nil =>
+				-- @OnFail("CoSimulation source file names are not unique");
+				(len cs.sourceFiles = card elems cs.sourceFiles);

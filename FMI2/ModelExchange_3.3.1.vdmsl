@@ -36,6 +36,9 @@ functions
 	 * Check ModelExchange values.
 	 */
 	isValidModelExchange: [ModelExchange] +> bool
-	isValidModelExchange(-) ==
-		true;
+	isValidModelExchange(me) ==
+		me <> nil =>
+			me.sourceFiles <> nil =>
+				-- @OnFail("ModelExchange source file names are not unique");
+				(len me.sourceFiles = card elems me.sourceFiles);
 
