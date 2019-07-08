@@ -32,7 +32,7 @@ types
 		unitDefinitions		: [seq1 of Unit]			-- XSD 2.2.2, p33
 
 		-- A global list of type definitions that are utilized in "ModelVariables"
-		typeDefinitions		: set of SimpleType			-- XSD 2.2.3, p38
+		typeDefinitions		: [set1 of SimpleType]		-- XSD 2.2.3, p38
 
 		-- Log categories
 		logCategories		: [seq1 of Category]		-- XSD 2.2.4, p42
@@ -45,7 +45,7 @@ types
 
 		-- The central FMU data structure defining all variables of the FMU that
 		-- Are visible/accessible via the FMU functions.
-		modelVariables		: seq of ScalarVariable		-- XSD 2.2.7, p44
+		modelVariables		: seq1 of ScalarVariable	-- XSD 2.2.7, p44
 
 		-- Defines the structure of the model. Especially, the ordered lists of
 		-- outputs, continuous-time states and initial unknowns (the unknowns
@@ -107,15 +107,14 @@ functions
 
 			-- Type definitions are valid
 			(
-				forall stype in set md.typeDefinitions &
-					-- @OnFail("%s.TypeDefinition[%s] invalid", md.attributes.modelName, stype.name)
-					(isValidType(stype))
+				isValidTypeDefinitions(md.typeDefinitions)
 			),
 
 			-- Type definitions are unique by name
 			-- @OnFail("%s.TypeDefinitions are not unique", md.attributes.modelName)
 			(
-				card { t.name | t in set md.typeDefinitions } = card md.typeDefinitions
+				md.typeDefinitions <> nil =>
+					card { t.name | t in set md.typeDefinitions } = card md.typeDefinitions
 			),
 
 			-- Log categories are valid
@@ -139,11 +138,15 @@ functions
 			-- All scalar variables are valid
 			(
 				-- @OnFail("%s.ScalarVariable names not unique", md.attributes.modelName)
-				( card { sv.name | sv in seq md.modelVariables } = len md.modelVariables )
+				(
+					card { sv.name | sv in seq md.modelVariables } = len md.modelVariables
+				)
 				and
-				forall sv in seq md.modelVariables &
-					-- @OnFail("%s.ScalarVariables[%s] invalid", md.attributes.modelName, sv.name)
-					(isValidScalarVariable(sv.causality, sv.variability, sv.initial, sv.variable))
+				(
+					forall sv in seq md.modelVariables &
+						-- @OnFail("%s.ScalarVariables[%s] invalid", md.attributes.modelName, sv.name)
+						(isValidScalarVariable(sv))
+				)
 			),
 
 			-- All modelVariable declaredTypes must match the typeDefinitions
@@ -248,12 +251,12 @@ functions
 	 * Check that all variables' declaredTypes are defined, that the variables' type match
 	 * the declared type and the min/max of numeric types are compatible with the start value.
 	 */
-	typeCheck: seq of ScalarVariable * set of SimpleType +> bool
+	typeCheck: [seq1 of ScalarVariable] * [set1 of SimpleType] +> bool
 	typeCheck(variables, typedefs) ==
-		forall sv in seq variables &
+		forall sv in seq nilSeq[ScalarVariable](variables) &
 			let dname = sv.variable.declaredType in
 				dname <> nil =>
-					let matchingTypes = { td | td in set typedefs & td.name = dname } in
+					let matchingTypes = { td | td in set nilSet[SimpleType](typedefs) & td.name = dname } in
 					{
 						-- Only one type name should match
 						-- @OnFail("Typedefs have multiple matching names")

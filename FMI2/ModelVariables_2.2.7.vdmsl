@@ -44,15 +44,16 @@ types
 
 	VarName = seq1 of char;		-- Has a syntax defined in section 2.2.9, p64
 
-	ScalarVariable ::			-- XSD 2.2.7, p44
+	ScalarVariable ::			-- XSD 2.2.7, p44, p54
 		-- attributes
-		name		: VarName
-		causality	: [Causality]
-		variability	: [Variability]
-		initial		: [Initial]
+		name			: VarName
+		causality		: [Causality]
+		variability		: [Variability]
+		initial			: [Initial]
 
 		-- elements
-		variable	: Variable;
+		variable		: Variable
+		annotations		: [seq1 of Tool];
 
 functions
 	/**
@@ -94,11 +95,11 @@ functions
 	/**
 	 * ScalarVariable invariant. Rules defined in the table on p49.
 	 */
-	isValidScalarVariable: [Causality] * [Variability] * [Initial] * Variable +> bool
-	isValidScalarVariable(causality, variability, initial, variable) ==
-		let eCausality = effectiveCausality(causality),
-			eVariability = effectiveVariability(variability),
-			eInitial = effectiveInitial(initial, eCausality, eVariability)
+	isValidScalarVariable: ScalarVariable +> bool
+	isValidScalarVariable(sv) ==
+		let eCausality = effectiveCausality(sv.causality),
+			eVariability = effectiveVariability(sv.variability),
+			eInitial = effectiveInitial(sv.initial, eCausality, eVariability)
 		in
 		{
 			-- Table on p46 defining causality, and p48/49 defining combinations
@@ -120,8 +121,8 @@ functions
 					<independent> ->
 						eVariability = <continuous>
 						and eInitial = nil		-- (D)
-						and is_Real(variable)
-						and variable.start = nil,
+						and is_Real(sv.variable)
+						and sv.variable.start = nil,
 
 					<output> ->
 						cases eVariability:
@@ -166,14 +167,14 @@ functions
 
 					<continuous> ->
 						eCausality in set {<input>, <output>, <local>, <independent>}
-						and is_Real(variable)
+						and is_Real(sv.variable)
 				end
 			),
 
 			-- Table on p47 defining initial
-			-- @OnFail("Initial %s fails", initial)
+			-- @OnFail("Initial %s fails", sv.initial)
 			(
-				initial <> nil =>
+				sv.initial <> nil =>
 					(eCausality not in set {<input>, <independent>})
 			),
 
@@ -182,15 +183,15 @@ functions
 			(
 				cases eInitial:
 					<exact> ->
-						variable.start <> nil,
+						sv.variable.start <> nil,
 
 					<approx> ->
-						variable.start <> nil
-						and variability <> <constant>,
+						sv.variable.start <> nil
+						and sv.variability <> <constant>,
 
 					<calculated> ->
-						variable.start = nil
-						and variability <> <constant>,
+						sv.variable.start = nil
+						and sv.variability <> <constant>,
 
 					nil ->		-- Note that eInitial can be nil (undefined in table on p48)
 						true	-- Tests on eInitial above are sufficient
@@ -200,7 +201,13 @@ functions
 			-- And the Variable itself is valid
 			-- @OnFail("Invalid variable value")
 			(
-				isValidVariable(variable)
+				isValidVariable(sv.variable)
+			),
+
+			-- And any vendor annotations are valid
+			-- @OnFail("Invalid vendor annotations")
+			(
+				isValidVendorAnnotations(sv.annotations)
 			)
 		} = {true};
 

@@ -10,7 +10,7 @@ values
 
 		nil, nil,
 
-		{},
+		nil,
 
 		nil,
 
@@ -20,9 +20,9 @@ values
 
 		[
 			mk_ScalarVariable("A", <input>, nil, nil,
-					mk_Real(nil, nil, nil, nil, nil, 0, nil)),
+					mk_Real(nil, nil, nil, nil, nil, 0, nil), nil),
 			mk_ScalarVariable("B", <output>, nil, nil,
-					mk_Real(nil, nil, nil, nil, nil, nil, nil))
+					mk_Real(nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
 		mk_ModelStructure
@@ -41,7 +41,7 @@ values
 
 		nil, nil,
 
-		{},
+		nil,
 
 		nil,
 
@@ -51,9 +51,9 @@ values
 
 		[
 			mk_ScalarVariable("C", <input>, nil, nil,
-					mk_Real(nil, nil, nil, nil, nil, 0, nil)),
+					mk_Real(nil, nil, nil, nil, nil, 0, nil), nil),
 			mk_ScalarVariable("D", <output>, nil, nil,
-					mk_Real(nil, nil, nil, nil, nil, nil, nil))
+					mk_Real(nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
 		mk_ModelStructure
