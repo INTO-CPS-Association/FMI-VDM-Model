@@ -123,7 +123,7 @@ functions
 values
 --	test: () +> bool
 --	test() ==
---	isValidModelDescription
+--	isValidFMIModelDescription
 
 	/**
 	 * This test model is based on the example on p62
@@ -202,7 +202,7 @@ functions
 	tests() ==
 	[
 		testCausalityVariabilityInitial(),
-		isValidModelDescription(example),
-		isValidModelDescription(springMassDamper)
+		isValidFMIModelDescription(example),
+		isValidFMIModelDescription(springMassDamper)
 	]
 	post elems RESULT = {true};

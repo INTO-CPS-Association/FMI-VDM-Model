@@ -44,7 +44,7 @@ functions
 			(
 				forall fmu in seq cs.fmus &
 					-- @OnFail("FMU %s is invalid", fmu.attributes.modelName)
-					(isValidModelDescription(fmu))
+					(isValidFMIModelDescription(fmu))
 			),
 
 			-- Connection inputs are valid indexes and types

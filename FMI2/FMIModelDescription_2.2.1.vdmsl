@@ -66,8 +66,8 @@ functions
 	/**
 	 * Invariant definition for FMIModelDescription
 	 */
-	isValidModelDescription: FMIModelDescription +> bool
-	isValidModelDescription(md) ==
+	isValidFMIModelDescription: FMIModelDescription +> bool
+	isValidFMIModelDescription(md) ==
 		-- First fill in effective values for model variables' missing attributes
 		let eModelVariables =
 			[
