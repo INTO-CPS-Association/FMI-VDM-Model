@@ -10,5 +10,5 @@ functions
 	isValidLogCategories: [seq1 of Category] +> bool
 	isValidLogCategories(cats) ==
 		cats <> nil =>
-			-- @OnFail("Log category names are not unique")
+			-- @OnFail("LogCategory names are not unique")
 			( card { c.name | c in seq cats } = len cats );

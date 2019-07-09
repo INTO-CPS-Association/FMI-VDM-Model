@@ -57,28 +57,6 @@ types
 
 functions
 	/**
-	 * Validate a Variable.
-	 */
-	isValidVariable: Variable +> bool
-	isValidVariable(value) ==
-	-- @OnFail("Variable is invalid")
-	(
-		cases value:
-			mk_Real(-, min, max, -, -, start, -) ->
-				isInRange[real](min, max, start),
-
-			mk_Integer(-, min, max, start) ->
-				isInRange[real](min, max, start),
-
-			mk_Enumeration(-, min, max, start) ->
-				isInRange[real](min, max, start),
-
-			others -> true		-- String, Boolean
-		end
-	);
-
-
-	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
 	 */
 	isInRange[@T]: [@T] * [@T] * [@T] +> bool
@@ -103,7 +81,7 @@ functions
 		in
 		{
 			-- Table on p46 defining causality, and p48/49 defining combinations
-			-- @OnFail("Causality %s fails", eCausality)
+			-- @OnFail("Causality/variability/initial %s/%s/%s fails", eCausality, eVariability, eInitial)
 			(
 				cases eCausality:
 					<parameter> ->
@@ -153,7 +131,7 @@ functions
 			),
 
 			-- Table on p46 defining variability, and p49 defining combinations
-			-- @OnFail("Variability %s fails", eVariability)
+			-- @OnFail("Variability/causality %s/%s fails", eVariability, eCausality)
 			(
 				cases eVariability:
 					<constant> ->
@@ -172,14 +150,14 @@ functions
 			),
 
 			-- Table on p47 defining initial
-			-- @OnFail("Initial %s fails", sv.initial)
+			-- @OnFail("Initial/causality %s/%s fails", sv.initial, eCausality)
 			(
 				sv.initial <> nil =>
 					(eCausality not in set {<input>, <independent>})
 			),
 
 			-- Table on p47 defining initial
-			-- @OnFail("Initial %s fails", eInitial)
+			-- @OnFail("Initial/variability/start %s/%s/%s fails", eInitial, eVariability, sv.variable.start)
 			(
 				cases eInitial:
 					<exact> ->
@@ -187,25 +165,34 @@ functions
 
 					<approx> ->
 						sv.variable.start <> nil
-						and sv.variability <> <constant>,
+						and eVariability <> <constant>,
 
 					<calculated> ->
 						sv.variable.start = nil
-						and sv.variability <> <constant>,
+						and eVariability <> <constant>,
 
 					nil ->		-- Note that eInitial can be nil (undefined in table on p48)
 						true	-- Tests on eInitial above are sufficient
 				end
 			),
 
-			-- And the Variable itself is valid
-			-- @OnFail("Invalid variable value")
+			-- @OnFail("Variable invalid", sv.name)
 			(
-				isValidVariable(sv.variable)
+				cases sv.variable:
+					mk_Real(-, min, max, -, -, start, -) ->
+						isInRange[real](min, max, start),
+
+					mk_Integer(-, min, max, start) ->
+						isInRange[real](min, max, start),
+
+					mk_Enumeration(-, min, max, start) ->
+						isInRange[real](min, max, start),
+
+					others -> true		-- String, Boolean
+				end
 			),
 
-			-- And any vendor annotations are valid
-			-- @OnFail("Invalid vendor annotations")
+			-- @OnFail("VendorAnnotations invalid")
 			(
 				isValidVendorAnnotations(sv.annotations)
 			)

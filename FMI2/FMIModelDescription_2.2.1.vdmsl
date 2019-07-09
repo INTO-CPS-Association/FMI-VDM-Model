@@ -81,109 +81,92 @@ functions
 			]
 		in
 		{
-			-- Attributes are valid
-			-- @OnFail("%s.ModelAttributes invalid", md.attributes.modelName)
+			-- @OnFail("ModelAttributes invalid")
 			(
 				isValidModelAttributes(md.attributes)
 			),
 
-			-- Model exchange settings are valid
-			-- @OnFail("%s.modelExchange invalid", md.attributes.modelName)
+			-- @OnFail("ModelExchange invalid")
 			(
 				isValidModelExchange(md.modelExchange)
 			),
 
-			-- Co-simulation settings are valid
-			-- @OnFail("%s.coSimulation invalid", md.attributes.modelName)
+			-- @OnFail("CoSimulation invalid")
 			(
 				isValidCoSimulation(md.coSimulation)
 			),
 
-			-- Unit definitions are valid
-			-- @OnFail("%s.UnitDefinitions invalid", md.attributes.modelName)
+			-- @OnFail("UnitDefinitions invalid")
 			(
 				isValidUnitDefinitions(md.unitDefinitions)
 			),
 
-			-- Type definitions are valid
-			-- @OnFail("%s.TypeDefinitions invalid", md.attributes.modelName)
+			-- @OnFail("TypeDefinitions invalid")
 			(
 				isValidTypeDefinitions(md.typeDefinitions)
 			),
 
-			-- Type definitions are unique by name
-			-- @OnFail("%s.TypeDefinitions are not unique", md.attributes.modelName)
+			-- @OnFail("TypeDefinitions names are not unique")
 			(
 				md.typeDefinitions <> nil =>
 					card { t.name | t in set md.typeDefinitions } = card md.typeDefinitions
 			),
 
-			-- Log categories are valid
-			-- @OnFail("%s.LogCategories invalid", md.attributes.modelName)
+			-- @OnFail("LogCategories invalid")
 			(
 				isValidLogCategories(md.logCategories)
 			),
 
-			-- Default experiment is valid
-			-- @OnFail("%s.DefaultExperiment invalid", md.attributes.modelName)
+			-- @OnFail("DefaultExperiment invalid")
 			(
 				isValidDefaultExperiment(md.defaultExperiment)
 			),
 
-			-- Vendor annotations are valid
-			-- @OnFail("%s.VendorAnnotations invalid", md.attributes.modelName)
+			-- @OnFail("VendorAnnotations invalid")
 			(
 				isValidVendorAnnotations(md.vendorAnnotations)
 			),
 
-			-- All scalar variables are valid
+			-- @OnFail("ScalarVariable names are not unique")
 			(
-				-- @OnFail("%s.ScalarVariable names not unique", md.attributes.modelName)
-				(
-					card { sv.name | sv in seq md.modelVariables } = len md.modelVariables
-				)
-				and
-				(
-					forall sv in seq md.modelVariables &
-						-- @OnFail("%s.ScalarVariables[%s] invalid", md.attributes.modelName, sv.name)
-						(isValidScalarVariable(sv))
-				)
+				card { sv.name | sv in seq md.modelVariables } = len md.modelVariables
 			),
 
-			-- All modelVariable declaredTypes must match the typeDefinitions
-			-- @OnFail("%s.ScalarVariables, typecheck against type definitions failed", md.attributes.modelName)
+			(
+				forall sv in seq md.modelVariables &
+					-- @OnFail("ScalarVariables[%s] invalid", sv.name)
+					(isValidScalarVariable(sv))
+			),
+
+			-- @OnFail("ScalarVariables typecheck against TypeDefinitions failed")
 			(
 				typeCheck(eModelVariables, md.typeDefinitions)
 			),
 
-			-- At most one variable can be <independent>
-			-- @OnFail("%s.ScalarVariables, more than one independent variable", md.attributes.modelName)
+			-- @OnFail("ScalarVariables.causality defines more than one independent variable")
 			(
 				card { sv | sv in seq eModelVariables & sv.causality = <independent> } <= 1
 			),
 
-			-- The modelStructure is valid
-			-- @OnFail("%s.ModelStructure invalid", md.attributes.modelName)
+			-- @OnFail("ModelStructure invalid")
 			(
 				isValidModelStructure(md.modelStructure)
 			),
 
-			-- Model structure outputs contain every model variable of "output" causality
-			-- @OnFail("%s.ModelStructure does not contain every <output> variable", md.attributes.modelName)
 			(
 				let outputIndexes = { svi | svi in set inds eModelVariables &
 					eModelVariables(svi).causality = <output> }
 				in
 				 	if outputIndexes <> {}
 				 	then
-				 		md.modelStructure.outputs <> nil
-				 		and { u.index | u in seq md.modelStructure.outputs } = outputIndexes
+						-- @OnFail("ModelStructure.Outputs should be %s", outputIndexes)
+				 		( md.modelStructure.outputs <> nil
+				 		  and { u.index | u in seq md.modelStructure.outputs } = outputIndexes )
 				 	else
-				 		md.modelStructure.outputs = nil
+				 		-- @OnFail("ModelStructure.Outputs should be omitted")
+				 		( md.modelStructure.outputs = nil )
 			),
 
-			-- Derivatives must refer to all variables that are Real which define the "derivative" variable
-			-- @OnFail("%s.ModelStructure.Derivatives section does not refer to Real/derivative variable", md.attributes.modelName)
 			(
 				let derivativeIndexes = { svi | svi in set inds eModelVariables &
 					is_Real(eModelVariables(svi).variable)
@@ -191,18 +174,21 @@ functions
 				in
 				 	if derivativeIndexes <> {}
 				 	then
-				 		md.modelStructure.derivatives <> nil
-				 		and let structIndexes = { u.index | u in seq md.modelStructure.derivatives } in
+						-- @OnFail("ModelStructure.Derivatives section does not match Real/derivative variables")
+				 		( md.modelStructure.derivatives <> nil
+				 		  and let structIndexes = { u.index | u in seq md.modelStructure.derivatives } in
 				 			structIndexes = derivativeIndexes
-				 			and forall i in set structIndexes & i <= len eModelVariables
+				 			and forall i in set structIndexes & i <= len eModelVariables )
 				 	else
-				 		md.modelStructure.derivatives = nil
+				 		-- @OnFail("ModelStructure.Derivatives declared, but no Real/derivative variables")
+				 		( md.modelStructure.derivatives = nil )
 			),
 
 			-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
-			-- all continuous-time states and derivatives that are approx/calculated
+			-- all continuous-time states and derivatives that are approx/calculated.
 			-- And the list must be in ascending index order
-			-- @OnFail("%s.ModelStructure.InitialUnknowns are invalid", md.attributes.modelName)
+
+			-- @OnFail("ModelStructure.InitialUnknowns invalid")
 			(
 				let initIndexes = { svi | svi in set inds eModelVariables &
 					let sv = eModelVariables(svi) in
@@ -223,12 +209,12 @@ functions
 				 	then
 				 		let ius = md.modelStructure.initialUnknowns in
 				 		{
-			 				-- @OnFail("InitialUnknowns should be defined: %s", initIndexes)
+			 				-- @OnFail("InitialUnknowns should be: %s", initIndexes)
 			 				(
 				 				ius <> nil
 				 			),
 
-			 				-- @OnFail("InitialUnknowns not as expected: %s", initIndexes)
+			 				-- @OnFail("InitialUnknowns should be: %s", initIndexes)
 			 				(
 			 					ius <> nil => { u.index | u in seq ius } = initIndexes
 			 				),
@@ -259,19 +245,17 @@ functions
 				dname <> nil =>
 					let matchingTypes = { td | td in set nilSet[SimpleType](typedefs) & td.name = dname } in
 					{
-						-- Only one type name should match
 						-- @OnFail("Typedefs have multiple matching names")
 						(
 							card matchingTypes = 1
 						),
 
 						-- The match is the same type as the ScalarVariable type and for numerics,
-						-- any start value is within the (perhaps overridden) min/max. 
+						-- and any start value is within the (perhaps overridden) min/max. 
 						let { simpleType } = matchingTypes in
 							cases simpleType.type:
 								mk_RealType(dmin, dmax, -, -) ->
 								{
-									-- The named definition is the right type
 									-- @OnFail("ScalarVariable %s, RealType not referenced by Real variable %s", sv.name, sv.variable)
 									(
 										is_Real(sv.variable)
@@ -296,7 +280,6 @@ functions
 
 								mk_IntegerType(dmin, dmax) ->
 								{
-									-- The named definition is the right type
 									-- @OnFail("ScalarVariable %s, IntegerType not referenced by Integer variable %s", sv.name, sv.variable)
 									(
 										is_Integer(sv.variable)

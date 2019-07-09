@@ -28,7 +28,7 @@ functions
 	isValidUnitDefinitions: [seq1 of Unit] +> bool
 	isValidUnitDefinitions(units) ==
 		units <> nil =>
-			-- @OnFail("Unit definition names are not unique")
+			-- @OnFail("UnitDefinitions names are not unique")
 			( card { unit.name | unit in seq units } = len units );
 
 	effBaseUnit: BaseUnit +> BaseUnit
