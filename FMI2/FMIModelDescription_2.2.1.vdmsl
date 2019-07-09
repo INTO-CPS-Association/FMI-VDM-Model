@@ -60,7 +60,7 @@ functions
 	 */
 	isValidModelAttributes: ModelAttributes +> bool
 	isValidModelAttributes(attrs) ==
-		-- @OnFail("%s model version should be 2.0", attrs.modelName)
+		-- @OnFail("ModelAttribute fmiVersion should be 2.0")
 		(attrs.fmiVersion in set { "2", "2.0" });
 
 	/**
@@ -106,12 +106,6 @@ functions
 				isValidTypeDefinitions(md.typeDefinitions)
 			),
 
-			-- @OnFail("TypeDefinitions names are not unique")
-			(
-				md.typeDefinitions <> nil =>
-					card { t.name | t in set md.typeDefinitions } = card md.typeDefinitions
-			),
-
 			-- @OnFail("LogCategories invalid")
 			(
 				isValidLogCategories(md.logCategories)
@@ -127,25 +121,14 @@ functions
 				isValidVendorAnnotations(md.vendorAnnotations)
 			),
 
-			-- @OnFail("ScalarVariable names are not unique")
+			-- @OnFail("ScalarVariables invalid")
 			(
-				card { sv.name | sv in seq md.modelVariables } = len md.modelVariables
-			),
-
-			(
-				forall sv in seq md.modelVariables &
-					-- @OnFail("ScalarVariables[%s] invalid", sv.name)
-					(isValidScalarVariable(sv))
+				isValidScalarVariables(eModelVariables)
 			),
 
 			-- @OnFail("ScalarVariables typecheck against TypeDefinitions failed")
 			(
 				typeCheck(eModelVariables, md.typeDefinitions)
-			),
-
-			-- @OnFail("ScalarVariables.causality defines more than one independent variable")
-			(
-				card { sv | sv in seq eModelVariables & sv.causality = <independent> } <= 1
 			),
 
 			-- @OnFail("ModelStructure invalid")

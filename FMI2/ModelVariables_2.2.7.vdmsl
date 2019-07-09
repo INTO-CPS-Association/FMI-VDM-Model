@@ -71,6 +71,30 @@ functions
 	pre is_(min, [real]) and is_(max, [real]) and is_(start, [real]);	-- ie. numerics
 
 	/**
+	 * Verify a sequence of ScalarVariables.
+	 */
+	isValidScalarVariables: seq1 of ScalarVariable +> bool
+    isValidScalarVariables(svs) ==
+        {
+            -- @OnFail("ScalarVariables.causality defines more than one independent variable")
+            (
+                card { sv | sv in seq svs & sv.causality = <independent> } <= 1
+            ),
+
+            -- @OnFail("ScalarVariable names are not unique")
+            (
+                card { sv.name | sv in seq svs } = len svs
+            )
+        }
+        union
+        {
+            -- @OnFail("ScalarVariables[%s] invalid", sv.name)
+            (isValidScalarVariable(sv))
+
+            | sv in seq svs
+        } = {true};
+
+	/**
 	 * ScalarVariable invariant. Rules defined in the table on p49.
 	 */
 	isValidScalarVariable: ScalarVariable +> bool

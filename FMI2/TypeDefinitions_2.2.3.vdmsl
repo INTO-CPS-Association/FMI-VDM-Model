@@ -64,7 +64,17 @@ functions
 	isValidTypeDefinitions: [set1 of SimpleType] +> bool
 	isValidTypeDefinitions(defs) ==
 		defs <> nil =>
-			forall stype in set defs &
-				-- @OnFail("TypeDefinition[%s] invalid", stype.name)
-				(isValidType(stype));
+    		{
+    		    -- @OnFail("TypeDefinitions names are not unique")
+                (
+                    card { stype.name | stype in set defs } = card defs
+                )
+            }
+            union
+            {
+    			-- @OnFail("TypeDefinition[%s] invalid", stype.name)
+                (isValidType(stype))
+
+                | stype in set defs
+    		} = {true};
 
