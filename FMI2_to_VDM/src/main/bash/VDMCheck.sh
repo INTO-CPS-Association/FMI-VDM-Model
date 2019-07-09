@@ -5,13 +5,13 @@
 
 if [ "$1" = "-v" -a $# -gt 2 ]
 then
-	SAVE=$(pwd)/$2
+	SAVE=$2
 	shift 2
 fi
 
 if [ $# -ne 1 ]
 then
-	echo "Usage: $0 [-v outfile] <FMU or modelDescription.xml file>"
+	echo "Usage: $0 [-v <VDM outfile>] <FMU or modelDescription.xml file>"
 	exit 1
 else
 	FILE=$1
@@ -47,26 +47,29 @@ case $(file -b --mime-type $FILE) in
 	;;
 esac
 
-cd $(dirname $0)
-
-VAR=model$$
-
-if ! type java 2>/dev/null 1>&2
-then
-	echo "java is not installed?"
-	exit 2
-fi
-
-if ! java -cp classes fmi2vdm.FMI2ToVDM "$XML" "$VAR" >$VDM
-then
-	echo "Problem converting modelDescription.xml to VDM-SL?"
-	exit 2
-fi
-
-java -Xmx1g -cp vdmj-4.3.0.jar:annotations-1.0.0.jar:annotations2-1.0.0.jar \
-	com.fujitsu.vdmj.VDMJ \
-	-vdmsl -q -annotations -e "isValidFMIModelDescription($VAR)" \
-	model $VDM
+# Subshell cd, so we can set the classpath
+(
+	cd $(dirname $0)
+	
+	VAR=model$$
+	
+	if ! type java 2>/dev/null 1>&2
+	then
+		echo "java is not installed?"
+		exit 2
+	fi
+	
+	if ! java -cp classes fmi2vdm.FMI2ToVDM "$XML" "$VAR" >$VDM
+	then
+		echo "Problem converting modelDescription.xml to VDM-SL?"
+		exit 2
+	fi
+	
+	java -Xmx1g -cp vdmj-4.3.0.jar:annotations-1.0.0.jar:annotations2-1.0.0.jar \
+		com.fujitsu.vdmj.VDMJ \
+		-vdmsl -q -annotations -e "isValidFMIModelDescription($VAR)" \
+		model $VDM
+)
 
 if [ "$SAVE" ]
 then

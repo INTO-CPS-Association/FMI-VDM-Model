@@ -191,7 +191,7 @@ public class FMI2ToVDM
 		}
 		else
 		{
-			System.out.println("\t\tnil");
+			System.out.println("nil");
 		}
 
 		System.out.println("\t),\n");
@@ -248,7 +248,7 @@ public class FMI2ToVDM
 		}
 		else
 		{
-			System.out.println("\t\tnil");
+			System.out.println("nil");
 		}
 
 		System.out.println("\t),\n");
