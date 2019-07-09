@@ -233,7 +233,7 @@ functions
 			 					ius <> nil => { u.index | u in seq ius } = initIndexes
 			 				),
 
-			 				-- @OnFail("InitialUnknowns are not sorted: %s", ius)
+			 				-- @OnFail("InitialUnknowns are not sorted: %s", [ u.index | u in seq ius ])
 			 				(
 			 					ius <> nil => 
 					 				 forall i in set inds ius &
@@ -249,8 +249,8 @@ functions
 		} = {true};
 
 	/**
-	 * Check that all variables' declaredTypes are defined, that the variables' type match
-	 * the declared type and the min/max of numeric types are compatible with the start value.
+	 * Check that all variables' declaredTypes are defined, that the variables' types match
+	 * the declared types and the min/max of numeric types are compatible with the start value.
 	 */
 	typeCheck: seq1 of ScalarVariable * [set1 of SimpleType] +> bool
 	typeCheck(variables, typedefs) ==
