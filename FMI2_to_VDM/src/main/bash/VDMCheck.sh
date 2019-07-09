@@ -65,7 +65,7 @@ fi
 
 java -Xmx1g -cp vdmj-4.3.0.jar:annotations-1.0.0.jar:annotations2-1.0.0.jar \
 	com.fujitsu.vdmj.VDMJ \
-	-vdmsl -q -annotations -e "isValidModelDescription($VAR)" \
+	-vdmsl -q -annotations -e "isValidFMIModelDescription($VAR)" \
 	model $VDM
 
 if [ "$SAVE" ]
