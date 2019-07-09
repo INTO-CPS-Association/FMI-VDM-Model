@@ -200,7 +200,7 @@ functions
 				end
 			),
 
-			-- @OnFail("Variable invalid", sv.name)
+			-- @OnFail("Variable min/max/start invalid")
 			(
 				cases sv.variable:
 					mk_Real(-, min, max, -, -, start, -) ->
