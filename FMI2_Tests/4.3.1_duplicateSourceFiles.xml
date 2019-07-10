@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0"
+	modelName="4.3.1_duplicateSourceFiles" guid="{111-222-333-444}">
+	<CoSimulation modelIdentifier="Test FMU">
+		<SourceFiles>
+			<File name="abc" />
+			<File name="def" />
+			<File name="abc" />
+		</SourceFiles>
+	</CoSimulation>
+	<ModelVariables>
+		<ScalarVariable name="varname" valueReference="0">
+			<Real />
+		</ScalarVariable>
+	</ModelVariables>
+	<ModelStructure>
+	</ModelStructure>
+</fmiModelDescription>
