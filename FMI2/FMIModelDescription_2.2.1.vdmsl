@@ -136,6 +136,11 @@ functions
 				isValidModelStructure(md.modelStructure)
 			),
 
+			-- @OnFail("No model type specified")
+			(
+				md.modelExchange <> nil or md.coSimulation <> nil
+			),
+
 			(
 				let outputIndexes = { svi | svi in set inds eModelVariables &
 					eModelVariables(svi).causality = <output> }
