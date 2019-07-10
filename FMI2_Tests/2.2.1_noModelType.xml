@@ -2,7 +2,7 @@
 <fmiModelDescription fmiVersion="2.0"
 	modelName="2.2.1_noModelType" guid="{111-222-333-444}">
 	<ModelVariables>
-		<ScalarVariable name="varname">
+		<ScalarVariable name="varname" valueReference="0">
 			<Real />
 		</ScalarVariable>
 	</ModelVariables>

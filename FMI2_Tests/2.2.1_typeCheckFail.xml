@@ -10,19 +10,19 @@
 		<SimpleType name="T5"><Enumeration><Item name="a" value="1"/></Enumeration></SimpleType>
 	</TypeDefinitions>
 	<ModelVariables>
-		<ScalarVariable name="v1" variability="discrete" initial="approx">
+		<ScalarVariable name="v1" variability="discrete" initial="approx" valueReference="0">
 			<Integer declaredType="T1" start="100" />
 		</ScalarVariable>
-		<ScalarVariable name="v2" variability="discrete" initial="approx">
+		<ScalarVariable name="v2" variability="discrete" initial="approx" valueReference="1">
 			<Real declaredType="T2" start="100" />
 		</ScalarVariable>
-		<ScalarVariable name="v3" variability="discrete" initial="calculated">
+		<ScalarVariable name="v3" variability="discrete" initial="calculated" valueReference="2">
 			<Boolean declaredType="T3" />
 		</ScalarVariable>
-		<ScalarVariable name="v4" variability="discrete" initial="calculated">
+		<ScalarVariable name="v4" variability="discrete" initial="calculated" valueReference="3">
 			<Enumeration declaredType="T4" />
 		</ScalarVariable>
-		<ScalarVariable name="v5" variability="discrete" initial="calculated">
+		<ScalarVariable name="v5" variability="discrete" initial="calculated" valueReference="4">
 			<String declaredType="T5" />
 		</ScalarVariable>
 	</ModelVariables>
