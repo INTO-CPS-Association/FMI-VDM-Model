@@ -38,10 +38,12 @@ functions
 	{
 		-- @OnFail("ModelStructure has invalid unknowns")
 		(
-			forall list in set {ms.outputs, ms.derivatives, ms.initialUnknowns} &
+			{
 				list <> nil =>
-					forall u in seq list &
-						isValidUnknown(u)
+					{ isValidUnknown(u) | u in seq list } = {true}
+
+				| list in set {ms.outputs, ms.derivatives, ms.initialUnknowns}
+			} = {true}
 		),
 
 		-- @OnFail("ModelStructure has duplicate variables")

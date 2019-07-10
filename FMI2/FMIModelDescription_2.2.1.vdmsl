@@ -228,7 +228,7 @@ functions
 	 */
 	typeCheck: seq1 of ScalarVariable * [set1 of SimpleType] +> bool
 	typeCheck(variables, typedefs) ==
-		forall sv in seq variables &
+		{
 			let dname = sv.variable.declaredType in
 				dname <> nil =>
 					let matchingTypes = { td | td in set nilSet[SimpleType](typedefs) & td.name = dname } in
@@ -302,4 +302,6 @@ functions
 									-- @OnFail("ScalarVariable %s, EnumerationType not referenced by Enumeration variable %s", sv.name, sv.variable)
 									(is_Enumeration(sv.variable))
 							end
-					} = {true};
+					} = {true}
+			| sv in seq variables
+		} = {true};
