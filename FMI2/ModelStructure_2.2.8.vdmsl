@@ -25,9 +25,18 @@ functions
 	(
 		if u.dependencies <> nil
 		then u.dependenciesKind <> nil =>
-			len u.dependencies = len u.dependenciesKind			-- Matching lists
-			and len u.dependencies = card elems u.dependencies	-- No duplicates
-		else u.dependenciesKind = nil
+			{
+				-- @OnFail("Dependencies does not match dependenciesKind")
+				(len u.dependencies = len u.dependenciesKind),
+
+				-- @OnFail("Dependencies has duplicates")
+				(len u.dependencies = card elems u.dependencies),
+
+				-- @OnFail("Unknown cannot depend on itself")
+				(u.index not in set elems u.dependencies)
+			} = {true}
+		else
+			u.dependenciesKind = nil
 	);
 
 	/**

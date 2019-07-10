@@ -61,13 +61,16 @@ functions
 	 */
 	isInRange[@T]: [@T] * [@T] * [@T] +> bool
 	isInRange(min, max, start) ==
-		(max <> nil and min <> nil =>
+	{
+		max <> nil and min <> nil =>
 			--@OnFail("min %s is not <= max %s", min, max)
-			(max >= min))
-		and	(start <> nil =>
+			(max >= min),
+
+		start <> nil =>
 			--@OnFail("start %s is not within min %s/max %s", start, min, max)
 			((min <> nil => min <= start) and
-			 (max <> nil => max >= start)))
+			 (max <> nil => max >= start))
+	} = {true}
 	pre is_(min, [real]) and is_(max, [real]) and is_(start, [real]);	-- ie. numerics
 
 	/**

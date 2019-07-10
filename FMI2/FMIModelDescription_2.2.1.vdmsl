@@ -260,9 +260,11 @@ functions
 													  else nil
 											in
 												-- @OnFail("ScalarVariable %s, calculated min/max does not match start %s", sv.name, sv.variable.start)
-												(max <> nil and min <> nil => max >= min)
-												and (min <> nil => min <= sv.variable.start)
-												and	(max <> nil => max >= sv.variable.start)
+												(
+													(max <> nil and min <> nil => max >= min)
+													and (min <> nil => min <= sv.variable.start)
+													and	(max <> nil => max >= sv.variable.start)
+												)
 									)
 								} = {true},
 
@@ -284,9 +286,11 @@ functions
 													  else nil
 											in
 												-- @OnFail("ScalarVariable %s, calculated min/max does not match start %s", sv.name, sv.variable.start)
-												(max <> nil and min <> nil => max >= min)
-												and (min <> nil => min <= sv.variable.start)
-												and	(max <> nil => max >= sv.variable.start)
+												(
+													(max <> nil and min <> nil => max >= min)
+													and (min <> nil => min <= sv.variable.start)
+													and	(max <> nil => max >= sv.variable.start)
+												)
 									)
 								} = {true},
 
