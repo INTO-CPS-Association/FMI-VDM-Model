@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0"
+	modelName="2.2.6_duplicateVendorNames" guid="{111-222-333-444}">
+	<CoSimulation modelIdentifier="Test FMU" />
+	<VendorAnnotations>
+		<Tool name="one"></Tool>
+		<Tool name="two"></Tool>
+		<Tool name="one"></Tool>
+	</VendorAnnotations>
+	<ModelVariables>
+		<ScalarVariable name="varname" valueReference="0">
+			<Real />
+		</ScalarVariable>
+	</ModelVariables>
+	<ModelStructure>
+	</ModelStructure>
+</fmiModelDescription>
