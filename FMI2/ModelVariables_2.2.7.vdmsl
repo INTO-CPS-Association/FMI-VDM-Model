@@ -108,7 +108,7 @@ functions
 		in
 		{
 			-- Table on p46 defining causality, and p48/49 defining combinations
-			-- @OnFail("Causality/variability/initial/start %s/%s/%s invalid", eCausality, eVariability, eInitial, sv.variable.start)
+			-- @OnFail("Causality/variability/initial/start %s/%s/%s/%s invalid", eCausality, eVariability, eInitial, sv.variable.start)
 			(
 				cases eCausality:
 					<parameter> ->

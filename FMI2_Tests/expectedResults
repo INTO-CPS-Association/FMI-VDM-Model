@@ -1,0 +1,377 @@
+------------------------------ 2.2.1_initialUnknowns1.xml
+VDMCheck.sh:
+InitialUnknowns should be empty in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 218:29
+ModelStructure.InitialUnknowns invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 179:17
+false
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time"
+------------------------------ 2.2.1_initialUnknowns2.xml
+VDMCheck.sh:
+InitialUnknowns should be: {2} in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 205:33
+ModelStructure.InitialUnknowns invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 179:17
+false
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time","v2"
+------------------------------ 2.2.1_initialUnknowns3.xml
+VDMCheck.sh:
+InitialUnknowns are not sorted: [3, 2] in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 210:33
+ModelStructure.InitialUnknowns invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 179:17
+false
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time","v2","v3"
+------------------------------ 2.2.1_invalidDerivatives1.xml
+VDMCheck.sh:
+Causality/variability/initial/start <input>/<continuous>/nil/nil invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 111:17
+ScalarVariables["v1"] invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 94:17
+ScalarVariables invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 124:17
+ModelStructure.Derivatives section does not match Real/derivative variables in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 165:29
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] Start attribute is required for this causality, variability and initial combination
+[ERROR][FMI2XML] The state derivative 'v1' does not specify the state variable that it is a derivative of.
+[FATAL][FMI2XML] Model structure is not valid due to detected errors. Cannot continue.
+[FATAL][FMI2XML] Parse error at line 23:
+parsing aborted
+[FATAL][FMUCHK] Error parsing XML, exiting
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	5 Error(s)
+	3 Fatal error(s) occurred during processing
+------------------------------ 2.2.1_invalidDerivatives2.xml
+VDMCheck.sh:
+Causality/variability/initial/start <input>/<continuous>/nil/nil invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 111:17
+ScalarVariables["v1"] invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 94:17
+ScalarVariables invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 124:17
+ModelStructure.Derivatives declared, but no Real/derivative variables in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 171:29
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] Start attribute is required for this causality, variability and initial combination
+[ERROR][FMI2XML] The state derivative 'v1' does not specify the state variable that it is a derivative of.
+[FATAL][FMI2XML] Model structure is not valid due to detected errors. Cannot continue.
+[FATAL][FMI2XML] Parse error at line 23:
+parsing aborted
+[FATAL][FMUCHK] Error parsing XML, exiting
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	5 Error(s)
+	3 Fatal error(s) occurred during processing
+------------------------------ 2.2.1_invalidOutputs1.xml
+VDMCheck.sh:
+ModelStructure.Outputs should be {1, 2} in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 150:29
+false
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time","v1","v2"
+------------------------------ 2.2.1_invalidOutputs2.xml
+VDMCheck.sh:
+Causality/variability/initial/start <input>/<continuous>/nil/nil invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 111:17
+ScalarVariables["v1"] invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 94:17
+ScalarVariables invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 124:17
+ModelStructure.Outputs should be omitted in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 154:29
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] Start attribute is required for this causality, variability and initial combination
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	1 Error(s)
+"time"
+------------------------------ 2.2.1_noModelType.xml
+VDMCheck.sh:
+No model type specified in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 139:17
+false
+------------
+fmuCheck:
+[FATAL][FMI2XML] Neither ModelExchange nor CoSimulation element were parsed correctly. FMU kind not known.
+[FATAL][FMI2XML] Parse error at line 12:
+parsing aborted
+[FATAL][FMUCHK] Error parsing XML, exiting
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	3 Error(s)
+	3 Fatal error(s) occurred during processing
+------------------------------ 2.2.1_typeCheckFail.xml
+VDMCheck.sh:
+ScalarVariable "v1", RealType not referenced by Real variable T1 in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 247:41
+ScalarVariable "v1", calculated min/max does not match start 100 in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 262:53
+ScalarVariable "v2", IntegerType not referenced by Integer variable T2 in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 273:41
+ScalarVariable "v2", calculated min/max does not match start 100 in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 288:53
+ScalarVariable "v3", StringType not referenced by String variable T3 in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 302:41
+ScalarVariable "v4", BooleanType not referenced by Boolean variable T4 in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 298:41
+ScalarVariable "v5", EnumerationType not referenced by Enumeration variable T5 in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 306:41
+ScalarVariables typecheck against TypeDefinitions failed in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 129:17
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] Declared type T1 does not match variable type. Ignoring.
+[ERROR][FMI2XML] Declared type T2 does not match variable type. Ignoring.
+[ERROR][FMI2XML] Declared type T3 does not match variable type. Ignoring.
+[ERROR][FMI2XML] Declared type T4 does not match variable type. Ignoring.
+[ERROR][FMI2XML] Declared type T5 does not match variable type. Ignoring.
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	5 Error(s)
+"time"
+------------------------------ 2.2.1_wrongFMIVersion.xml
+VDMCheck.sh:
+FMU is not FMI v2 format
+Problem converting modelDescription.xml to VDM-SL?
+------------
+fmuCheck:
+[FATAL][FMIXML] This version of FMI standard is not supported (fmiVersion=???)
+[FATAL][FMIXML] Parse error at line 3:
+parsing aborted
+[FATAL][FMUCHK] Error in FMU version detection
+------------------------------ 2.2.2_duplicateUnitNames.xml
+VDMCheck.sh:
+UnitDefinitions names are not unique in 'DEFAULT' (model/UnitDefinitions_2.2.2.vdmsl) at line 31:17
+UnitDefinitions invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 99:17
+false
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time"
+------------------------------ 2.2.3_invalidTypes.xml
+VDMCheck.sh:
+TypeDefinitions names are not unique in 'DEFAULT' (model/TypeDefinitions_2.2.3.vdmsl) at line 68:21
+SimpleType abc, Integer max 0 not >= min 100 in 'DEFAULT' (model/TypeDefinitions_2.2.3.vdmsl) at line 46:21
+TypeDefinition[abc] invalid in 'DEFAULT' (model/TypeDefinitions_2.2.3.vdmsl) at line 75:21
+SimpleType abc, Real max 1 not >= min 10 in 'DEFAULT' (model/TypeDefinitions_2.2.3.vdmsl) at line 42:21
+TypeDefinition[abc] invalid in 'DEFAULT' (model/TypeDefinitions_2.2.3.vdmsl) at line 75:21
+SimpleType enum, EnumerationType item name/values do not form a bijection in 'DEFAULT' (model/TypeDefinitions_2.2.3.vdmsl) at line 55:21
+TypeDefinition[enum] invalid in 'DEFAULT' (model/TypeDefinitions_2.2.3.vdmsl) at line 75:21
+TypeDefinitions invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 104:17
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] Enum items 'a' and 'c' within enumeration 'enum' have the same value 1
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	1 Error(s)
+"time"
+------------------------------ 2.2.4_duplicateCategories.xml
+VDMCheck.sh:
+LogCategory names are not unique in 'DEFAULT' (model/LogCategories_2.2.4.vdmsl) at line 13:17
+LogCategories invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 109:17
+false
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time"
+------------------------------ 2.2.5_invalidExperiment.xml
+VDMCheck.sh:
+DefaultExperiment stop time must be later than start time in 'DEFAULT' (model/DefaultExperiment_2.2.5.vdmsl) at line 17:21
+DefaultExperiment stepSize must be less than start-stop interval in 'DEFAULT' (model/DefaultExperiment_2.2.5.vdmsl) at line 20:21
+DefaultExperiment invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 114:17
+false
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time"
+------------------------------ 2.2.6_duplicateVendorNames.xml
+VDMCheck.sh:
+VendorAnnotations tool names are not unique in 'DEFAULT' (model/VendorAnnotations_2.2.6.vdmsl) at line 13:17
+VendorAnnotations invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 119:17
+false
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time"
+------------------------------ 2.2.7_causalityVariabiliy.xml
+VDMCheck.sh:
+Causality/variability/initial/start <parameter>/<continuous>/nil/nil invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 111:17
+Variability/causality <continuous>/<parameter> invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 162:17
+ScalarVariables["v1"] invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 94:17
+Causality/variability/initial/start <independent>/<continuous>/<approx>/200 invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 111:17
+Initial/causality <approx>/<independent> invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 181:17
+min 100 is not <= max 1 in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 66:16
+start 200 is not within min 100/max 1 in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 70:16
+Variable min/max/start invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 207:17
+VendorAnnotations tool names are not unique in 'DEFAULT' (model/VendorAnnotations_2.2.6.vdmsl) at line 13:17
+VendorAnnotations invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 223:17
+ScalarVariables["v2"] invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 94:17
+ScalarVariables invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 124:17
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] Invalid combination of variability continuous and causality parameter. Setting variability to 'fixed'
+[ERROR][FMI2XML] Start attribute is required for this causality, variability and initial combination
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	2 Error(s)
+"time"
+------------------------------ 2.2.7_duplicateVarNames.xml
+VDMCheck.sh:
+ScalarVariables.causality defines more than one independent variable in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 82:17
+ScalarVariable names are not unique in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 87:17
+ScalarVariables invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 124:17
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] Two variables with the same name varname found. This is not allowed.
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	1 Error(s)
+"time"
+------------------------------ 2.2.7_notInMinMaxRange.xml
+VDMCheck.sh:
+Initial/variability/start <calculated>/<continuous>/1 invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 188:17
+min 10 is not <= max 5 in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 66:16
+start 1 is not within min 10/max 5 in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 70:16
+Variable min/max/start invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 207:17
+ScalarVariables["varname"] invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 94:17
+ScalarVariables invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 124:17
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] Start attribute is not allowed for variables with initial='calculated'
+[WARNING][FMI2XML] Attribute 'start' not processed by element 'Real' handle
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	1 Warning(s)
+	1 Error(s)
+"time"
+------------------------------ 2.2.8_invalidUnknowns.xml
+VDMCheck.sh:
+Dependencies does not match dependenciesKind in 'DEFAULT' (model/ModelStructure_2.2.8.vdmsl) at line 29:21
+Unknown cannot depend on itself in 'DEFAULT' (model/ModelStructure_2.2.8.vdmsl) at line 35:21
+Unknown 1 has invalid dependencies/kinds in 'DEFAULT' (model/ModelStructure_2.2.8.vdmsl) at line 24:9
+Dependencies has duplicates in 'DEFAULT' (model/ModelStructure_2.2.8.vdmsl) at line 32:21
+Unknown 1 has invalid dependencies/kinds in 'DEFAULT' (model/ModelStructure_2.2.8.vdmsl) at line 24:9
+Unknown cannot depend on itself in 'DEFAULT' (model/ModelStructure_2.2.8.vdmsl) at line 35:21
+Unknown 2 has invalid dependencies/kinds in 'DEFAULT' (model/ModelStructure_2.2.8.vdmsl) at line 24:9
+ModelStructure has invalid unknowns in 'DEFAULT' (model/ModelStructure_2.2.8.vdmsl) at line 48:13
+ModelStructure has duplicate variables in 'DEFAULT' (model/ModelStructure_2.2.8.vdmsl) at line 58:13
+ModelStructure.InitialUnknowns are not of kind dependent or constant in 'DEFAULT' (model/ModelStructure_2.2.8.vdmsl) at line 65:13
+ModelStructure invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 134:17
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] XML element 'Unknown': different number of items (1 and 0) in the lists for 'dependencies' and 'dependenciesKind'
+[ERROR][FMI2XML] XML element 'Unknown' within 'InitialUnknowns': 'fixed' is not allowed in list for attribute 'dependenciesKind'; setting to 'dependent'
+[FATAL][FMI2XML] Model structure is not valid due to detected errors. Cannot continue.
+[FATAL][FMI2XML] Parse error at line 23:
+parsing aborted
+[FATAL][FMUCHK] Error parsing XML, exiting
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	5 Error(s)
+	3 Fatal error(s) occurred during processing
+------------------------------ 3.3.1_duplicateSourceFiles.xml
+VDMCheck.sh:
+ModelExchange source file names are not unique in 'DEFAULT' (model/ModelExchange_3.3.1.vdmsl) at line 42:21
+ModelExchange invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 89:17
+false
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time"
+------------------------------ 4.3.1_duplicateSourceFiles.xml
+VDMCheck.sh:
+CoSimulation source file names are not unique in 'DEFAULT' (model/CoSimulation_4.3.1.vdmsl) at line 51:21
+CoSimulation invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 94:17
+false
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time"
+------------------------------ minimal.xml
+VDMCheck.sh:
+true
+------------
+fmuCheck:
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	0 Error(s)
+"time"
