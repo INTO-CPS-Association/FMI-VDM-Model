@@ -108,7 +108,7 @@ functions
 		in
 		{
 			-- Table on p46 defining causality, and p48/49 defining combinations
-			-- @OnFail("Causality/variability/initial %s/%s/%s fails", eCausality, eVariability, eInitial)
+			-- @OnFail("Causality/variability/initial/start %s/%s/%s invalid", eCausality, eVariability, eInitial, sv.variable.start)
 			(
 				cases eCausality:
 					<parameter> ->
@@ -121,7 +121,8 @@ functions
 
 					<input> ->
 						eVariability in set {<discrete>, <continuous>}
-						and eInitial = nil,		-- (D)
+						and eInitial = nil
+						and sv.variable.start <> nil,		-- (D)
 
 					<independent> ->
 						eVariability = <continuous>
@@ -158,7 +159,7 @@ functions
 			),
 
 			-- Table on p46 defining variability, and p49 defining combinations
-			-- @OnFail("Variability/causality %s/%s fails", eVariability, eCausality)
+			-- @OnFail("Variability/causality %s/%s invalid", eVariability, eCausality)
 			(
 				cases eVariability:
 					<constant> ->
@@ -177,14 +178,14 @@ functions
 			),
 
 			-- Table on p47 defining initial
-			-- @OnFail("Initial/causality %s/%s fails", sv.initial, eCausality)
+			-- @OnFail("Initial/causality %s/%s invalid", sv.initial, eCausality)
 			(
 				sv.initial <> nil =>
 					(eCausality not in set {<input>, <independent>})
 			),
 
 			-- Table on p47 defining initial
-			-- @OnFail("Initial/variability/start %s/%s/%s fails", eInitial, eVariability, sv.variable.start)
+			-- @OnFail("Initial/variability/start %s/%s/%s invalid", eInitial, eVariability, sv.variable.start)
 			(
 				cases eInitial:
 					<exact> ->

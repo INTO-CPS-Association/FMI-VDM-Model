@@ -244,7 +244,7 @@ functions
 							cases simpleType.type:
 								mk_RealType(dmin, dmax, -, -) ->
 								{
-									-- @OnFail("ScalarVariable %s, RealType not referenced by Real variable %s", sv.name, sv.variable)
+									-- @OnFail("ScalarVariable %s, RealType not referenced by Real variable %s", sv.name, sv.variable.declaredType)
 									(
 										is_Real(sv.variable)
 									),
@@ -270,7 +270,7 @@ functions
 
 								mk_IntegerType(dmin, dmax) ->
 								{
-									-- @OnFail("ScalarVariable %s, IntegerType not referenced by Integer variable %s", sv.name, sv.variable)
+									-- @OnFail("ScalarVariable %s, IntegerType not referenced by Integer variable %s", sv.name, sv.variable.declaredType)
 									(
 										is_Integer(sv.variable)
 									),
@@ -295,15 +295,15 @@ functions
 								} = {true},
 
 								mk_BooleanType() ->
-									-- @OnFail("ScalarVariable %s, BooleanType not referenced by Boolean variable %s", sv.name, sv.variable)
+									-- @OnFail("ScalarVariable %s, BooleanType not referenced by Boolean variable %s", sv.name, sv.variable.declaredType)
 									(is_Boolean(sv.variable)),
 
 								mk_StringType() ->
-									-- @OnFail("ScalarVariable %s, StringType not referenced by String variable %s", sv.name, sv.variable)
+									-- @OnFail("ScalarVariable %s, StringType not referenced by String variable %s", sv.name, sv.variable.declaredType)
 									(is_String(sv.variable)),
 
 								mk_EnumerationType(-) ->
-									-- @OnFail("ScalarVariable %s, EnumerationType not referenced by Enumeration variable %s", sv.name, sv.variable)
+									-- @OnFail("ScalarVariable %s, EnumerationType not referenced by Enumeration variable %s", sv.name, sv.variable.declaredType)
 									(is_Enumeration(sv.variable))
 							end
 					} = {true}

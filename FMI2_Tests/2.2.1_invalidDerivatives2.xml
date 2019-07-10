@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0"
+	modelName="2.2.1_invalidDerivatives2" guid="{111-222-333-444}">
+	<CoSimulation modelIdentifier="Test FMU" />
+	<ModelVariables>
+		<ScalarVariable name="v1" causality="input" valueReference="0">
+			<Real />
+		</ScalarVariable>
+		<ScalarVariable name="v2" causality="output" valueReference="1">
+			<Real />
+		</ScalarVariable>
+	</ModelVariables>
+	<ModelStructure>
+		<Outputs>
+			<Unknown index="2" />
+		</Outputs>
+		<Derivatives>
+			<Unknown index="1" />
+		</Derivatives>
+		<InitialUnknowns>
+			<Unknown index="2" />
+		</InitialUnknowns>
+	</ModelStructure>
+</fmiModelDescription>

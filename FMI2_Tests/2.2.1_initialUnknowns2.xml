@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0"
+	modelName="2.2.1_initialUnknowns1" guid="{111-222-333-444}">
+	<CoSimulation modelIdentifier="Test FMU" />
+	<ModelVariables>
+		<ScalarVariable name="v1" causality="input" valueReference="0">
+			<Real start="0" />
+		</ScalarVariable>
+		<ScalarVariable name="v2" causality="output" valueReference="1">
+			<Real />
+		</ScalarVariable>
+	</ModelVariables>
+	<ModelStructure>
+		<Outputs>
+			<Unknown index="2" />
+		</Outputs>
+		<InitialUnknowns>
+			<Unknown index="1" />
+		</InitialUnknowns>
+	</ModelStructure>
+</fmiModelDescription>
