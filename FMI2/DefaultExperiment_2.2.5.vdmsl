@@ -13,9 +13,11 @@ functions
 	isValidDefaultExperiment(e) ==
 		e <> nil =>
 			e.startTime <> nil and e.stopTime <> nil =>
+			{
 				-- @OnFail("DefaultExperiment stop time must be later than start time")
-				(e.stopTime > e.startTime)
+				(e.stopTime > e.startTime),
 
 				-- @OnFail("DefaultExperiment stepSize must be less than start-stop interval")
-				and (e.stepSize <> nil =>
-					e.stopTime - e.startTime > e.stepSize);
+				(e.stepSize <> nil =>
+					e.stopTime - e.startTime > e.stepSize)
+			} = {true};
