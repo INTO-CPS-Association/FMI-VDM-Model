@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0"
+	modelName="2.2.1_typeCheckFail" guid="{111-222-333-444}">
+	<CoSimulation modelIdentifier="Test FMU" />
+	<TypeDefinitions>
+		<SimpleType name="T1"><Real min="0" max="10" /></SimpleType>
+		<SimpleType name="T2"><Integer min="10" max="20" /></SimpleType>
+		<SimpleType name="T3"><String /></SimpleType>
+		<SimpleType name="T4"><Boolean /></SimpleType>
+		<SimpleType name="T5"><Enumeration><Item name="a" value="1"/></Enumeration></SimpleType>
+	</TypeDefinitions>
+	<ModelVariables>
+		<ScalarVariable name="v1" variability="discrete" initial="approx">
+			<Integer declaredType="T1" start="100" />
+		</ScalarVariable>
+		<ScalarVariable name="v2" variability="discrete" initial="approx">
+			<Real declaredType="T2" start="100" />
+		</ScalarVariable>
+		<ScalarVariable name="v3" variability="discrete" initial="calculated">
+			<Boolean declaredType="T3" />
+		</ScalarVariable>
+		<ScalarVariable name="v4" variability="discrete" initial="calculated">
+			<Enumeration declaredType="T4" />
+		</ScalarVariable>
+		<ScalarVariable name="v5" variability="discrete" initial="calculated">
+			<String declaredType="T5" />
+		</ScalarVariable>
+	</ModelVariables>
+	<ModelStructure>
+	</ModelStructure>
+</fmiModelDescription>

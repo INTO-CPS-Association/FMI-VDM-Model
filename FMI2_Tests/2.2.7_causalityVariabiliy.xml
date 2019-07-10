@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0"
+	modelName="2.2.7_causalityVariability" guid="{111-222-333-444}">
+	<CoSimulation modelIdentifier="Test FMU" />
+	<ModelVariables>
+		<ScalarVariable name="v1" causality="parameter" variability="continuous" valueReference="0">
+			<Real />
+		</ScalarVariable>
+		<ScalarVariable name="v2" causality="independent" initial="approx" valueReference="1">
+			<Real min="100" max="1" start="200" />
+			<Annotations>
+				<Tool name="x" />
+				<Tool name="x" />
+			</Annotations>
+		</ScalarVariable>
+	</ModelVariables>
+	<ModelStructure>
+	</ModelStructure>
+</fmiModelDescription>

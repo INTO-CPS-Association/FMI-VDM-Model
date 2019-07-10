@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0"
+	modelName="2.2.7_duplicateVarNames" guid="{111-222-333-444}">
+	<CoSimulation modelIdentifier="Test FMU" />
+	<ModelVariables>
+		<ScalarVariable name="varname" causality="independent" valueReference="0">
+			<Real />
+		</ScalarVariable>
+		<ScalarVariable name="varname" causality="independent" valueReference="1">
+			<Real />
+			<Annotations>
+				<Tool name="z" />
+			</Annotations>
+		</ScalarVariable>
+	</ModelVariables>
+	<ModelStructure>
+	</ModelStructure>
+</fmiModelDescription>

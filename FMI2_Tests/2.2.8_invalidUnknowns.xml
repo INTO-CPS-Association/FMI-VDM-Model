@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0"
+	modelName="2.2.8_invalidUnknowns" guid="{111-222-333-444}">
+	<CoSimulation modelIdentifier="Test FMU" />
+	<ModelVariables>
+		<ScalarVariable name="v1" causality="output" valueReference="0">
+			<Real />
+		</ScalarVariable>
+		<ScalarVariable name="v2" causality="output" valueReference="1">
+			<Real />
+		</ScalarVariable>
+	</ModelVariables>
+	<ModelStructure>
+		<Outputs>
+			<Unknown index="1" dependencies="1" dependenciesKind="" />
+			<Unknown index="1" dependencies="2 2" dependenciesKind="constant constant" />
+			<Unknown index="2" dependencies="2" dependenciesKind="constant" />
+		</Outputs>
+		<InitialUnknowns>
+			<Unknown index="1" />
+			<Unknown index="2" dependencies="1" dependenciesKind="fixed" />
+		</InitialUnknowns>
+	</ModelStructure>
+</fmiModelDescription>
