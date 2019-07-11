@@ -49,4 +49,4 @@ functions
 		cs <> nil =>
 			cs.sourceFiles <> nil =>
 				-- @OnFail("CoSimulation source file names are not unique");
-				(len cs.sourceFiles = card elems cs.sourceFiles);
+				( len cs.sourceFiles = card elems cs.sourceFiles );

@@ -82,64 +82,40 @@ functions
 		in
 		{
 			-- @OnFail("ModelAttributes invalid")
-			(
-				isValidModelAttributes(md.attributes)
-			),
+			( isValidModelAttributes(md.attributes) ),
 
 			-- @OnFail("ModelExchange invalid")
-			(
-				isValidModelExchange(md.modelExchange)
-			),
+			( isValidModelExchange(md.modelExchange) ),
 
 			-- @OnFail("CoSimulation invalid")
-			(
-				isValidCoSimulation(md.coSimulation)
-			),
+			( isValidCoSimulation(md.coSimulation) ),
 
 			-- @OnFail("UnitDefinitions invalid")
-			(
-				isValidUnitDefinitions(md.unitDefinitions)
-			),
+			( isValidUnitDefinitions(md.unitDefinitions) ),
 
 			-- @OnFail("TypeDefinitions invalid")
-			(
-				isValidTypeDefinitions(md.typeDefinitions)
-			),
+			( isValidTypeDefinitions(md.typeDefinitions) ),
 
 			-- @OnFail("LogCategories invalid")
-			(
-				isValidLogCategories(md.logCategories)
-			),
+			( isValidLogCategories(md.logCategories) ),
 
 			-- @OnFail("DefaultExperiment invalid")
-			(
-				isValidDefaultExperiment(md.defaultExperiment)
-			),
+			( isValidDefaultExperiment(md.defaultExperiment) ),
 
 			-- @OnFail("VendorAnnotations invalid")
-			(
-				isValidVendorAnnotations(md.vendorAnnotations)
-			),
+			( isValidVendorAnnotations(md.vendorAnnotations) ),
 
 			-- @OnFail("ScalarVariables invalid")
-			(
-				isValidScalarVariables(eModelVariables)
-			),
+			( isValidScalarVariables(eModelVariables) ),
 
 			-- @OnFail("ScalarVariables typecheck against TypeDefinitions failed")
-			(
-				typeCheck(eModelVariables, md.typeDefinitions)
-			),
+			( typeCheck(eModelVariables, md.typeDefinitions) ),
 
 			-- @OnFail("ModelStructure invalid")
-			(
-				isValidModelStructure(md.modelStructure)
-			),
+			( isValidModelStructure(md.modelStructure) ),
 
 			-- @OnFail("No model type specified")
-			(
-				md.modelExchange <> nil or md.coSimulation <> nil
-			),
+			( md.modelExchange <> nil or md.coSimulation <> nil ),
 
 			(
 				let outputIndexes = { svi | svi in set inds eModelVariables &
@@ -198,27 +174,19 @@ functions
 				 		let ius = md.modelStructure.initialUnknowns in
 				 		{
 			 				-- @OnFail("InitialUnknowns should be: %s", initIndexes)
-			 				(
-				 				ius <> nil
-				 			),
+			 				( ius <> nil ),
 
 			 				-- @OnFail("InitialUnknowns should be: %s", initIndexes)
-			 				(
-			 					ius <> nil => { u.index | u in seq ius } = initIndexes
-			 				),
+			 				( ius <> nil => { u.index | u in seq ius } = initIndexes ),
 
 			 				-- @OnFail("InitialUnknowns are not sorted: %s", [ u.index | u in seq ius ])
-			 				(
-			 					ius <> nil => 
-					 				 forall i in set inds ius &
-					 					i = len ius or ius(i).index < ius(i+1).index
-				 			)
+			 				( ius <> nil => 
+					 				forall i in set inds ius &
+					 					i = len ius or ius(i).index < ius(i+1).index )
 				 		} = {true}
 				 	else
 				 		-- @OnFail("InitialUnknowns should be empty")
-			 			(
-				 			md.modelStructure.initialUnknowns = nil
-				 		)
+			 			( md.modelStructure.initialUnknowns = nil )
 			)
 		} = {true};
 
@@ -234,9 +202,7 @@ functions
 					let matchingTypes = { td | td in set nilSet[SimpleType](typedefs) & td.name = dname } in
 					{
 						-- @OnFail("Typedefs have multiple matching names")
-						(
-							card matchingTypes = 1
-						),
+						( card matchingTypes = 1 ),
 
 						-- The match is the same type as the ScalarVariable type and for numerics,
 						-- and any start value is within the (perhaps overridden) min/max. 
@@ -245,9 +211,7 @@ functions
 								mk_RealType(dmin, dmax, -, -) ->
 								{
 									-- @OnFail("ScalarVariable %s, RealType not referenced by Real variable %s", sv.name, sv.variable.declaredType)
-									(
-										is_Real(sv.variable)
-									),
+									( is_Real(sv.variable) ),
 
 									-- And any start value matches the calculated min/max
 									(
@@ -271,9 +235,7 @@ functions
 								mk_IntegerType(dmin, dmax) ->
 								{
 									-- @OnFail("ScalarVariable %s, IntegerType not referenced by Integer variable %s", sv.name, sv.variable.declaredType)
-									(
-										is_Integer(sv.variable)
-									),
+									( is_Integer(sv.variable) ),
 
 									-- And any start value matches the calculated min/max
 									(
@@ -296,15 +258,15 @@ functions
 
 								mk_BooleanType() ->
 									-- @OnFail("ScalarVariable %s, BooleanType not referenced by Boolean variable %s", sv.name, sv.variable.declaredType)
-									(is_Boolean(sv.variable)),
+									( is_Boolean(sv.variable) ),
 
 								mk_StringType() ->
 									-- @OnFail("ScalarVariable %s, StringType not referenced by String variable %s", sv.name, sv.variable.declaredType)
-									(is_String(sv.variable)),
+									( is_String(sv.variable) ),
 
 								mk_EnumerationType(-) ->
 									-- @OnFail("ScalarVariable %s, EnumerationType not referenced by Enumeration variable %s", sv.name, sv.variable.declaredType)
-									(is_Enumeration(sv.variable))
+									( is_Enumeration(sv.variable) )
 							end
 					} = {true}
 			| sv in seq variables

@@ -66,14 +66,12 @@ functions
 		defs <> nil =>
     		{
     		    -- @OnFail("TypeDefinitions names are not unique")
-                (
-                    card { stype.name | stype in set defs } = card defs
-                )
+                ( card { stype.name | stype in set defs } = card defs )
             }
             union
             {
     			-- @OnFail("TypeDefinition[%s] invalid", stype.name)
-                (isValidType(stype))
+                ( isValidType(stype) )
 
                 | stype in set defs
     		} = {true};

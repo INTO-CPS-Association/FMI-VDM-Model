@@ -64,12 +64,12 @@ functions
 	{
 		max <> nil and min <> nil =>
 			--@OnFail("min %s is not <= max %s", min, max)
-			(max >= min),
+			( max >= min ),
 
 		start <> nil =>
 			--@OnFail("start %s is not within min %s/max %s", start, min, max)
-			((min <> nil => min <= start) and
-			 (max <> nil => max >= start))
+			( (min <> nil => min <= start) and
+			  (max <> nil => max >= start) )
 	} = {true}
 	pre is_(min, [real]) and is_(max, [real]) and is_(start, [real]);	-- ie. numerics
 
@@ -80,19 +80,15 @@ functions
     isValidScalarVariables(svs) ==
         {
             -- @OnFail("ScalarVariables.causality defines more than one independent variable")
-            (
-                card { sv | sv in seq svs & sv.causality = <independent> } <= 1
-            ),
+            ( card { sv | sv in seq svs & sv.causality = <independent> } <= 1 ),
 
             -- @OnFail("ScalarVariable names are not unique")
-            (
-                card { sv.name | sv in seq svs } = len svs
-            )
+            ( card { sv.name | sv in seq svs } = len svs )
         }
         union
         {
             -- @OnFail("ScalarVariables[%s] invalid", sv.name)
-            (isValidScalarVariable(sv))
+            ( isValidScalarVariable(sv) )
 
             | sv in seq svs
         } = {true};
@@ -221,9 +217,7 @@ functions
 			),
 
 			-- @OnFail("VendorAnnotations invalid")
-			(
-				isValidVendorAnnotations(sv.annotations)
-			)
+			( isValidVendorAnnotations(sv.annotations) )
 		} = {true};
 
 	/**

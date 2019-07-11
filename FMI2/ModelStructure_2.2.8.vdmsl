@@ -27,13 +27,13 @@ functions
 		then u.dependenciesKind <> nil =>
 			{
 				-- @OnFail("Dependencies does not match dependenciesKind")
-				(len u.dependencies = len u.dependenciesKind),
+				( len u.dependencies = len u.dependenciesKind ),
 
-				-- @OnFail("Dependencies has duplicates")
-				(len u.dependencies = card elems u.dependencies),
+				-- @OnFail("Dependencies has duplicates" )
+				( len u.dependencies = card elems u.dependencies),
 
 				-- @OnFail("Unknown cannot depend on itself")
-				(u.index not in set elems u.dependencies)
+				( u.index not in set elems u.dependencies )
 			} = {true}
 		else
 			u.dependenciesKind = nil
