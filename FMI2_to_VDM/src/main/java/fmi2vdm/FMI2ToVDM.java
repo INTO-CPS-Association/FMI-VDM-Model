@@ -277,7 +277,7 @@ public class FMI2ToVDM
 				System.out.print(")");
 			}
 			
-			System.out.println("\t},\n");
+			System.out.println("\n\t},\n");
 		}
 		else
 		{
