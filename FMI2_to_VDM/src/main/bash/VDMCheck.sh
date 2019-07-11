@@ -74,4 +74,5 @@ esac
 if [ "$SAVE" ]
 then
 	sed -e "s+generated from $XML+generated from $FILE+" $VDM > "$SAVE"
+	echo "VDM source written to $SAVE"
 fi
