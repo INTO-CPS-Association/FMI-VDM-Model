@@ -20,7 +20,7 @@ fi
 XML=/tmp/modelDescription$$.xml
 VDM=/tmp/vdm$$.vdmsl
 
-trap "rm -f $XML $VDM" EXIT INT
+trap "rm -f $XML $VDM" EXIT
 
 case $(file -b --mime-type $FILE) in
 	application/zip)
