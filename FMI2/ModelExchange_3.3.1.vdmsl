@@ -3,7 +3,7 @@
  */
 types
 	ModelExchange ::
-		modelIdentifier						: seq1 of char
+		modelIdentifier						: NormalizedString1
 		needsExecutionTool					: [bool]
 		completedIntegratorStepNotNeeded	: [bool]
 		canBeInstantiatedOnlyOncePerProcess	: [bool]

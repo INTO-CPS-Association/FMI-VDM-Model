@@ -3,7 +3,7 @@
  */
 types
 	Tool ::
-		name		: seq1 of char
+		name		: NormalizedString1
 		annotation	: [token];
 
 functions

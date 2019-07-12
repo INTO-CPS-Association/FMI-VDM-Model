@@ -162,7 +162,7 @@ values
 			mk_ScalarVariable("u1",			<input>, <continuous>,		nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 2
 			mk_ScalarVariable("u2",			<input>, <continuous>,		nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 3
 			mk_ScalarVariable("u3",			<input>, <discrete>,		nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 4
-			mk_ScalarVariable("x1",			<input>, <continuous>,		nil, mk_Real("Real-Undefined", 0, 10, nil, nil, nil, nil), nil),	-- 5
+			mk_ScalarVariable("x1",			<input>, <continuous>,		nil, mk_Real("Real-Undefined", 0, 10, nil, nil, 1, nil), nil),	-- 5
 			mk_ScalarVariable("x2",			<local>, <continuous>,		nil, mk_Real("Real-Undefined", 0, 10, nil, nil, nil, nil), nil),	-- 6
 			mk_ScalarVariable("x3",			<local>, <continuous>,		nil, mk_Real("Real-Undefined", 0, 10, nil, nil, nil, nil), nil),	-- 7
 			mk_ScalarVariable("der(x1)",	<calculatedParameter>, <tunable>,	nil, mk_Real("Real-Positive", 0, 10, nil, nil, nil, 5), nil),	-- 8

@@ -3,8 +3,8 @@
  */
 types
 	Category ::
-		name			: seq1 of char
-		description		: [seq1 of char];
+		name			: NormalizedString1
+		description		: [AnyString];
 
 functions
 	isValidLogCategories: [seq1 of Category] +> bool

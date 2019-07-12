@@ -12,7 +12,7 @@ types
 	Initial		= <exact> | <approx> | <calculated>;
 
 	Real ::		-- XSD p52
-		declaredType	: [seq1 of char]
+		declaredType	: [NormalizedString1]
 		min				: [real]
 		max				: [real]
 		nominal			: [real]
@@ -21,28 +21,28 @@ types
 		derivative		: [nat1];
 
 	Integer ::	-- XSD p52
-		declaredType	: [seq1 of char]
+		declaredType	: [NormalizedString1]
 		min				: [int]
 		max				: [int]
 		start			: [int];
 
 	Boolean ::		-- XSD p53
-		declaredType	: [seq1 of char]
+		declaredType	: [NormalizedString1]
 		start			: [bool];
 
 	String ::		-- XSD p53
-		declaredType	: [seq1 of char]
-		start			: [seq1 of char];
+		declaredType	: [NormalizedString1]
+		start			: [AnyString];
 
 	Enumeration ::	-- XSD p53
-		declaredType	: seq1 of char	-- Note, not optional
+		declaredType	: NormalizedString1	-- Note, not optional
 		min				: [int]
 		max				: [int]
 		start			: [int];
 
 	Variable = Real | Integer | Boolean | String | Enumeration;
 
-	VarName = seq1 of char;		-- Has a syntax defined in section 2.2.9, p64
+	VarName = NormalizedString1;		-- Has a syntax defined in section 2.2.9, p64
 
 	ScalarVariable ::			-- XSD 2.2.7, p44, p54
 		-- attributes

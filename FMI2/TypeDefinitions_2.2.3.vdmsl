@@ -22,7 +22,7 @@ types
 	-- An Enumeration must have at least one Item.
 
 	Item ::
-		name		: seq1 of char
+		name		: NormalizedString1
 		value		: int;
 
 	EnumerationType ::
@@ -31,7 +31,7 @@ types
 	Type = RealType | IntegerType | BooleanType | StringType | EnumerationType;
 
 	SimpleType ::	-- XSD p38
-		name		: seq1 of char
+		name		: NormalizedString1
 		type		: Type;
 
 functions

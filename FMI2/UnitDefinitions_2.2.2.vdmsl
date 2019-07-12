@@ -3,7 +3,7 @@
  */
 types
 	Unit ::
-		name			: seq1 of char
+		name			: NormalizedString1
 		baseUnit		: [BaseUnit]
 		displayUnits	: [seq of DisplayUnit];
 
@@ -20,7 +20,7 @@ types
 		offset			: [real];
 
 	DisplayUnit ::
-		name			: seq1 of char
+		name			: NormalizedString1
 		factor			: [real]
 		offset			: [real];
 

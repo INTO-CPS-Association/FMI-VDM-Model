@@ -3,7 +3,7 @@
  */
 types
 	CoSimulation ::
-		modelIdentifier							: seq1 of char
+		modelIdentifier							: NormalizedString1
 		needsExecutionTool						: [bool]
 		canHandleVariableCommunicationStepSize	: [bool]
 		canInterpolateInputs					: [bool]
@@ -17,7 +17,7 @@ types
 		sourceFiles								: [seq1 of SourceFile];
 
 	SourceFile ::
-		name : seq1 of char;
+		name : NormalizedString1;
 
 functions
 	/**
