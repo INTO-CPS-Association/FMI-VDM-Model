@@ -61,7 +61,7 @@ functions
 	isValidModelAttributes: ModelAttributes +> bool
 	isValidModelAttributes(attrs) ==
 		-- @OnFail("ModelAttribute fmiVersion should be 2.0")
-		(attrs.fmiVersion in set { "2", "2.0" });
+		( attrs.fmiVersion in set { "2.0" } );
 
 	/**
 	 * Invariant definition for FMIModelDescription
