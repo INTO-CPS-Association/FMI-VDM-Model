@@ -280,6 +280,21 @@ functions
 		then <continuous>
 		else v;
 
+	effectiveScalarVariable: ScalarVariable +> ScalarVariable
+	effectiveScalarVariable(sv) ==
+		let causality = effectiveCausality(sv.causality),
+			variability = effectiveVariability(sv.variability)
+		in 
+			mk_ScalarVariable
+			(
+				sv.name,
+				causality,
+				variability,
+				effectiveInitial(sv.initial, causality, variability),
+				sv.variable,
+				sv.annotations
+			);
+
 	/**
 	 * Return the ScalarVariables from a list which are continuous-time states, defined to be
 	 * variables which are the derivative of some other variable.
