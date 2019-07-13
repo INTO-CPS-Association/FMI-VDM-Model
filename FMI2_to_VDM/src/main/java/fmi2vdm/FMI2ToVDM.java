@@ -155,19 +155,19 @@ public class FMI2ToVDM
 		System.out.print("\t\t");
 		printStringAttribute(attributes, "modelIdentifier");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "needsExecutionTool");
+		printRawAttribute(attributes, "needsExecutionTool");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "completedIntegratorStepNotNeeded");
+		printRawAttribute(attributes, "completedIntegratorStepNotNeeded");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canBeInstantiatedOnlyOncePerProcess");
+		printRawAttribute(attributes, "canBeInstantiatedOnlyOncePerProcess");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canNotUseMemoryManagementFunctions");
+		printRawAttribute(attributes, "canNotUseMemoryManagementFunctions");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canGetAndSetFMUstate");
+		printRawAttribute(attributes, "canGetAndSetFMUstate");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "canSerializeFMUstate");
+		printRawAttribute(attributes, "canSerializeFMUstate");
 		System.out.print(",\n\t\t");
-		printStringAttribute(attributes, "providesDirectionalDerivative");
+		printRawAttribute(attributes, "providesDirectionalDerivative");
 		System.out.print(",\n\t\t");
 		
 		NodeList nodes = element.getElementsByTagName("SourceFiles");
