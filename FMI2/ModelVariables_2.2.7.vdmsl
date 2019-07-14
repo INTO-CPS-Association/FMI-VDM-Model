@@ -44,12 +44,13 @@ types
 
 	VarName = NormalizedString1;		-- Has a syntax defined in section 2.2.9, p64
 
-	ScalarVariable ::			-- XSD 2.2.7, p44, p54
+	ScalarVariable ::	-- XSD 2.2.7, p44, p54
 		-- attributes
-		name			: VarName
-		causality		: [Causality]
-		variability		: [Variability]
-		initial			: [Initial]
+		name								: VarName
+		causality							: [Causality]
+		variability							: [Variability]
+		initial								: [Initial]
+		canHandleMultipleSetPerTimeInstant	: [bool]
 
 		-- elements
 		variable		: Variable
@@ -291,6 +292,7 @@ functions
 				causality,
 				variability,
 				effectiveInitial(sv.initial, causality, variability),
+				sv.canHandleMultipleSetPerTimeInstant,
 				sv.variable,
 				sv.annotations
 			);

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0"
+	modelName="2.2.3_invalidTypeName" guid="{111-222-333-444}">
+	<CoSimulation modelIdentifier="Test FMU" />
+	<TypeDefinitions>
+		<SimpleType name="abc">
+			<Real  />
+		</SimpleType>
+	</TypeDefinitions>
+	<ModelVariables>
+		<ScalarVariable name="abc" valueReference="0">
+			<Real />
+		</ScalarVariable>
+	</ModelVariables>
+	<ModelStructure>
+	</ModelStructure>
+</fmiModelDescription>

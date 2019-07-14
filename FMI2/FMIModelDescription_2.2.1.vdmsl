@@ -110,6 +110,21 @@ functions
 			( md.modelExchange <> nil or md.coSimulation <> nil ),
 
 			(
+				md.typeDefinitions <> nil =>
+					forall simpleType in set md.typeDefinitions &
+						-- @OnFail("TypeDefinition and ScalarVariable names overlap: %s", simpleType.name)
+						( not exists sv in seq eModelVariables & sv.name = simpleType.name )
+			),
+
+
+			(
+				forall sv in seq eModelVariables &
+					sv.canHandleMultipleSetPerTimeInstant <> nil =>
+						-- @OnFail("[%s].canHandleMultipleSetPerTimeInstant invalid", sv.name)
+						( md.modelExchange <> nil and sv.causality = <input> )
+			),
+
+			(
 				let outputIndexes = { svi | svi in set inds eModelVariables &
 					eModelVariables(svi).causality = <output> }
 				in
@@ -198,7 +213,7 @@ functions
 
 						-- The match is the same type as the ScalarVariable type and for numerics,
 						-- and any start value is within the (perhaps overridden) min/max. 
-						let { simpleType } = matchingTypes in
+						card matchingTypes = 1 => let { simpleType } = matchingTypes in
 							cases simpleType.type:
 								mk_RealType(dmin, dmax, -, -) ->
 								{

@@ -37,16 +37,16 @@ values
 
 		-- ScalarVariables
 		[
-/* 1 */		mk_ScalarVariable("inertial.J", <parameter>, <fixed>, nil,
+/* 1 */		mk_ScalarVariable("inertial.J", <parameter>, <fixed>, nil, nil,
 					mk_Real("Modelica.SIunits.Inertia", nil, nil, nil, nil, 1, nil), nil),
 
-/* 2 */		mk_ScalarVariable("torque.tau", <input>, nil, nil,
+/* 2 */		mk_ScalarVariable("torque.tau", <input>, nil, nil, nil,
 					mk_Real("Modelica.SIunits.Torque", nil, nil, nil, nil, 0, nil), nil),
 
-/* 3 */		mk_ScalarVariable("inertial.phi", <output>, nil, nil,
+/* 3 */		mk_ScalarVariable("inertial.phi", <output>, nil, nil, nil,
 					mk_Real("Modelica.SIunits.Angle", nil, nil, nil, nil, nil, nil), nil),
 
-/* 4 */		mk_ScalarVariable("inertial.w", <output>, nil, nil,
+/* 4 */		mk_ScalarVariable("inertial.w", <output>, nil, nil, nil,
 					mk_Real("Modelica.SIunits.AngularVelocity", nil, nil, nil, nil, nil, nil), nil)
 		],
 
