@@ -22,4 +22,4 @@ do
 	echo "------------"
 	echo "fmuCheck:"
 	runFmuCheck.sh $file
-done
+done 2>&1

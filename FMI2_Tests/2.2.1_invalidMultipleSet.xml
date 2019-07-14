@@ -3,7 +3,7 @@
 	modelName="2.2.1_wrongFMUVersion" guid="{111-222-333-444}">
 	<CoSimulation modelIdentifier="Test FMU" />
 	<ModelVariables>
-		<ScalarVariable name="varname" canHandleMultipleSetPerTimeInstant="true">
+		<ScalarVariable name="varname" canHandleMultipleSetPerTimeInstant="true" valueReference="0">
 			<Real />
 		</ScalarVariable>
 	</ModelVariables>
