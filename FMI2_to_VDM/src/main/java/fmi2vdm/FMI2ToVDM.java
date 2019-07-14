@@ -552,6 +552,8 @@ public class FMI2ToVDM
 				System.out.print(", ");
 				printQuoteAttribute(attrs, "initial");
 				System.out.print(", ");
+				printRawAttribute(attrs, "canHandleMultipleSetPerTimeInstant");
+				System.out.print(", ");
 				printVariable(scalarVariable);
 				System.out.print(", ");
 				printAnnotations(scalarVariable.getElementsByTagName("Annotations"));
