@@ -3,6 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fmi2</groupId>
 	<artifactId>fmi2vdm</artifactId>
+	
+	<properties>
+		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>
+	</properties>
+	
 	<version>0.0.1-SNAPSHOT</version>
 	<dependencies>
 		<dependency>
@@ -43,7 +48,7 @@
 					<descriptors>
 						<descriptor>assembly.xml</descriptor>
 					</descriptors>
-					<finalName>vdmcheck-${project.version}</finalName>
+					<finalName>vdmcheck-${project.version}-${maven.build.timestamp}</finalName>
 				</configuration>
 				<executions>
 					<execution>

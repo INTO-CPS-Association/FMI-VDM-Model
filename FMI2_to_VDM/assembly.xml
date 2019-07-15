@@ -6,6 +6,8 @@
 	<formats>
 		<format>zip</format>
 	</formats>
+	
+	<baseDirectory>vdmcheck-${project.version}</baseDirectory>
 
 	<files>
 		<file>
