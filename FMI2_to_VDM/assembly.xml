@@ -11,10 +11,6 @@
 
 	<files>
 		<file>
-			<source>target/classes/fmi2vdm/FMI2ToVDM.class</source>
-			<destName>classes/fmi2vdm/FMI2ToVDM.class</destName>
-		</file>
-		<file>
 			<source>src/main/bash/VDMCheck.sh</source>
 			<destName>VDMCheck.sh</destName>
 		</file>
@@ -36,6 +32,7 @@
 		</dependencySet>
 		<dependencySet>
 			<includes>
+				<include>fmi2:fmi2vdm</include>
 				<include>com.fujitsu:vdmj</include>
 				<include>com.fujitsu:annotations</include>
 				<include>com.fujitsu:annotations2</include>

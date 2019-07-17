@@ -3,17 +3,18 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fmi2</groupId>
 	<artifactId>fmi2vdm</artifactId>
-	
+
 	<properties>
 		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>
 	</properties>
-	
-	<version>0.0.1-SNAPSHOT</version>
+
+	<version>0.0.1</version>
+
 	<dependencies>
 		<dependency>
 			<groupId>fmi2</groupId>
 			<artifactId>vdm-model</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fujitsu</groupId>
@@ -39,6 +40,22 @@
 				<configuration>
 					<source />
 					<target />
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Main-Class>fmi2vdm.FMI2ToVDM</Main-Class>
+							<Implementation-Version>${project.version} build ${maven.build.timestamp}</Implementation-Version>
+							<Class-Path>.</Class-Path>
+						</manifestEntries>
+					</archive>
+					<finalName>
+						${project.artifactId}-${project.version}-${maven.build.timestamp}
+					</finalName>
 				</configuration>
 			</plugin>
 			<plugin>
