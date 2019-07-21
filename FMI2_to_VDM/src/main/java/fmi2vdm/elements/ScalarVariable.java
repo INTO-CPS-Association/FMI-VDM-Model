@@ -48,9 +48,9 @@ public class ScalarVariable extends Element
 		System.out.println(indent + "mk_ScalarVariable");
 		System.out.println(indent + "(");
 		printStringAttribute(indent + "\t", name, ",\n");
-		printStringAttribute(indent + "\t", causality, ",\n");
-		printStringAttribute(indent + "\t", variability, ",\n");
-		printStringAttribute(indent + "\t", initial, ",\n");
+		printQuoteAttribute(indent + "\t", causality, ",\n");
+		printQuoteAttribute(indent + "\t", variability, ",\n");
+		printQuoteAttribute(indent + "\t", initial, ",\n");
 		printRawAttribute(indent + "\t", canHandleMultipleSetPerTimeInstant, ",\n");
 		printOptional(indent + "\t", variable, ",\n");
 		printOptional(indent + "\t", annotations, "\n");

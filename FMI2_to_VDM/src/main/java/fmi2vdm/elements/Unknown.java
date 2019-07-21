@@ -36,7 +36,16 @@ public class Unknown extends Element
 		}
 		else
 		{
-			return value.split("\\s+");
+			String[] array = value.split("\\s+");
+			
+			if (array.length == 1 && array[0].isEmpty())
+			{
+				return new String[0];
+			}
+			else
+			{
+				return array;
+			}
 		}
 	}
 

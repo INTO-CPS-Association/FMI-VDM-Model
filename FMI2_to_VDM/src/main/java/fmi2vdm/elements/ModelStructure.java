@@ -52,15 +52,40 @@ public class ModelStructure extends Element
 		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.println(indent + "mk_ModelStructure");
 		System.out.println(indent + "(");
-		System.out.println(indent + "\t-- Outputs");
-		outputs.toVDM(indent);
-		System.out.println(",\n");
-		System.out.println(indent + "\t-- Derivatives");
-		derivatives.toVDM(indent);
-		System.out.println(",\n");
-		System.out.println(indent + "\t-- InitialUnknowns");
-		initialUnknowns.toVDM(indent);
-		System.out.println();
+		
+		if (outputs != null)
+		{
+			System.out.println(indent + "\t-- Outputs");
+			outputs.toVDM(indent);
+			System.out.println(",\n");
+		}
+		else
+		{
+			System.out.println(indent + "\tnil,");
+		}
+		
+		if (derivatives != null)
+		{
+			System.out.println(indent + "\t-- Derivatives");
+			derivatives.toVDM(indent);
+			System.out.println(",\n");
+		}
+		else
+		{
+			System.out.println(indent + "\tnil,");
+		}
+		
+		if (initialUnknowns != null)
+		{
+			System.out.println(indent + "\t-- InitialUnknowns");
+			initialUnknowns.toVDM(indent);
+			System.out.println();
+		}
+		else
+		{
+			System.out.println(indent + "\tnil");
+		}
+		
 		System.out.println(indent + ")");
 	}
 }

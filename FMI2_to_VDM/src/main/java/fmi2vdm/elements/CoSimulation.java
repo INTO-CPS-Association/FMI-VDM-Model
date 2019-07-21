@@ -13,7 +13,7 @@ public class CoSimulation extends Element
 		needsExecutionTool = boolOf(attributes, "needsExecutionTool");
 		canHandleVariableCommunicationStepSize = boolOf(attributes, "canHandleVariableCommunicationStepSize");
 		canInterpolateInputs = boolOf(attributes, "canInterpolateInputs");
-		maxOutputDerivativeOrder = boolOf(attributes, "maxOutputDerivativeOrder");
+		maxOutputDerivativeOrder = intOf(attributes, "maxOutputDerivativeOrder");
 		canRunAsynchronuously = boolOf(attributes, "canRunAsynchronuously");
 		canBeInstantiatedOnlyOncePerProcess = boolOf(attributes, "canBeInstantiatedOnlyOncePerProcess");
 		canNotUseMemoryManagementFunctions = boolOf(attributes, "canNotUseMemoryManagementFunctions");
@@ -39,7 +39,7 @@ public class CoSimulation extends Element
 	private Boolean needsExecutionTool;
 	private Boolean canHandleVariableCommunicationStepSize;
 	private Boolean canInterpolateInputs;
-	private Boolean maxOutputDerivativeOrder;
+	private Integer maxOutputDerivativeOrder;
 	private Boolean canRunAsynchronuously;
 	private Boolean canBeInstantiatedOnlyOncePerProcess;
 	private Boolean canNotUseMemoryManagementFunctions;

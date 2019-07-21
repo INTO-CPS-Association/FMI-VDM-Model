@@ -34,7 +34,7 @@ public class SimpleType extends Element
 		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.println(indent + "mk_SimpleType(");
 		printStringAttribute(indent + "\t", name, ",\n");
-		type.toVDM(indent + "\t");
+		printOptional(indent + "\t", type, "");
 		System.out.print("\n" + indent + ")");
 	}
 }

@@ -59,7 +59,7 @@ public class ModelAttributes extends Element
 		printStringAttribute(indent + "\t", license, ",\n");
 		printStringAttribute(indent + "\t", generationTool, ",\n");
 		printStringAttribute(indent + "\t", generationDateAndTime, ",\n");
-		printStringAttribute(indent + "\t", variableNamingConvention, ",\n");
+		printQuoteAttribute(indent + "\t", variableNamingConvention, ",\n");
 		printRawAttribute(indent + "\t", numberOfEventIndicators, "\n");
 		
 		System.out.print(indent + ")");

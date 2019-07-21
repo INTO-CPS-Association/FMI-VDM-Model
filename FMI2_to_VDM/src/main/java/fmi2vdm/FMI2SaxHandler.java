@@ -138,6 +138,7 @@ public class FMI2SaxHandler extends DefaultHandler
 				break;
 				
 			case "VendorAnnotations":
+			case "Annotations":
 				stack.push(new VendorAnnotations(locator));
 				break;
 				
