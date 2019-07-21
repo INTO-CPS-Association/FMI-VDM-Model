@@ -23,7 +23,7 @@ public class StringVariable extends Variable
 		System.out.print(indent + "mk_String(");
 		
 		printStringAttribute("", declaredType, ", ");
-		printRawAttribute("", start, "");
+		printStringAttribute("", start, "");
 		
 		System.out.print(")");
 	}

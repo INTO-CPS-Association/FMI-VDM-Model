@@ -4,9 +4,9 @@ import java.util.Stack;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import fmi2vdm.elements.Any;
 import fmi2vdm.elements.BaseUnit;
 import fmi2vdm.elements.BooleanType;
 import fmi2vdm.elements.BooleanVariable;
@@ -230,19 +230,16 @@ public class FMI2SaxHandler extends DefaultHandler
 				break;
 				
 			default:
-				System.err.println("Unknown element " + qName);
-				System.exit(1);
-		}
-	}
-	
-	@Override
-	public void characters(char[] ch, int start, int length) throws SAXException
-	{
-		// Only useful for adding annotation "any" to Tools
-		if (!stack.isEmpty() && stack.peek() instanceof Tool)
-		{
-			Tool tool = (Tool)stack.peek();
-			tool.setAnnotation(new String(ch, start, length));
+				if (stack.isEmpty() || !(stack.peek() instanceof Tool))
+				{
+					System.err.println("Unknown element " + qName);
+					System.exit(1);
+				}
+				else
+				{
+					// Unknown "any" type in Tools - popped in endElement
+					stack.push(new Any(qName, attributes, locator));
+				}
 		}
 	}
 	

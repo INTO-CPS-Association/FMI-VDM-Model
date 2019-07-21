@@ -11,6 +11,26 @@ public class Tool extends Element
 		name = stringOf(attributes, "name");
 	}
 	
+	@Override
+	public void add(Element element)
+	{
+		if (element instanceof Any)
+		{
+			if (annotation == null)
+			{
+				annotation = element.toString();
+			}
+			else
+			{
+				annotation = annotation + ";" + element.toString();
+			}
+		}
+		else
+		{
+			super.add(element);
+		}
+	}
+	
 	private String name;
 	private String annotation;
 
