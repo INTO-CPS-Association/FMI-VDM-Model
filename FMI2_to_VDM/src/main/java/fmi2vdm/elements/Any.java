@@ -26,6 +26,13 @@ public class Any extends Element
 	}
 	
 	@Override
+	public void add(Element element)
+	{
+		// Fine - we can add anything to an "any".
+		text = text + ";" + element.toString();
+	}
+	
+	@Override
 	public String toString()
 	{
 		return text;

@@ -230,7 +230,7 @@ public class FMI2SaxHandler extends DefaultHandler
 				break;
 				
 			default:
-				if (stack.isEmpty() || !(stack.peek() instanceof Tool))
+				if (!withinTool())
 				{
 					System.err.println("Unknown element " + qName);
 					System.exit(1);
@@ -241,6 +241,19 @@ public class FMI2SaxHandler extends DefaultHandler
 					stack.push(new Any(qName, attributes, locator));
 				}
 		}
+	}
+	
+	private boolean withinTool()
+	{
+		for (Element e: stack)
+		{
+			if (e instanceof Tool)
+			{
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	@Override

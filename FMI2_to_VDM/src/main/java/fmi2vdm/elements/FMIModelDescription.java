@@ -89,6 +89,8 @@ public class FMIModelDescription extends Element
 		modelAttributes.toVDM(indent + "\t");
 		System.out.println(",\n");
 		
+		System.out.println(indent + "\t-- ModelExchange");
+		
 		if (modelExchange != null)
 		{
 			modelExchange.toVDM(indent + "\t");
@@ -96,8 +98,10 @@ public class FMIModelDescription extends Element
 		}
 		else
 		{
-			System.out.println(indent + "nil,\n");
+			System.out.println(indent + "\tnil,\n");
 		}
+		
+		System.out.println(indent + "\t-- CoSimulation");
 		
 		if (coSimulation != null)
 		{
@@ -106,56 +110,61 @@ public class FMIModelDescription extends Element
 		}
 		else
 		{
-			System.out.println(indent + "nil,\n");
+			System.out.println(indent + "\tnil,\n");
 		}
+		
+		System.out.println(indent + "\t-- UnitDefinitions");
 		
 		if (unitDefinitions != null)
 		{
-			System.out.println(indent + "\t-- UnitDefinitions");
 			unitDefinitions.toVDM(indent + "\t");
 			System.out.println(",\n");
 		}
 		else
 		{
-			System.out.println(indent + "nil,\n");
+			System.out.println(indent + "\tnil,\n");
 		}
 
+		System.out.println(indent + "\t-- TypeDefinitions");
+		
 		if (typeDefinitions != null)
 		{
-			System.out.println(indent + "\t-- TypeDefinitions");
 			typeDefinitions.toVDM(indent + "\t");
 			System.out.println(",\n");
 		}
 		else
 		{
-			System.out.println(indent + "nil,\n");
+			System.out.println(indent + "\tnil,\n");
 		}
+		
+		System.out.println(indent + "\t-- LogCategories");
 		
 		if (logCategories != null)
 		{
-			System.out.println(indent + "\t-- LogCategories");
 			logCategories.toVDM(indent + "\t");
 			System.out.println(",\n");
 		}
 		else
 		{
-			System.out.println(indent + "nil,\n");
+			System.out.println(indent + "\tnil,\n");
 		}
 	
+		System.out.println(indent + "\t-- DefaultExperiment");
+		
 		if (defaultExperiment != null)
 		{
-			System.out.println(indent + "\t-- DefaultExperiment");
 			defaultExperiment.toVDM(indent + "\t");
 			System.out.println(",\n");
 		}
 		else
 		{
-			System.out.println(indent + "nil,\n");
+			System.out.println(indent + "\tnil,\n");
 		}
 
+		System.out.println(indent + "\t-- VendorAnnotations");
+		
 		if (vendorAnnotations != null)
 		{
-			System.out.println(indent + "\t-- VendorAnnotations");
 			vendorAnnotations.toVDM(indent + "\t");
 			System.out.println(",\n");
 		}
@@ -164,25 +173,27 @@ public class FMIModelDescription extends Element
 			System.out.println(indent + "nil,\n");
 		}
 
+		System.out.println(indent + "\t-- ModelVariables");
+		
 		if (modelVariables != null)
 		{
-			System.out.println(indent + "\t-- ModelVariables");
 			modelVariables.toVDM(indent + "\t");
 			System.out.println(",\n");
 		}
 		else
 		{
-			System.out.println(indent + "nil,\n");
+			System.out.println(indent + "\tnil,\n");
 		}
 
+		System.out.println(indent + "\t-- ModelStructure");
+		
 		if (modelStructure != null)
 		{
-			System.out.println(indent + "\t-- ModelStructure");
 			modelStructure.toVDM(indent + "\t");
 		}
 		else
 		{
-			System.out.println(indent + "nil\n");
+			System.out.println(indent + "\tnil\n");
 		}
 
 		System.out.println(indent + ");");
