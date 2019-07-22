@@ -89,113 +89,38 @@ public class FMIModelDescription extends Element
 		modelAttributes.toVDM(indent + "\t");
 		System.out.println(",\n");
 		
-		System.out.println(indent + "\t-- ModelExchange");
-		
-		if (modelExchange != null)
-		{
-			modelExchange.toVDM(indent + "\t");
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,\n");
-		}
-		
-		System.out.println(indent + "\t-- CoSimulation");
-		
-		if (coSimulation != null)
-		{
-			coSimulation.toVDM(indent + "\t");
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,\n");
-		}
-		
-		System.out.println(indent + "\t-- UnitDefinitions");
-		
-		if (unitDefinitions != null)
-		{
-			unitDefinitions.toVDM(indent + "\t");
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,\n");
-		}
-
-		System.out.println(indent + "\t-- TypeDefinitions");
-		
-		if (typeDefinitions != null)
-		{
-			typeDefinitions.toVDM(indent + "\t");
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,\n");
-		}
-		
-		System.out.println(indent + "\t-- LogCategories");
-		
-		if (logCategories != null)
-		{
-			logCategories.toVDM(indent + "\t");
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,\n");
-		}
-	
-		System.out.println(indent + "\t-- DefaultExperiment");
-		
-		if (defaultExperiment != null)
-		{
-			defaultExperiment.toVDM(indent + "\t");
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,\n");
-		}
-
-		System.out.println(indent + "\t-- VendorAnnotations");
-		
-		if (vendorAnnotations != null)
-		{
-			vendorAnnotations.toVDM(indent + "\t");
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "nil,\n");
-		}
-
-		System.out.println(indent + "\t-- ModelVariables");
-		
-		if (modelVariables != null)
-		{
-			modelVariables.toVDM(indent + "\t");
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,\n");
-		}
-
-		System.out.println(indent + "\t-- ModelStructure");
-		
-		if (modelStructure != null)
-		{
-			modelStructure.toVDM(indent + "\t");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil\n");
-		}
+		printOne(indent, modelExchange, "ModelExchange");
+		System.out.println(",\n");
+		printOne(indent, coSimulation, "CoSimulation");
+		System.out.println(",\n");
+		printOne(indent, unitDefinitions, "UnitDefinitions");
+		System.out.println(",\n");
+		printOne(indent, typeDefinitions, "TypeDefinitions");
+		System.out.println(",\n");
+		printOne(indent, logCategories, "LogCategories");
+		System.out.println(",\n");
+		printOne(indent, defaultExperiment, "DefaultExperiment");
+		System.out.println(",\n");
+		printOne(indent, vendorAnnotations, "VendorAnnotations");
+		System.out.println(",\n");
+		printOne(indent, modelVariables, "ModelVariables");
+		System.out.println(",\n");
+		printOne(indent, modelStructure, "ModelStructure");
 
 		System.out.println(indent + ");");
+	}
+
+	private void printOne(String indent, Element element, String title)
+	{
+		System.out.println(indent + "\t-- " + title);
+		
+		if (element != null)
+		{
+			element.toVDM(indent + "\t");
+		}
+		else
+		{
+			System.out.print(indent + "\tnil");
+		}
 	}
 }

@@ -16,6 +16,7 @@ public class File extends Element
 	@Override
 	void toVDM(String indent)
 	{
+		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.print(indent + "mk_SourceFile(\"" + name + "\")");
 	}
 }
