@@ -112,5 +112,6 @@ functions
 		su <> nil =>
 			let indexes = [ u.index | u in seq su ] in
 				/* @OnFail("Duplicate indexes: %s",
-					{ a | a, b in seq indexes & a = b } ) */
+					{ indexes(a) | a, b in set inds indexes &
+						a <> b and indexes(a) = indexes(b) } ) */
 				( len indexes = card elems indexes );
