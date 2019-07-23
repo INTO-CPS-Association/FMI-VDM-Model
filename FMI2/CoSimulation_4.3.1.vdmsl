@@ -32,6 +32,7 @@
  */
 types
 	CoSimulation ::
+		location								: Location
 		modelIdentifier							: NormalizedString1
 		needsExecutionTool						: [bool]
 		canHandleVariableCommunicationStepSize	: [bool]
@@ -46,7 +47,8 @@ types
 		sourceFiles								: [seq1 of SourceFile];
 
 	SourceFile ::
-		name : NormalizedString1;
+		location	: Location
+		name		: NormalizedString1;
 
 functions
 	/**
@@ -56,6 +58,7 @@ functions
 	effCoSimulation(cs) ==
 		mk_CoSimulation
 		(
+			cs.location,
 			cs.modelIdentifier,
 			nilBool(cs.needsExecutionTool),
 			nilBool(cs.canHandleVariableCommunicationStepSize),
@@ -77,5 +80,9 @@ functions
 	isValidCoSimulation(cs) ==
 		cs <> nil =>
 			cs.sourceFiles <> nil =>
-				-- @OnFail("CoSimulation source file names are not unique");
-				( len cs.sourceFiles = card elems cs.sourceFiles );
+				/* @OnFail("CoSimulation source file names are not unique: %s",
+					let files = cs.sourceFiles in
+						{ files(a).name | a, b in set inds files &
+							a <> b and files(a).name = files(b).name })
+				 */
+				( len cs.sourceFiles = card { f.name | f in seq cs.sourceFiles } );

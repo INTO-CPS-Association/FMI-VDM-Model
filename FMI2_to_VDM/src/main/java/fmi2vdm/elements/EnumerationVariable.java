@@ -52,7 +52,6 @@ public class EnumerationVariable extends Variable
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.print(indent + "mk_Enumeration(");
 		
 		printStringAttribute("", declaredType, ", ");

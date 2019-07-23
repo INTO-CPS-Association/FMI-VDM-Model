@@ -74,9 +74,9 @@ public class ModelAttributes extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.println(indent + "mk_ModelAttributes");
 		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		
 		printStringAttribute(indent + "\t", fmiVersion, ",\n");
 		printStringAttribute(indent + "\t", modelName, ",\n");

@@ -73,9 +73,9 @@ public class ScalarVariable extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.println(indent + "mk_ScalarVariable");
 		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", name, ",\n");
 		printQuoteAttribute(indent + "\t", causality, ",\n");
 		printQuoteAttribute(indent + "\t", variability, ",\n");

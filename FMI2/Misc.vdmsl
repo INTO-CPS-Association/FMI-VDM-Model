@@ -31,12 +31,14 @@
  * Miscellaneous support types and functions, not related to a specific section of the FMI spec.
  */
 types
-	AnyString = seq of char;				-- Note, can be empty string
+	AnyString = seq of char;			-- Note, can be empty string
 
 	NormalizedString1 = seq1 of char	-- Not empty
 	inv ns ==
 		forall c in seq ns &
 			c not in set { '\r', '\n', '\t'};
+
+	Location = nat;						-- XML source line number
 
 functions
 	nilSeq[@T]: [seq of @T] +> seq of @T

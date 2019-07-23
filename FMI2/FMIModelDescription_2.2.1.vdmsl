@@ -32,6 +32,7 @@
  */
 types
 	ModelAttributes ::
+		location					: Location
 		fmiVersion					: NormalizedString1
 		modelName					: AnyString
 		guid						: NormalizedString1
@@ -102,16 +103,16 @@ functions
 			[ effectiveScalarVariable(sv) | sv in seq md.modelVariables ]
 		in
 		{
-			-- @OnFail("ModelAttributes invalid")
+			-- @OnFail("ModelAttributes invalid at line %s", md.attributes.location)
 			( isValidModelAttributes(md.attributes) ),
 
-			-- @OnFail("ModelExchange invalid")
+			-- @OnFail("ModelExchange invalid at line %s", md.modelExchange.location)
 			( isValidModelExchange(md.modelExchange) ),
 
-			-- @OnFail("CoSimulation invalid")
+			-- @OnFail("CoSimulation invalid at line %s", md.coSimulation.location)
 			( isValidCoSimulation(md.coSimulation) ),
 
-			-- @OnFail("UnitDefinitions invalid")
+			-- @OnFail("UnitDefinitions invalid"))
 			( isValidUnitDefinitions(md.unitDefinitions) ),
 
 			-- @OnFail("TypeDefinitions invalid")
@@ -120,7 +121,7 @@ functions
 			-- @OnFail("LogCategories invalid")
 			( isValidLogCategories(md.logCategories) ),
 
-			-- @OnFail("DefaultExperiment invalid")
+			-- @OnFail("DefaultExperiment invalid at line %s", md.defaultExperiment.location)
 			( isValidDefaultExperiment(md.defaultExperiment) ),
 
 			-- @OnFail("VendorAnnotations invalid")
@@ -132,16 +133,17 @@ functions
 			-- @OnFail("ScalarVariables typecheck against TypeDefinitions failed")
 			( typeCheck(eModelVariables, md.typeDefinitions) ),
 
-			-- @OnFail("ModelStructure invalid")
+			-- @OnFail("ModelStructure invalid at line %s", md.modelStructure.location)
 			( isValidModelStructure(md.modelStructure) ),
 
-			-- @OnFail("No model type specified")
+			-- @OnFail("Neither ModelExchange nor CoSimlation specified")
 			( md.modelExchange <> nil or md.coSimulation <> nil ),
 
 			(
 				md.typeDefinitions <> nil =>
 					forall simpleType in set md.typeDefinitions &
-						-- @OnFail("TypeDefinition and ScalarVariable names overlap: %s", simpleType.name)
+						/* @OnFail("TypeDefinition and ScalarVariable names overlap: %s at line %s",
+								simpleType.name, simpleType.location) */
 						( not exists sv in seq eModelVariables & sv.name = simpleType.name )
 			),
 
@@ -149,7 +151,8 @@ functions
 			(
 				forall sv in seq eModelVariables &
 					sv.canHandleMultipleSetPerTimeInstant <> nil =>
-						-- @OnFail("[%s].canHandleMultipleSetPerTimeInstant invalid", sv.name)
+						/* @OnFail("[%s].canHandleMultipleSetPerTimeInstant invalid at line %s",
+							sv.name, sv.location) */
 						( md.modelExchange <> nil and sv.causality = <input> )
 			),
 
@@ -159,11 +162,13 @@ functions
 				in
 				 	if outputIndexes <> {}
 				 	then
-						-- @OnFail("ModelStructure.Outputs should be %s", outputIndexes)
+						/* @OnFail("Outputs should be %s at line %s",
+							outputIndexes, md.modelStructure.location) */
 				 		( md.modelStructure.outputs <> nil
 				 		  and { u.index | u in seq md.modelStructure.outputs } = outputIndexes )
 				 	else
-				 		-- @OnFail("ModelStructure.Outputs should be omitted")
+				 		/* @OnFail("Outputs should be omitted at line %s",
+				 			md.modelStructure.location) */
 				 		( md.modelStructure.outputs = nil )
 			),
 
@@ -174,13 +179,15 @@ functions
 				in
 				 	if derivativeIndexes <> {}
 				 	then
-						-- @OnFail("ModelStructure.Derivatives section does not match Real/derivative variables")
+						/* @OnFail("Derivatives section does not match Real/derivative variables at line %s",
+							md.modelStructure.location) */
 				 		( md.modelStructure.derivatives <> nil
 				 		  and let structIndexes = { u.index | u in seq md.modelStructure.derivatives } in
 				 			structIndexes = derivativeIndexes
 				 			and forall i in set structIndexes & i <= len eModelVariables )
 				 	else
-				 		-- @OnFail("ModelStructure.Derivatives declared, but no Real/derivative variables")
+				 		/* @OnFail("Derivatives declared, but no Real/derivative variables at line %s",
+				 			md.modelStructure.location) */
 				 		( md.modelStructure.derivatives = nil )
 			),
 
@@ -188,7 +195,7 @@ functions
 			-- all continuous-time states and derivatives that are approx/calculated.
 			-- And the list must be in ascending index order
 
-			-- @OnFail("ModelStructure.InitialUnknowns invalid")
+			-- @OnFail("InitialUnknowns invalid at line %s", md.modelStructure.location)
 			(
 				let initIndexes = { svi | svi in set inds eModelVariables &
 					let sv = eModelVariables(svi) in
@@ -237,7 +244,8 @@ functions
 				dname <> nil =>
 					let matchingTypes = { td | td in set nilSet[SimpleType](typedefs) & td.name = dname } in
 					{
-						-- @OnFail("Typedefs have multiple matching names")
+						/* @OnFail("Typedefs have multiple matching names: %s",
+							{ st.name | st in set matchingTypes } ) */
 						( card matchingTypes = 1 ),
 
 						-- The match is the same type as the ScalarVariable type and for numerics,
@@ -246,7 +254,8 @@ functions
 							cases simpleType.type:
 								mk_RealType(dmin, dmax, -, -) ->
 								{
-									-- @OnFail("ScalarVariable %s, RealType not referenced by Real variable %s", sv.name, sv.variable.declaredType)
+									/* @OnFail("ScalarVariable %s, RealType not referenced by Real variable %s at line %s",
+										sv.name, sv.variable.declaredType, sv.location) */
 									( is_Real(sv.variable) ),
 
 									-- And any start value matches the calculated min/max
@@ -259,7 +268,8 @@ functions
 													  else if dmax <> nil then dmax
 													  else nil
 											in
-												-- @OnFail("ScalarVariable %s, calculated min/max does not match start %s", sv.name, sv.variable.start)
+												/* @OnFail("ScalarVariable %s, calculated min/max does not match start %s at line %s",
+													sv.name, sv.variable.start, sv.location) */
 												(
 													(max <> nil and min <> nil => max >= min)
 													and (min <> nil => min <= sv.variable.start)
@@ -270,7 +280,8 @@ functions
 
 								mk_IntegerType(dmin, dmax) ->
 								{
-									-- @OnFail("ScalarVariable %s, IntegerType not referenced by Integer variable %s", sv.name, sv.variable.declaredType)
+									/* @OnFail("ScalarVariable %s, IntegerType not referenced by Integer variable %s at line %s",
+										sv.name, sv.variable.declaredType, sv.location) */
 									( is_Integer(sv.variable) ),
 
 									-- And any start value matches the calculated min/max
@@ -283,7 +294,8 @@ functions
 													  else if dmax <> nil then dmax
 													  else nil
 											in
-												-- @OnFail("ScalarVariable %s, calculated min/max does not match start %s", sv.name, sv.variable.start)
+												/* @OnFail("ScalarVariable %s, calculated min/max does not match start %s at line %s",
+													sv.name, sv.variable.start, sv.location) */
 												(
 													(max <> nil and min <> nil => max >= min)
 													and (min <> nil => min <= sv.variable.start)
@@ -293,15 +305,18 @@ functions
 								} = {true},
 
 								mk_BooleanType() ->
-									-- @OnFail("ScalarVariable %s, BooleanType not referenced by Boolean variable %s", sv.name, sv.variable.declaredType)
+									/* @OnFail("ScalarVariable %s, BooleanType not referenced by Boolean variable %s at line %s",
+										sv.name, sv.variable.declaredType, sv.location) */
 									( is_Boolean(sv.variable) ),
 
 								mk_StringType() ->
-									-- @OnFail("ScalarVariable %s, StringType not referenced by String variable %s", sv.name, sv.variable.declaredType)
+									/* @OnFail("ScalarVariable %s, StringType not referenced by String variable %s at line %s",
+										sv.name, sv.variable.declaredType, sv.location) */
 									( is_String(sv.variable) ),
 
 								mk_EnumerationType(-) ->
-									-- @OnFail("ScalarVariable %s, EnumerationType not referenced by Enumeration variable %s", sv.name, sv.variable.declaredType)
+									/* @OnFail("ScalarVariable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
+										sv.name, sv.variable.declaredType, sv.location) */
 									( is_Enumeration(sv.variable) )
 							end
 					} = {true}

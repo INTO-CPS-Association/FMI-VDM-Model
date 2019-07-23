@@ -85,9 +85,9 @@ public class Unknown extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.println(indent + "mk_Unknown");
 		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printRawAttribute(indent + "\t", index, ",\n");
 		
 		if (dependencies == null)

@@ -52,12 +52,13 @@ public class DefaultExperiment extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "-- Line " + lineNumber);
-		System.out.print(indent + "mk_DefaultExperiment(");
-		printRawAttribute("", startTime, ", ");
-		printRawAttribute("", stopTime, ", ");
-		printRawAttribute("", tolerance, ", ");
-		printRawAttribute("", stepSize, "");
-		System.out.print(")");
+		System.out.println(indent + "mk_DefaultExperiment");
+		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printRawAttribute(indent + "\t", startTime, ",\n");
+		printRawAttribute(indent + "\t", stopTime, ",\n");
+		printRawAttribute(indent + "\t", tolerance, ",\n");
+		printRawAttribute(indent + "\t", stepSize, "\n");
+		System.out.print(indent + ")");
 	}
 }

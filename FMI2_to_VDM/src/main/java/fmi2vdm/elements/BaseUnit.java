@@ -64,7 +64,6 @@ public class BaseUnit extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.print(indent + "mk_BaseUnit(");
 		printRawAttribute("", kg, ", ");
 		printRawAttribute("", m, ", ");

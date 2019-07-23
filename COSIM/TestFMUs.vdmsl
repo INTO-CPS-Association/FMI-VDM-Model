@@ -33,7 +33,7 @@
 values
 	FMU1 = mk_FMIModelDescription
 	(
-		mk_ModelAttributes("2.0", "FMU1", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
+		mk_ModelAttributes(0, "2.0", "FMU1", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
 		nil,
 
@@ -48,23 +48,24 @@ values
 		nil,
 
 		[
-			mk_ScalarVariable("A", <input>, nil, nil, nil,
+			mk_ScalarVariable(0, "A", <input>, nil, nil, nil,
 					mk_Real(nil, nil, nil, nil, nil, 0, nil), nil),
-			mk_ScalarVariable("B", <output>, nil, nil, nil,
+			mk_ScalarVariable(0, "B", <output>, nil, nil, nil,
 					mk_Real(nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
 		mk_ModelStructure
 		(
-			[ mk_Unknown(2, [1], [<dependent>]) ],		-- B depends on A
+			0,
+			[ mk_Unknown(0, 2, [1], [<dependent>]) ],		-- B depends on A
 			nil,
-			[ mk_Unknown(2, [1], [<dependent>]) ]		-- B depends on A
+			[ mk_Unknown(0, 2, [1], [<dependent>]) ]		-- B depends on A
 		)
 	);
 
 	FMU2 = mk_FMIModelDescription
 	(
-		mk_ModelAttributes("2.0", "FMU2", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
+		mk_ModelAttributes(0, "2.0", "FMU2", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
 
 		nil,
 
@@ -79,17 +80,18 @@ values
 		nil,
 
 		[
-			mk_ScalarVariable("C", <input>, nil, nil, nil,
+			mk_ScalarVariable(0, "C", <input>, nil, nil, nil,
 					mk_Real(nil, nil, nil, nil, nil, 0, nil), nil),
-			mk_ScalarVariable("D", <output>, nil, nil, nil,
+			mk_ScalarVariable(0, "D", <output>, nil, nil, nil,
 					mk_Real(nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
 		mk_ModelStructure
 		(
-			[ mk_Unknown(2, [1], [<dependent>]) ],		-- D depends on C
+			0,
+			[ mk_Unknown(0, 2, [1], [<dependent>]) ],		-- D depends on C
 			nil,
-			[ mk_Unknown(2, [1], [<dependent>]) ]		-- D depends on C
+			[ mk_Unknown(0, 2, [1], [<dependent>]) ]		-- D depends on C
 		)
 	);
 

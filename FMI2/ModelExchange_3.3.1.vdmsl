@@ -32,6 +32,7 @@
  */
 types
 	ModelExchange ::
+		location							: Location
 		modelIdentifier						: NormalizedString1
 		needsExecutionTool					: [bool]
 		completedIntegratorStepNotNeeded	: [bool]
@@ -50,6 +51,7 @@ functions
 	effModelExchange(me) ==
 		mk_ModelExchange
 		(
+			me.location,
 			me.modelIdentifier,
 			nilBool(me.needsExecutionTool),
 			nilBool(me.completedIntegratorStepNotNeeded),
@@ -68,6 +70,10 @@ functions
 	isValidModelExchange(me) ==
 		me <> nil =>
 			me.sourceFiles <> nil =>
-				-- @OnFail("ModelExchange source file names are not unique");
-				( len me.sourceFiles = card elems me.sourceFiles );
+				/* @OnFail("ModelExchange source file names are not unique: %s",
+				 	let files = me.sourceFiles in
+						{ files(a).name | a, b in set inds files &
+							a <> b and files(a).name = files(b).name })
+				 */
+				( len me.sourceFiles = card { f.name | f in seq me.sourceFiles } );
 

@@ -32,6 +32,7 @@
  */
 types
 	Unit ::
+		location		: Location
 		name			: NormalizedString1
 		baseUnit		: [BaseUnit]
 		displayUnits	: [seq of DisplayUnit];
@@ -57,7 +58,9 @@ functions
 	isValidUnitDefinitions: [seq1 of Unit] +> bool
 	isValidUnitDefinitions(units) ==
 		units <> nil =>
-			-- @OnFail("UnitDefinitions names are not unique")
+			/* @OnFail("UnitDefinitions names are not unique: %s",
+				{ units(a).name | a, b in set inds units &
+					a <> b and units(a).name = units(b).name }) */
 			( card { unit.name | unit in seq units } = len units );
 
 	effBaseUnit: BaseUnit +> BaseUnit

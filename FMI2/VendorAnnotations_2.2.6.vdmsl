@@ -32,6 +32,7 @@
  */
 types
 	Tool ::
+		location	: Location
 		name		: NormalizedString1
 		annotation	: [token];
 
@@ -39,6 +40,8 @@ functions
 	isValidVendorAnnotations: [seq1 of Tool] +> bool
 	isValidVendorAnnotations(tools) ==
 		tools <> nil =>
-			-- @OnFail("VendorAnnotations tool names are not unique")
+			/* @OnFail("VendorAnnotations tool names are not unique: %s",
+				{ tools(a).name | a, b in set inds tools &
+					a <> b and tools(a).name = tools(b).name }) */
 			( card { t.name | t in seq tools } = len tools );
 

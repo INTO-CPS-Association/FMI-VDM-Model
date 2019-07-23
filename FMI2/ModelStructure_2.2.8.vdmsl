@@ -35,11 +35,13 @@ types
 	DependencyKind = <dependent> | <constant> | <fixed> | <tunable> | <discrete>;
 
 	Unknown ::			-- XSD p57
+		location			: Location
 		index				: nat1
 		dependencies		: [seq of nat1]
 		dependenciesKind	: [seq of DependencyKind];
 
 	ModelStructure ::	-- XSD p56
+		location			: Location
 		outputs				: [seq1 of Unknown]
 		derivatives			: [seq1 of Unknown]
 		initialUnknowns		: [seq1 of Unknown];
@@ -50,18 +52,18 @@ functions
 	 */
 	isValidUnknown: Unknown +> bool
 	isValidUnknown(u) ==
-	-- @OnFail("Unknown %s has invalid dependencies/kinds", u.index)
+	-- @OnFail("Unknown %s has invalid dependencies/kinds at line %s", u.index, u.location)
 	(
 		if u.dependencies <> nil
 		then u.dependenciesKind <> nil =>
 			{
-				-- @OnFail("Dependencies does not match dependenciesKind")
+				-- @OnFail("Dependencies does not match dependenciesKind at line %s", u.location)
 				( len u.dependencies = len u.dependenciesKind ),
 
-				-- @OnFail("Dependencies has duplicates" )
+				-- @OnFail("Dependencies has duplicates at line %s", u.location )
 				( len u.dependencies = card elems u.dependencies),
 
-				-- @OnFail("Unknown cannot depend on itself")
+				-- @OnFail("Unknown cannot depend on itself at line %s", u.location)
 				( u.index not in set elems u.dependencies )
 			} = {true}
 		else
@@ -74,7 +76,7 @@ functions
 	isValidModelStructure: ModelStructure +> bool
 	isValidModelStructure(ms) ==
 	{
-		-- @OnFail("ModelStructure has invalid unknowns")
+		-- @OnFail("ModelStructure has invalid Unknowns")
 		(
 			{
 				list <> nil =>
@@ -84,14 +86,14 @@ functions
 			} = {true}
 		),
 
-		-- @OnFail("ModelStructure has duplicate variables")
+		-- @OnFail("ModelStructure has duplicate Unknown variable indexes")
 		(
 			duplicateCheck(ms.outputs)
 			and	duplicateCheck(ms.derivatives)
 			and duplicateCheck(ms.initialUnknowns)
 		),
 
-		-- @OnFail("ModelStructure.InitialUnknowns are not of kind dependent or constant")
+		-- @OnFail("InitialUnknowns are not of kind dependent or constant")
 		(
 			ms.initialUnknowns <> nil =>
 				forall iu in seq ms.initialUnknowns &
@@ -109,4 +111,6 @@ functions
 	duplicateCheck(su) ==
 		su <> nil =>
 			let indexes = [ u.index | u in seq su ] in
-				len indexes = card elems indexes;
+				/* @OnFail("Duplicate indexes: %s",
+					{ a | a, b in seq indexes & a = b } ) */
+				( len indexes = card elems indexes );

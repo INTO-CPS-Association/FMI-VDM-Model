@@ -111,7 +111,6 @@ public class FMIModelDescription extends Element
 		System.out.println(" */");
 		System.out.println("values");
 		
-		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.println(indent + varname + " = mk_FMIModelDescription");
 		System.out.println(indent + "(");
 		

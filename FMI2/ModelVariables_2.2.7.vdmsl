@@ -74,6 +74,7 @@ types
 	VarName = NormalizedString1;		-- Has a syntax defined in section 2.2.9, p64
 
 	ScalarVariable ::	-- XSD 2.2.7, p44, p54
+		location							: Location
 		-- attributes
 		name								: VarName
 		causality							: [Causality]
@@ -109,15 +110,18 @@ functions
 	isValidScalarVariables: seq1 of ScalarVariable +> bool
     isValidScalarVariables(svs) ==
         {
-            -- @OnFail("ScalarVariables.causality defines more than one independent variable")
+            /* @OnFail("Causalities defines more than one independent variable: %s",
+            	{ sv.name | sv in seq svs & sv.causality = <independent> }) */
             ( card { sv | sv in seq svs & sv.causality = <independent> } <= 1 ),
 
-            -- @OnFail("ScalarVariable names are not unique")
+            /* @OnFail("ScalarVariable names are not unique: %s",
+            	{ svs(a).name | a, b in set inds svs &
+            		a <> b and svs(a).name = svs(b).name } ) */
             ( card { sv.name | sv in seq svs } = len svs )
         }
         union
         {
-            -- @OnFail("ScalarVariables[%s] invalid", sv.name)
+            -- @OnFail("ScalarVariables[%s] invalid at line %s", sv.name, sv.location)
             ( isValidScalarVariable(sv) )
 
             | sv in seq svs
@@ -134,7 +138,8 @@ functions
 		in
 		{
 			-- Table on p46 defining causality, and p48/49 defining combinations
-			-- @OnFail("Causality/variability/initial/start %s/%s/%s/%s invalid", eCausality, eVariability, eInitial, sv.variable.start)
+			/* @OnFail("Causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
+				eCausality, eVariability, eInitial, sv.variable.start, sv.location) */
 			(
 				cases eCausality:
 					<parameter> ->
@@ -185,7 +190,8 @@ functions
 			),
 
 			-- Table on p46 defining variability, and p49 defining combinations
-			-- @OnFail("Variability/causality %s/%s invalid", eVariability, eCausality)
+			/* @OnFail("Variability/causality %s/%s invalid at line %s",
+				eVariability, eCausality, sv.location) */
 			(
 				cases eVariability:
 					<constant> ->
@@ -204,14 +210,16 @@ functions
 			),
 
 			-- Table on p47 defining initial
-			-- @OnFail("Initial/causality %s/%s invalid", sv.initial, eCausality)
+			/* @OnFail("Initial/causality %s/%s invalid at %s",
+				sv.initial, eCausality, sv.location) */
 			(
 				sv.initial <> nil =>
 					(eCausality not in set {<input>, <independent>})
 			),
 
 			-- Table on p47 defining initial
-			-- @OnFail("Initial/variability/start %s/%s/%s invalid", eInitial, eVariability, sv.variable.start)
+			/* @OnFail("Initial/variability/start %s/%s/%s invalid at line %s",
+				eInitial, eVariability, sv.variable.start, sv.location) */
 			(
 				cases eInitial:
 					<exact> ->
@@ -230,7 +238,7 @@ functions
 				end
 			),
 
-			-- @OnFail("Variable min/max/start invalid")
+			-- @OnFail("Variable min/max/start invalid at line %s", sv.location)
 			(
 				cases sv.variable:
 					mk_Real(-, min, max, -, -, start, -) ->
@@ -312,11 +320,12 @@ functions
 
 	effectiveScalarVariable: ScalarVariable +> ScalarVariable
 	effectiveScalarVariable(sv) ==
-		let causality = effectiveCausality(sv.causality),
+		let causality   = effectiveCausality(sv.causality),
 			variability = effectiveVariability(sv.variability)
 		in 
 			mk_ScalarVariable
 			(
+				sv.location,
 				sv.name,
 				causality,
 				variability,

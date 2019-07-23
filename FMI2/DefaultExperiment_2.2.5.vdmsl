@@ -32,6 +32,7 @@
  */
 types
 	DefaultExperiment ::
+		location		: Location
 		startTime		: [real]
 		stopTime		: [real]
 		tolerance		: [real]
@@ -43,10 +44,10 @@ functions
 		e <> nil =>
 			e.startTime <> nil and e.stopTime <> nil =>
 			{
-				-- @OnFail("DefaultExperiment stop time must be later than start time")
+				-- @OnFail("DefaultExperiment stop time must be later than start time at line %s", e.location)
 				( e.stopTime > e.startTime ),
 
-				-- @OnFail("DefaultExperiment stepSize must be less than start-stop interval")
+				-- @OnFail("DefaultExperiment stepSize must be less than start-stop interval at line %s", e.location)
 				( e.stepSize <> nil =>
 					e.stopTime - e.startTime > e.stepSize )
 			} = {true};

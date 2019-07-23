@@ -78,9 +78,9 @@ public class ModelStructure extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.println(indent + "mk_ModelStructure");
 		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		
 		if (outputs != null)
 		{

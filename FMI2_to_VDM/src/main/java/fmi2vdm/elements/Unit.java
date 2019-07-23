@@ -70,9 +70,9 @@ public class Unit extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.println(indent + "mk_Unit");
 		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", name, ",\n");
 		printOptional(indent + "\t", baseUnit, ",\n");
 		printSequence(indent + "\t", displayUnits, "\n");

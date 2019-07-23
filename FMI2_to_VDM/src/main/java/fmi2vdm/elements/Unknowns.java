@@ -64,7 +64,6 @@ public class Unknowns extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "\t-- Line " + lineNumber);
 		printSequence(indent + "\t", unknowns, "");
 	}
 }

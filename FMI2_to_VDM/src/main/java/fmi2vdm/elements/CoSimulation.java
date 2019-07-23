@@ -80,9 +80,9 @@ public class CoSimulation extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "-- Line " + lineNumber);
 		System.out.println(indent + "mk_CoSimulation");
 		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		
 		printStringAttribute(indent + "\t", modelIdentifier, ",\n");
 		printRawAttribute(indent + "\t", needsExecutionTool, ",\n");

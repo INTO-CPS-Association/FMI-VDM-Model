@@ -60,6 +60,7 @@ types
 	Type = RealType | IntegerType | BooleanType | StringType | EnumerationType;
 
 	SimpleType ::	-- XSD p38
+		location	: Location
 		name		: NormalizedString1
 		type		: Type;
 
@@ -99,7 +100,7 @@ functions
             }
             union
             {
-    			-- @OnFail("TypeDefinition[%s] invalid", stype.name)
+    			-- @OnFail("TypeDefinition[%s] invalid at line %s", stype.name, stype.location)
                 ( isValidType(stype) )
 
                 | stype in set defs

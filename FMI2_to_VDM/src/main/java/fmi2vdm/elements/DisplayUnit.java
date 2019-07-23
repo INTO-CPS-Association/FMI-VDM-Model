@@ -50,11 +50,11 @@ public class DisplayUnit extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "-- Line " + lineNumber);
-		System.out.print(indent + "mk_DisplayUnit(");
-		printStringAttribute("", name, ", ");
-		printRawAttribute("", factor, ", ");
-		printRawAttribute("", offset, "");
-		System.out.print(")");
+		System.out.println(indent + "mk_DisplayUnit");
+		System.out.println(indent + "(");
+		printStringAttribute(indent + "\t", name, ",\n");
+		printRawAttribute(indent + "\t", factor, ",\n");
+		printRawAttribute(indent + "\t", offset, "\n");
+		System.out.print(indent + ")");
 	}
 }
