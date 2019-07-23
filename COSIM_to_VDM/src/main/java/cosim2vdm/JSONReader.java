@@ -1,4 +1,7 @@
-// package org.stringtree.json;
+/**
+ * Originally from https://sourceforge.net/projects/stringtree/.
+ * Apache Software License, GNU Library or Lesser General Public License version 2.0 (LGPLv2)
+ */
 
 package cosim2vdm;
 

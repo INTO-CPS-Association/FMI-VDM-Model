@@ -38,6 +38,11 @@
 									<exclude>generated/**</exclude>
 									<exclude>pom.xml</exclude>
 								</resource>
+								<resource>
+									<directory>..</directory>
+									<filtering>false</filtering>
+									<include>LICENCE</include>
+								</resource>
 							</resources>
 						</configuration>
 					</execution>
@@ -54,7 +59,10 @@
 							<useDefaultManifestFile>true</useDefaultManifestFile>
 							<outputDirectory>generated</outputDirectory>
 							<classesDirectory>generated/sources</classesDirectory>
-							<includes>**/*.vdmsl</includes>
+							<includes>
+								<include>**/*.vdmsl</include>
+								<include>LICENCE</include>
+							</includes>
 						</configuration>
 					</execution>
 				</executions>
