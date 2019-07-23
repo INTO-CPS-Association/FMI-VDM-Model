@@ -208,7 +208,7 @@ Checker reported:
 "time"
 ------------------------------ 2.2.3_invalidTypes.xml
 VDMCheck.sh:
-TypeDefinitions names are not unique
+TypeDefinitions names are not unique: {"abc"}
 SimpleType "abc", Real max 1 not >= min 10
 TypeDefinition["abc"] invalid at line 6
 SimpleType "abc", Integer max 0 not >= min 100

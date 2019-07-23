@@ -95,7 +95,8 @@ functions
 	isValidTypeDefinitions(defs) ==
 		defs <> nil =>
     		{
-    		    -- @OnFail("TypeDefinitions names are not unique")
+    		    /* @OnFail("TypeDefinitions names are not unique: %s",
+    		    	{ a.name | a, b in set defs & a <> b and a.name = b.name }) */
                 ( card { stype.name | stype in set defs } = card defs )
             }
             union
