@@ -1,7 +1,6 @@
 ------------------------------ 2.2.1_initialUnknowns1.xml
 VDMCheck.sh:
-InitialUnknowns should be empty
-InitialUnknowns invalid at line 10
+2.2.8 InitialUnknowns should be empty
 false
 ------------
 fmuCheck:
@@ -14,8 +13,7 @@ Checker reported:
 "time"
 ------------------------------ 2.2.1_initialUnknowns2.xml
 VDMCheck.sh:
-InitialUnknowns should be: {2}
-InitialUnknowns invalid at line 13
+2.2.8 InitialUnknowns should be: {2}
 false
 ------------
 fmuCheck:
@@ -28,8 +26,7 @@ Checker reported:
 "time","v2"
 ------------------------------ 2.2.1_initialUnknowns3.xml
 VDMCheck.sh:
-InitialUnknowns are not sorted: [3, 2]
-InitialUnknowns invalid at line 16
+2.2.8 InitialUnknowns are not sorted: [3, 2]
 false
 ------------
 fmuCheck:
@@ -42,10 +39,10 @@ Checker reported:
 "time","v2","v3"
 ------------------------------ 2.2.1_invalidDerivatives1.xml
 VDMCheck.sh:
-Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
-ScalarVariables["v1"] invalid at line 6
-ScalarVariables invalid
-Derivatives section does not match Real/derivative variables at line 13
+2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+2.2.7 ScalarVariables["v1"] invalid at line 6
+2.2.1 ScalarVariables invalid
+2.2.8 Derivatives section does not match Real/derivative variables at line 13
 false
 ------------
 fmuCheck:
@@ -64,10 +61,10 @@ Checker reported:
 	3 Fatal error(s) occurred during processing
 ------------------------------ 2.2.1_invalidDerivatives2.xml
 VDMCheck.sh:
-Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
-ScalarVariables["v1"] invalid at line 6
-ScalarVariables invalid
-Derivatives declared, but no Real/derivative variables at line 13
+2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+2.2.7 ScalarVariables["v1"] invalid at line 6
+2.2.1 ScalarVariables invalid
+2.2.8 Derivatives declared, but no Real/derivative variables at line 13
 false
 ------------
 fmuCheck:
@@ -86,7 +83,7 @@ Checker reported:
 	3 Fatal error(s) occurred during processing
 ------------------------------ 2.2.1_invalidMultipleSet.xml
 VDMCheck.sh:
-["varname"].canHandleMultipleSetPerTimeInstant invalid at line 6
+2.2.7 ["varname"].canHandleMultipleSetPerTimeInstant invalid at line 6
 false
 ------------
 fmuCheck:
@@ -99,7 +96,7 @@ Checker reported:
 "time"
 ------------------------------ 2.2.1_invalidOutputs1.xml
 VDMCheck.sh:
-Outputs should be {1, 2} at line 13
+2.2.8 Outputs should be {1, 2} at line 13
 false
 ------------
 fmuCheck:
@@ -112,10 +109,10 @@ Checker reported:
 "time","v1","v2"
 ------------------------------ 2.2.1_invalidOutputs2.xml
 VDMCheck.sh:
-Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
-ScalarVariables["v1"] invalid at line 6
-ScalarVariables invalid
-Outputs should be omitted at line 10
+2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+2.2.7 ScalarVariables["v1"] invalid at line 6
+2.2.1 ScalarVariables invalid
+2.2.8 Outputs should be omitted at line 10
 false
 ------------
 fmuCheck:
@@ -129,7 +126,7 @@ Checker reported:
 "time"
 ------------------------------ 2.2.1_noModelType.xml
 VDMCheck.sh:
-Neither ModelExchange nor CoSimlation specified
+2.2.1 Neither ModelExchange nor CoSimulation specified
 false
 ------------
 fmuCheck:
@@ -146,14 +143,14 @@ Checker reported:
 	3 Fatal error(s) occurred during processing
 ------------------------------ 2.2.1_typeCheckFail.xml
 VDMCheck.sh:
-ScalarVariable "v1", RealType not referenced by Real variable "T1" at line 13
-ScalarVariable "v1", calculated min/max does not match start 100 at line 13
-ScalarVariable "v2", IntegerType not referenced by Integer variable "T2" at line 16
-ScalarVariable "v2", calculated min/max does not match start 100 at line 16
-ScalarVariable "v3", StringType not referenced by String variable "T3" at line 19
-ScalarVariable "v4", BooleanType not referenced by Boolean variable "T4" at line 22
-ScalarVariable "v5", EnumerationType not referenced by Enumeration variable "T5" at line 25
-ScalarVariables typecheck against TypeDefinitions failed
+2.2.7 ScalarVariable "v1", RealType not referenced by Real variable "T1" at line 13
+2.2.7 ScalarVariable "v1", calculated min/max does not match start 100 at line 13
+2.2.7 ScalarVariable "v2", IntegerType not referenced by Integer variable "T2" at line 16
+2.2.7 ScalarVariable "v2", calculated min/max does not match start 100 at line 16
+2.2.7 ScalarVariable "v3", StringType not referenced by String variable "T3" at line 19
+2.2.7 ScalarVariable "v4", BooleanType not referenced by Boolean variable "T4" at line 22
+2.2.7 ScalarVariable "v5", EnumerationType not referenced by Enumeration variable "T5" at line 25
+2.2.1 ScalarVariables typecheck against TypeDefinitions failed
 false
 ------------
 fmuCheck:
@@ -181,8 +178,8 @@ parsing aborted
 [FATAL][FMUCHK] Error in FMU version detection
 ------------------------------ 2.2.2_duplicateUnitNames.xml
 VDMCheck.sh:
-UnitDefinitions names are not unique: {"wibble"}
-UnitDefinitions invalid
+2.2.2 UnitDefinitions names are not unique: {"wibble"}
+2.2.1 UnitDefinitions invalid
 false
 ------------
 fmuCheck:
@@ -195,7 +192,7 @@ Checker reported:
 "time"
 ------------------------------ 2.2.3_invalidTypeName.xml
 VDMCheck.sh:
-TypeDefinition and ScalarVariable names overlap: "abc" at line 6
+2.2.3 TypeDefinition and ScalarVariable names overlap: "abc" at line 6
 false
 ------------
 fmuCheck:
@@ -208,14 +205,14 @@ Checker reported:
 "time"
 ------------------------------ 2.2.3_invalidTypes.xml
 VDMCheck.sh:
-TypeDefinitions names are not unique: {"abc"}
-SimpleType "abc", Real max 1 not >= min 10
-TypeDefinition["abc"] invalid at line 6
-SimpleType "abc", Integer max 0 not >= min 100
-TypeDefinition["abc"] invalid at line 9
-SimpleType "enum", EnumerationType item name/values do not form a bijection
-TypeDefinition["enum"] invalid at line 12
-TypeDefinitions invalid
+2.2.3 TypeDefinitions names are not unique: {"abc"}
+2.2.3 SimpleType "abc", Real max 1 not >= min 10
+2.2.3 TypeDefinition["abc"] invalid at line 6
+2.2.3 SimpleType "abc", Integer max 0 not >= min 100
+2.2.3 TypeDefinition["abc"] invalid at line 9
+2.2.3 SimpleType "enum", EnumerationType item name/values do not form a bijection
+2.2.3 TypeDefinition["enum"] invalid at line 12
+2.2.1 TypeDefinitions invalid
 false
 ------------
 fmuCheck:
@@ -229,8 +226,8 @@ Checker reported:
 "time"
 ------------------------------ 2.2.4_duplicateCategories.xml
 VDMCheck.sh:
-LogCategory names are not unique: {"one"}
-LogCategories invalid
+2.2.4 LogCategory names are not unique: {"one"}
+2.2.1 LogCategories invalid
 false
 ------------
 fmuCheck:
@@ -243,9 +240,9 @@ Checker reported:
 "time"
 ------------------------------ 2.2.5_invalidExperiment.xml
 VDMCheck.sh:
-DefaultExperiment stop time must be later than start time at line 5
-DefaultExperiment stepSize must be less than start-stop interval at line 5
-DefaultExperiment invalid at line 5
+2.2.5 DefaultExperiment stop time must be later than start time at line 5
+2.2.5 DefaultExperiment stepSize must be less than start-stop interval at line 5
+2.2.1 DefaultExperiment invalid at line 5
 false
 ------------
 fmuCheck:
@@ -258,8 +255,8 @@ Checker reported:
 "time"
 ------------------------------ 2.2.6_duplicateVendorNames.xml
 VDMCheck.sh:
-VendorAnnotations tool names are not unique: {"one"}
-VendorAnnotations invalid
+2.2.6 VendorAnnotations tool names are not unique: {"one"}
+2.2.1 VendorAnnotations invalid
 false
 ------------
 fmuCheck:
@@ -272,18 +269,18 @@ Checker reported:
 "time"
 ------------------------------ 2.2.7_causalityVariabiliy.xml
 VDMCheck.sh:
-Causality/variability/initial/start <parameter>/<continuous>/nil/nil invalid at line 6
-Variability/causality <continuous>/<parameter> invalid at line 6
-ScalarVariables["v1"] invalid at line 6
-Causality/variability/initial/start <independent>/<continuous>/<approx>/200 invalid at line 9
-Initial/causality <approx>/<independent> invalid at 9
-min 100 is not <= max 1
-start 200 is not within min 100/max 1
-Variable min/max/start invalid at line 9
-VendorAnnotations tool names are not unique: {"x"}
-VendorAnnotations invalid
-ScalarVariables["v2"] invalid at line 9
-ScalarVariables invalid
+2.2.7 Causality/variability/initial/start <parameter>/<continuous>/nil/nil invalid at line 6
+2.2.7 Variability/causality <continuous>/<parameter> invalid at line 6
+2.2.7 ScalarVariables["v1"] invalid at line 6
+2.2.7 Causality/variability/initial/start <independent>/<continuous>/<approx>/200 invalid at line 9
+2.2.7 Initial/causality <approx>/<independent> invalid at 9
+2.2.7 min 100 is not <= max 1
+2.2.7 start 200 is not within min 100/max 1
+2.2.7 Variable min/max/start invalid at line 9
+2.2.6 VendorAnnotations tool names are not unique: {"x"}
+2.2.7 VendorAnnotations invalid
+2.2.7 ScalarVariables["v2"] invalid at line 9
+2.2.1 ScalarVariables invalid
 false
 ------------
 fmuCheck:
@@ -298,9 +295,9 @@ Checker reported:
 "time"
 ------------------------------ 2.2.7_duplicateVarNames.xml
 VDMCheck.sh:
-Causalities defines more than one independent variable: {"varname"}
-ScalarVariable names are not unique: {"varname"}
-ScalarVariables invalid
+2.2.7 ScalarVariables define more than one independent variable: {"varname"}
+2.2.7 ScalarVariable names are not unique: {"varname"}
+2.2.1 ScalarVariables invalid
 false
 ------------
 fmuCheck:
@@ -314,12 +311,12 @@ Checker reported:
 "time"
 ------------------------------ 2.2.7_notInMinMaxRange.xml
 VDMCheck.sh:
-Initial/variability/start <calculated>/<continuous>/1 invalid at line 6
-min 10 is not <= max 5
-start 1 is not within min 10/max 5
-Variable min/max/start invalid at line 6
-ScalarVariables["varname"] invalid at line 6
-ScalarVariables invalid
+2.2.7 Initial/variability/start <calculated>/<continuous>/1 invalid at line 6
+2.2.7 min 10 is not <= max 5
+2.2.7 start 1 is not within min 10/max 5
+2.2.7 Variable min/max/start invalid at line 6
+2.2.7 ScalarVariables["varname"] invalid at line 6
+2.2.1 ScalarVariables invalid
 false
 ------------
 fmuCheck:
@@ -334,18 +331,18 @@ Checker reported:
 "time"
 ------------------------------ 2.2.8_invalidUnknowns.xml
 VDMCheck.sh:
-Dependencies does not match dependenciesKind at line 15
-Unknown cannot depend on itself at line 15
-Unknown 1 has invalid dependencies/kinds at line 15
-Dependencies has duplicates at line 16
-Unknown 1 has invalid dependencies/kinds at line 16
-Unknown cannot depend on itself at line 17
-Unknown 2 has invalid dependencies/kinds at line 17
-ModelStructure has invalid Unknowns
-Duplicate indexes: {1}
-ModelStructure has duplicate Unknown variable indexes
-InitialUnknowns are not of kind dependent or constant
-ModelStructure invalid at line 13
+2.2.8 Dependencies list does not match dependenciesKind at line 15
+2.2.8 Unknown cannot depend on itself at line 15
+2.2.8 Unknown 1 has invalid dependencies/kinds at line 15
+2.2.8 Dependencies list has duplicates at line 16
+2.2.8 Unknown 1 has invalid dependencies/kinds at line 16
+2.2.8 Unknown cannot depend on itself at line 17
+2.2.8 Unknown 2 has invalid dependencies/kinds at line 17
+2.2.8 ModelStructure has invalid Unknowns
+2.2.8 Duplicate indexes: {1}
+2.2.8 ModelStructure has duplicate Unknown variable indexes
+2.2.8 InitialUnknowns are not of kind dependent or constant
+2.2.1 ModelStructure invalid at line 13
 false
 ------------
 fmuCheck:
@@ -364,8 +361,8 @@ Checker reported:
 	3 Fatal error(s) occurred during processing
 ------------------------------ 3.3.1_duplicateSourceFiles.xml
 VDMCheck.sh:
-ModelExchange source file names are not unique: {"abc"}
-ModelExchange invalid at line 4
+3.3.1 ModelExchange source file names are not unique: {"abc"}
+2.2.1 ModelExchange invalid at line 4
 false
 ------------
 fmuCheck:
@@ -378,8 +375,8 @@ Checker reported:
 "time"
 ------------------------------ 4.3.1_duplicateSourceFiles.xml
 VDMCheck.sh:
-CoSimulation source file names are not unique: {"abc"}
-CoSimulation invalid at line 4
+4.3.1 CoSimulation source file names are not unique: {"abc"}
+2.2.1 CoSimulation invalid at line 4
 false
 ------------
 fmuCheck:
