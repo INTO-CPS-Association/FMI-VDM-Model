@@ -52,18 +52,18 @@ functions
 	 */
 	isValidUnknown: Unknown +> bool
 	isValidUnknown(u) ==
-	-- @OnFail("Unknown %s has invalid dependencies/kinds at line %s", u.index, u.location)
+	-- @OnFail("2.2.8 Unknown %s has invalid dependencies/kinds at line %s", u.index, u.location)
 	(
 		if u.dependencies <> nil
 		then u.dependenciesKind <> nil =>
 			{
-				-- @OnFail("Dependencies does not match dependenciesKind at line %s", u.location)
+				-- @OnFail("2.2.8 Dependencies list does not match dependenciesKind at line %s", u.location)
 				( len u.dependencies = len u.dependenciesKind ),
 
-				-- @OnFail("Dependencies has duplicates at line %s", u.location )
+				-- @OnFail("2.2.8 Dependencies list has duplicates at line %s", u.location )
 				( len u.dependencies = card elems u.dependencies),
 
-				-- @OnFail("Unknown cannot depend on itself at line %s", u.location)
+				-- @OnFail("2.2.8 Unknown cannot depend on itself at line %s", u.location)
 				( u.index not in set elems u.dependencies )
 			} = {true}
 		else
@@ -76,7 +76,7 @@ functions
 	isValidModelStructure: ModelStructure +> bool
 	isValidModelStructure(ms) ==
 	{
-		-- @OnFail("ModelStructure has invalid Unknowns")
+		-- @OnFail("2.2.8 ModelStructure has invalid Unknowns")
 		(
 			{
 				list <> nil =>
@@ -86,14 +86,14 @@ functions
 			} = {true}
 		),
 
-		-- @OnFail("ModelStructure has duplicate Unknown variable indexes")
+		-- @OnFail("2.2.8 ModelStructure has duplicate Unknown variable indexes")
 		(
 			duplicateCheck(ms.outputs)
 			and	duplicateCheck(ms.derivatives)
 			and duplicateCheck(ms.initialUnknowns)
 		),
 
-		-- @OnFail("InitialUnknowns are not of kind dependent or constant")
+		-- @OnFail("2.2.8 InitialUnknowns are not of kind dependent or constant")
 		(
 			ms.initialUnknowns <> nil =>
 				forall iu in seq ms.initialUnknowns &
@@ -111,7 +111,7 @@ functions
 	duplicateCheck(su) ==
 		su <> nil =>
 			let indexes = [ u.index | u in seq su ] in
-				/* @OnFail("Duplicate indexes: %s",
+				/* @OnFail("2.2.8 Duplicate indexes: %s",
 					{ indexes(a) | a, b in set inds indexes &
 						a <> b and indexes(a) = indexes(b) } ) */
 				( len indexes = card elems indexes );

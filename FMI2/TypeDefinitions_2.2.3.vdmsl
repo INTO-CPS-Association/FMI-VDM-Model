@@ -69,11 +69,11 @@ functions
 	isValidType(stype) ==
 		cases stype.type:
 			mk_RealType(min, max, -, -) ->
-				-- @OnFail("SimpleType %s, Real max %s not >= min %s", stype.name, max, min)
+				-- @OnFail("2.2.3 SimpleType %s, Real max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
 
 			mk_IntegerType(min, max) ->
-				-- @OnFail("SimpleType %s, Integer max %s not >= min %s", stype.name, max, min)
+				-- @OnFail("2.2.3 SimpleType %s, Integer max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
 
 			-- Items of an enumeration as a sequence of "name" and "value" pairs. The
@@ -82,7 +82,7 @@ functions
 			-- bijective). An Enumeration element must have at least one Item.
 
 			mk_EnumerationType(items) ->
-				-- @OnFail("SimpleType %s, EnumerationType item name/values do not form a bijection", stype.name)
+				-- @OnFail("2.2.3 SimpleType %s, EnumerationType item name/values do not form a bijection", stype.name)
 				(
 					card { i.name | i in seq items } = len items
 					and	card { i.value | i in seq items } = len items
@@ -95,13 +95,13 @@ functions
 	isValidTypeDefinitions(defs) ==
 		defs <> nil =>
     		{
-    		    /* @OnFail("TypeDefinitions names are not unique: %s",
+    		    /* @OnFail("2.2.3 TypeDefinitions names are not unique: %s",
     		    	{ a.name | a, b in set defs & a <> b and a.name = b.name }) */
                 ( card { stype.name | stype in set defs } = card defs )
             }
             union
             {
-    			-- @OnFail("TypeDefinition[%s] invalid at line %s", stype.name, stype.location)
+    			-- @OnFail("2.2.3 TypeDefinition[%s] invalid at line %s", stype.name, stype.location)
                 ( isValidType(stype) )
 
                 | stype in set defs

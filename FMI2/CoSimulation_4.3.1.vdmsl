@@ -80,7 +80,7 @@ functions
 	isValidCoSimulation(cs) ==
 		cs <> nil =>
 			cs.sourceFiles <> nil =>
-				/* @OnFail("CoSimulation source file names are not unique: %s",
+				/* @OnFail("4.3.1 CoSimulation source file names are not unique: %s",
 					let files = cs.sourceFiles in
 						{ files(a).name | a, b in set inds files &
 							a <> b and files(a).name = files(b).name })

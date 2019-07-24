@@ -70,7 +70,7 @@ functions
 	isValidModelExchange(me) ==
 		me <> nil =>
 			me.sourceFiles <> nil =>
-				/* @OnFail("ModelExchange source file names are not unique: %s",
+				/* @OnFail("3.3.1 ModelExchange source file names are not unique: %s",
 				 	let files = me.sourceFiles in
 						{ files(a).name | a, b in set inds files &
 							a <> b and files(a).name = files(b).name })
