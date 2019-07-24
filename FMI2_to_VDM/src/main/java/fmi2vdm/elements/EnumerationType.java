@@ -62,7 +62,8 @@ public class EnumerationType extends Type
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_EnumerationType(");
+		System.out.println(indent + "mk_EnumerationType");
+		System.out.println(indent + "(");
 		printSequence(indent + "\t", items, "\n");
 		System.out.println(indent + ")");
 	}

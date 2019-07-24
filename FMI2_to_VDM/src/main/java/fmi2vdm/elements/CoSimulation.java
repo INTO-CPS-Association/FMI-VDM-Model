@@ -95,7 +95,7 @@ public class CoSimulation extends Element
 		printRawAttribute(indent + "\t", canGetAndSetFMUstate, ",\n");
 		printRawAttribute(indent + "\t", canSerializeFMUstate, ",\n");
 		printRawAttribute(indent + "\t", providesDirectionalDerivative, ",\n");
-		printOptional(indent + "\t", sourceFiles, "");
+		printOptional(indent + "\t", sourceFiles, "\n");
 		System.out.print(indent + ")");
 	}
 }
