@@ -334,13 +334,11 @@ VDMCheck.sh:
 2.2.8 Dependencies list does not match dependenciesKind at line 15
 2.2.8 Unknown cannot depend on itself at line 15
 2.2.8 Unknown 1 has invalid dependencies/kinds at line 15
-2.2.8 Dependencies list has duplicates at line 16
+2.2.8 Unknown has duplicate indexes {2} at line 16
 2.2.8 Unknown 1 has invalid dependencies/kinds at line 16
 2.2.8 Unknown cannot depend on itself at line 17
 2.2.8 Unknown 2 has invalid dependencies/kinds at line 17
 2.2.8 ModelStructure has invalid Unknowns
-2.2.8 Duplicate indexes: {1}
-2.2.8 ModelStructure has duplicate Unknown variable indexes
 2.2.8 InitialUnknowns are not of kind dependent or constant
 2.2.1 ModelStructure invalid at line 13
 false

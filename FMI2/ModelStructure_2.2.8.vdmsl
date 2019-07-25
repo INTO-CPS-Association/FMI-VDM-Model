@@ -60,7 +60,9 @@ functions
 				-- @OnFail("2.2.8 Dependencies list does not match dependenciesKind at line %s", u.location)
 				( len u.dependencies = len u.dependenciesKind ),
 
-				-- @OnFail("2.2.8 Dependencies list has duplicates at line %s", u.location )
+				/* @OnFail("2.2.8 Unknown has duplicate indexes %s at line %s",
+					{ u.dependencies(a) | a, b in set inds u.dependencies &
+						a <> b and u.dependencies(a) = u.dependencies(b) }, u.location ) */
 				( len u.dependencies = card elems u.dependencies),
 
 				-- @OnFail("2.2.8 Unknown cannot depend on itself at line %s", u.location)
@@ -86,13 +88,6 @@ functions
 			} = {true}
 		),
 
-		-- @OnFail("2.2.8 ModelStructure has duplicate Unknown variable indexes")
-		(
-			duplicateCheck(ms.outputs)
-			and	duplicateCheck(ms.derivatives)
-			and duplicateCheck(ms.initialUnknowns)
-		),
-
 		-- @OnFail("2.2.8 InitialUnknowns are not of kind dependent or constant")
 		(
 			ms.initialUnknowns <> nil =>
@@ -103,15 +98,3 @@ functions
 		)
 	} = {true};
 
-
-	/**
-	 * Check for duplicate indexes in a sequence of Unknowns.
-	 */
-	duplicateCheck: [seq1 of Unknown] +> bool
-	duplicateCheck(su) ==
-		su <> nil =>
-			let indexes = [ u.index | u in seq su ] in
-				/* @OnFail("2.2.8 Duplicate indexes: %s",
-					{ indexes(a) | a, b in set inds indexes &
-						a <> b and indexes(a) = indexes(b) } ) */
-				( len indexes = card elems indexes );
