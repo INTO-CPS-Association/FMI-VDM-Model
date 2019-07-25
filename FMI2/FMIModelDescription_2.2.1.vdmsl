@@ -191,7 +191,7 @@ functions
 				 		( md.modelStructure.derivatives = nil )
 			),
 
-			-- InitalUnknowns must be all output (approx/calculated), calculatedParameters and 
+			-- InitalUnknowns must include all output (approx/calculated), calculatedParameters and 
 			-- all continuous-time states and derivatives that are approx/calculated.
 			-- And the list must be in ascending index order
 			(
@@ -205,29 +205,23 @@ functions
 						or (sv in set continuousTimeStates(eModelVariables)
 							and sv.initial in set { <approx>, <calculated> })
 
-						or (md.modelStructure.derivatives <> nil
-							and svi in set { u.index | u in seq md.modelStructure.derivatives &
-								let dv = eModelVariables(u.index) in 
-									dv.initial in set { <approx>, <calculated> } } ) }
+						or (sv in set stateDerivatives(eModelVariables)
+							and sv.initial in set { <approx>, <calculated> }) }
 				in
-				 	if initIndexes <> {}
-				 	then
+				 	initIndexes <> {} =>
 				 		let ius = md.modelStructure.initialUnknowns in
 				 		{
-			 				-- @OnFail("2.2.8 InitialUnknowns should be: %s", initIndexes)
+			 				-- @OnFail("2.2.8 InitialUnknowns must include: %s", initIndexes)
 			 				( ius <> nil ),
 
-			 				-- @OnFail("2.2.8 InitialUnknowns should be: %s", initIndexes)
-			 				( ius <> nil => { u.index | u in seq ius } = initIndexes ),
+			 				-- @OnFail("2.2.8 InitialUnknowns must include: %s", initIndexes)
+			 				( ius <> nil => { u.index | u in seq ius } subset initIndexes ),
 
 			 				-- @OnFail("2.2.8 InitialUnknowns are not sorted: %s", [ u.index | u in seq ius ])
 			 				( ius <> nil => 
 					 				forall i in set inds ius &
 					 					i = len ius or ius(i).index < ius(i+1).index )
 				 		} = {true}
-				 	else
-				 		-- @OnFail("2.2.8 InitialUnknowns should be empty")
-			 			( md.modelStructure.initialUnknowns = nil )
 			)
 		} = {true};
 

@@ -337,11 +337,20 @@ functions
 
 	/**
 	 * Return the ScalarVariables from a list which are continuous-time states, defined to be
-	 * variables which are the derivative of some other variable.
+	 * Real variables which are continuous and have a derivative.
 	 */
 	continuousTimeStates: seq of ScalarVariable -> set of ScalarVariable
 	continuousTimeStates(svs) ==
+		{ svs(i) | i in set inds svs &
+			is_Real(svs(i).variable)
+			and svs(i).variability = <continuous> 
+			and exists j in set inds svs & svs(j).variable.derivative = i };
+
+	/**
+	 * Return the ScalarVariables from a list which are state derivatives, defined to be
+	 * variables which are the derivative of some other variable.
+	 */
+	stateDerivatives: seq of ScalarVariable -> set of ScalarVariable
+	stateDerivatives(svs) ==
 		{ sv | sv in seq svs &
-			is_Real(sv.variable)
-			and sv.variability = <continuous> 
-			and sv.variable.derivative <> nil };
+			sv.variable.derivative <> nil };
