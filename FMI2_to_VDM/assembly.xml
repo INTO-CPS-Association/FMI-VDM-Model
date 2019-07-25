@@ -11,8 +11,12 @@
 
 	<files>
 		<file>
-			<source>src/main/bash/VDMCheck.sh</source>
+			<source>src/main/scripts/VDMCheck.sh</source>
 			<destName>VDMCheck.sh</destName>
+		</file>
+		<file>
+			<source>src/main/scripts/VDMCheck.ps1</source>
+			<destName>VDMCheck.ps1</destName>
 		</file>
 		<file>
 			<source>../LICENCE</source>
