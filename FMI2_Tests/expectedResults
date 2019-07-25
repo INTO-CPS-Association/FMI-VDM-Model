@@ -1,7 +1,6 @@
 ------------------------------ 2.2.1_initialUnknowns1.xml
 VDMCheck.sh:
-2.2.8 InitialUnknowns should be empty
-false
+true
 ------------
 fmuCheck:
 FMU check summary:
@@ -13,7 +12,7 @@ Checker reported:
 "time"
 ------------------------------ 2.2.1_initialUnknowns2.xml
 VDMCheck.sh:
-2.2.8 InitialUnknowns should be: {2}
+2.2.8 InitialUnknowns must include: {2}
 false
 ------------
 fmuCheck:
@@ -43,13 +42,15 @@ VDMCheck.sh:
 2.2.7 ScalarVariables["v1"] invalid at line 6
 2.2.1 ScalarVariables invalid
 2.2.8 Derivatives section does not match Real/derivative variables at line 13
+2.2.8 Derivatives indexes out of range at line 13
 false
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Start attribute is required for this causality, variability and initial combination
 [ERROR][FMI2XML] The state derivative 'v1' does not specify the state variable that it is a derivative of.
+[ERROR][FMI2XML] The index attribute must have a value between 1 and the number of model variables.
 [FATAL][FMI2XML] Model structure is not valid due to detected errors. Cannot continue.
-[FATAL][FMI2XML] Parse error at line 23:
+[FATAL][FMI2XML] Parse error at line 24:
 parsing aborted
 [FATAL][FMUCHK] Error parsing XML, exiting
 FMU check summary:
@@ -57,7 +58,7 @@ FMU reported:
 	0 warning(s) and error(s)
 Checker reported:
 	0 Warning(s)
-	5 Error(s)
+	6 Error(s)
 	3 Fatal error(s) occurred during processing
 ------------------------------ 2.2.1_invalidDerivatives2.xml
 VDMCheck.sh:
@@ -81,6 +82,23 @@ Checker reported:
 	0 Warning(s)
 	5 Error(s)
 	3 Fatal error(s) occurred during processing
+------------------------------ 2.2.1_invalidDerivatives3.xml
+VDMCheck.sh:
+2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+2.2.7 ScalarVariables["v1"] invalid at line 6
+2.2.1 ScalarVariables invalid
+2.2.8 Real/derivative variables but no Derivatives declared at line 13
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] Start attribute is required for this causality, variability and initial combination
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	1 Error(s)
+"time","v2"
 ------------------------------ 2.2.1_invalidMultipleSet.xml
 VDMCheck.sh:
 2.2.7 ["varname"].canHandleMultipleSetPerTimeInstant invalid at line 6

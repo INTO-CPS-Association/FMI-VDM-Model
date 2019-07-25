@@ -14,10 +14,6 @@
 		<Outputs>
 			<Unknown index="2" />
 		</Outputs>
-		<Derivatives>
-			<Unknown index="1" />
-			<Unknown index="99" />
-		</Derivatives>
 		<InitialUnknowns>
 			<Unknown index="2" />
 		</InitialUnknowns>

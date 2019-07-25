@@ -344,7 +344,8 @@ functions
 		{ svs(i) | i in set inds svs &
 			is_Real(svs(i).variable)
 			and svs(i).variability = <continuous> 
-			and exists j in set inds svs & svs(j).variable.derivative = i };
+			and exists j in set inds svs &
+				is_Real(svs(j).variable) and svs(j).variable.derivative = i };
 
 	/**
 	 * Return the ScalarVariables from a list which are state derivatives, defined to be
@@ -353,4 +354,4 @@ functions
 	stateDerivatives: seq of ScalarVariable -> set of ScalarVariable
 	stateDerivatives(svs) ==
 		{ sv | sv in seq svs &
-			sv.variable.derivative <> nil };
+			is_Real(sv.variable) and sv.variable.derivative <> nil };
