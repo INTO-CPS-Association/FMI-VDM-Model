@@ -17,13 +17,11 @@ Usage: VDMCheck.sh [-v <VDM outfile>] <FMU or modelDescription.xml file>
 $ VDMCheck.sh WaterTank_Control.fmu
 true
 
-$ VDMCheck.sh BouncingBall.fmu
-Causality/variability/initial/start <parameter>/<constant>/nil/0.1 invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 111:17
-Variability/causality <constant>/<parameter> invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 162:17
-ScalarVariables["v_min"] invalid in 'DEFAULT' (model/ModelVariables_2.2.7.vdmsl) at line 94:17
-ScalarVariables invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 124:17
-InitialUnknowns should be empty in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 218:29
-ModelStructure.InitialUnknowns invalid in 'DEFAULT' (model/FMIModelDescription_2.2.1.vdmsl) at line 179:17
+$ VDMCheck.sh invalidOutputs2.xml
+2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+2.2.7 ScalarVariables["v1"] invalid at line 6
+2.2.1 ScalarVariables invalid
+2.2.8 Outputs should be omitted at line 10
 false
 $
 ```
