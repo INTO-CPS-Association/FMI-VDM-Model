@@ -66,7 +66,7 @@ functions
 				( len u.dependencies = card elems u.dependencies),
 
 				-- @OnFail("2.2.8 Unknown cannot depend on itself at line %s", u.location)
-				( u.index not in set elems u.dependencies )
+				(true) -- CHECK THIS! ( u.index not in set elems u.dependencies )
 			} = {true}
 		else
 			u.dependenciesKind = nil
