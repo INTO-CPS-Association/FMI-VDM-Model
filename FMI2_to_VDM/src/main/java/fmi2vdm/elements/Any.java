@@ -70,6 +70,6 @@ public class Any extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		// Ignore
+		// Ignore - see Tool.java
 	}
 }

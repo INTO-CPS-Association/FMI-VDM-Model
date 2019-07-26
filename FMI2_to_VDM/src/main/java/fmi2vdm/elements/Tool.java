@@ -70,12 +70,16 @@ public class Tool extends Element
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", name, ",\n");
-		System.out.println(indent + "\tmk_token(\"" + annotation + "\")");
+		
+		if (annotation == null)
+		{
+			System.out.println(indent + "\tnil");
+		}
+		else
+		{
+			System.out.println(indent + "\tmk_token(\"" + annotation + "\")");
+		}
+		
 		System.out.print(indent + ")");
-	}
-
-	public void setAnnotation(String annotation)
-	{
-		this.annotation = annotation;
 	}
 }
