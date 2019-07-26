@@ -45,6 +45,12 @@ else
 	FILE=$1
 fi
 
+if [ ! -e "$FILE" ]
+then
+	echo "File not found: $FILE"
+	exit 1
+fi
+
 XML=/tmp/modelDescription$$.xml
 VDM=/tmp/vdm$$.vdmsl
 
