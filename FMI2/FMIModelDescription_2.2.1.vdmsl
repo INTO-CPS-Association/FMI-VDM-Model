@@ -203,18 +203,20 @@ functions
 			-- all continuous-time states and derivatives that are approx/calculated.
 			-- And the list must be in ascending index order
 			(
-				let initIndexes = { svi | svi in set inds eModelVariables &
-					let sv = eModelVariables(svi) in
-						(sv.causality = <output>
-							and sv.initial in set { <approx>, <calculated> })
+				let ctVars = continuousTimeStates(eModelVariables),
+					sdVars = stateDerivatives(eModelVariables),
+					initIndexes = { svi | svi in set inds eModelVariables &
+						let sv = eModelVariables(svi) in
+							(sv.causality = <output>
+								and sv.initial in set { <approx>, <calculated> })
 
-						or (sv.causality = <calculatedParameter>)
+							or (sv.causality = <calculatedParameter>)
 
-						or (sv in set continuousTimeStates(eModelVariables)
-							and sv.initial in set { <approx>, <calculated> })
+							or (sv in set ctVars
+								and sv.initial in set { <approx>, <calculated> })
 
-						or (sv in set stateDerivatives(eModelVariables)
-							and sv.initial in set { <approx>, <calculated> }) }
+							or (sv in set sdVars
+								and sv.initial in set { <approx>, <calculated> }) }
 				in
 				 	initIndexes <> {} =>
 				 		let ius = md.modelStructure.initialUnknowns in
