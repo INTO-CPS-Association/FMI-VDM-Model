@@ -77,6 +77,7 @@ types
 		location							: Location
 		-- attributes
 		name								: VarName
+		valueReference						: nat
 		causality							: [Causality]
 		variability							: [Variability]
 		initial								: [Initial]
@@ -117,7 +118,48 @@ functions
             /* @OnFail("2.2.7 ScalarVariable names are not unique: %s",
             	{ svs(a).name | a, b in set inds svs &
             		a <> b and svs(a).name = svs(b).name } ) */
-            ( card { sv.name | sv in seq svs } = len svs )
+            ( card { sv.name | sv in seq svs } = len svs ),
+
+            /* @OnFail("2.2.7 Invalid ScalarVariable aliasing") */
+            (
+                let refmap =
+                {
+                    sv.valueReference |->
+                    {
+                        v | v in seq svs
+                        & v.valueReference = sv.valueReference
+                            and sameTypes(v.variable, sv.variable)
+                    }
+
+                    | sv in seq svs
+                }
+            	in card dom refmap < len svs => dunion	-- Must be some aliases
+                {
+                    let aliases = refmap(ref) in
+                    {
+                        /* @OnFail("2.2.7 Multiple aliases of reference %s are settable: %s", ref,
+                                { a.name | a in set aliases & isSettable(a) }) */
+                        ( card { a | a in set aliases & isSettable(a) } <= 1 ),
+
+                        /* @OnFail("2.2.7 Aliases of reference %s are settable and independent: %s", ref,
+                                { {a.name, b.name} | a, b in set aliases &
+                                    a <> b and isSettable(a) and b.causality = <independent> } ) */
+                        ( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
+
+                        -- @OnFail("2.2.7 Too many aliases of reference %s have start set", ref)
+                        ( card { a.variable.start <> nil | a in set aliases & a.variability <> <constant> } <= 1 ),
+
+                        -- @OnFail("2.2.7 Constant aliases of reference %s have different start values", ref)
+                        ( card { a.variable.start | a in set aliases & a.variability = <constant> } <= 1 ),
+
+                        -- @OnFail("2.2.7 Aliases of reference %s must all be constant or variable", ref)
+                        ( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} )
+                    }
+
+                    | ref in set dom refmap & card refmap(ref) > 1
+                }
+                = {true}
+            )
         }
         union
         {
@@ -126,6 +168,32 @@ functions
 
             | sv in seq svs
         } = {true};
+
+    /**
+     * Test whether a ScalarVariable is settable with fmi2SetXXX. See sections 3.2.3 and 4.2.4.
+     */
+    isSettable: ScalarVariable +> bool
+    isSettable(sv) ==
+        sv.variability <> <constant> and sv.initial in set { <exact>, <approx> }
+        or
+        sv.causality = <input>
+        or
+        sv.causality = <parameter> and sv.variability = <tunable>;
+
+    /**
+     * Test whether two Variables are the same basic type.
+     */
+    sameTypes: Variable * Variable +> bool
+    sameTypes(a, b) ==
+        is_Real(a) and is_Real(b)
+        or
+        is_Integer(a) and is_Integer(b)
+        or
+        is_Enumeration(a) and is_Enumeration(b) and a.declaredType = b.declaredType
+        or
+        is_Boolean(a) and is_Boolean(b)
+        or
+        is_String(a) and is_String(b);
 
 	/**
 	 * ScalarVariable invariant. Rules defined in the table on p49.
@@ -327,6 +395,7 @@ functions
 			(
 				sv.location,
 				sv.name,
+				sv.valueReference,
 				causality,
 				variability,
 				effectiveInitial(sv.initial, causality, variability),

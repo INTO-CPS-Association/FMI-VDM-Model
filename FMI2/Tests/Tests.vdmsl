@@ -55,7 +55,7 @@ traces
 			mk_Tool(0, "A", mk_token(1))
 		}
 		in
-			isValidScalarVariable(mk_ScalarVariable(0, "name", c, v, i, nil, s, [a]));
+			isValidScalarVariable(mk_ScalarVariable(0, "name", 0, c, v, i, nil, s, [a]));
 
 functions
 	/**
@@ -75,78 +75,78 @@ functions
 						<parameter> ->
 							cases variability:
 								<fixed>, <tunable> ->
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <exact>, nil, startv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <approx>, nil, startv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <calculated>, nil, nilv, nil)),
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <exact>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <approx>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <calculated>, nil, nilv, nil)),
 
 								<constant>, <discrete>, <continuous> ->
 									forall initial : Initial &
-										not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, initial, nil, nilv, nil))
+										not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, initial, nil, nilv, nil))
 							end,
 
 						<calculatedParameter> ->
 							cases variability:
 								<fixed>, <tunable> ->
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <calculated>, nil, nilv, nil)) and
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <approx>, nil, startv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <exact>, nil, nilv, nil)),
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <calculated>, nil, nilv, nil)) and
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <approx>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <exact>, nil, nilv, nil)),
 
 								<constant>, <discrete>, <continuous> ->
 									forall initial : Initial &
-										not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, initial, nil, nilv, nil))
+										not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, initial, nil, nilv, nil))
 							end,
 
 						<input> ->
 							cases variability:
 								<discrete>, <continuous> ->
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, nil, nil, startv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <calculated>, nil, nilv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <approx>, nil, startv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <exact>, nil, nilv, nil)),
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, nil, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <calculated>, nil, nilv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <approx>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <exact>, nil, nilv, nil)),
 
 								<constant>, <fixed>, <tunable> ->
 									forall initial : Initial &
-										not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, initial, nil, nilv, nil))
+										not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, initial, nil, nilv, nil))
 							end,
 
 						<output> ->
 							cases variability:
 								<constant> ->
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <exact>, nil, startv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <calculated>, nil, nilv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <approx>, nil, startv, nil)),
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <exact>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <calculated>, nil, nilv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <approx>, nil, startv, nil)),
 
 								<discrete>, <continuous> ->
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <calculated>, nil, nilv, nil)) and
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <exact>, nil, startv, nil))
-									and isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <approx>, nil, startv, nil)),
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <calculated>, nil, nilv, nil)) and
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <exact>, nil, startv, nil))
+									and isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <approx>, nil, startv, nil)),
 
 								<fixed>, <tunable> ->
 									forall initial : Initial &
-										not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, initial, nil, nilv, nil))
+										not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, initial, nil, nilv, nil))
 							end,
 
 						<local> ->
 							cases variability:
 								<constant> ->
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <exact>, nil, startv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <calculated>, nil, nilv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <approx>, nil, startv, nil)),
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <exact>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <calculated>, nil, nilv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <approx>, nil, startv, nil)),
 
 								<fixed>, <tunable> ->
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <calculated>, nil, nilv, nil)) and
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <approx>, nil, startv, nil)) and
-									not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <exact>, nil, startv, nil)),
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <calculated>, nil, nilv, nil)) and
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <approx>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <exact>, nil, startv, nil)),
 
 								<discrete>, <continuous> ->
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <calculated>, nil, nilv, nil)) and
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <approx>, nil, startv, nil)) and
-									isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, <exact>, nil, startv, nil))
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <calculated>, nil, nilv, nil)) and
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <approx>, nil, startv, nil)) and
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, <exact>, nil, startv, nil))
 							end,
 
 						<independent> ->
 							forall initial : Initial &
-								not isValidScalarVariable(mk_ScalarVariable(0, "n", causality, variability, initial, nil, nilv, nil))
+								not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, causality, variability, initial, nil, nilv, nil))
 					end);
 
 values
@@ -187,17 +187,17 @@ values
 
 		-- ScalarVariables
 		[
-			mk_ScalarVariable(0, "p",			<parameter>, <fixed>,		nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 1
-			mk_ScalarVariable(0, "u1",			<input>, <continuous>,		nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 2
-			mk_ScalarVariable(0, "u2",			<input>, <continuous>,		nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 3
-			mk_ScalarVariable(0, "u3",			<input>, <discrete>,		nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 4
-			mk_ScalarVariable(0, "x1",			<input>, <continuous>,		nil, nil, mk_Real("Real-Undefined", 0, 10, nil, nil, 1, nil), nil),	-- 5
-			mk_ScalarVariable(0, "x2",			<local>, <continuous>,		nil, nil, mk_Real("Real-Undefined", 0, 10, nil, nil, nil, nil), nil),	-- 6
-			mk_ScalarVariable(0, "x3",			<local>, <continuous>,		nil, nil, mk_Real("Real-Undefined", 0, 10, nil, nil, nil, nil), nil),	-- 7
-			mk_ScalarVariable(0, "der(x1)",	<calculatedParameter>, <tunable>,	nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, nil, 5), nil),	-- 8
-			mk_ScalarVariable(0, "der(x2)",	<calculatedParameter>, <tunable>,	nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, nil, 6), nil),	-- 9
-			mk_ScalarVariable(0, "der(x3)",	<calculatedParameter>, <tunable>,	nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, nil, 7), nil),	-- 10
-			mk_ScalarVariable(0, "y",			<output>, <continuous>,		nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, nil, nil), nil)	-- 11
+			mk_ScalarVariable(0, "p", 0,		<parameter>, <fixed>,		nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 1
+			mk_ScalarVariable(0, "u1", 1,		<input>, <continuous>,		nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 2
+			mk_ScalarVariable(0, "u2", 2,		<input>, <continuous>,		nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 3
+			mk_ScalarVariable(0, "u3", 3,		<input>, <discrete>,		nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, 1, nil), nil),	-- 4
+			mk_ScalarVariable(0, "x1", 4,		<input>, <continuous>,		nil, nil, mk_Real("Real-Undefined", 0, 10, nil, nil, 1, nil), nil),	-- 5
+			mk_ScalarVariable(0, "x2", 5,		<local>, <continuous>,		nil, nil, mk_Real("Real-Undefined", 0, 10, nil, nil, nil, nil), nil),	-- 6
+			mk_ScalarVariable(0, "x3", 6,		<local>, <continuous>,		nil, nil, mk_Real("Real-Undefined", 0, 10, nil, nil, nil, nil), nil),	-- 7
+			mk_ScalarVariable(0, "der(x1)", 7,	<calculatedParameter>, <tunable>,	nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, nil, 5), nil),	-- 8
+			mk_ScalarVariable(0, "der(x2)",	8,	<calculatedParameter>, <tunable>,	nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, nil, 6), nil),	-- 9
+			mk_ScalarVariable(0, "der(x3)",	9,	<calculatedParameter>, <tunable>,	nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, nil, 7), nil),	-- 10
+			mk_ScalarVariable(0, "y", 10,		<output>, <continuous>,		nil, nil, mk_Real("Real-Positive", 0, 10, nil, nil, nil, nil), nil)	-- 11
 		],
 
 		mk_ModelStructure

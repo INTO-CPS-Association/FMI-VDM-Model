@@ -48,9 +48,9 @@ values
 		nil,
 
 		[
-			mk_ScalarVariable(0, "A", <input>, nil, nil, nil,
+			mk_ScalarVariable(0, "A", 0, <input>, nil, nil, nil,
 					mk_Real(nil, nil, nil, nil, nil, 0, nil), nil),
-			mk_ScalarVariable(0, "B", <output>, nil, nil, nil,
+			mk_ScalarVariable(0, "B", 0, <output>, nil, nil, nil,
 					mk_Real(nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
@@ -80,9 +80,9 @@ values
 		nil,
 
 		[
-			mk_ScalarVariable(0, "C", <input>, nil, nil, nil,
+			mk_ScalarVariable(0, "C", 0, <input>, nil, nil, nil,
 					mk_Real(nil, nil, nil, nil, nil, 0, nil), nil),
-			mk_ScalarVariable(0, "D", <output>, nil, nil, nil,
+			mk_ScalarVariable(0, "D", 0, <output>, nil, nil, nil,
 					mk_Real(nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
