@@ -41,33 +41,40 @@ types
 	Initial		= <exact> | <approx> | <calculated>;
 
 	Real ::		-- XSD p52
-		declaredType	: [NormalizedString1]
-		min				: [real]
-		max				: [real]
-		nominal			: [real]
-		unbounded		: [bool]
-		start			: [real]
-		derivative		: [nat1];
+        declaredType        : [NormalizedString1]
+        quantity            : [NormalizedString1]
+        unit                : [NormalizedString1]
+        displayUnit         : [NormalizedString1]
+        relativeQuantity    : [bool]
+        min                 : [real]
+        max                 : [real]
+        nominal             : [real]
+        unbounded           : [bool]
+        start               : [real]
+        derivative          : [nat1]
+        reinit              : [bool];
 
 	Integer ::	-- XSD p52
-		declaredType	: [NormalizedString1]
-		min				: [int]
-		max				: [int]
-		start			: [int];
+        declaredType        : [NormalizedString1]
+        quantity            : [NormalizedString1]
+        min                 : [int]
+        max                 : [int]
+        start               : [int];
 
-	Boolean ::		-- XSD p53
-		declaredType	: [NormalizedString1]
-		start			: [bool];
+	Boolean ::		        -- XSD p53
+        declaredType        : [NormalizedString1]
+        start               : [bool];
 
-	String ::		-- XSD p53
-		declaredType	: [NormalizedString1]
-		start			: [AnyString];
+	String ::		        -- XSD p53
+        declaredType        : [NormalizedString1]
+        start               : [AnyString];
 
-	Enumeration ::	-- XSD p53
-		declaredType	: NormalizedString1	-- Note, not optional
-		min				: [int]
-		max				: [int]
-		start			: [int];
+	Enumeration ::	        -- XSD p53
+        declaredType        : NormalizedString1     -- Note, not optional
+        quantity            : [NormalizedString1]
+        min                 : [int]
+        max                 : [int]
+        start               : [int];
 
 	Variable = Real | Integer | Boolean | String | Enumeration;
 
@@ -78,6 +85,7 @@ types
 		-- attributes
 		name								: VarName
 		valueReference						: nat
+		description                         : [AnyString]
 		causality							: [Causality]
 		variability							: [Variability]
 		initial								: [Initial]
@@ -309,13 +317,13 @@ functions
 			-- @OnFail("2.2.7 Variable min/max/start invalid at line %s", sv.location)
 			(
 				cases sv.variable:
-					mk_Real(-, min, max, -, -, start, -) ->
+					mk_Real(-, -, -, -, -, min, max, -, -, start, -, -) ->
 						isInRange[real](min, max, start),
 
-					mk_Integer(-, min, max, start) ->
+					mk_Integer(-, -, min, max, start) ->
 						isInRange[real](min, max, start),
 
-					mk_Enumeration(-, min, max, start) ->
+					mk_Enumeration(-, -, min, max, start) ->
 						isInRange[real](min, max, start),
 
 					others -> true		-- String, Boolean
@@ -396,6 +404,7 @@ functions
 				sv.location,
 				sv.name,
 				sv.valueReference,
+				sv.description,
 				causality,
 				variability,
 				effectiveInitial(sv.initial, causality, variability),

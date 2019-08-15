@@ -254,7 +254,7 @@ functions
 						-- and any start value is within the (perhaps overridden) min/max. 
 						card matchingTypes = 1 => let { simpleType } = matchingTypes in
 							cases simpleType.type:
-								mk_RealType(dmin, dmax, -, -) ->
+								mk_RealType(-, -, -, -, dmin, dmax, -, -) ->
 								{
 									/* @OnFail("2.2.7 ScalarVariable %s, RealType not referenced by Real variable %s at line %s",
 										sv.name, sv.variable.declaredType, sv.location) */
@@ -280,7 +280,7 @@ functions
 									)
 								} = {true},
 
-								mk_IntegerType(dmin, dmax) ->
+								mk_IntegerType(-, dmin, dmax) ->
 								{
 									/* @OnFail("2.2.7 ScalarVariable %s, IntegerType not referenced by Integer variable %s at line %s",
 										sv.name, sv.variable.declaredType, sv.location) */
@@ -316,7 +316,7 @@ functions
 										sv.name, sv.variable.declaredType, sv.location) */
 									( is_String(sv.variable) ),
 
-								mk_EnumerationType(-) ->
+								mk_EnumerationType(-, -) ->
 									/* @OnFail("2.2.7 ScalarVariable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
 										sv.name, sv.variable.declaredType, sv.location) */
 									( is_Enumeration(sv.variable) )

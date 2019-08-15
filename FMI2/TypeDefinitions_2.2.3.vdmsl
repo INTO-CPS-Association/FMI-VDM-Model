@@ -31,15 +31,20 @@
  * 2.2.3 Definition of Types (TypeDefinitions)
  */
 types
-	RealType ::
-		min			: [real]
-		max			: [real]
-		nominal		: [real]
-		unbounded	: [bool];
+    RealType ::             -- XSD p39
+        quantity            : [NormalizedString1]
+        unit                : [NormalizedString1]
+        displayUnit         : [NormalizedString1]
+        relativeQuantity    : [bool]
+		min                 : [real]
+        max                 : [real]
+        nominal             : [real]
+        unbounded           : [bool];
 
-	IntegerType ::
-		min			: [int]
-		max			: [int];
+	IntegerType ::  -- XSD p39
+        quantity            : [NormalizedString1]
+        min                 : [int]
+        max                 : [int];
 
 	BooleanType ::
 		;
@@ -47,32 +52,34 @@ types
 	StringType ::
 		;
 
-	-- Items of an enumeration as a sequence of "name" and "value" pairs.
-	-- An Enumeration must have at least one Item.
+	-- Items of an enumeration are a sequence of "name" and "value" pairs.
+	-- An EnumerationType must have at least one Item.
 
 	Item ::
-		name		: NormalizedString1
-		value		: int;
+        name                : NormalizedString1
+        value               : int
+        description         : [AnyString];
 
-	EnumerationType ::
-		items		: seq1 of Item;
+	EnumerationType ::      -- XSD p39
+        quantity            : [NormalizedString1]
+        items               : seq1 of Item;
 
-	Type = RealType | IntegerType | BooleanType | StringType | EnumerationType;
 
 	SimpleType ::	-- XSD p38
 		location	: Location
 		name		: NormalizedString1
-		type		: Type;
+		description : [AnyString]
+		type		: RealType | IntegerType | BooleanType | StringType | EnumerationType;
 
 functions
 	isValidType: SimpleType +> bool
 	isValidType(stype) ==
 		cases stype.type:
-			mk_RealType(min, max, -, -) ->
+			mk_RealType(-, -, -, -, min, max, -, -) ->
 				-- @OnFail("2.2.3 SimpleType %s, Real max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
 
-			mk_IntegerType(min, max) ->
+			mk_IntegerType(-, min, max) ->
 				-- @OnFail("2.2.3 SimpleType %s, Integer max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
 
@@ -81,7 +88,7 @@ functions
 			-- enumeration (in order that the mapping between "name" and "value" is
 			-- bijective). An Enumeration element must have at least one Item.
 
-			mk_EnumerationType(items) ->
+			mk_EnumerationType(-, items) ->
 				-- @OnFail("2.2.3 SimpleType %s, EnumerationType item name/values do not form a bijection", stype.name)
 				(
 					card { i.name | i in seq items } = len items
