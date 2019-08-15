@@ -156,6 +156,33 @@ functions
 						( md.modelExchange <> nil and sv.causality = <input> )
 			),
 
+            (
+                forall sv in seq eModelVariables &
+                    is_Real(sv.variable) =>
+                    {
+                        /* @OnFail("2.2.7 [%s] unit must be defined for displayUnit %s at line %s",
+                            sv.name, sv.variable.displayUnit, sv.location) */
+                        ( sv.variable.displayUnit <> nil => sv.variable.unit <> nil ),
+
+                        sv.variable.unit <> nil =>
+                            /* @OnFail("2.2.7 [%s] Real unit %s not defined in UnitDefinitions at line %s",
+                                sv.name, sv.variable.unit, sv.location) */
+                            ( md.unitDefinitions <> nil
+                              and exists u in seq md.unitDefinitions & u.name = sv.variable.unit )
+                    }
+                    = {true}
+            ),
+
+            (
+                forall svi in set inds eModelVariables &
+                    let sv = eModelVariables(svi) in
+                        is_Real(sv.variable) and sv.variable.reinit <> nil =>
+                           /* @OnFail("2.2.7 [%s] Real reinit for model exchange continuous time only at line %s",
+                                sv.name, sv.location) */
+                           ( isContinuousTimeState(svi, eModelVariables)
+                             and md.modelExchange <> nil )
+            ),
+
 			(
 				let outputIndexes = { svi | svi in set inds eModelVariables &
 					eModelVariables(svi).causality = <output> }

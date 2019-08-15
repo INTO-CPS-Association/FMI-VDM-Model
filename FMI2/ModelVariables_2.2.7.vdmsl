@@ -161,7 +161,10 @@ functions
                         ( card { a.variable.start | a in set aliases & a.variability = <constant> } <= 1 ),
 
                         -- @OnFail("2.2.7 Aliases of reference %s must all be constant or variable", ref)
-                        ( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} )
+                        ( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
+
+                        -- @OnFail("2.2.7 Aliases of reference %s must all have same unit/displayUnits", ref)
+                        ( card { mk_(a.variable.unit, a.variable.displayUnit) | a in set aliases & is_Real(a.variable) } <= 1 )
                     }
 
                     | ref in set dom refmap & card refmap(ref) > 1
@@ -316,11 +319,13 @@ functions
 				end
 			),
 
-			-- @OnFail("2.2.7 Variable min/max/start invalid at line %s", sv.location)
+			-- @OnFail("2.2.7 Variable min/max/start/nominal invalid at line %s", sv.location)
 			(
 				cases sv.variable:
-					mk_Real(-, -, -, -, -, min, max, -, -, start, -, -) ->
-						isInRange[real](min, max, start),
+					mk_Real(-, -, -, -, -, min, max, nominal, -, start, -, -) ->
+						isInRange[real](min, max, start)
+						-- @OnFail("2.2.7 Real nominal must be >0.0 at line %s", sv.location)
+						and (nominal <> nil => nominal > 0.0),
 
 					mk_Integer(-, -, min, max, start) ->
 						isInRange[real](min, max, start),
@@ -421,11 +426,17 @@ functions
 	 */
 	continuousTimeStates: seq of ScalarVariable -> set of ScalarVariable
 	continuousTimeStates(svs) ==
-		{ svs(i) | i in set inds svs &
-			is_Real(svs(i).variable)
-			and svs(i).variability = <continuous> 
-			and exists j in set inds svs &
-				is_Real(svs(j).variable) and svs(j).variable.derivative = i };
+		{ svs(i) | i in set inds svs & isContinuousTimeState(i, svs) };
+
+	/**
+	 * Test ith index variable as a continuous time state.
+	 */
+	isContinuousTimeState: nat1 * seq of ScalarVariable +> bool
+	isContinuousTimeState(i, svs) ==
+        is_Real(svs(i).variable)
+        and svs(i).variability = <continuous> 
+        and exists j in seq svs &
+        	is_Real(j.variable) and j.variable.derivative = i;
 
 	/**
 	 * Return the ScalarVariables from a list which are state derivatives, defined to be
