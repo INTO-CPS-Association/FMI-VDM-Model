@@ -38,10 +38,12 @@ public class IntegerType extends Type
 	{
 		super(locator);
 		
+		quantity = stringOf(attributes, "quantity");
 		min = intOf(attributes, "min");
 		max = intOf(attributes, "max");
 	}
 	
+	private String quantity;
 	private Integer min;
 	private Integer max;
 
@@ -50,6 +52,7 @@ public class IntegerType extends Type
 	{
 		System.out.print(indent + "mk_IntegerType(");
 		
+		printStringAttribute("", quantity, ", ");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, "");
 		

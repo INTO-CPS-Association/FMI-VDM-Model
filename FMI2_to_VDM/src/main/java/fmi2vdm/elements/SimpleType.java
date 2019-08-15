@@ -37,8 +37,9 @@ public class SimpleType extends Element
 	public SimpleType(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		name = stringOf(attributes, "name");
+		description = stringOf(attributes, "description");
 	}
 
 	@Override
@@ -55,6 +56,7 @@ public class SimpleType extends Element
 	}
 	
 	private String name;
+	private String description;
 	private Type type;
 
 	@Override
@@ -64,6 +66,7 @@ public class SimpleType extends Element
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", name, ",\n");
+		printStringAttribute(indent + "\t", description, ",\n");
 		printOptional(indent + "\t", type, "");
 		System.out.print("\n" + indent + ")");
 	}

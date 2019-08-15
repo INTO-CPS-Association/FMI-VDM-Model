@@ -38,12 +38,20 @@ public class RealType extends Type
 	{
 		super(locator);
 		
+		quantity = stringOf(attributes, "quantity");
+		unit = stringOf(attributes, "unit");
+		displayUnit = stringOf(attributes, "displayUnit");
+		relativeQuantity = boolOf(attributes, "relativeQuantity");
 		min = doubleOf(attributes, "min");
 		max = doubleOf(attributes, "max");
 		nominal = doubleOf(attributes, "nominal");
 		unbounded = boolOf(attributes, "unbounded");
 	}
 	
+	private String quantity;
+	private String unit;
+	private String displayUnit;
+	private Boolean relativeQuantity;
 	private Double min;
 	private Double max;
 	private Double nominal;
@@ -54,6 +62,10 @@ public class RealType extends Type
 	{
 		System.out.print(indent + "mk_RealType(");
 		
+		printStringAttribute("", quantity, ", ");
+		printStringAttribute("", unit, ", ");
+		printStringAttribute("", displayUnit, ", ");
+		printRawAttribute("", relativeQuantity, ", ");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, ", ");
 		printRawAttribute("", nominal, ", ");

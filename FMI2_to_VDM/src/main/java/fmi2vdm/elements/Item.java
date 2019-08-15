@@ -40,14 +40,23 @@ public class Item extends Element
 		
 		name = stringOf(attributes, "name");
 		value = intOf(attributes, "value");
+		description = stringOf(attributes, "description");
 	}
 	
 	private String name;
 	private Integer value;
+	private String description;
 
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Item(\"" + name + "\", " + value + ")");
+		System.out.print(indent + "mk_Item(");
+		
+		printStringAttribute("", name, ", ");
+		printRawAttribute("", value, ", ");
+		printStringAttribute("", description, "");
+		
+		System.out.print(")");
+
 	}
 }

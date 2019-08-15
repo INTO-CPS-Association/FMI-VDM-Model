@@ -37,6 +37,7 @@ public class EnumerationType extends Type
 	public EnumerationType(Attributes attributes, Locator locator)
 	{
 		super(locator);
+		quantity = stringOf(attributes, "quantity");
 	}
 	
 	@Override
@@ -57,6 +58,7 @@ public class EnumerationType extends Type
 		}
 	}
 	
+	private String quantity;
 	private ElementList<Item> items;
 	
 	@Override
@@ -64,6 +66,7 @@ public class EnumerationType extends Type
 	{
 		System.out.println(indent + "mk_EnumerationType");
 		System.out.println(indent + "(");
+		printStringAttribute(indent + "\t", quantity, ",\n");
 		printSequence(indent + "\t", items, "\n");
 		System.out.println(indent + ")");
 	}

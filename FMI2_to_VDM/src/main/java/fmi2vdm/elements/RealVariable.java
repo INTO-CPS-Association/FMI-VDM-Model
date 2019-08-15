@@ -39,21 +39,31 @@ public class RealVariable extends Variable
 		super(locator);
 		
 		declaredType = stringOf(attributes, "declaredType");
+		quantity = stringOf(attributes, "quantity");
+		unit = stringOf(attributes, "unit");
+		displayUnit = stringOf(attributes, "displayUnit");
+		relativeQuantity = boolOf(attributes, "relativeQuantity");
 		min = doubleOf(attributes, "min");
 		max = doubleOf(attributes, "max");
 		nominal = doubleOf(attributes, "nominal");
 		unbounded = boolOf(attributes, "unbounded");
 		start = doubleOf(attributes, "start");
 		derivative = intOf(attributes, "derivative");
+		reinit = boolOf(attributes, "reinit");
 	}
 	
 	private String declaredType;
+	private String quantity;
+	private String unit;
+	private String displayUnit;
+	private Boolean relativeQuantity;
 	private Double min;
 	private Double max;
 	private Double nominal;
 	private Boolean unbounded;
 	private Double start;
 	private Integer derivative;
+	private Boolean reinit;
 
 	@Override
 	void toVDM(String indent)
@@ -61,12 +71,17 @@ public class RealVariable extends Variable
 		System.out.print(indent + "mk_Real(");
 		
 		printStringAttribute("", declaredType, ", ");
+		printStringAttribute("", quantity, ", ");
+		printStringAttribute("", unit, ", ");
+		printStringAttribute("", displayUnit, ", ");
+		printRawAttribute("", relativeQuantity, ", ");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, ", ");
 		printRawAttribute("", nominal, ", ");
 		printRawAttribute("", unbounded, ", ");
 		printRawAttribute("", start, ", ");
-		printRawAttribute("", derivative, "");
+		printRawAttribute("", derivative, ", ");
+		printRawAttribute("", reinit, "");
 		
 		System.out.print(")");
 	}

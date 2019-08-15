@@ -39,12 +39,14 @@ public class EnumerationVariable extends Variable
 		super(locator);
 		
 		declaredType = stringOf(attributes, "declaredType");
+		quantity = stringOf(attributes, "quantity");
 		min = doubleOf(attributes, "min");
 		max = doubleOf(attributes, "max");
 		start = doubleOf(attributes, "start");
 	}
 	
 	private String declaredType;
+	private String quantity;
 	private Double min;
 	private Double max;
 	private Double start;
@@ -55,6 +57,7 @@ public class EnumerationVariable extends Variable
 		System.out.print(indent + "mk_Enumeration(");
 		
 		printStringAttribute("", declaredType, ", ");
+		printStringAttribute("", quantity, ", ");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, ", ");
 		printRawAttribute("", start, "");

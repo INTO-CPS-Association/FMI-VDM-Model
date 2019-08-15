@@ -40,6 +40,7 @@ public class ScalarVariable extends Element
 		
 		name = stringOf(attributes, "name");
 		valueReference = intOf(attributes, "valueReference");
+		description = stringOf(attributes, "description");
 		causality = stringOf(attributes, "causality");
 		variability = stringOf(attributes, "variability");
 		initial = stringOf(attributes, "initial");
@@ -65,6 +66,7 @@ public class ScalarVariable extends Element
 	
 	private String name;
 	private Integer valueReference;
+	private String description;
 	private String causality;
 	private String variability;
 	private String initial;
@@ -80,6 +82,7 @@ public class ScalarVariable extends Element
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", name, ",\n");
 		printRawAttribute(indent + "\t", valueReference, ",\n");
+		printStringAttribute(indent + "\t", description, ",\n");
 		printQuoteAttribute(indent + "\t", causality, ",\n");
 		printQuoteAttribute(indent + "\t", variability, ",\n");
 		printQuoteAttribute(indent + "\t", initial, ",\n");

@@ -48,6 +48,9 @@ public class FMI2ToVDM
 {
 	public static void main(String[] args)
 	{
+		System.err.println("This parser is not maintained. Use FMI2SaxParser instead.");
+		System.exit(1);
+		
 		if (args.length != 2)
 		{
 			System.err.println("Usage: FMI2VDM <xml file> <VDM var name>");

@@ -39,12 +39,14 @@ public class IntegerVariable extends Variable
 		super(locator);
 		
 		declaredType = stringOf(attributes, "declaredType");
+		quantity = stringOf(attributes, "quantity");
 		min = intOf(attributes, "min");
 		max = intOf(attributes, "max");
 		start = intOf(attributes, "start");
 	}
 	
 	private String declaredType;
+	private String quantity;
 	private Integer min;
 	private Integer max;
 	private Integer start;
@@ -55,6 +57,7 @@ public class IntegerVariable extends Variable
 		System.out.print(indent + "mk_Integer(");
 		
 		printStringAttribute("", declaredType, ", ");
+		printStringAttribute("", quantity, ", ");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, ", ");
 		printRawAttribute("", start, "");
