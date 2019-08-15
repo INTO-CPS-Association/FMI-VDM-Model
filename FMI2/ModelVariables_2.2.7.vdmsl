@@ -234,8 +234,9 @@ functions
 					<independent> ->
 						eVariability = <continuous>
 						and eInitial = nil		-- (D)
-						and is_Real(sv.variable)
-						and sv.variable.start = nil,
+						and sv.variable.start = nil
+                        -- @OnFail("2.2.7 Independent variable must be Real at line %s", sv.location)
+                        and (is_Real(sv.variable)),
 
 					<output> ->
 						cases eVariability:
@@ -281,7 +282,8 @@ functions
 
 					<continuous> ->
 						eCausality in set {<input>, <output>, <local>, <independent>}
-						and is_Real(sv.variable)
+						-- @OnFail("2.2.7 Continuous variable must be Real at line %s", sv.location)
+						and (is_Real(sv.variable))
 				end
 			),
 
