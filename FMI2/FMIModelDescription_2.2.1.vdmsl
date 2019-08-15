@@ -147,11 +147,28 @@ functions
 						( not exists sv in seq eModelVariables & sv.name = simpleType.name )
 			),
 
+            (
+                md.typeDefinitions <> nil =>
+                    forall std in set md.typeDefinitions &
+                        is_RealType(std.type) =>
+                        {
+                            /* @OnFail("2.2.3 SimpleType %s, unit must be defined for displayUnit %s at line %s",
+                                std.name, std.type.displayUnit, std.location) */
+                            ( std.type.displayUnit <> nil => std.type.unit <> nil ),
+
+                            std.type.unit <> nil =>
+                                /* @OnFail("2.2.3 SimpleType %s, Real unit %s not defined in UnitDefinitions at line %s",
+                                    std.name, std.type.unit, std.location) */
+                                ( md.unitDefinitions <> nil
+                                  and exists u in seq md.unitDefinitions & u.name = std.type.unit )
+                        }
+                        = {true}
+            ),
 
 			(
 				forall sv in seq eModelVariables &
 					sv.canHandleMultipleSetPerTimeInstant <> nil =>
-						/* @OnFail("2.2.7 [%s].canHandleMultipleSetPerTimeInstant invalid at line %s",
+						/* @OnFail("2.2.7 ScalarVariable %s, canHandleMultipleSetPerTimeInstant invalid at line %s",
 							sv.name, sv.location) */
 						( md.modelExchange <> nil and sv.causality = <input> )
 			),
@@ -160,12 +177,12 @@ functions
                 forall sv in seq eModelVariables &
                     is_Real(sv.variable) =>
                     {
-                        /* @OnFail("2.2.7 [%s] unit must be defined for displayUnit %s at line %s",
+                        /* @OnFail("2.2.7 ScalarVariable %s, Real unit must be defined for displayUnit %s at line %s",
                             sv.name, sv.variable.displayUnit, sv.location) */
                         ( sv.variable.displayUnit <> nil => sv.variable.unit <> nil ),
 
                         sv.variable.unit <> nil =>
-                            /* @OnFail("2.2.7 [%s] Real unit %s not defined in UnitDefinitions at line %s",
+                            /* @OnFail("2.2.7 ScalarVariable %s, Real unit %s not defined in UnitDefinitions at line %s",
                                 sv.name, sv.variable.unit, sv.location) */
                             ( md.unitDefinitions <> nil
                               and exists u in seq md.unitDefinitions & u.name = sv.variable.unit )
@@ -177,7 +194,7 @@ functions
                 forall svi in set inds eModelVariables &
                     let sv = eModelVariables(svi) in
                         is_Real(sv.variable) and sv.variable.reinit <> nil =>
-                           /* @OnFail("2.2.7 [%s] Real reinit for model exchange continuous time only at line %s",
+                           /* @OnFail("2.2.7 ScalarVariable %s, Real reinit for model exchange continuous time only at line %s",
                                 sv.name, sv.location) */
                            ( isContinuousTimeState(svi, eModelVariables)
                              and md.modelExchange <> nil )
@@ -281,7 +298,7 @@ functions
 						-- and any start value is within the (perhaps overridden) min/max. 
 						card matchingTypes = 1 => let { simpleType } = matchingTypes in
 							cases simpleType.type:
-								mk_RealType(-, -, -, -, dmin, dmax, -, -) ->
+								mk_RealType(-, dunit, ddisplayUnit, -, dmin, dmax, -, -) ->
 								{
 									/* @OnFail("2.2.7 ScalarVariable %s, RealType not referenced by Real variable %s at line %s",
 										sv.name, sv.variable.declaredType, sv.location) */
@@ -304,7 +321,25 @@ functions
 													and (min <> nil => min <= sv.variable.start)
 													and	(max <> nil => max >= sv.variable.start)
 												)
-									)
+									),
+
+									-- And if unit is defined in both, they must be the same
+									(
+									   is_Real(sv.variable) =>
+                                            /* @OnFail("2.2.7 ScalarVariable %s, Real unit does not match declaredType at line %s",
+                                                sv.name, sv.location) */
+									       (sv.variable.unit <> nil and dunit <> nil =>
+									           sv.variable.unit = dunit)
+									),
+
+                                    -- And if displayUnit is defined in both, they must be the same
+                                    (
+                                       is_Real(sv.variable) =>
+                                            /* @OnFail("2.2.7 ScalarVariable %s, Real displayUnit does not match declaredType at line %s",
+                                                sv.name, sv.location) */
+                                           (sv.variable.displayUnit <> nil and ddisplayUnit <> nil =>
+                                               sv.variable.displayUnit = ddisplayUnit)
+                                    )
 								} = {true},
 
 								mk_IntegerType(-, dmin, dmax) ->

@@ -174,7 +174,7 @@ functions
         }
         union
         {
-            -- @OnFail("2.2.7 ScalarVariables[%s] invalid at line %s", sv.name, sv.location)
+            -- @OnFail("2.2.7 ScalarVariables %s invalid at line %s", sv.name, sv.location)
             ( isValidScalarVariable(sv) )
 
             | sv in seq svs
