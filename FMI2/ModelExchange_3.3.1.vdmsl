@@ -71,9 +71,13 @@ functions
 		me <> nil =>
 			me.sourceFiles <> nil =>
 				/* @OnFail("3.3.1 ModelExchange source file names are not unique: %s",
-				 	let files = me.sourceFiles in
+					let files = me.sourceFiles in
 						{ files(a).name | a, b in set inds files &
 							a <> b and files(a).name = files(b).name })
+
+					The file names within the sequence of source files listed for the ModelExchange
+					must be unique. This is determined by checking that the set of names is the same
+					size as the length of the list of source files.
 				 */
 				( len me.sourceFiles = card { f.name | f in seq me.sourceFiles } );
 

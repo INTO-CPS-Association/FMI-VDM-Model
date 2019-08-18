@@ -147,23 +147,23 @@ functions
 						( not exists sv in seq eModelVariables & sv.name = simpleType.name )
 			),
 
-            (
-                md.typeDefinitions <> nil =>
-                    forall std in set md.typeDefinitions &
-                        is_RealType(std.type) =>
-                        {
-                            /* @OnFail("2.2.3 SimpleType %s, unit must be defined for displayUnit %s at line %s",
-                                std.name, std.type.displayUnit, std.location) */
-                            ( std.type.displayUnit <> nil => std.type.unit <> nil ),
+			(
+				md.typeDefinitions <> nil =>
+					forall std in set md.typeDefinitions &
+						is_RealType(std.type) =>
+						{
+							/* @OnFail("2.2.3 SimpleType %s, unit must be defined for displayUnit %s at line %s",
+								std.name, std.type.displayUnit, std.location) */
+							( std.type.displayUnit <> nil => std.type.unit <> nil ),
 
-                            std.type.unit <> nil =>
-                                /* @OnFail("2.2.3 SimpleType %s, Real unit %s not defined in UnitDefinitions at line %s",
-                                    std.name, std.type.unit, std.location) */
-                                ( md.unitDefinitions <> nil
-                                  and exists u in seq md.unitDefinitions & u.name = std.type.unit )
-                        }
-                        = {true}
-            ),
+							std.type.unit <> nil =>
+								/* @OnFail("2.2.3 SimpleType %s, Real unit %s not defined in UnitDefinitions at line %s",
+									std.name, std.type.unit, std.location) */
+								( md.unitDefinitions <> nil
+								  and exists u in seq md.unitDefinitions & u.name = std.type.unit )
+						}
+						= {true}
+			),
 
 			(
 				forall sv in seq eModelVariables &
@@ -173,32 +173,32 @@ functions
 						( md.modelExchange <> nil and sv.causality = <input> )
 			),
 
-            (
-                forall sv in seq eModelVariables &
-                    is_Real(sv.variable) =>
-                    {
-                        /* @OnFail("2.2.7 ScalarVariable %s, Real unit must be defined for displayUnit %s at line %s",
-                            sv.name, sv.variable.displayUnit, sv.location) */
-                        ( sv.variable.displayUnit <> nil => sv.variable.unit <> nil ),
+			(
+				forall sv in seq eModelVariables &
+					is_Real(sv.variable) =>
+					{
+						/* @OnFail("2.2.7 ScalarVariable %s, Real unit must be defined for displayUnit %s at line %s",
+							sv.name, sv.variable.displayUnit, sv.location) */
+						( sv.variable.displayUnit <> nil => sv.variable.unit <> nil ),
 
-                        sv.variable.unit <> nil =>
-                            /* @OnFail("2.2.7 ScalarVariable %s, Real unit %s not defined in UnitDefinitions at line %s",
-                                sv.name, sv.variable.unit, sv.location) */
-                            ( md.unitDefinitions <> nil
-                              and exists u in seq md.unitDefinitions & u.name = sv.variable.unit )
-                    }
-                    = {true}
-            ),
+						sv.variable.unit <> nil =>
+							/* @OnFail("2.2.7 ScalarVariable %s, Real unit %s not defined in UnitDefinitions at line %s",
+								sv.name, sv.variable.unit, sv.location) */
+							( md.unitDefinitions <> nil
+							  and exists u in seq md.unitDefinitions & u.name = sv.variable.unit )
+					}
+					= {true}
+			),
 
-            (
-                forall svi in set inds eModelVariables &
-                    let sv = eModelVariables(svi) in
-                        is_Real(sv.variable) and sv.variable.reinit <> nil =>
-                           /* @OnFail("2.2.7 ScalarVariable %s, Real reinit for model exchange continuous time only at line %s",
-                                sv.name, sv.location) */
-                           ( isContinuousTimeState(svi, eModelVariables)
-                             and md.modelExchange <> nil )
-            ),
+			(
+				forall svi in set inds eModelVariables &
+					let sv = eModelVariables(svi) in
+						is_Real(sv.variable) and sv.variable.reinit <> nil =>
+						   /* @OnFail("2.2.7 ScalarVariable %s, Real reinit for model exchange continuous time only at line %s",
+								sv.name, sv.location) */
+						   ( isContinuousTimeState(svi, eModelVariables)
+							 and md.modelExchange <> nil )
+			),
 
 			(
 				let outputIndexes = { svi | svi in set inds eModelVariables &
@@ -325,21 +325,21 @@ functions
 
 									-- And if unit is defined in both, they must be the same
 									(
-									   is_Real(sv.variable) =>
-                                            /* @OnFail("2.2.7 ScalarVariable %s, Real unit does not match declaredType at line %s",
-                                                sv.name, sv.location) */
-									       (sv.variable.unit <> nil and dunit <> nil =>
-									           sv.variable.unit = dunit)
+										is_Real(sv.variable) =>
+											/* @OnFail("2.2.7 ScalarVariable %s, Real unit does not match declaredType at line %s",
+												sv.name, sv.location) */
+											(sv.variable.unit <> nil and dunit <> nil =>
+												sv.variable.unit = dunit)
 									),
 
-                                    -- And if displayUnit is defined in both, they must be the same
-                                    (
-                                       is_Real(sv.variable) =>
-                                            /* @OnFail("2.2.7 ScalarVariable %s, Real displayUnit does not match declaredType at line %s",
-                                                sv.name, sv.location) */
-                                           (sv.variable.displayUnit <> nil and ddisplayUnit <> nil =>
-                                               sv.variable.displayUnit = ddisplayUnit)
-                                    )
+									-- And if displayUnit is defined in both, they must be the same
+									(
+										is_Real(sv.variable) =>
+											/* @OnFail("2.2.7 ScalarVariable %s, Real displayUnit does not match declaredType at line %s",
+												sv.name, sv.location) */
+											(sv.variable.displayUnit <> nil and ddisplayUnit <> nil =>
+												sv.variable.displayUnit = ddisplayUnit)
+									)
 								} = {true},
 
 								mk_IntegerType(-, dmin, dmax) ->

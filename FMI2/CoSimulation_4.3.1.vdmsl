@@ -84,5 +84,9 @@ functions
 					let files = cs.sourceFiles in
 						{ files(a).name | a, b in set inds files &
 							a <> b and files(a).name = files(b).name })
+
+					The file names within the sequence of source files listed for the CoSimulation
+					must be unique. This is determined by checking that the set of names is the same
+					size as the length of the list of source files.
 				 */
 				( len cs.sourceFiles = card { f.name | f in seq cs.sourceFiles } );

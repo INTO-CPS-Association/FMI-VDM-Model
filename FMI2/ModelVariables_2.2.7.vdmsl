@@ -41,40 +41,40 @@ types
 	Initial		= <exact> | <approx> | <calculated>;
 
 	Real ::		-- XSD p52
-        declaredType        : [NormalizedString1]
-        quantity            : [NormalizedString1]
-        unit                : [NormalizedString1]
-        displayUnit         : [NormalizedString1]
-        relativeQuantity    : [bool]
-        min                 : [real]
-        max                 : [real]
-        nominal             : [real]
-        unbounded           : [bool]
-        start               : [real]
-        derivative          : [nat1]
-        reinit              : [bool];
+		declaredType		: [NormalizedString1]
+		quantity			: [NormalizedString1]
+		unit				: [NormalizedString1]
+		displayUnit			: [NormalizedString1]
+		relativeQuantity	: [bool]
+		min					: [real]
+		max					: [real]	
+		nominal				: [real]
+		unbounded			: [bool]
+		start				: [real]
+		derivative			: [nat1]
+		reinit				: [bool];
 
 	Integer ::	-- XSD p52
-        declaredType        : [NormalizedString1]
-        quantity            : [NormalizedString1]
-        min                 : [int]
-        max                 : [int]
-        start               : [int];
+		declaredType		: [NormalizedString1]
+		quantity			: [NormalizedString1]
+		min					: [int]
+		max					: [int]
+		start				: [int];
 
-	Boolean ::		        -- XSD p53
-        declaredType        : [NormalizedString1]
-        start               : [bool];
+	Boolean ::				-- XSD p53
+		declaredType		: [NormalizedString1]
+		start				: [bool];
 
-	String ::		        -- XSD p53
-        declaredType        : [NormalizedString1]
-        start               : [AnyString];
+	String ::				-- XSD p53
+		declaredType		: [NormalizedString1]
+		start				: [AnyString];
 
-	Enumeration ::	        -- XSD p53
-        declaredType        : NormalizedString1     -- Note, not optional
-        quantity            : [NormalizedString1]
-        min                 : [int]
-        max                 : [int]
-        start               : [int];
+	Enumeration ::			-- XSD p53
+		declaredType		: NormalizedString1	 -- Note, not optional
+		quantity			: [NormalizedString1]
+		min					: [int]
+		max					: [int]
+		start				: [int];
 
 	Variable = Real | Integer | Boolean | String | Enumeration;
 
@@ -85,7 +85,7 @@ types
 		-- attributes
 		name								: VarName
 		valueReference						: nat
-		description                         : [AnyString]
+		description							: [AnyString]
 		causality							: [Causality]
 		variability							: [Variability]
 		initial								: [Initial]
@@ -117,94 +117,94 @@ functions
 	 * Verify a sequence of ScalarVariables.
 	 */
 	isValidScalarVariables: seq1 of ScalarVariable +> bool
-    isValidScalarVariables(svs) ==
-        {
-            /* @OnFail("2.2.7 ScalarVariables define more than one independent variable: %s",
-            	{ sv.name | sv in seq svs & sv.causality = <independent> }) */
-            ( card { sv | sv in seq svs & sv.causality = <independent> } <= 1 ),
+	isValidScalarVariables(svs) ==
+		{
+			/* @OnFail("2.2.7 ScalarVariables define more than one independent variable: %s",
+				{ sv.name | sv in seq svs & sv.causality = <independent> }) */
+			( card { sv | sv in seq svs & sv.causality = <independent> } <= 1 ),
 
-            /* @OnFail("2.2.7 ScalarVariable names are not unique: %s",
-            	{ svs(a).name | a, b in set inds svs &
-            		a <> b and svs(a).name = svs(b).name } ) */
-            ( card { sv.name | sv in seq svs } = len svs ),
+			/* @OnFail("2.2.7 ScalarVariable names are not unique: %s",
+				{ svs(a).name | a, b in set inds svs &
+					a <> b and svs(a).name = svs(b).name } ) */
+			( card { sv.name | sv in seq svs } = len svs ),
 
-            /* @OnFail("2.2.7 Invalid ScalarVariable aliasing") */
-            (
-                let refmap =
-                {
-                    sv.valueReference |->
-                    {
-                        v | v in seq svs
-                        & v.valueReference = sv.valueReference
-                            and sameTypes(v.variable, sv.variable)
-                    }
+			/* @OnFail("2.2.7 Invalid ScalarVariable aliasing") */
+			(
+				let refmap =
+				{
+					sv.valueReference |->
+					{
+						v | v in seq svs
+						& v.valueReference = sv.valueReference
+							and sameTypes(v.variable, sv.variable)
+					}
 
-                    | sv in seq svs
-                }
-            	in card dom refmap < len svs => dunion	-- Must be some aliases
-                {
-                    let aliases = refmap(ref) in
-                    {
-                        /* @OnFail("2.2.7 Multiple aliases of reference %s are settable: %s", ref,
-                                { a.name | a in set aliases & isSettable(a) }) */
-                        ( card { a | a in set aliases & isSettable(a) } <= 1 ),
+					| sv in seq svs
+				}
+				in card dom refmap < len svs => dunion	-- Must be some aliases
+				{
+					let aliases = refmap(ref) in
+					{
+						/* @OnFail("2.2.7 Multiple aliases of reference %s are settable: %s", ref,
+								{ a.name | a in set aliases & isSettable(a) }) */
+						( card { a | a in set aliases & isSettable(a) } <= 1 ),
 
-                        /* @OnFail("2.2.7 Aliases of reference %s are settable and independent: %s", ref,
-                                { {a.name, b.name} | a, b in set aliases &
-                                    a <> b and isSettable(a) and b.causality = <independent> } ) */
-                        ( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
+						/* @OnFail("2.2.7 Aliases of reference %s are settable and independent: %s", ref,
+								{ {a.name, b.name} | a, b in set aliases &
+									a <> b and isSettable(a) and b.causality = <independent> } ) */
+						( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
 
-                        -- @OnFail("2.2.7 Too many aliases of reference %s have start set", ref)
-                        ( card { a.variable.start <> nil | a in set aliases & a.variability <> <constant> } <= 1 ),
+						-- @OnFail("2.2.7 Too many aliases of reference %s have start set", ref)
+						( card { a.variable.start <> nil | a in set aliases & a.variability <> <constant> } <= 1 ),
 
-                        -- @OnFail("2.2.7 Constant aliases of reference %s have different start values", ref)
-                        ( card { a.variable.start | a in set aliases & a.variability = <constant> } <= 1 ),
+						-- @OnFail("2.2.7 Constant aliases of reference %s have different start values", ref)
+						( card { a.variable.start | a in set aliases & a.variability = <constant> } <= 1 ),
 
-                        -- @OnFail("2.2.7 Aliases of reference %s must all be constant or variable", ref)
-                        ( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
+						-- @OnFail("2.2.7 Aliases of reference %s must all be constant or variable", ref)
+						( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
 
-                        -- @OnFail("2.2.7 Aliases of reference %s must all have same unit/displayUnits", ref)
-                        ( card { mk_(a.variable.unit, a.variable.displayUnit) | a in set aliases & is_Real(a.variable) } <= 1 )
-                    }
+						-- @OnFail("2.2.7 Aliases of reference %s must all have same unit/displayUnits", ref)
+						( card { mk_(a.variable.unit, a.variable.displayUnit) | a in set aliases & is_Real(a.variable) } <= 1 )
+					}
 
-                    | ref in set dom refmap & card refmap(ref) > 1
-                }
-                = {true}
-            )
-        }
-        union
-        {
-            -- @OnFail("2.2.7 ScalarVariables %s invalid at line %s", sv.name, sv.location)
-            ( isValidScalarVariable(sv) )
+					| ref in set dom refmap & card refmap(ref) > 1
+				}
+				= {true}
+			)
+		}
+		union
+		{
+			-- @OnFail("2.2.7 ScalarVariables %s invalid at line %s", sv.name, sv.location)
+			( isValidScalarVariable(sv) )
 
-            | sv in seq svs
-        } = {true};
+			| sv in seq svs
+		} = {true};
 
-    /**
-     * Test whether a ScalarVariable is settable with fmi2SetXXX. See sections 3.2.3 and 4.2.4.
-     */
-    isSettable: ScalarVariable +> bool
-    isSettable(sv) ==
-        sv.variability <> <constant> and sv.initial in set { <exact>, <approx> }
-        or
-        sv.causality = <input>
-        or
-        sv.causality = <parameter> and sv.variability = <tunable>;
+	/**
+	 * Test whether a ScalarVariable is settable with fmi2SetXXX. See sections 3.2.3 and 4.2.4.
+	 */
+	isSettable: ScalarVariable +> bool
+	isSettable(sv) ==
+		sv.variability <> <constant> and sv.initial in set { <exact>, <approx> }
+		or
+		sv.causality = <input>
+		or
+		sv.causality = <parameter> and sv.variability = <tunable>;
 
-    /**
-     * Test whether two Variables are the same basic type.
-     */
-    sameTypes: Variable * Variable +> bool
-    sameTypes(a, b) ==
-        is_Real(a) and is_Real(b)
-        or
-        is_Integer(a) and is_Integer(b)
-        or
-        is_Enumeration(a) and is_Enumeration(b) and a.declaredType = b.declaredType
-        or
-        is_Boolean(a) and is_Boolean(b)
-        or
-        is_String(a) and is_String(b);
+	/**
+	 * Test whether two Variables are the same basic type.
+	 */
+	sameTypes: Variable * Variable +> bool
+	sameTypes(a, b) ==
+		is_Real(a) and is_Real(b)
+		or
+		is_Integer(a) and is_Integer(b)
+		or
+		is_Enumeration(a) and is_Enumeration(b) and a.declaredType = b.declaredType
+		or
+		is_Boolean(a) and is_Boolean(b)
+		or
+		is_String(a) and is_String(b);
 
 	/**
 	 * ScalarVariable invariant. Rules defined in the table on p49.
@@ -238,8 +238,8 @@ functions
 						eVariability = <continuous>
 						and eInitial = nil		-- (D)
 						and sv.variable.start = nil
-                        -- @OnFail("2.2.7 Independent variable must be Real at line %s", sv.location)
-                        and (is_Real(sv.variable)),
+						-- @OnFail("2.2.7 Independent variable must be Real at line %s", sv.location)
+						and (is_Real(sv.variable)),
 
 					<output> ->
 						cases eVariability:
@@ -433,10 +433,10 @@ functions
 	 */
 	isContinuousTimeState: nat1 * seq of ScalarVariable +> bool
 	isContinuousTimeState(i, svs) ==
-        is_Real(svs(i).variable)
-        and svs(i).variability = <continuous> 
-        and exists j in seq svs &
-        	is_Real(j.variable) and j.variable.derivative = i;
+		is_Real(svs(i).variable)
+		and svs(i).variability = <continuous> 
+		and exists j in seq svs &
+			is_Real(j.variable) and j.variable.derivative = i;
 
 	/**
 	 * Return the ScalarVariables from a list which are state derivatives, defined to be
