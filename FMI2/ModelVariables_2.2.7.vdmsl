@@ -126,51 +126,7 @@ functions
 			/* @OnFail("2.2.7 ScalarVariable names are not unique: %s",
 				{ svs(a).name | a, b in set inds svs &
 					a <> b and svs(a).name = svs(b).name } ) */
-			( card { sv.name | sv in seq svs } = len svs ),
-
-			/* @OnFail("2.2.7 Invalid ScalarVariable aliasing") */
-			(
-				let refmap =
-				{
-					sv.valueReference |->
-					{
-						v | v in seq svs
-						& v.valueReference = sv.valueReference
-							and sameTypes(v.variable, sv.variable)
-					}
-
-					| sv in seq svs
-				}
-				in card dom refmap < len svs => dunion	-- Must be some aliases
-				{
-					let aliases = refmap(ref) in
-					{
-						/* @OnFail("2.2.7 Multiple aliases of reference %s are settable: %s", ref,
-								{ a.name | a in set aliases & isSettable(a) }) */
-						( card { a | a in set aliases & isSettable(a) } <= 1 ),
-
-						/* @OnFail("2.2.7 Aliases of reference %s are settable and independent: %s", ref,
-								{ {a.name, b.name} | a, b in set aliases &
-									a <> b and isSettable(a) and b.causality = <independent> } ) */
-						( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
-
-						-- @OnFail("2.2.7 Too many aliases of reference %s have start set", ref)
-						( card { a.variable.start <> nil | a in set aliases & a.variability <> <constant> } <= 1 ),
-
-						-- @OnFail("2.2.7 Constant aliases of reference %s have different start values", ref)
-						( card { a.variable.start | a in set aliases & a.variability = <constant> } <= 1 ),
-
-						-- @OnFail("2.2.7 Aliases of reference %s must all be constant or variable", ref)
-						( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
-
-						-- @OnFail("2.2.7 Aliases of reference %s must all have same unit/displayUnits", ref)
-						( card { mk_(a.variable.unit, a.variable.displayUnit) | a in set aliases & is_Real(a.variable) } <= 1 )
-					}
-
-					| ref in set dom refmap & card refmap(ref) > 1
-				}
-				= {true}
-			)
+			( card { sv.name | sv in seq svs } = len svs )
 		}
 		union
 		{
@@ -319,27 +275,84 @@ functions
 				end
 			),
 
-			-- @OnFail("2.2.7 Variable min/max/start/nominal invalid at line %s", sv.location)
-			(
-				cases sv.variable:
-					mk_Real(-, -, -, -, -, min, max, nominal, -, start, -, -) ->
-						isInRange[real](min, max, start)
-						-- @OnFail("2.2.7 Real nominal must be >0.0 at line %s", sv.location)
-						and (nominal <> nil => nominal > 0.0),
-
-					mk_Integer(-, -, min, max, start) ->
-						isInRange[real](min, max, start),
-
-					mk_Enumeration(-, -, min, max, start) ->
-						isInRange[real](min, max, start),
-
-					others -> true		-- String, Boolean
-				end
-			),
-
 			-- @OnFail("2.2.7 VendorAnnotations invalid")
 			( isValidVendorAnnotations(sv.annotations) )
 		} = {true};
+
+
+	/**
+	 * Vaidity checks that depend on inherited values from any declaredType - ie. passed
+	 * effective ScalarVariables.
+	 */
+	isValidEffectiveVariables: seq1 of ScalarVariable +> bool
+	isValidEffectiveVariables(svs) ==
+	{
+		-- @OnFail("2.2.7 Variable min/max/start/nominal invalid at line %s", sv.location)
+		(
+			cases sv.variable:
+				mk_Real(-, -, -, -, -, min, max, nominal, -, start, -, -) ->
+					isInRange[real](min, max, start)
+					-- @OnFail("2.2.7 Real nominal must be >0.0 at line %s", sv.location)
+					and (nominal <> nil => nominal > 0.0),
+
+				mk_Integer(-, -, min, max, start) ->
+					isInRange[real](min, max, start),
+
+				mk_Enumeration(-, -, min, max, start) ->
+					isInRange[real](min, max, start),
+
+				others -> true		-- String, Boolean
+			end
+		)
+
+		| sv in seq svs
+	}
+	union
+	{
+		/* @OnFail("2.2.7 Invalid ScalarVariable aliasing") */
+		(
+			let refmap =
+			{
+				sv.valueReference |->
+				{
+					v | v in seq svs
+					& v.valueReference = sv.valueReference
+						and sameTypes(v.variable, sv.variable)
+				}
+
+				| sv in seq svs
+			}
+			in card dom refmap < len svs => dunion	-- Must be some aliases
+			{
+				let aliases = refmap(ref) in
+				{
+					/* @OnFail("2.2.7 Multiple aliases of reference %s are settable: %s", ref,
+							{ a.name | a in set aliases & isSettable(a) }) */
+					( card { a | a in set aliases & isSettable(a) } <= 1 ),
+
+					/* @OnFail("2.2.7 Aliases of reference %s are settable and independent: %s", ref,
+							{ {a.name, b.name} | a, b in set aliases &
+								a <> b and isSettable(a) and b.causality = <independent> } ) */
+					( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
+
+					-- @OnFail("2.2.7 Too many aliases of reference %s have start set", ref)
+					( card { a.variable.start <> nil | a in set aliases & a.variability <> <constant> } <= 1 ),
+
+					-- @OnFail("2.2.7 Constant aliases of reference %s have different start values", ref)
+					( card { a.variable.start | a in set aliases & a.variability = <constant> } <= 1 ),
+
+					-- @OnFail("2.2.7 Aliases of reference %s must all be constant or variable", ref)
+					( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
+
+					-- @OnFail("2.2.7 Aliases of reference %s must all have same unit/displayUnits", ref)
+					( card { mk_(a.variable.unit, a.variable.displayUnit) | a in set aliases & is_Real(a.variable) } <= 1 )
+				}
+
+				| ref in set dom refmap & card refmap(ref) > 1
+			}
+			= {true}
+		)
+	} = {true};
 
 	/**
 	 * The default value for initial, defined by the (effective) values of causality and
@@ -401,8 +414,8 @@ functions
 		then <continuous>
 		else v;
 
-	effectiveScalarVariable: ScalarVariable +> ScalarVariable
-	effectiveScalarVariable(sv) ==
+	effectiveScalarVariable: ScalarVariable * [set1 of SimpleType] +> ScalarVariable
+	effectiveScalarVariable(sv, typedefs) ==
 		let causality   = effectiveCausality(sv.causality),
 			variability = effectiveVariability(sv.variability)
 		in 
@@ -416,9 +429,42 @@ functions
 				variability,
 				effectiveInitial(sv.initial, causality, variability),
 				sv.canHandleMultipleSetPerTimeInstant,
-				sv.variable,
+				effectiveVariable(sv.variable, typedefs),
 				sv.annotations
 			);
+
+	effectiveVariable: Variable * [set1 of SimpleType] +> Variable
+	effectiveVariable(v, typedefs) ==
+		if v.declaredType = nil or typedefs = nil
+		then v
+		else let dtypes = { td | td in set typedefs & td.name = v.declaredType } in
+			cases dtypes:
+				{ dt } ->
+					cases dt.type:
+						mk_RealType(dquantity, dunit, ddisplayUnit, drelq, dmin, dmax, dnominal, dunbounded) ->
+							mu(v,
+								quantity			|-> if v.quantity <> nil then v.quantity else dquantity,
+								unit				|-> if v.unit <> nil then v.unit else dunit,
+								displayUnit			|-> if v.displayUnit <> nil then v.displayUnit else ddisplayUnit,
+								relativeQuantity	|-> if v.relativeQuantity <> nil then v.relativeQuantity else drelq,
+								min					|-> if v.min <> nil then v.min else dmin,
+								max					|-> if v.max <> nil then v.max else dmax,
+								nominal				|-> if v.nominal <> nil then v.nominal else dnominal,
+								unbounded			|-> if v.unbounded <> nil then v.unbounded else dunbounded),
+
+						mk_IntegerType(dquantity, dmin, dmax) ->
+							mu(v,
+								quantity			|-> if v.quantity <> nil then v.quantity else dquantity,
+								min					|-> if v.min <> nil then v.min else dmin,
+								max					|-> if v.max <> nil then v.max else dmax),
+
+						mk_EnumerationType(dquantity, -) ->
+							mu(v,
+								quantity			|-> if v.quantity <> nil then v.quantity else dquantity)
+
+					end,
+				others -> v		-- Duplicate typedefs caught elsewhere
+			end;
 
 	/**
 	 * Return the ScalarVariables from a list which are continuous-time states, defined to be
