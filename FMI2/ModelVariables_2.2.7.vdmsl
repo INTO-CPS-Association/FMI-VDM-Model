@@ -287,7 +287,7 @@ functions
 		(
 			let refmap =
 			{
-				sv.valueReference |->
+				mk_(sv.valueReference, typeName(sv.variable)) |->
 				{
 					v | v in seq svs
 					& v.valueReference = sv.valueReference
@@ -300,26 +300,26 @@ functions
 			{
 				let aliases = refmap(ref) in
 				{
-					/* @OnFail("2.2.7 Multiple aliases of reference %s are settable: %s", ref,
+					/* @OnFail("2.2.7 Multiple aliases of reference %s/%s are settable: %s", ref.#1, ref.#2,
 							{ a.name | a in set aliases & isSettable(a) }) */
 					( card { a | a in set aliases & isSettable(a) } <= 1 ),
 
-					/* @OnFail("2.2.7 Aliases of reference %s are settable and independent: %s", ref,
+					/* @OnFail("2.2.7 Aliases of reference %s/%s are settable and independent: %s", ref.#1, ref.#2,
 							{ {a.name, b.name} | a, b in set aliases &
 								a <> b and isSettable(a) and b.causality = <independent> } ) */
 					( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
 
-					-- @OnFail("2.2.7 Too many aliases of reference %s have start set", ref)
-					( card { a.variable.start <> nil | a in set aliases & a.variability <> <constant> } <= 1 ),
+					-- @OnFail("2.2.7 Too many aliases of reference %s/%s have start set", ref.#1, ref.#2)
+					( card { a.variable.start | a in set aliases & a.variability <> <constant> and a.variable.start <> nil } <= 1 ),
 
-					-- @OnFail("2.2.7 Constant aliases of reference %s have different start values", ref)
-					( card { a.variable.start | a in set aliases & a.variability = <constant> } <= 1 ),
+					-- @OnFail("2.2.7 Constant aliases of reference %s/%s have different start values", ref.#1, ref.#2)
+					( card { a.variable.start | a in set aliases & a.variability = <constant> and a.variable.start <> nil } <= 1 ),
 
-					-- @OnFail("2.2.7 Aliases of reference %s must all be constant or variable", ref)
+					-- @OnFail("2.2.7 Aliases of reference %s/%s must all be constant or variable", ref.#1, ref.#2)
 					( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
 
-					-- @OnFail("2.2.7 Aliases of reference %s must all have same unit/displayUnits", ref)
-					( card { mk_(a.variable.unit, a.variable.displayUnit) | a in set aliases & is_Real(a.variable) } <= 1 )
+					-- @OnFail("2.2.7 Aliases of reference %s/%s must all have same unit/baseUnits", ref.#1, ref.#2)
+					( card { a.variable.unit | a in set aliases & is_Real(a.variable) } <= 1 )
 				}
 
 				| ref in set dom refmap & card refmap(ref) > 1
@@ -442,8 +442,9 @@ functions
 
 						mk_EnumerationType(dquantity, -) ->
 							mu(v,
-								quantity			|-> if v.quantity <> nil then v.quantity else dquantity)
+								quantity			|-> if v.quantity <> nil then v.quantity else dquantity),
 
+						others -> v		-- Boolean and String unchanged
 					end,
 
 				others -> v		-- Duplicate typedefs caught elsewhere
@@ -465,15 +466,19 @@ functions
 	 */
 	sameTypes: Variable * Variable +> bool
 	sameTypes(a, b) ==
-		is_Real(a) and is_Real(b)
-		or
-		is_Integer(a) and is_Integer(b)
-		or
-		is_Enumeration(a) and is_Enumeration(b) and a.declaredType = b.declaredType
-		or
-		is_Boolean(a) and is_Boolean(b)
-		or
-		is_String(a) and is_String(b);
+		typeName(a) = typeName(b);
+
+	/**
+	 * Get the string name of a Variable type.
+	 */
+	typeName: Variable +> seq1 of char
+	typeName(v) ==
+		if is_Real(v) then "Real"
+		else if is_Integer(v) then "Integer"
+		else if is_Boolean(v) then "Boolean"
+		else if is_String(v) then "String"
+		else if is_Enumeration(v) then "Enumeration_" ^ v.declaredType
+		else "?";
 
 	/**
 	 * Return the ScalarVariables from a list which are continuous-time states, defined to be
