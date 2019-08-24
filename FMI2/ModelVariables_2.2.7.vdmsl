@@ -114,7 +114,7 @@ functions
 	pre is_(min, [real]) and is_(max, [real]) and is_(start, [real]);	-- ie. numerics
 
 	/**
-	 * Verify a sequence of ScalarVariables.
+	 * Verify a sequence of raw ScalarVariables.
 	 */
 	isValidScalarVariables: seq1 of ScalarVariable +> bool
 	isValidScalarVariables(svs) ==
@@ -130,51 +130,25 @@ functions
 		}
 		union
 		{
-			-- @OnFail("2.2.7 ScalarVariables %s invalid at line %s", sv.name, sv.location)
+			-- @OnFail("2.2.7 ScalarVariable %s invalid at line %s", sv.name, sv.location)
 			( isValidScalarVariable(sv) )
 
 			| sv in seq svs
 		} = {true};
 
 	/**
-	 * Test whether a ScalarVariable is settable with fmi2SetXXX. See sections 3.2.3 and 4.2.4.
-	 */
-	isSettable: ScalarVariable +> bool
-	isSettable(sv) ==
-		sv.variability <> <constant> and sv.initial in set { <exact>, <approx> }
-		or
-		sv.causality = <input>
-		or
-		sv.causality = <parameter> and sv.variability = <tunable>;
-
-	/**
-	 * Test whether two Variables are the same basic type.
-	 */
-	sameTypes: Variable * Variable +> bool
-	sameTypes(a, b) ==
-		is_Real(a) and is_Real(b)
-		or
-		is_Integer(a) and is_Integer(b)
-		or
-		is_Enumeration(a) and is_Enumeration(b) and a.declaredType = b.declaredType
-		or
-		is_Boolean(a) and is_Boolean(b)
-		or
-		is_String(a) and is_String(b);
-
-	/**
-	 * ScalarVariable invariant. Rules defined in the table on p49.
+	 * Raw ScalarVariable invariant. Rules defined in the table on p49.
 	 */
 	isValidScalarVariable: ScalarVariable +> bool
 	isValidScalarVariable(sv) ==
-		let eCausality = effectiveCausality(sv.causality),
+		let eCausality   = effectiveCausality(sv.causality),
 			eVariability = effectiveVariability(sv.variability),
-			eInitial = effectiveInitial(sv.initial, eCausality, eVariability)
+			eInitial     = effectiveInitial(sv.initial, eCausality, eVariability)
 		in
 		{
 			-- Table on p46 defining causality, and p48/49 defining combinations
-			/* @OnFail("2.2.7 Causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
-				eCausality, eVariability, eInitial, sv.variable.start, sv.location) */
+			/* @OnFail("2.2.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
+				sv.name, eCausality, eVariability, eInitial, sv.variable.start, sv.location) */
 			(
 				cases eCausality:
 					<parameter> ->
@@ -226,8 +200,8 @@ functions
 			),
 
 			-- Table on p46 defining variability, and p49 defining combinations
-			/* @OnFail("2.2.7 Variability/causality %s/%s invalid at line %s",
-				eVariability, eCausality, sv.location) */
+			/* @OnFail("2.2.7 Variable %s variability/causality %s/%s invalid at line %s",
+				sv.name, eVariability, eCausality, sv.location) */
 			(
 				cases eVariability:
 					<constant> ->
@@ -247,16 +221,16 @@ functions
 			),
 
 			-- Table on p47 defining initial
-			/* @OnFail("2.2.7 Initial/causality %s/%s invalid at %s",
-				sv.initial, eCausality, sv.location) */
+			/* @OnFail("2.2.7 Variable %s initial/causality %s/%s invalid at %s",
+				sv.name, sv.initial, eCausality, sv.location) */
 			(
 				sv.initial <> nil =>
 					(eCausality not in set {<input>, <independent>})
 			),
 
 			-- Table on p47 defining initial
-			/* @OnFail("2.2.7 Initial/variability/start %s/%s/%s invalid at line %s",
-				eInitial, eVariability, sv.variable.start, sv.location) */
+			/* @OnFail("2.2.7 Variable %s initial/variability/start %s/%s/%s invalid at line %s",
+				sv.name, eInitial, eVariability, sv.variable.start, sv.location) */
 			(
 				cases eInitial:
 					<exact> ->
@@ -287,7 +261,7 @@ functions
 	isValidEffectiveVariables: seq1 of ScalarVariable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail("2.2.7 Variable min/max/start/nominal invalid at line %s", sv.location)
+		-- @OnFail("2.2.7 Variable %s min/max/start/nominal invalid at line %s", sv.name, sv.location)
 		(
 			cases sv.variable:
 				mk_Real(-, -, -, -, -, min, max, nominal, -, start, -, -) ->
@@ -414,6 +388,10 @@ functions
 		then <continuous>
 		else v;
 
+	/**
+	 * Generate the effective value of a ScalarVariable, accounting for fields inherited from
+	 * any declaredType and defaulted values of causality, variability and initial.
+	 */
 	effectiveScalarVariable: ScalarVariable * [set1 of SimpleType] +> ScalarVariable
 	effectiveScalarVariable(sv, typedefs) ==
 		let causality   = effectiveCausality(sv.causality),
@@ -433,6 +411,10 @@ functions
 				sv.annotations
 			);
 
+	/**
+	 * Generate the effective value of a Variable, accounting for fields inherited from
+	 * its declaredType.
+	 */
 	effectiveVariable: Variable * [set1 of SimpleType] +> Variable
 	effectiveVariable(v, typedefs) ==
 		if v.declaredType = nil or typedefs = nil
@@ -463,8 +445,35 @@ functions
 								quantity			|-> if v.quantity <> nil then v.quantity else dquantity)
 
 					end,
+
 				others -> v		-- Duplicate typedefs caught elsewhere
 			end;
+
+	/**
+	 * Test whether a ScalarVariable is settable with fmi2SetXXX. See sections 3.2.3 and 4.2.4.
+	 */
+	isSettable: ScalarVariable +> bool
+	isSettable(sv) ==
+		sv.variability <> <constant> and sv.initial in set { <exact>, <approx> }
+		or
+		sv.causality = <input>
+		or
+		sv.causality = <parameter> and sv.variability = <tunable>;
+
+	/**
+	 * Test whether two Variables are the same basic type.
+	 */
+	sameTypes: Variable * Variable +> bool
+	sameTypes(a, b) ==
+		is_Real(a) and is_Real(b)
+		or
+		is_Integer(a) and is_Integer(b)
+		or
+		is_Enumeration(a) and is_Enumeration(b) and a.declaredType = b.declaredType
+		or
+		is_Boolean(a) and is_Boolean(b)
+		or
+		is_String(a) and is_String(b);
 
 	/**
 	 * Return the ScalarVariables from a list which are continuous-time states, defined to be
