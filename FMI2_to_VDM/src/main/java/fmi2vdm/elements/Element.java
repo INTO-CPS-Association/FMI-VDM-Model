@@ -34,6 +34,8 @@ import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import fmi2vdm.FMI2SaxParser;
+
 abstract public class Element
 {
 	protected Integer lineNumber;
@@ -53,7 +55,7 @@ abstract public class Element
 		}
 		else
 		{
-			return value;
+			return value.replace("\"", "\\\"");
 		}
 	}
 	
@@ -67,7 +69,45 @@ abstract public class Element
 		}
 		else
 		{
-			return Integer.parseInt(value);
+			try
+			{
+				return Integer.parseInt(value);
+			}
+			catch (NumberFormatException e)
+			{
+				FMI2SaxParser.error(e.toString() + " at " + lineNumber);
+				return new Integer(0);
+			}
+		}
+	}
+	
+	protected Long uintOf(Attributes attributes, String name)
+	{
+		String value = attributes.getValue(name);
+		
+		if (value == null)
+		{
+			return null;
+		}
+		else
+		{
+			try
+			{
+				Long uint = Long.parseLong(value);
+				
+				if (Long.signum(uint) < 0)
+				{
+					FMI2SaxParser.error("Negative unsigned int " + value + " at " + lineNumber);
+					return new Long(0);
+				}
+				
+				return uint;
+			}
+			catch (NumberFormatException e)
+			{
+				FMI2SaxParser.error(e.toString() + " at " + lineNumber);
+				return new Long(0);
+			}
 		}
 	}
 	
@@ -81,7 +121,15 @@ abstract public class Element
 		}
 		else
 		{
-			return Double.parseDouble(value);
+			try
+			{
+				return Double.parseDouble(value);
+			}
+			catch (NumberFormatException e)
+			{
+				FMI2SaxParser.error(e.toString() + " at " + lineNumber);
+				return new Double(0);
+			}
 		}
 	}
 	

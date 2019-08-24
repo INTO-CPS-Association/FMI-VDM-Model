@@ -39,6 +39,8 @@ import org.xml.sax.SAXException;
 
 public class FMI2SaxParser
 {
+	private static int errors = 0;
+	
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
 	{
 		if (args.length != 2)
@@ -53,5 +55,17 @@ public class FMI2SaxParser
 		saxParser.parse(args[0], handler);
 		
 		handler.getFMIModelDescription().toVDM("\t");
+		
+		if (errors > 0)
+		{
+			System.err.println("XML parse errors found.");
+			System.exit(1);
+		}
+	}
+	
+	public static void error(String message)
+	{
+		System.err.println(message);
+		errors++;
 	}
 }

@@ -39,7 +39,7 @@ public class ScalarVariable extends Element
 		super(locator);
 		
 		name = stringOf(attributes, "name");
-		valueReference = intOf(attributes, "valueReference");
+		valueReference = uintOf(attributes, "valueReference");
 		description = stringOf(attributes, "description");
 		causality = stringOf(attributes, "causality");
 		variability = stringOf(attributes, "variability");
@@ -65,7 +65,7 @@ public class ScalarVariable extends Element
 	}
 	
 	private String name;
-	private Integer valueReference;
+	private Long valueReference;
 	private String description;
 	private String causality;
 	private String variability;

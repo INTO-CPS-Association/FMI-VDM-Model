@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import fmi2vdm.FMI2SaxParser;
+
 public class Unknown extends Element
 {
 	public Unknown(Attributes attributes, Locator locator)
@@ -50,7 +52,15 @@ public class Unknown extends Element
 			dependencies = new int[deps.length];
 			for (int i=0; i<deps.length; i++)
 			{
-				dependencies[i] = Integer.parseInt(deps[i]);
+				try
+				{
+					dependencies[i] = Integer.parseInt(deps[i]);
+				}
+				catch (NumberFormatException e)
+				{
+					FMI2SaxParser.error(e.toString() + " at " + lineNumber);
+					dependencies[i] = new Integer(0);
+				}
 			}
 		}
 
