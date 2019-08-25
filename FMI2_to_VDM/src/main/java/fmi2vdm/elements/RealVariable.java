@@ -48,7 +48,7 @@ public class RealVariable extends Variable
 		nominal = doubleOf(attributes, "nominal");
 		unbounded = boolOf(attributes, "unbounded");
 		start = doubleOf(attributes, "start");
-		derivative = intOf(attributes, "derivative");
+		derivative = uintOf(attributes, "derivative");
 		reinit = boolOf(attributes, "reinit");
 	}
 	
@@ -62,7 +62,7 @@ public class RealVariable extends Variable
 	private Double nominal;
 	private Boolean unbounded;
 	private Double start;
-	private Integer derivative;
+	private Long derivative;
 	private Boolean reinit;
 
 	@Override
