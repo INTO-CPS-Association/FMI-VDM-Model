@@ -71,6 +71,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/FMI2/UnitDefinitions_2.2.2.vdmsl</locationURI>
 		</link>
 		<link>
+			<name>FMI2/VariableNaming_2.2.9.vdmsl</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/FMI2/VariableNaming_2.2.9.vdmsl</locationURI>
+		</link>
+		<link>
 			<name>FMI2/VendorAnnotations_2.2.6.vdmsl</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/FMI2/VendorAnnotations_2.2.6.vdmsl</locationURI>

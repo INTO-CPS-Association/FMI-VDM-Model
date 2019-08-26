@@ -143,6 +143,17 @@ functions
 			( md.modelExchange <> nil or md.coSimulation <> nil ),
 
 			(
+				md.attributes.variableNamingConvention = <structured> =>
+					{
+						-- @OnFail("Structured name %s invalid at line %s", sv.name, sv.location)
+						( isValidStructuredName(sv.name) )
+
+						| sv in seq eModelVariables
+					}
+					= {true}
+			),
+
+			(
 				md.typeDefinitions <> nil =>
 					{
 						/* @OnFail("2.2.3 TypeDefinition and ScalarVariable names overlap: %s at line %s",

@@ -38,7 +38,7 @@ values
 	springMassDamper = mk_FMIModelDescription
 	(
 		-- Attributes
-		mk_ModelAttributes(0, "2.0", "MassSpringDamper", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
+		mk_ModelAttributes(0, "2.0", "MassSpringDamper", "GUID", nil, nil, nil, nil, nil, nil, nil, <structured>, nil),
 
 		-- Model types
 		mk_ModelExchange(0, "MSD", nil, nil, nil, nil, nil, nil, nil, nil),
@@ -66,8 +66,8 @@ values
 
 		-- ScalarVariables
 		[
-/* 1 */		mk_ScalarVariable(1, "inertial.J", 0, nil, <parameter>, <fixed>, nil, nil,
-					mk_Real("Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
+/* 1 */		mk_ScalarVariable(1, "inertial.J[]", 0, nil, <parameter>, <fixed>, nil, nil,
+					mk_Real("Modelica.SIunits.Inertiazz", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
 
 /* 2 */		mk_ScalarVariable(2, "torque.tau", 1, nil, <input>, nil, nil, nil,
 					mk_Real("Modelica.SIunits.Torque", nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
