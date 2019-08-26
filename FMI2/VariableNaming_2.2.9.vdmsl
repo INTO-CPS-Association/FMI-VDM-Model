@@ -138,10 +138,11 @@ functions
 		then let mk_(ok, tail) = unsigned(source) in
 			if ok
 			then if tail <> [] and hd tail = ','
-				then unsigned(tail(2, ..., len tail))
+				then unsignedSeq(tail(2, ..., len tail))
 				else mk_(true, tail)
 			else mk_(false, source)
-		else mk_(false, source);
+		else mk_(false, source)
+	measure len source;
 
 	startsWith: seq of char * seq1 of char +> nat
 	startsWith(source, matching) ==
