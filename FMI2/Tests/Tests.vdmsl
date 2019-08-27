@@ -149,6 +149,21 @@ functions
 								not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, initial, nil, nilv, nil))
 					end);
 
+	testStructuredNames: () +> seq of bool
+	testStructuredNames() ==
+	[
+		isValidStructuredName("der(a.b.c,3)"),
+		isValidStructuredName("der(a)"),
+		isValidStructuredName("a"),
+		isValidStructuredName("'!#$'"),
+		isValidStructuredName("a[1]"),
+		isValidStructuredName("_abc[1,2,3]"),
+		isValidStructuredName("xyz.abc.def[1,2,3]"),
+		isValidStructuredName("'!!!\\?'.a10[1,2,3]"),
+		isValidStructuredName("a20[1,2,3].def[1]"),
+		isValidStructuredName("'\\\"\\?\\\\'")
+	];
+
 values
 --	test: () +> bool
 --	test() ==
@@ -247,4 +262,6 @@ functions
 		isValidFMIModelDescription(example),
 		isValidFMIModelDescription(springMassDamper)
 	]
+	^	testStructuredNames()
+
 	post elems RESULT = {true};

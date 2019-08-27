@@ -32,7 +32,9 @@
  */
 values
 	DIGITS = "0123456789";
-	NONDIGITS = "abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	NONDIGITS = "abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	QCHARS = "!#$%&()*+,-./:;<>=?@[]^{}|~ ";
+	ESCAPES = "’\"\\abfnrtv?";	-- ie. you can have \', \", \\, \a etc.
 
 functions
 	isValidStructuredName: NormalizedString1 +> bool
@@ -40,23 +42,28 @@ functions
 		let mk_(ok, tail) = structuredName(name) in
 			ok and tail = [];
 
+	/**
+	 * Parser functions are passed a source string and return a tuple of a bool
+	 * which indicates whether the symbol was correctly parsed, and the 
+	 * remaining string after the symbol was parsed. If the parse fails, the
+	 * remaining string is the same as the original input.
+	 *
+	 * This follows the EBNF grammar in section 2.2.9, p64.
+	 */
+
 	structuredName: seq of char -> bool * seq of char
 	structuredName(source) ==
 		if source(1, ..., 4) = "der("
 		then let mk_(ok, tail) = identifier(source(5, ..., len source)) in
-			if ok then
-				cases tail:
-					"," ^ - -> let mk_(ok2, tail2) = unsigned(tail(2, ..., len tail)) in
-						if ok2
-						then if tail2 <> [] and tail2(1) = ')'
-							then mk_(true, tail2(2, ..., len tail2))
-							else mk_(false, source)
-						else mk_(false, source),
-
-					")" ^ - -> mk_(true, tail(2, ..., len tail)),
-
-					others -> mk_(false, source)
-				end
+			if ok and tail <> [] then
+				if hd tail = ','
+				then let mk_(ok2, tail2) = unsigned(tail(2, ..., len tail)) in
+					if ok2 and tail2 <> [] and tail2(1) = ')'
+					then mk_(true, tail2(2, ..., len tail2))
+					else mk_(false, source)
+				else if hd tail = ')'
+					then mk_(true, tail(2, ..., len tail))
+					else mk_(false, source)
 			else mk_(false, source)
 		else identifier(source);
 
@@ -64,8 +71,7 @@ functions
 	identifier(source) ==
 		let mk_(ok, tail) = bname(source) in
 			if ok
-			then
-				if ok and tail <> [] and hd tail = '.'
+			then if tail <> [] and hd tail = '.'
 				then identifier(tail(2, ..., len tail))
 				else let mk_(ok2, tail2) = arrayIndices(tail) in
 					if ok2
@@ -87,28 +93,44 @@ functions
 	alphanum(source) ==
 		let acount = startsWith(source, DIGITS ^ NONDIGITS) in
 			if acount > 0
-			then if hd source in set elems NONDIGITS
+				and hd source in set elems NONDIGITS
 				and forall i in set {1, ..., acount} &
 					i > 1 => source(i) in set elems (DIGITS ^ NONDIGITS)
-				then mk_(true, source(acount + 1, ..., len source))
-				else mk_(false, source)
+			then mk_(true, source(acount + 1, ..., len source))
 			else mk_(false, source);
 
 	qname: seq of char -> bool * seq of char
 	qname(source) ==
 		if source <> [] and hd source = '\''
-		then let mk_(ok, tail) = qchars(source(2, ..., len source)) in
+		then let mk_(ok, tail) = qcharsOrEscapes(source(2, ..., len source)) in
 			if ok and tail <> [] and hd tail = '\''
 			then mk_(true, tail(2, ..., len tail))
 			else mk_(false, source)
 		else mk_(false, source);
 
-	qchars: seq of char -> bool * seq of char
-	qchars(source) ==
-		let qcount = startsWith(source, "!#$%&()*+,-./:;<>=?@[]^{}|~ ") in
-			if qcount > 0
-			then mk_(true, source(qcount + 1, ..., len source))
-			else mk_(false, source);
+	qcharsOrEscapes: seq of char -> bool * seq of char
+	qcharsOrEscapes(source) ==
+		let mk_(ok, tail) = qcharOrEscape(source) in
+			if ok and tail <> []
+			then let mk_(-, tail2) = qcharsOrEscapes(tail) in mk_(true, tail2)
+			else mk_(false, source)
+	measure len source;
+
+	qcharOrEscape: seq of char -> bool * seq of char
+	qcharOrEscape(source) ==
+		let mk_(ok, tail) = qchar(source) in
+			if ok
+			then mk_(true, tail)
+			else let mk_(ok2, tail2) = escape(source) in
+				if ok2
+				then mk_(true, tail2)
+				else mk_(false, source);
+
+	qchar: seq of char -> bool * seq of char
+	qchar(source) ==
+		if source <> [] and hd source in set elems (QCHARS ^ DIGITS ^ NONDIGITS)
+		then mk_(true, source(2, ..., len source))
+		else mk_(false, source);
 
 	unsigned: seq of char -> bool * seq of char
 	unsigned(source) ==
@@ -119,7 +141,8 @@ functions
 
 	escape: seq of char -> bool * seq of char
 	escape(source) ==
-		if len source > 1 and source(1) = '\\' and source(2) in set elems "’\"\\abfnrtv?"
+		if len source > 1 and source(1) = '\\'
+			and source(2) in set elems ESCAPES
 		then mk_(true, source(3, ..., len source))
 		else mk_(false, source);
 
@@ -152,5 +175,3 @@ functions
 			then 1 + startsWith(tl source, matching)
 			else 0
 	measure len source;
-
-
