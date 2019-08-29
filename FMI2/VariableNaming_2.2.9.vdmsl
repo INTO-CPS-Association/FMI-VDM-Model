@@ -51,6 +51,7 @@ functions
 	 * This follows the EBNF grammar in section 2.2.9, p64.
 	 */
 
+	-- name = identifier | "der(" identifier ["," unsignedInteger ] ")"
 	structuredName: seq of char -> bool * seq of char
 	structuredName(source) ==
 		if source(1, ..., 4) = "der("
@@ -58,7 +59,7 @@ functions
 			if ok and tail <> [] then
 				if hd tail = ','
 				then let mk_(ok2, tail2) = unsigned(tail(2, ..., len tail)) in
-					if ok2 and tail2 <> [] and tail2(1) = ')'
+					if ok2 and tail2 <> [] and hd tail2 = ')'
 					then mk_(true, tail2(2, ..., len tail2))
 					else mk_(false, source)
 				else if hd tail = ')'
@@ -67,6 +68,7 @@ functions
 			else mk_(false, source)
 		else identifier(source);
 
+	-- identifier = B-name [ arrayIndices ] {"." B-name [ arrayIndices ] }
 	identifier: seq of char -> bool * seq of char
 	identifier(source) ==
 		let mk_(ok, tail) = bname(source) in
@@ -82,6 +84,7 @@ functions
 			else mk_(false, source)
 	measure len source;
 
+	-- B-name = nondigit { digit | nondigit } | Q-name
 	bname: seq of char -> bool * seq of char
 	bname(source) ==
 		let mk_(ok, tail) = qname(source) in
@@ -89,16 +92,19 @@ functions
 			then mk_(ok, tail)
 			else alphanum(source);
 
+	-- nondigit { digit | nondigit }
+	-- nondigit = "_" | letters "a" to "z" | letters "A" to "Z"
 	alphanum: seq of char -> bool * seq of char
 	alphanum(source) ==
 		let acount = startsWith(source, DIGITS ^ NONDIGITS) in
 			if acount > 0
 				and hd source in set elems NONDIGITS
-				and forall i in set {1, ..., acount} &
-					i > 1 => source(i) in set elems (DIGITS ^ NONDIGITS)
+				and forall i in set {2, ..., acount} &
+					source(i) in set elems (DIGITS ^ NONDIGITS)
 			then mk_(true, source(acount + 1, ..., len source))
 			else mk_(false, source);
 
+	-- Q-name = "’" ( Q-char | escape ) { Q-char | escape } "’"
 	qname: seq of char -> bool * seq of char
 	qname(source) ==
 		if source <> [] and hd source = '\''
@@ -108,6 +114,7 @@ functions
 			else mk_(false, source)
 		else mk_(false, source);
 
+	-- ( Q-char | escape ) { Q-char | escape }
 	qcharsOrEscapes: seq of char -> bool * seq of char
 	qcharsOrEscapes(source) ==
 		let mk_(ok, tail) = qcharOrEscape(source) in
@@ -116,6 +123,7 @@ functions
 			else mk_(false, source)
 	measure len source;
 
+	-- ( Q-char | escape )
 	qcharOrEscape: seq of char -> bool * seq of char
 	qcharOrEscape(source) ==
 		let mk_(ok, tail) = qchar(source) in
@@ -126,12 +134,17 @@ functions
 				then mk_(true, tail2)
 				else mk_(false, source);
 
+	-- Q-char = nondigit | digit | "!" | "#" | "$" | "%" | "&" | "(" | ")" |
+	--		"*" | "+" | "," | "-" | "." | "/" | ":" |
+	--		";" | "<" | ">" | "=" | "?" | "@" | "[" |
+	--		"]" | "^" | "{" | "}" | "|" | "~" | " "
 	qchar: seq of char -> bool * seq of char
 	qchar(source) ==
 		if source <> [] and hd source in set elems (QCHARS ^ DIGITS ^ NONDIGITS)
 		then mk_(true, source(2, ..., len source))
 		else mk_(false, source);
 
+	-- unsignedInteger = digit { digit }
 	unsigned: seq of char -> bool * seq of char
 	unsigned(source) ==
 		let dcount = startsWith(source, DIGITS) in
@@ -139,13 +152,16 @@ functions
 			then mk_(true, source(dcount + 1, ..., len source))
 			else mk_(false, source);
 
+	-- escape = "\’" | "\"" | "\?" | "\\" | "\a" | "\b" |
+	--		"\f" | "\n" | "\r" | "\t" | "\v"
 	escape: seq of char -> bool * seq of char
 	escape(source) ==
-		if len source > 1 and source(1) = '\\'
+		if len source > 1 and hd source = '\\'
 			and source(2) in set elems ESCAPES
 		then mk_(true, source(3, ..., len source))
 		else mk_(false, source);
 
+	-- arrayIndices = "[" unsignedInteger {"," unsignedInteger} "]"
 	arrayIndices: seq of char -> bool * seq of char
 	arrayIndices(source) ==
 		if source <> [] and hd source = '['
@@ -155,6 +171,7 @@ functions
 			else mk_(false, source)
 		else mk_(false, source);
 
+	-- unsignedInteger {"," unsignedInteger}
 	unsignedSeq: seq of char -> bool * seq of char
 	unsignedSeq(source) ==
 		if startsWith(source, DIGITS) > 0
@@ -167,6 +184,7 @@ functions
 		else mk_(false, source)
 	measure len source;
 
+	-- Return the size of the stem of source that contains chars from the matching string.
 	startsWith: seq of char * seq1 of char +> nat
 	startsWith(source, matching) ==
 		if source = []
