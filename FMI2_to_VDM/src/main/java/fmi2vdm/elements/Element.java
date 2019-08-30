@@ -55,7 +55,7 @@ abstract public class Element
 		}
 		else
 		{
-			return value.replace("\"", "\\\"");
+			return value.replace("\\", "\\\\").replace("\"", "\\\"");
 		}
 	}
 	
