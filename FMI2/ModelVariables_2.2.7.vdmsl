@@ -424,25 +424,34 @@ functions
 				{ dt } ->
 					cases dt.type:
 						mk_RealType(dquantity, dunit, ddisplayUnit, drelq, dmin, dmax, dnominal, dunbounded) ->
-							mu(v,
-								quantity			|-> if v.quantity <> nil then v.quantity else dquantity,
-								unit				|-> if v.unit <> nil then v.unit else dunit,
-								displayUnit			|-> if v.displayUnit <> nil then v.displayUnit else ddisplayUnit,
-								relativeQuantity	|-> if v.relativeQuantity <> nil then v.relativeQuantity else drelq,
-								min					|-> if v.min <> nil then v.min else dmin,
-								max					|-> if v.max <> nil then v.max else dmax,
-								nominal				|-> if v.nominal <> nil then v.nominal else dnominal,
-								unbounded			|-> if v.unbounded <> nil then v.unbounded else dunbounded),
+							if is_Real(v) then
+								mu(v,
+									quantity			|-> if v.quantity <> nil then v.quantity else dquantity,
+									unit				|-> if v.unit <> nil then v.unit else dunit,
+									displayUnit			|-> if v.displayUnit <> nil then v.displayUnit else ddisplayUnit,
+									relativeQuantity	|-> if v.relativeQuantity <> nil then v.relativeQuantity else drelq,
+									min					|-> if v.min <> nil then v.min else dmin,
+									max					|-> if v.max <> nil then v.max else dmax,
+									nominal				|-> if v.nominal <> nil then v.nominal else dnominal,
+									unbounded			|-> if v.unbounded <> nil then v.unbounded else dunbounded)
+							else
+								v,	-- Error reported elsewhere
 
 						mk_IntegerType(dquantity, dmin, dmax) ->
-							mu(v,
-								quantity			|-> if v.quantity <> nil then v.quantity else dquantity,
-								min					|-> if v.min <> nil then v.min else dmin,
-								max					|-> if v.max <> nil then v.max else dmax),
+							if is_Integer(v) then
+								mu(v,
+									quantity			|-> if v.quantity <> nil then v.quantity else dquantity,
+									min					|-> if v.min <> nil then v.min else dmin,
+									max					|-> if v.max <> nil then v.max else dmax)
+							else
+								v,	-- Error reported elsewhere
 
 						mk_EnumerationType(dquantity, -) ->
-							mu(v,
-								quantity			|-> if v.quantity <> nil then v.quantity else dquantity),
+							if is_Enumeration(v) then
+								mu(v,
+									quantity			|-> if v.quantity <> nil then v.quantity else dquantity)
+							else
+								v,	-- Error reported elsewhere
 
 						others -> v		-- Boolean and String unchanged
 					end,
