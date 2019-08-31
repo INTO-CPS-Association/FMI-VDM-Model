@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="2.0"
+	modelName="Test FMU" guid="{111-222-333-444}" variableNamingConvention="structured">
+	<CoSimulation modelIdentifier="Test FMU" />
+	<ModelVariables>
+		<ScalarVariable name="der(-)" valueReference="0">
+			<Real />
+		</ScalarVariable>
+		<ScalarVariable name="123" valueReference="1">
+			<Real />
+		</ScalarVariable>
+		<ScalarVariable name="'\z'" valueReference="2">
+			<Real />
+		</ScalarVariable>
+	</ModelVariables>
+	<ModelStructure>
+	</ModelStructure>
+</fmiModelDescription>

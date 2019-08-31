@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="2.0"
-	modelName="Test FMU" guid="{111-222-333-444}">
+	modelName="Test FMU" guid="{111-222-333-444}" variableNamingConvention="flat">
 	<CoSimulation modelIdentifier="Test FMU" />
 	<ModelVariables>
 		<ScalarVariable name="varname" valueReference="0">

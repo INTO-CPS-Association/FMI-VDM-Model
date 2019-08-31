@@ -38,8 +38,8 @@ Checker reported:
 "time","v2","v3"
 ------------------------------ 2.2.1_invalidDerivatives1.xml
 VDMCheck.sh:
-2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
-2.2.7 ScalarVariables["v1"] invalid at line 6
+2.2.7 Variable "v1" causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+2.2.7 ScalarVariable "v1" invalid at line 6
 2.2.1 ScalarVariables invalid
 2.2.8 Derivatives section does not match Real/derivative variables at line 13
 2.2.8 Derivatives indexes out of range at line 13
@@ -62,8 +62,8 @@ Checker reported:
 	3 Fatal error(s) occurred during processing
 ------------------------------ 2.2.1_invalidDerivatives2.xml
 VDMCheck.sh:
-2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
-2.2.7 ScalarVariables["v1"] invalid at line 6
+2.2.7 Variable "v1" causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+2.2.7 ScalarVariable "v1" invalid at line 6
 2.2.1 ScalarVariables invalid
 2.2.8 Derivatives declared, but no Real/derivative variables at line 13
 false
@@ -84,8 +84,8 @@ Checker reported:
 	3 Fatal error(s) occurred during processing
 ------------------------------ 2.2.1_invalidDerivatives3.xml
 VDMCheck.sh:
-2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
-2.2.7 ScalarVariables["v1"] invalid at line 6
+2.2.7 Variable "v1" causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+2.2.7 ScalarVariable "v1" invalid at line 6
 2.2.1 ScalarVariables invalid
 2.2.8 Real/derivative variables but no Derivatives declared at line 13
 false
@@ -101,7 +101,7 @@ Checker reported:
 "time","v2"
 ------------------------------ 2.2.1_invalidMultipleSet.xml
 VDMCheck.sh:
-2.2.7 ["varname"].canHandleMultipleSetPerTimeInstant invalid at line 6
+2.2.7 ScalarVariable "varname", canHandleMultipleSetPerTimeInstant invalid at line 6
 false
 ------------
 fmuCheck:
@@ -127,8 +127,8 @@ Checker reported:
 "time","v1","v2"
 ------------------------------ 2.2.1_invalidOutputs2.xml
 VDMCheck.sh:
-2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
-2.2.7 ScalarVariables["v1"] invalid at line 6
+2.2.7 Variable "v1" causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+2.2.7 ScalarVariable "v1" invalid at line 6
 2.2.1 ScalarVariables invalid
 2.2.8 Outputs should be omitted at line 10
 false
@@ -162,9 +162,7 @@ Checker reported:
 ------------------------------ 2.2.1_typeCheckFail.xml
 VDMCheck.sh:
 2.2.7 ScalarVariable "v1", RealType not referenced by Real variable "T1" at line 13
-2.2.7 ScalarVariable "v1", calculated min/max does not match start 100 at line 13
 2.2.7 ScalarVariable "v2", IntegerType not referenced by Integer variable "T2" at line 16
-2.2.7 ScalarVariable "v2", calculated min/max does not match start 100 at line 16
 2.2.7 ScalarVariable "v3", StringType not referenced by String variable "T3" at line 19
 2.2.7 ScalarVariable "v4", BooleanType not referenced by Boolean variable "T4" at line 22
 2.2.7 ScalarVariable "v5", EnumerationType not referenced by Enumeration variable "T5" at line 25
@@ -225,11 +223,11 @@ Checker reported:
 VDMCheck.sh:
 2.2.3 TypeDefinitions names are not unique: {"abc"}
 2.2.3 SimpleType "abc", Real max 1 not >= min 10
-2.2.3 TypeDefinition["abc"] invalid at line 6
+2.2.3 TypeDefinition "abc" invalid at line 6
 2.2.3 SimpleType "abc", Integer max 0 not >= min 100
-2.2.3 TypeDefinition["abc"] invalid at line 9
+2.2.3 TypeDefinition "abc" invalid at line 9
 2.2.3 SimpleType "enum", EnumerationType item name/values do not form a bijection
-2.2.3 TypeDefinition["enum"] invalid at line 12
+2.2.3 TypeDefinition "enum" invalid at line 12
 2.2.1 TypeDefinitions invalid
 false
 ------------
@@ -287,18 +285,19 @@ Checker reported:
 "time"
 ------------------------------ 2.2.7_causalityVariabiliy.xml
 VDMCheck.sh:
-2.2.7 Causality/variability/initial/start <parameter>/<continuous>/nil/nil invalid at line 6
-2.2.7 Variability/causality <continuous>/<parameter> invalid at line 6
-2.2.7 ScalarVariables["v1"] invalid at line 6
-2.2.7 Causality/variability/initial/start <independent>/<continuous>/<approx>/200 invalid at line 9
-2.2.7 Initial/causality <approx>/<independent> invalid at 9
-2.2.7 min 100 is not <= max 1
-2.2.7 start 200 is not within min 100/max 1
-2.2.7 Variable min/max/start invalid at line 9
+2.2.7 Variable "v1" causality/variability/initial/start <parameter>/<continuous>/nil/nil invalid at line 6
+2.2.7 Variable "v1" variability/causality <continuous>/<parameter> invalid at line 6
+2.2.7 ScalarVariable "v1" invalid at line 6
+2.2.7 Variable "v2" causality/variability/initial/start <independent>/<continuous>/<approx>/200 invalid at line 9
+2.2.7 Variable "v2" initial/causality <approx>/<independent> invalid at 9
 2.2.6 VendorAnnotations tool names are not unique: {"x"}
 2.2.7 VendorAnnotations invalid
-2.2.7 ScalarVariables["v2"] invalid at line 9
+2.2.7 ScalarVariable "v2" invalid at line 9
 2.2.1 ScalarVariables invalid
+2.2.7 min 100 is not <= max 1
+2.2.7 start 200 is not within min 100/max 1
+2.2.7 Variable "v2" min/max/start/nominal invalid at line 9
+2.2.1 Effective ScalarVariables invalid
 false
 ------------
 fmuCheck:
@@ -329,12 +328,13 @@ Checker reported:
 "time"
 ------------------------------ 2.2.7_notInMinMaxRange.xml
 VDMCheck.sh:
-2.2.7 Initial/variability/start <calculated>/<continuous>/1 invalid at line 6
+2.2.7 Variable "varname" initial/variability/start <calculated>/<continuous>/1 invalid at line 6
+2.2.7 ScalarVariable "varname" invalid at line 6
+2.2.1 ScalarVariables invalid
 2.2.7 min 10 is not <= max 5
 2.2.7 start 1 is not within min 10/max 5
-2.2.7 Variable min/max/start invalid at line 6
-2.2.7 ScalarVariables["varname"] invalid at line 6
-2.2.1 ScalarVariables invalid
+2.2.7 Variable "varname" min/max/start/nominal invalid at line 6
+2.2.1 Effective ScalarVariables invalid
 false
 ------------
 fmuCheck:
@@ -350,12 +350,9 @@ Checker reported:
 ------------------------------ 2.2.8_invalidUnknowns.xml
 VDMCheck.sh:
 2.2.8 Dependencies list does not match dependenciesKind at line 15
-2.2.8 Unknown cannot depend on itself at line 15
 2.2.8 Unknown 1 has invalid dependencies/kinds at line 15
 2.2.8 Unknown has duplicate indexes {2} at line 16
 2.2.8 Unknown 1 has invalid dependencies/kinds at line 16
-2.2.8 Unknown cannot depend on itself at line 17
-2.2.8 Unknown 2 has invalid dependencies/kinds at line 17
 2.2.8 ModelStructure has invalid Unknowns
 2.2.8 InitialUnknowns are not of kind dependent or constant
 2.2.1 ModelStructure invalid at line 13
@@ -375,6 +372,24 @@ Checker reported:
 	0 Warning(s)
 	5 Error(s)
 	3 Fatal error(s) occurred during processing
+------------------------------ 2.2.9_invalidStructNames.xml
+VDMCheck.sh:
+2.2.9 Structured name "der(-)" invalid at line 6
+2.2.9 Structured name "123" invalid at line 9
+2.2.9 Structured name "'\\z'" invalid at line 12
+false
+------------
+fmuCheck:
+[ERROR][FMI2XML] Invalid structured ScalarVariable name "der(-)": syntax error, unexpected $undefined, expecting NONDIGIT or Q_NAME
+[ERROR][FMI2XML] Invalid structured ScalarVariable name "123": syntax error, unexpected UNSIGNED_INTEGER, expecting DER or NONDIGIT or Q_NAME
+[ERROR][FMI2XML] Invalid structured ScalarVariable name "'\z'": syntax error, unexpected $undefined, expecting DER or NONDIGIT or Q_NAME
+FMU check summary:
+FMU reported:
+	0 warning(s) and error(s)
+Checker reported:
+	0 Warning(s)
+	3 Error(s)
+"time"
 ------------------------------ 3.3.1_duplicateSourceFiles.xml
 VDMCheck.sh:
 3.3.1 ModelExchange source file names are not unique: {"abc"}
