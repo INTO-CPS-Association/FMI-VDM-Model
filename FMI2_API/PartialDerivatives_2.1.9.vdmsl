@@ -28,24 +28,12 @@
  */
 
 /**
- * 2.1.2 Platform Dependent Definitions
- * 2.1.3 Status Returned by Functions
+ * 2.1.9 Getting Partial Derivatives
  */
-types
-	fmi2ValueReference = nat;
-	fmi2Real = real;
-	fmi2Integer = int;
-	fmi2Boolean = bool;
-	fmi2Char = char;
-	fmi2String = seq of fmi2Char;
-	-- fmi2Byte = ?;
+functions
+	fmi2GetDirectionalDerivative: fmi2Component * seq of fmi2ValueReference * nat *
+				seq of fmi2ValueReference * nat* seq of fmi2Real * seq of fmi2Real +> fmi2Status
+	fmi2GetDirectionalDerivative(c, vUnknown_ref, uUnknown, vKnown_ref, nKnown, dvKnown, dvUnknown) ==
+		is not yet specified
+	pre c.fmustate = <EVENTS>;
 
-	fmi2Status = <fmi2OK> | <fmi2Warning> | <fmi2Discard> | <fmi2Error> | <fmi2Fatal> | <fmi2Pending>;
-
-	fmi2Component ::
-		fmuType			: fmi2Type
-		fmustate		: <RESET> | <SETUP> | <INITIALIZATION> | <EVENTS> | <TERMINATED>
-		callbacks		: fmi2CallbackFunctions
-		inErrorState	: bool;
-
-	fmi2ComponentEnvironment = FMIModelDescription;
