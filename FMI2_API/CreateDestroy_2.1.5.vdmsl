@@ -1,0 +1,52 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.5 Creation, Destruction and Logging of FMU Instances.
+ */
+types
+	fmi2Type = <fmi2ModelExchange> | <fmi2CoSimulation>;
+
+	fmi2CallbackFunctions ::
+		logger					: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> ?
+		allocateMemory			: nat1 * nat1 +> token
+		freeMemory				: token +> ?
+		stepFinished			: fmi2ComponentEnvironment * fmi2Status +> ?
+		componentEnvironment	: fmi2ComponentEnvironment;
+
+
+functions
+	fmi2Instantiate: fmi2String * fmi2Type * fmi2String * fmi2String * fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> fmi2Component
+	fmi2Instantiate(instanceName, fmuType, fmuGUID, fmuResourceLocation, funcs, visible, loggingOn) ==
+		is not yet specified
+	pre instanceName <> ""
+		and fmuGUID = funcs.componentEnvironment.attributes.guid
+		and fmuType = <fmi2CoSimulation>  => funcs.componentEnvironment.coSimulation <> nil
+		and fmuType = <fmi2ModelExchange> => funcs.componentEnvironment.modelExchange <> nil;
+

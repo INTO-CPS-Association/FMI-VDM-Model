@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>COSIM</name>
+	<name>FMI2_API</name>
 	<comment></comment>
 	<projects>
 		<project>FMI2</project>
