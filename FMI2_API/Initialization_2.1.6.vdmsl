@@ -28,24 +28,35 @@
  */
 
 /**
- * 2.1.2 Platform Dependent Definitions
- * 2.1.3 Status Returned by Functions
+ * 2.1.6  Initialization, Termination, and Resetting an FMU
  */
-types
-	fmi2ValueReference = nat;
-	fmi2Real = real;
-	fmi2Integer = int;
-	fmi2Boolean = bool;
-	fmi2Char = char;
-	fmi2String = seq of fmi2Char;
-	fmi2Byte = ?;
+functions
+	fmi2SetupExperiment: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status
+	fmi2SetupExperiment(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
+		is not yet specified
+	pre  c.fmustate = <RESET> or c.fmustate = <SETUP>
+	post c.fmustate = <SETUP>;
 
-	fmi2Status = <fmi2OK> | <fmi2Warning> | <fmi2Discard> | <fmi2Error> | <fmi2Fatal> | <fmi2Pending>;
+	fmi2EnterInitializationMode: fmi2Component +> fmi2Status
+	fmi2EnterInitializationMode(c) ==
+		is not yet specified
+	pre  c.fmustate = <SETUP>
+	post c.fmustate = <INITIALIZATION>;
 
-	fmi2Component ::
-		fmuType			: fmi2Type
-		fmustate		: <RESET> | <SETUP> | <INITIALIZATION> | <EVENTS> | <TERMINATED>
-		callbacks		: fmi2CallbackFunctions
-		inErrorState	: bool;
+	fmi2ExitInitializationMode: fmi2Component +> fmi2Status
+	fmi2ExitInitializationMode(c) ==
+		is not yet specified
+	pre  c.fmustate = <INITIALIZATION>
+	post c.fmustate = <EVENTS>;
 
-	fmi2ComponentEnvironment = FMIModelDescription;
+	fmi2Terminate: fmi2Component +> fmi2Status
+	fmi2Terminate(c) ==
+		is not yet specified
+	pre  c.fmustate = <EVENTS> and c.inErrorState = false
+	post c.fmustate = <TERMINATED>;
+
+	fmi2Reset: fmi2Component +> fmi2Status
+	fmi2Reset(c) ==
+		is not yet specified
+	pre  c.fmustate = <TERMINATED>
+	post c.fmustate = <RESET>;

@@ -1,0 +1,82 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.7 Getting and Setting Variable Values
+ */
+functions
+	fmi2GetReal: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetReal(c, vr, nvr) ==
+		is not yet specified
+	pre len vr = nvr
+	post len RESULT.#2 = nvr;
+
+	fmi2GetInteger: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Integer
+	fmi2GetInteger(c, vr, nvr) ==
+		is not yet specified
+	pre len vr = nvr
+	post len RESULT.#2 = nvr
+		and RESULT.#1 <> <fmi2Discard>;
+
+	fmi2GetBoolean: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Boolean
+	fmi2GetBoolean(c, vr, nvr) ==
+		is not yet specified
+	pre len vr = nvr
+	post len RESULT.#2 = nvr
+		and RESULT.#1 <> <fmi2Discard>;
+
+	fmi2GetString: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2String
+	fmi2GetString(c, vr, nvr) ==
+		is not yet specified
+	pre len vr = nvr
+	post len RESULT.#2 = nvr
+		and RESULT.#1 <> <fmi2Discard>;
+
+	-- Set functions
+
+	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status
+	fmi2SetReal(c, vr, nvr, value) ==
+		is not yet specified
+	pre len vr = nvr and len vr = len value;
+
+	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status
+	fmi2SetInteger(c, vr, nvr, value) ==
+		is not yet specified
+	pre len vr = nvr and len vr = len value;
+
+	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status
+	fmi2SetBoolean(c, vr, nvr, value) ==
+		is not yet specified
+	pre len vr = nvr and len vr = len value;
+
+	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status
+	fmi2SetString(c, vr, nvr, value) ==
+		is not yet specified
+	pre len vr = nvr and len vr = len value;
+
