@@ -42,9 +42,24 @@ types
 
 	fmi2Status = <fmi2OK> | <fmi2Warning> | <fmi2Discard> | <fmi2Error> | <fmi2Fatal> | <fmi2Pending>;
 
+	fmi2State =
+		<START> |
+		<INSTANTIATED> |
+		<INITIALIZATION> |
+		<EVENT_MODE> |
+		<CT_MODE> |
+		<STEP_COMPLETE> |
+		<STEP_IN_PROGRESS> |
+		<STEP_FAILED> |
+		<STEP_CANCELLED> |
+		<TERMINATED> |
+		<ERROR> |
+		<FATAIL> |
+		<END>;
+
 	fmi2Component ::
 		fmuType			: fmi2Type
-		fmustate		: <RESET> | <SETUP> | <INITIALIZATION> | <EVENTS> | <TERMINATED>
+		fmustate		: fmi2State
 		callbacks		: fmi2CallbackFunctions
 		inErrorState	: bool;
 

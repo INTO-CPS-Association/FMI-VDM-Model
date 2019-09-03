@@ -28,47 +28,38 @@
  */
 
 /**
- * 2.1.8 Getting and Setting the Complete FMU State
+ * 4.2.3 Retrieving Status Information from the Slave
  */
+types
+	fmi2StatusKind = <fmi2DoStepStatus> | <fmi2PendingStatus> | <fmi2LastSuccessfulTime> | <fmi2Terminated>;
+
 functions
-	canDoGetSetState: fmi2Component +> bool
-	canDoGetSetState(c) ==
-		(c.fmuType = <fmi2CoSimulation> and c.callbacks.componentEnvironment.coSimulation.canGetAndSetFMUstate
-		or c.fmuType = <fmi2ModelExchange> and c.callbacks.componentEnvironment.modelExchange.canGetAndSetFMUstate)
-		and c.fmustate = <EVENT_MODE>;
-
-	fmi2GetFMUstate: fmi2Component +> fmi2Status * token
-	fmi2GetFMUstate(c) ==
+	fmi2GetStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Status
+	fmi2GetStatus(c, s) ==
 		is not yet specified
 	pre
-		canDoGetSetState(c);
+		c.fmustate = <EVENT_MODE>;
 
-	fmi2SetFMUstate: fmi2Component * token +> fmi2Status
-	fmi2SetFMUstate(c, FMUstate) ==
+	fmi2GetRealStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Real
+	fmi2GetRealStatus(c, s) ==
 		is not yet specified
 	pre
-		canDoGetSetState(c);
+		c.fmustate = <EVENT_MODE>;
 
-	fmi2FreeFMUstate: fmi2Component * token +> fmi2Status
-	fmi2FreeFMUstate(c, FMUstate) ==
+	fmi2GetIntegerStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Integer
+	fmi2GetIntegerStatus(c, s) ==
 		is not yet specified
 	pre
-		canDoGetSetState(c);
+		c.fmustate = <EVENT_MODE>;
 
-	fmi2SerializedFMUstateSize: fmi2Component * token +> fmi2Status * nat
-	fmi2SerializedFMUstateSize(c, FMUstate) ==
+	fmi2GetBooleanStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Boolean
+	fmi2GetBooleanStatus(c, s) ==
 		is not yet specified
 	pre
-		canDoGetSetState(c);
+		c.fmustate = <EVENT_MODE>;
 
-	fmi2SerializeFMUstate: fmi2Component * token * token * nat +> fmi2Status * token
-	fmi2SerializeFMUstate(c, FMUstate, serializedState, size) ==
+	fmi2GetStringStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2String
+	fmi2GetStringStatus(c, s) ==
 		is not yet specified
 	pre
-		canDoGetSetState(c);
-
-	fmi2DeSerializeFMUstate: fmi2Component * token * nat +> fmi2Status * token
-	fmi2DeSerializeFMUstate(c, serializedState, size) ==
-		is not yet specified
-	pre
-		canDoGetSetState(c);
+		c.fmustate = <EVENT_MODE>;

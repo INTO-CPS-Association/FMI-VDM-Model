@@ -52,7 +52,7 @@ functions
 		and fmuType = <fmi2CoSimulation>  => callbacks.componentEnvironment.coSimulation <> nil
 		and fmuType = <fmi2ModelExchange> => callbacks.componentEnvironment.modelExchange <> nil
 	post
-		RESULT.fmustate = <RESET>
+		RESULT.fmustate = <START>
 		and RESULT.inErrorState = false
 		and RESULT.fmuType = fmuType;
 

@@ -35,7 +35,7 @@ functions
 	fmi2DoStep(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENTS>
+		c.fmustate = <EVENT_MODE>
 		and communicationStepSize > 0.0;
 		-- and more...!
 
@@ -43,5 +43,5 @@ functions
 	fmi2CancelStep(c) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENTS>;
+		c.fmustate = <EVENT_MODE>;
 

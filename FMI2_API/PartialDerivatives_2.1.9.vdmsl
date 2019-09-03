@@ -36,7 +36,7 @@ functions
 	fmi2GetDirectionalDerivative(c, vUnknown_ref, uUnknown, vKnown_ref, nKnown, dvKnown) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENTS>
+		c.fmustate = <EVENT_MODE>
 	post
 		RESULT.#1 = <fmi2OK> => len RESULT.#2 = nKnown;
 

@@ -1,0 +1,93 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 3.2.2 Evaluation of Model Equations
+ */
+types
+	fmi2EventInfo ::
+		newDiscreteStatesNeeded				: fmi2Boolean
+		terminateSimulation					: fmi2Boolean
+		nominalsOfContinuousStatesChanged	: fmi2Boolean
+		valuesOfContinuousStatesChanged		: fmi2Boolean
+		nextEventTimeDefined				: fmi2Boolean
+		nextEventTime						: [fmi2Real]
+	inv
+		info == info.nextEventTimeDefined => info.nextEventTime <> nil;
+
+functions
+	fmi2EnterEventMode: fmi2Component +> fmi2Status
+	fmi2EnterEventMode(c) ==
+		is not yet specified
+	pre
+		c.fmustate = <INITIALIZATION>
+	post
+		RESULT = <fmi2OK> => c.fmustate = <EVENT_MODE>;
+
+	fmi2NewDiscreteStates: fmi2Component * fmi2EventInfo +> fmi2Status
+	fmi2NewDiscreteStates(c, fmi2eventInfo) ==
+		is not yet specified
+	pre
+		c.fmustate = <EVENT_MODE>;
+
+	fmi2EnterContinuousTimeMode: fmi2Component +> fmi2Status
+	fmi2EnterContinuousTimeMode(c) ==
+		is not yet specified
+	pre
+		c.fmustate = <EVENT_MODE>;
+
+	fmi2CompletedIntegratorStep: fmi2Component * fmi2Boolean +> fmi2Status * fmi2Boolean * fmi2Boolean
+	fmi2CompletedIntegratorStep(c, noSetFMUStatePriorToCurrentPoint) ==
+		is not yet specified
+	pre
+		c.fmustate = <EVENT_MODE>;
+
+	fmi2GetDerivatives: fmi2Component * seq of fmi2Real * nat +> fmi2Status
+	fmi2GetDerivatives(c, derivatives, nx) ==
+		is not yet specified
+	pre
+		c.fmustate = <EVENT_MODE>;
+
+	fmi2GetEventIndicators: fmi2Component * seq of fmi2Real * nat +> fmi2Status
+	fmi2GetEventIndicators(c, eventIndicators, ni) ==
+		is not yet specified
+	pre
+		c.fmustate = <EVENT_MODE>;
+
+	fmi2GetContinuousStates: fmi2Component * seq of fmi2Real * nat +> fmi2Status
+	fmi2GetContinuousStates(c, x, nx) ==
+		is not yet specified
+	pre
+		c.fmustate = <EVENT_MODE>;
+
+	fmi2GetNominalsOfContinuousStates: fmi2Component * seq of fmi2Real * nat +> fmi2Status
+	fmi2GetNominalsOfContinuousStates(c, x_nominal, nx) ==
+		is not yet specified
+	pre
+		c.fmustate = <EVENT_MODE>;

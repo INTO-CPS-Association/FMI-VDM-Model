@@ -36,7 +36,7 @@ functions
 	fmi2SetRealInputDerivatives(c, vr, nvr, order, value) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENTS>
+		c.fmustate = <EVENT_MODE>
 		and nvr = len vr
 		and nvr = len value
 		and nvr = len order
@@ -47,7 +47,7 @@ functions
 	fmi2GetRealOutputDerivatives(c, vr, nvr, order) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENTS>
+		c.fmustate = <EVENT_MODE>
 		and nvr = len vr
 		and nvr = len order
 		and forall o in seq order & o > 0

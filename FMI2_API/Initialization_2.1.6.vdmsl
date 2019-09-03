@@ -35,16 +35,16 @@ functions
 	fmi2SetupExperiment(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
 		is not yet specified
 	pre
-		c.fmustate = <RESET>
-		or c.fmustate = <SETUP>
+		c.fmustate = <TERMINATED>
+		or c.fmustate = <START>
 	post
-		c.fmustate = <SETUP>;
+		c.fmustate = <INSTANTIATED>;
 
 	fmi2EnterInitializationMode: fmi2Component +> fmi2Status
 	fmi2EnterInitializationMode(c) ==
 		is not yet specified
 	pre
-		c.fmustate = <SETUP>
+		c.fmustate = <INSTANTIATED>
 	post
 		c.fmustate = <INITIALIZATION>;
 
@@ -54,13 +54,13 @@ functions
 	pre
 		c.fmustate = <INITIALIZATION>
 	post
-		c.fmustate = <EVENTS>;
+		c.fmustate = <EVENT_MODE>;
 
 	fmi2Terminate: fmi2Component +> fmi2Status
 	fmi2Terminate(c) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENTS>
+		c.fmustate = <EVENT_MODE>
 		and c.inErrorState = false
 	post
 		c.fmustate = <TERMINATED>;
@@ -71,4 +71,4 @@ functions
 	pre
 		c.fmustate = <TERMINATED>
 	post
-		c.fmustate = <RESET>;
+		c.fmustate = <START>;
