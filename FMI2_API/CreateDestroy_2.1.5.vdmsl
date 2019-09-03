@@ -42,12 +42,17 @@ types
 
 
 functions
-	fmi2Instantiate: fmi2String * fmi2Type * fmi2String * fmi2String * fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> fmi2Component
+	fmi2Instantiate: fmi2String * fmi2Type * fmi2String * fmi2String *
+					 fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> fmi2Component
 	fmi2Instantiate(instanceName, fmuType, fmuGUID, fmuResourceLocation, callbacks, visible, loggingOn) ==
 		is not yet specified
-	pre instanceName <> ""
+	pre
+		instanceName <> ""
 		and fmuGUID = callbacks.componentEnvironment.attributes.guid
 		and fmuType = <fmi2CoSimulation>  => callbacks.componentEnvironment.coSimulation <> nil
 		and fmuType = <fmi2ModelExchange> => callbacks.componentEnvironment.modelExchange <> nil
-	post RESULT.fmustate = <RESET> and RESULT.inErrorState = false and RESULT.fmuType = fmuType;
+	post
+		RESULT.fmustate = <RESET>
+		and RESULT.inErrorState = false
+		and RESULT.fmuType = fmuType;
 

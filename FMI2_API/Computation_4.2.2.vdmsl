@@ -28,47 +28,20 @@
  */
 
 /**
- * 2.1.8 Getting and Setting the Complete FMU State
+ * 4.2.2 Computation
  */
 functions
-	canDoGetSetState: fmi2Component +> bool
-	canDoGetSetState(c) ==
-		(c.fmuType = <fmi2CoSimulation> and c.callbacks.componentEnvironment.coSimulation.canGetAndSetFMUstate
-		or c.fmuType = <fmi2ModelExchange> and c.callbacks.componentEnvironment.modelExchange.canGetAndSetFMUstate)
-		and c.fmustate = <EVENTS>;
-
-	fmi2GetFMUstate: fmi2Component +> fmi2Status * token
-	fmi2GetFMUstate(c) ==
+	fmi2DoStep: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status
+	fmi2DoStep(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
 		is not yet specified
 	pre
-		canDoGetSetState(c);
+		c.fmustate = <EVENTS>
+		and communicationStepSize > 0.0;
+		-- and more...!
 
-	fmi2SetFMUstate: fmi2Component * token +> fmi2Status
-	fmi2SetFMUstate(c, FMUstate) ==
+	fmi2CancelStep: fmi2Component +> fmi2Status
+	fmi2CancelStep(c) ==
 		is not yet specified
 	pre
-		canDoGetSetState(c);
+		c.fmustate = <EVENTS>;
 
-	fmi2FreeFMUstate: fmi2Component * token +> fmi2Status
-	fmi2FreeFMUstate(c, FMUstate) ==
-		is not yet specified
-	pre
-		canDoGetSetState(c);
-
-	fmi2SerializedFMUstateSize: fmi2Component * token +> fmi2Status * nat
-	fmi2SerializedFMUstateSize(c, FMUstate) ==
-		is not yet specified
-	pre
-		canDoGetSetState(c);
-
-	fmi2SerializeFMUstate: fmi2Component * token * token * nat +> fmi2Status * token
-	fmi2SerializeFMUstate(c, FMUstate, serializedState, size) ==
-		is not yet specified
-	pre
-		canDoGetSetState(c);
-
-	fmi2DeSerializeFMUstate: fmi2Component * token * nat +> fmi2Status * token
-	fmi2DeSerializeFMUstate(c, serializedState, size) ==
-		is not yet specified
-	pre
-		canDoGetSetState(c);

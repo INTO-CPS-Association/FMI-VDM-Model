@@ -28,15 +28,28 @@
  */
 
 /**
- * 2.1.9 Getting Partial Derivatives
+ * 4.2.1 Transfer of Input / Output Values and Parameters
  */
 functions
-	fmi2GetDirectionalDerivative: fmi2Component * seq of fmi2ValueReference * nat *
-				seq of fmi2ValueReference * nat* seq of fmi2Real +> fmi2Status * seq of fmi2Real
-	fmi2GetDirectionalDerivative(c, vUnknown_ref, uUnknown, vKnown_ref, nKnown, dvKnown) ==
+	fmi2SetRealInputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
+								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status
+	fmi2SetRealInputDerivatives(c, vr, nvr, order, value) ==
 		is not yet specified
 	pre
 		c.fmustate = <EVENTS>
-	post
-		RESULT.#1 = <fmi2OK> => len RESULT.#2 = nKnown;
+		and nvr = len vr
+		and nvr = len value
+		and nvr = len order
+		and forall o in seq order & o > 0;
 
+	fmi2GetRealOutputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
+								  seq of fmi2Integer +> fmi2Status * seq of fmi2Real
+	fmi2GetRealOutputDerivatives(c, vr, nvr, order) ==
+		is not yet specified
+	pre
+		c.fmustate = <EVENTS>
+		and nvr = len vr
+		and nvr = len order
+		and forall o in seq order & o > 0
+	post
+		RESULT.#1 = <fmi2OK> => nvr = len RESULT.#2;

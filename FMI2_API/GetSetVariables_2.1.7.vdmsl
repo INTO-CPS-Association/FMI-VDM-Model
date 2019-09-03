@@ -34,28 +34,36 @@ functions
 	fmi2GetReal: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetReal(c, vr, nvr) ==
 		is not yet specified
-	pre len vr = nvr
-	post len RESULT.#2 = nvr;
+	pre
+		len vr = nvr
+	post
+		len RESULT.#2 = nvr;
 
 	fmi2GetInteger: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Integer
 	fmi2GetInteger(c, vr, nvr) ==
 		is not yet specified
-	pre len vr = nvr
-	post len RESULT.#2 = nvr
+	pre
+		len vr = nvr
+	post
+		len RESULT.#2 = nvr
 		and RESULT.#1 <> <fmi2Discard>;
 
 	fmi2GetBoolean: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Boolean
 	fmi2GetBoolean(c, vr, nvr) ==
 		is not yet specified
-	pre len vr = nvr
-	post len RESULT.#2 = nvr
+	pre
+		len vr = nvr
+	post
+		len RESULT.#2 = nvr
 		and RESULT.#1 <> <fmi2Discard>;
 
 	fmi2GetString: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2String
 	fmi2GetString(c, vr, nvr) ==
 		is not yet specified
-	pre len vr = nvr
-	post len RESULT.#2 = nvr
+	pre
+		len vr = nvr
+	post
+		len RESULT.#2 = nvr
 		and RESULT.#1 <> <fmi2Discard>;
 
 	-- Set functions
@@ -63,20 +71,28 @@ functions
 	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status
 	fmi2SetReal(c, vr, nvr, value) ==
 		is not yet specified
-	pre len vr = nvr and len vr = len value;
+	pre
+		len vr = nvr
+		and len vr = len value;
 
 	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status
 	fmi2SetInteger(c, vr, nvr, value) ==
 		is not yet specified
-	pre len vr = nvr and len vr = len value;
+	pre
+		len vr = nvr
+		and len vr = len value;
 
 	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status
 	fmi2SetBoolean(c, vr, nvr, value) ==
 		is not yet specified
-	pre len vr = nvr and len vr = len value;
+	pre
+		len vr = nvr
+		and len vr = len value;
 
 	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status
 	fmi2SetString(c, vr, nvr, value) ==
 		is not yet specified
-	pre len vr = nvr and len vr = len value;
+	pre
+		len vr = nvr
+		and len vr = len value;
 
