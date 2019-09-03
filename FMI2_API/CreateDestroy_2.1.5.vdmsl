@@ -45,14 +45,23 @@ functions
 	fmi2Instantiate: fmi2String * fmi2Type * fmi2String * fmi2String *
 					 fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> fmi2Component
 	fmi2Instantiate(instanceName, fmuType, fmuGUID, fmuResourceLocation, callbacks, visible, loggingOn) ==
-		is not yet specified
+		let eModelVariables = effectiveScalarVariables(callbacks.componentEnvironment) in
+			mk_fmi2Component
+			(
+				fmuType,
+				<INSTANTIATED>,
+				callbacks,
+				eModelVariables,
+				{ i | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables) },
+				{ i | i in set inds eModelVariables & isStateDerivative(eModelVariables(i)) }
+			)
 	pre
 		instanceName <> ""
-		and fmuGUID = callbacks.componentEnvironment.attributes.guid
-		and fmuType = <fmi2CoSimulation>  => callbacks.componentEnvironment.coSimulation <> nil
-		and fmuType = <fmi2ModelExchange> => callbacks.componentEnvironment.modelExchange <> nil
+		and let modelDef = callbacks.componentEnvironment in
+			fmuGUID = modelDef.attributes.guid
+			and (fmuType = <fmi2CoSimulation>  => modelDef.coSimulation <> nil)
+			and (fmuType = <fmi2ModelExchange> => modelDef.modelExchange <> nil)
 	post
-		RESULT.fmustate = <START>
-		and RESULT.inErrorState = false
+		RESULT.fmustate = <INSTANTIATED>
 		and RESULT.fmuType = fmuType;
 

@@ -35,8 +35,7 @@ functions
 	fmi2SetupExperiment(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
 		is not yet specified
 	pre
-		c.fmustate = <TERMINATED>
-		or c.fmustate = <START>
+		c.fmustate = <INSTANTIATED>
 	post
 		c.fmustate = <INSTANTIATED>;
 
@@ -61,7 +60,6 @@ functions
 		is not yet specified
 	pre
 		c.fmustate = <EVENT_MODE>
-		and c.inErrorState = false
 	post
 		c.fmustate = <TERMINATED>;
 

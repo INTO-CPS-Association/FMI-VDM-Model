@@ -58,9 +58,11 @@ types
 		<END>;
 
 	fmi2Component ::
-		fmuType			: fmi2Type
-		fmustate		: fmi2State
-		callbacks		: fmi2CallbackFunctions
-		inErrorState	: bool;
+		fmuType					: fmi2Type
+		fmustate				: fmi2State
+		callbacks				: fmi2CallbackFunctions
+		eModelVariables			: seq1 of ScalarVariable
+		continuousTimeStates	: set of nat1
+		stateDerivatives		: set of nat1;
 
 	fmi2ComponentEnvironment = FMIModelDescription;
