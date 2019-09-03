@@ -99,9 +99,7 @@ functions
 	isValidFMIModelDescription: FMIModelDescription +> bool
 	isValidFMIModelDescription(md) ==
 		-- First fill in effective values for model variables' missing attributes
-		let eModelVariables =
-			[ effectiveScalarVariable(sv, md.typeDefinitions) | sv in seq md.modelVariables ]
-		in
+		let eModelVariables = effectiveScalarVariables(md) in
 		{
 			-- @OnFail("2.2.1 ModelAttributes invalid at line %s", md.attributes.location)
 			( isValidModelAttributes(md.attributes) ),

@@ -389,6 +389,16 @@ functions
 		else v;
 
 	/**
+	 * Generate all of the effective ScalarVariables.
+	 */
+	effectiveScalarVariables: FMIModelDescription +> seq1 of ScalarVariable
+	effectiveScalarVariables(model) ==
+	[
+		effectiveScalarVariable(sv, model.typeDefinitions)
+		| sv in seq model.modelVariables
+	];
+
+	/**
 	 * Generate the effective value of a ScalarVariable, accounting for fields inherited from
 	 * any declaredType and defaulted values of causality, variability and initial.
 	 */
@@ -513,5 +523,11 @@ functions
 	 */
 	stateDerivatives: seq of ScalarVariable -> set of ScalarVariable
 	stateDerivatives(svs) ==
-		{ sv | sv in seq svs &
-			is_Real(sv.variable) and sv.variable.derivative <> nil };
+		{ sv | sv in seq svs & isStateDerivative(sv) };
+
+	/**
+	 * Test ith index variabel as a state derivative.
+	 */
+	isStateDerivative: ScalarVariable +> bool
+	isStateDerivative(sv) ==
+		is_Real(sv.variable) and sv.variable.derivative <> nil;
