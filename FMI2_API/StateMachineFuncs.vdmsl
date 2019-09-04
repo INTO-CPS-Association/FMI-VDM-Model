@@ -85,7 +85,6 @@ functions
 		forall vr in seq vrs &
 			vr <= len c.eModelVariables
 			and (c.eModelVariables(vr).causality = <output>
-				 or vr in set c.continuousTimeStates
 				 or vr in set c.initialUnknowns);
 
 	varsINIE: fmi2Component * seq of fmi2ValueReference +> bool
