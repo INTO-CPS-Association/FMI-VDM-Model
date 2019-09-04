@@ -1,0 +1,96 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 3.2.3 State Machine of Calling Sequence (Model Exchange)
+ * 4.2.4 State Machine of Calling Sequence (Co-simulation)
+ */
+functions
+	-- State transition validation functions, where XXX in the Standard is a
+	-- function called varsXXX, returning a boolean.
+
+	varsSEA: fmi2Component * seq of fmi2ValueReference +> bool
+	varsSEA(c, vrs) ==
+		forall vr in seq vrs &
+			vr <= len c.eModelVariables
+			and c.eModelVariables(vr).variability <> <constant>
+			and c.eModelVariables(vr).initial in set { <exact>, <approx> };
+
+	varsSE: fmi2Component * seq of fmi2ValueReference +> bool
+	varsSE(c, vrs) ==
+		forall vr in seq vrs &
+			vr <= len c.eModelVariables
+			and c.eModelVariables(vr).variability <> <constant>
+			and (c.eModelVariables(vr).causality = <input>
+				 or c.eModelVariables(vr).initial = <exact>);
+
+	varsINC: fmi2Component * seq of fmi2ValueReference +> bool
+	varsINC(c, vrs) ==
+		forall vr in seq vrs &
+			vr <= len c.eModelVariables
+			and c.eModelVariables(vr).causality = <input>
+			and c.eModelVariables(vr).variability = <continuous>;
+
+	varsINI: fmi2Component * seq of fmi2ValueReference +> bool
+	varsINI(c, vrs) ==
+		forall vr in seq vrs &
+			vr <= len c.eModelVariables
+			and c.eModelVariables(vr).variability <> <constant>
+			and c.eModelVariables(vr).initial in set { <exact>, <approx> };
+
+	varsIN: fmi2Component * seq of fmi2ValueReference +> bool
+	varsIN(c, vrs) ==
+		if c.fmuType = <fmi2ModelExchange>
+		then
+			forall vr in seq vrs &
+				vr <= len c.eModelVariables
+				and ((c.eModelVariables(vr).variability = <discrete>
+					  and c.eModelVariables(vr).causality = <input>)
+					or c.eModelVariables(vr).variability = <tunable>)
+		else
+			forall vr in seq vrs &
+				vr <= len c.eModelVariables
+				and (c.eModelVariables(vr).causality = <input>
+					 or (c.eModelVariables(vr).causality = <parameter>
+						 and c.eModelVariables(vr).variability = <tunable>));
+
+	varsINIT: fmi2Component * seq of fmi2ValueReference +> bool
+	varsINIT(c, vrs) ==
+		forall vr in seq vrs &
+			vr <= len c.eModelVariables
+			and (c.eModelVariables(vr).causality = <output>
+				 or vr in set c.continuousTimeStates
+				 or vr in set c.initialUnknowns);
+
+	varsINIE: fmi2Component * seq of fmi2ValueReference +> bool
+	varsINIE(c, vrs) ==
+		forall vr in seq vrs &
+			vr <= len c.eModelVariables
+			and c.eModelVariables(vr).variability <> <constant>
+			and c.eModelVariables(vr).initial = <exact>;

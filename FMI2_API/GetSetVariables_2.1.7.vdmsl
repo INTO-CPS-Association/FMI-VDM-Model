@@ -31,96 +31,122 @@
  * 2.1.7 Getting and Setting Variable Values
  */
 functions
-	-- Tests for preconditions on variables. See 3.2.3 and 4.2.4.
+	/**
+	 * The general contracts for calling fmi2GetXXX and fmi2SetXXX functions in a given state.
+	 */
+	generalGetPrecondition: fmi2Component * seq of fmi2ValueReference +> bool
+	generalGetPrecondition(c, vrs) ==
+		cases c.fmustate:
+			<INSTANTIATED>		-> false,
+			<INITIALIZATION>	-> varsINIT(c, vrs),
+			<EVENT_MODE>		-> true,
+			<CT_MODE>			-> true,
+			<STEP_COMPLETE>		-> true,
+			<STEP_IN_PROGRESS>	-> false,
+			<STEP_FAILED>		-> true,
+			<STEP_CANCELLED>	-> true,
+			<TERMINATED>		-> true,
+			<ERROR>				-> true,
 
-	varsINIT: fmi2Component * seq of fmi2ValueReference +> bool
-	varsINIT(c, vrs) ==
-		forall vr in seq vrs &
-			vr <= len c.eModelVariables
-			and (c.eModelVariables(vr).causality = <output>
-				or vr in set c.continuousTimeStates
-				or vr in set c.stateDerivatives);
+			others -> undefined
+		end;
 
-	varsINIE: fmi2Component * seq of fmi2ValueReference +> bool
-	varsINIE(c, vrs) ==
-		forall vr in seq vrs &
-			vr <= len c.eModelVariables
-			and c.eModelVariables(vr).variability <> <constant>
-			and c.eModelVariables(vr).initial = <exact>;
+	generalSetPrecondition: fmi2Component * seq of fmi2ValueReference +> bool
+	generalSetPrecondition(c, vrs) ==
+		if c.fmuType = <fmi2ModelExchange>
+		then
+			cases c.fmustate:
+				<INSTANTIATED>		-> varsSEA(c, vrs),
+				<INITIALIZATION>	-> varsSE(c, vrs),
+				<EVENT_MODE>		-> varsIN(c, vrs) or varsINC(c, vrs),
+				<CT_MODE>			-> varsINC(c, vrs),
+				<TERMINATED>		-> false,
+				<ERROR>				-> false,
 
+				others -> undefined
+			end
+		else	-- fmi2CoSimulation
+			cases c.fmustate:
+				<INSTANTIATED>		-> varsINI(c, vrs),
+				<INITIALIZATION>	-> varsIN(c, vrs) or varsINI(c, vrs),
+				<STEP_COMPLETE>		-> varsIN(c, vrs),
+				<STEP_IN_PROGRESS>	-> false,
+				<STEP_FAILED>		-> false,
+				<STEP_CANCELLED>	-> false,
+				<TERMINATED>		-> false,
+				<ERROR>				-> false,
+
+				others -> undefined
+			end;
 
 	-- GetXXX functions
 
 	fmi2GetReal: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Real
-	fmi2GetReal(c, vr, nvr) ==
+	fmi2GetReal(c, vrs, nvr) ==
 		is not yet specified
 	pre
-		(c.fmustate = <INITIALIZATION> => varsINIT(c, vr))
-		and len vr = nvr
+		len vrs = nvr and
+		generalGetPrecondition(c, vrs)
 	post
-		len RESULT.#2 = nvr;
+		RESULT.#1 = <fmi2OK> =>
+			len RESULT.#2 = nvr;
 
 	fmi2GetInteger: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Integer
-	fmi2GetInteger(c, vr, nvr) ==
+	fmi2GetInteger(c, vrs, nvr) ==
 		is not yet specified
 	pre
-		(c.fmustate = <INITIALIZATION> => varsINIT(c, vr))
-		and len vr = nvr
+		len vrs = nvr and
+		generalGetPrecondition(c, vrs)
 	post
-		len RESULT.#2 = nvr
-		and RESULT.#1 <> <fmi2Discard>;
+		RESULT.#1 <> <fmi2Discard>
+		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
 
 	fmi2GetBoolean: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Boolean
-	fmi2GetBoolean(c, vr, nvr) ==
+	fmi2GetBoolean(c, vrs, nvr) ==
 		is not yet specified
 	pre
-		(c.fmustate = <INITIALIZATION> => varsINIT(c, vr))
-		and len vr = nvr
+		len vrs = nvr and
+		generalGetPrecondition(c, vrs)
 	post
-		len RESULT.#2 = nvr
-		and RESULT.#1 <> <fmi2Discard>;
+		RESULT.#1 <> <fmi2Discard>
+		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
 
 	fmi2GetString: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2String
-	fmi2GetString(c, vr, nvr) ==
+	fmi2GetString(c, vrs, nvr) ==
 		is not yet specified
 	pre
-		(c.fmustate = <INITIALIZATION> => varsINIT(c, vr))
-		and len vr = nvr
+		len vrs = nvr and
+		generalGetPrecondition(c, vrs)
 	post
-		len RESULT.#2 = nvr
-		and RESULT.#1 <> <fmi2Discard>;
+		RESULT.#1 <> <fmi2Discard>
+		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
 
 	-- SetXXX functions
 
 	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status
-	fmi2SetReal(c, vr, nvr, value) ==
+	fmi2SetReal(c, vrs, nvr, value) ==
 		is not yet specified
 	pre
-		(c.fmustate = <INITIALIZATION> => varsINIE(c, vr))
-		and len vr = nvr
-		and len vr = len value;
+		len vrs = nvr and len vrs = len value
+		and generalSetPrecondition(c, vrs);
 
 	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status
-	fmi2SetInteger(c, vr, nvr, value) ==
+	fmi2SetInteger(c, vrs, nvr, value) ==
 		is not yet specified
 	pre
-		(c.fmustate = <INITIALIZATION> => varsINIE(c, vr))
-		and len vr = nvr
-		and len vr = len value;
+		len vrs = nvr and len vrs = len value
+		and generalSetPrecondition(c, vrs);
 
 	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status
-	fmi2SetBoolean(c, vr, nvr, value) ==
+	fmi2SetBoolean(c, vrs, nvr, value) ==
 		is not yet specified
 	pre
-		(c.fmustate = <INITIALIZATION> => varsINIE(c, vr))
-		and len vr = nvr
-		and len vr = len value;
+		len vrs = nvr and len vrs = len value
+		and generalSetPrecondition(c, vrs);
 
 	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status
-	fmi2SetString(c, vr, nvr, value) ==
+	fmi2SetString(c, vrs, nvr, value) ==
 		is not yet specified
 	pre
-		(c.fmustate = <INITIALIZATION> => varsINIE(c, vr))
-		and len vr = nvr
-		and len vr = len value;
-
+		len vrs = nvr and len vrs = len value
+		and generalSetPrecondition(c, vrs);

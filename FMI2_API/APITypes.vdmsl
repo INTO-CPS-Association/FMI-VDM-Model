@@ -63,6 +63,6 @@ types
 		callbacks				: fmi2CallbackFunctions
 		eModelVariables			: seq1 of ScalarVariable
 		continuousTimeStates	: set of nat1
-		stateDerivatives		: set of nat1;
+		initialUnknowns			: set of nat1;
 
 	fmi2ComponentEnvironment = FMIModelDescription;
