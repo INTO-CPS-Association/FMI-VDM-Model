@@ -40,6 +40,8 @@ types
 	fmi2String = seq of fmi2Char;
 	-- fmi2Byte = ?;
 
+	fmi2Type = <fmi2ModelExchange> | <fmi2CoSimulation>;
+
 	fmi2Status = <fmi2OK> | <fmi2Warning> | <fmi2Discard> | <fmi2Error> | <fmi2Fatal> | <fmi2Pending>;
 
 	fmi2State =

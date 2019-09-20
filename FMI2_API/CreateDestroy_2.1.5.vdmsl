@@ -31,8 +31,6 @@
  * 2.1.5 Creation, Destruction and Logging of FMU Instances.
  */
 types
-	fmi2Type = <fmi2ModelExchange> | <fmi2CoSimulation>;
-
 	fmi2CallbackFunctions ::
 		logger					: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> ?
 		allocateMemory			: nat1 * nat1 +> token
