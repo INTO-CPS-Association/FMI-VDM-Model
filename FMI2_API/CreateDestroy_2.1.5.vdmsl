@@ -65,3 +65,22 @@ functions
 		RESULT.fmustate = <INSTANTIATED>
 		and RESULT.fmuType = fmuType;
 
+
+	fmi2FreeInstance: fmi2Component +> ?
+	fmi2FreeInstance(c) ==
+		is not yet specified;
+
+	fmi2SetDebugLogging: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status
+	fmi2SetDebugLogging(c, loggingOn, nCategories, categories) ==
+		is not yet specified
+	pre
+		nCategories = len categories
+		and card elems categories = nCategories
+		and (nCategories > 0 =>
+			let logcats = c.callbacks.componentEnvironment.logCategories in
+				logcats <> nil
+				and forall cname in seq categories &
+					exists lc in seq logcats &
+						lc.name = cname);
+	
+	

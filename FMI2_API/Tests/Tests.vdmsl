@@ -52,6 +52,49 @@ operations
 	coSimulate() ==
 	(
 		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, springMassDamper) in
-		let - = fmi2Instantiate("test", <fmi2CoSimulation>, "GUID", "", callbacks, false, false) in
-			skip
+		let c = fmi2Instantiate("test", <fmi2CoSimulation>, "GUID", "", callbacks, false, false) in
+		let startTime : real = 0, endTime : real = 1000 in 
+
+			if fmi2SetDebugLogging(c, false, 0, []) <> <fmi2OK>
+			then exit "Cannot initialize logging"
+			
+			elseif fmi2SetupExperiment(c, false, 0, startTime, true, endTime) <> <fmi2OK>
+			then exit "Cannot set up experiment"
+			
+			elseif fmi2EnterInitializationMode(c) <> <fmi2OK>
+			then exit "Cannot enter initialization mode"
+			
+			elseif fmi2ExitInitializationMode(c) <> <fmi2OK>
+			then exit "Cannot exit initialization mode"
+			
+			else
+			(
+				dcl time : real := startTime, h : real := 1, hh : real := 1;
+				
+				while time < endTime do
+				(
+					if h > endTime - time
+					then hh := endTime - time;
+					
+					let status = fmi2DoStep(c, time, hh, true) in
+						if status = <fmi2Discard>
+						then let mk_(s, terminated) = fmi2GetBooleanStatus(c, <fmi2Terminated>) in
+							if s <> <fmi2OK>
+							then exit "Cannot get terminated status"
+							elseif terminated
+							then exit "Simulation requested termination"
+							else exit "Could not complete simulation"
+
+						elseif status <> <fmi2OK>
+						then exit "Could not complete simulation"
+
+						else time := time + hh
+				);
+				
+				if fmi2Terminate(c) <> <fmi2OK>
+				then exit "Failed to terminate simulation"
+
+				elseif fmi2FreeInstance(c) <> <fmi2OK>
+				then exit "Failed to free instance"
+			)
 	);
