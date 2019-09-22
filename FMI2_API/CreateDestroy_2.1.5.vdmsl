@@ -42,9 +42,9 @@ types
 functions
 	fmi2Instantiate: fmi2String * fmi2Type * fmi2String * fmi2String *
 					 fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> fmi2Component
-	fmi2Instantiate(instanceName, fmuType, fmuGUID, fmuResourceLocation, callbacks, visible, loggingOn) ==
+	fmi2Instantiate(instanceName, fmuType, fmuGUID, -/*fmuResourceLocation*/, callbacks, -/*visible*/, -/*loggingOn*/) ==
 		let eModelVariables = effectiveScalarVariables(callbacks.componentEnvironment),
-			initialUnknowns = nilSeq[nat1](callbacks.componentEnvironment.modelStructure.initialUnknowns)
+			initialUnknowns = nilSeq[Unknown](callbacks.componentEnvironment.modelStructure.initialUnknowns)
 		in
 			mk_fmi2Component
 			(
@@ -53,7 +53,7 @@ functions
 				callbacks,
 				eModelVariables,
 				{ i | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables) },
-				{ i | i in seq initialUnknowns }
+				{ u.index | u in seq initialUnknowns }
 			)
 	pre
 		instanceName <> ""
