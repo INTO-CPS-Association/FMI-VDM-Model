@@ -61,8 +61,9 @@ functions
 	varsINI(c, vrs) ==
 		forall vr in seq vrs &
 			vr <= len c.eModelVariables
-			and c.eModelVariables(vr).variability <> <constant>
-			and c.eModelVariables(vr).initial in set { <exact>, <approx> };
+			and (vr in set c.initialUnknowns
+				or (c.eModelVariables(vr).variability <> <constant>
+					and c.eModelVariables(vr).initial in set { <exact>, <approx> }));
 
 	varsIN: fmi2Component * seq of fmi2ValueReference +> bool
 	varsIN(c, vrs) ==
@@ -76,9 +77,10 @@ functions
 		else
 			forall vr in seq vrs &
 				vr <= len c.eModelVariables
-				and (c.eModelVariables(vr).causality = <input>
-					 or (c.eModelVariables(vr).causality = <parameter>
-						 and c.eModelVariables(vr).variability = <tunable>));
+				and (vr in set c.initialUnknowns
+					 or (c.eModelVariables(vr).causality = <input>
+					 	 or (c.eModelVariables(vr).causality = <parameter>
+							 and c.eModelVariables(vr).variability = <tunable>)));
 
 	varsINIT: fmi2Component * seq of fmi2ValueReference +> bool
 	varsINIT(c, vrs) ==
