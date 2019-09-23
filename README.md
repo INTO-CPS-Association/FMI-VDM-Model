@@ -15,13 +15,13 @@ $ VDMCheck.sh
 Usage: VDMCheck.sh [-v <VDM outfile>] <FMU or modelDescription.xml file>
 
 $ VDMCheck.sh WaterTank_Control.fmu
-true
+No errors found.
 
 $ VDMCheck.sh invalidOutputs2.xml
 2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
 2.2.7 ScalarVariables["v1"] invalid at line 6
 2.2.1 ScalarVariables invalid
 2.2.8 Outputs should be omitted at line 10
-false
+Errors found.
 $
 ```
