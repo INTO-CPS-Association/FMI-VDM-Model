@@ -31,42 +31,43 @@
  * 2.1.6  Initialization, Termination, and Resetting an FMU
  */
 functions
-	fmi2SetupExperiment: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status
+	fmi2SetupExperiment: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetupExperiment(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
-		is not yet specified
+		mk_(<fmi2OK>, c)
 	pre
-		c.fmustate = <INSTANTIATED>
+		c.fmuState = <INSTANTIATED>
+		and (stopTimeDefined => stopTime > startTime)
 	post
-		c.fmustate = <INSTANTIATED>;
+		c.fmuState = <INSTANTIATED>;
 
-	fmi2EnterInitializationMode: fmi2Component +> fmi2Status
+	fmi2EnterInitializationMode: fmi2Component +> fmi2Status * fmi2Component
 	fmi2EnterInitializationMode(c) ==
-		is not yet specified
+		mk_(<fmi2OK>, mu(c, fmuState |-> <INITIALIZATION>))
 	pre
-		c.fmustate = <INSTANTIATED>
+		c.fmuState = <INSTANTIATED>
 	post
-		c.fmustate = <INITIALIZATION>;
+		RESULT.#2.fmuState = <INITIALIZATION>;
 
-	fmi2ExitInitializationMode: fmi2Component +> fmi2Status
+	fmi2ExitInitializationMode: fmi2Component +> fmi2Status * fmi2Component
 	fmi2ExitInitializationMode(c) ==
-		is not yet specified
+		mk_(<fmi2OK>, mu(c, fmuState |-> <EVENT_MODE>))
 	pre
-		c.fmustate = <INITIALIZATION>
+		c.fmuState = <INITIALIZATION>
 	post
-		c.fmustate = <EVENT_MODE>;
+		RESULT.#2.fmuState = <EVENT_MODE>;
 
-	fmi2Terminate: fmi2Component +> fmi2Status
+	fmi2Terminate: fmi2Component +> fmi2Status * fmi2Component
 	fmi2Terminate(c) ==
-		is not yet specified
+		mk_(<fmi2OK>, mu(c, fmuState |-> <TERMINATED>))
 	pre
-		c.fmustate = <EVENT_MODE>
+		c.fmuState = <EVENT_MODE>
 	post
-		c.fmustate = <TERMINATED>;
+		RESULT.#2.fmuState = <TERMINATED>;
 
-	fmi2Reset: fmi2Component +> fmi2Status
+	fmi2Reset: fmi2Component +> fmi2Status * fmi2Component
 	fmi2Reset(c) ==
-		is not yet specified
+		mk_(<fmi2OK>, mu(c, fmuState |-> <START>))
 	pre
-		c.fmustate = <TERMINATED>
+		c.fmuState = <TERMINATED>
 	post
-		c.fmustate = <START>;
+		RESULT.#2.fmuState = <START>;

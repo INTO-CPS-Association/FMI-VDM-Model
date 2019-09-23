@@ -42,7 +42,7 @@ types
 functions
 	fmi2Instantiate: fmi2String * fmi2Type * fmi2String * fmi2String *
 					 fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> fmi2Component
-	fmi2Instantiate(instanceName, fmuType, fmuGUID, -/*fmuResourceLocation*/, callbacks, -/*visible*/, -/*loggingOn*/) ==
+	fmi2Instantiate(instanceName, fmuType, fmuGUID, -/*fmuResourceLocation*/, callbacks, -/*visible*/, loggingOn) ==
 		let eModelVariables = effectiveScalarVariables(callbacks.componentEnvironment),
 			initialUnknowns = nilSeq[Unknown](callbacks.componentEnvironment.modelStructure.initialUnknowns)
 		in
@@ -53,7 +53,8 @@ functions
 				callbacks,
 				eModelVariables,
 				{ i | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables) },
-				{ u.index | u in seq initialUnknowns }
+				{ u.index | u in seq initialUnknowns },
+				if loggingOn then {} else nil
 			)
 	pre
 		instanceName <> ""
@@ -62,25 +63,33 @@ functions
 			and (fmuType = <fmi2CoSimulation>  => modelDef.coSimulation <> nil)
 			and (fmuType = <fmi2ModelExchange> => modelDef.modelExchange <> nil)
 	post
-		RESULT.fmustate = <INSTANTIATED>
+		RESULT.fmuState = <INSTANTIATED>
 		and RESULT.fmuType = fmuType;
 
 
 	fmi2FreeInstance: fmi2Component +> ?
 	fmi2FreeInstance(c) ==
-		is not yet specified;
-
-	fmi2SetDebugLogging: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status
-	fmi2SetDebugLogging(c, loggingOn, nCategories, categories) ==
-		is not yet specified
+		nil
 	pre
-		nCategories = len categories
+		c.fmuState not in set {<START>, <END>};
+
+	fmi2SetDebugLogging: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status * fmi2Component
+	fmi2SetDebugLogging(c, loggingOn, nCategories, categories) ==
+		if loggingOn
+		then mk_(<fmi2OK>, mu(c, logCategories |-> c.logCategories union elems categories))
+		else mk_(<fmi2OK>, mu(c, logCategories |-> c.logCategories \ elems categories))
+	pre
+		c.fmuState not in set {<START>, <END>}
+		and nCategories = len categories
 		and card elems categories = nCategories
 		and (nCategories > 0 =>
-			let logcats = c.callbacks.componentEnvironment.logCategories in
+			c.logCategories <> nil
+			and let logcats = c.callbacks.componentEnvironment.logCategories in
 				logcats <> nil
 				and forall cname in seq categories &
 					exists lc in seq logcats &
-						lc.name = cname);
-	
-	
+						lc.name = cname)
+	post
+		forall rcat in set RESULT.#2.logCategories &
+			exists lcat in seq c.callbacks.componentEnvironment.logCategories &
+				lcat.name = rcat;

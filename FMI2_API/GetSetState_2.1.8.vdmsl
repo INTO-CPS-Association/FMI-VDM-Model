@@ -35,7 +35,7 @@ functions
 	canDoGetSetState(c) ==
 		(c.fmuType = <fmi2CoSimulation> and c.callbacks.componentEnvironment.coSimulation.canGetAndSetFMUstate
 		or c.fmuType = <fmi2ModelExchange> and c.callbacks.componentEnvironment.modelExchange.canGetAndSetFMUstate)
-		and c.fmustate = <EVENT_MODE>;
+		and c.fmuState = <EVENT_MODE>;
 
 	fmi2GetFMUstate: fmi2Component +> fmi2Status * token
 	fmi2GetFMUstate(c) ==

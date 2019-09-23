@@ -56,15 +56,16 @@ types
 		<STEP_CANCELLED> |
 		<TERMINATED> |
 		<ERROR> |
-		<FATAIL> |
+		<FATAL> |
 		<END>;
 
 	fmi2Component ::
 		fmuType					: fmi2Type
-		fmustate				: fmi2State
+		fmuState				: fmi2State
 		callbacks				: fmi2CallbackFunctions
 		eModelVariables			: seq1 of ScalarVariable
 		continuousTimeStates	: set of nat1
-		initialUnknowns			: set of nat1;
+		initialUnknowns			: set of nat1
+		logCategories			: [set of fmi2String];
 
 	fmi2ComponentEnvironment = FMIModelDescription;

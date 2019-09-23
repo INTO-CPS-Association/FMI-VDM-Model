@@ -52,7 +52,9 @@ values
 		},
 
 		-- Log categories
-		nil,
+		[
+			mk_Category(0, "debug", "debug output")
+		],
 
 		-- Default experiment
 		nil,

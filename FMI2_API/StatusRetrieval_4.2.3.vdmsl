@@ -38,28 +38,28 @@ functions
 	fmi2GetStatus(c, s) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENT_MODE>;
+		c.fmuState = <EVENT_MODE>;
 
 	fmi2GetRealStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Real
 	fmi2GetRealStatus(c, s) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENT_MODE>;
+		c.fmuState = <EVENT_MODE>;
 
 	fmi2GetIntegerStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Integer
 	fmi2GetIntegerStatus(c, s) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENT_MODE>;
+		c.fmuState = <EVENT_MODE>;
 
 	fmi2GetBooleanStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Boolean
 	fmi2GetBooleanStatus(c, s) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENT_MODE>;
+		c.fmuState = <EVENT_MODE>;
 
 	fmi2GetStringStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2String
 	fmi2GetStringStatus(c, s) ==
 		is not yet specified
 	pre
-		c.fmustate = <EVENT_MODE>;
+		c.fmuState = <EVENT_MODE>;

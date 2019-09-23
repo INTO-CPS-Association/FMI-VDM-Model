@@ -36,7 +36,7 @@ functions
 	 */
 	generalGetPrecondition: fmi2Component * seq of fmi2ValueReference +> bool
 	generalGetPrecondition(c, vrs) ==
-		cases c.fmustate:
+		cases c.fmuState:
 			<INSTANTIATED>		-> false,
 			<INITIALIZATION>	-> varsINIT(c, vrs),
 			<EVENT_MODE>		-> true,
@@ -55,7 +55,7 @@ functions
 	generalSetPrecondition(c, vrs) ==
 		if c.fmuType = <fmi2ModelExchange>
 		then
-			cases c.fmustate:
+			cases c.fmuState:
 				<INSTANTIATED>		-> varsSEA(c, vrs),
 				<INITIALIZATION>	-> varsSE(c, vrs),
 				<EVENT_MODE>		-> varsIN(c, vrs) or varsINC(c, vrs),
@@ -66,7 +66,7 @@ functions
 				others -> undefined
 			end
 		else	-- fmi2CoSimulation
-			cases c.fmustate:
+			cases c.fmuState:
 				<INSTANTIATED>		-> varsINI(c, vrs),
 				<INITIALIZATION>	-> varsIN(c, vrs) or varsINI(c, vrs),
 				<STEP_COMPLETE>		-> varsIN(c, vrs),

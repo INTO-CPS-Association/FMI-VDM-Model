@@ -38,11 +38,11 @@ functions
 	allocateMemory: nat1 * nat1 +> token
 	allocateMemory(-, -) ==
 		is not yet specified;
-	
+
 	freeMemory: token +> ?
 	freeMemory(-) ==
 		is not yet specified;
-	
+
 	stepFinished: fmi2ComponentEnvironment * fmi2Status +> ?
 	stepFinished(-, -) ==
 		is not yet specified;
@@ -52,49 +52,61 @@ operations
 	coSimulate() ==
 	(
 		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, springMassDamper) in
-		let c = fmi2Instantiate("test", <fmi2CoSimulation>, "GUID", "", callbacks, false, false) in
-		let startTime : real = 0, endTime : real = 1000 in 
+		let startTime : real = 0, endTime : real = 1000 in
+		(
+			dcl c : fmi2Component;
 
-			if fmi2SetDebugLogging(c, false, 0, []) <> <fmi2OK>
-			then exit "Cannot initialize logging"
-			
-			elseif fmi2SetupExperiment(c, false, 0, startTime, true, endTime) <> <fmi2OK>
-			then exit "Cannot set up experiment"
-			
-			elseif fmi2EnterInitializationMode(c) <> <fmi2OK>
-			then exit "Cannot enter initialization mode"
-			
-			elseif fmi2ExitInitializationMode(c) <> <fmi2OK>
-			then exit "Cannot exit initialization mode"
-			
-			else
+			c := fmi2Instantiate("test", <fmi2CoSimulation>, "GUID", "", callbacks, false, true);
+
+			let mk_(s, c2) = fmi2SetDebugLogging(c, true, 1, ["debug"]) in
+				if s <> <fmi2OK>
+				then exit "Cannot initialize logging"
+				else c := c2;
+
+			let mk_(s, c2) = fmi2SetupExperiment(c, false, 0, startTime, true, endTime) in
+				if s <> <fmi2OK>
+				then exit "Cannot set up experiment"
+				else c := c2;
+
+			let mk_(s, c2) = fmi2EnterInitializationMode(c) in
+				if s <> <fmi2OK>
+				then exit "Cannot enter initialization mode"
+				else c := c2;
+
+			let mk_(s, c2) = fmi2ExitInitializationMode(c) in 
+				if s <> <fmi2OK>
+				then exit "Cannot exit initialization mode"
+				else c := c2;
+
 			(
 				dcl time : real := startTime, h : real := 1, hh : real := 1;
-				
+
 				while time < endTime do
 				(
 					if h > endTime - time
 					then hh := endTime - time;
-					
-					let status = fmi2DoStep(c, time, hh, true) in
-						if status = <fmi2Discard>
-						then let mk_(s, terminated) = fmi2GetBooleanStatus(c, <fmi2Terminated>) in
-							if s <> <fmi2OK>
+
+					let mk_(s, c2) = fmi2DoStep(c, time, hh, true) in
+						if s = <fmi2Discard>
+						then let mk_(s2, terminated) = fmi2GetBooleanStatus(c2, <fmi2Terminated>) in
+							if s2 <> <fmi2OK>
 							then exit "Cannot get terminated status"
 							elseif terminated
 							then exit "Simulation requested termination"
 							else exit "Could not complete simulation"
 
-						elseif status <> <fmi2OK>
+						elseif s <> <fmi2OK>
 						then exit "Could not complete simulation"
 
-						else time := time + hh
+						else ( time := time + hh; c := c2 )
 				);
-				
-				if fmi2Terminate(c) <> <fmi2OK>
-				then exit "Failed to terminate simulation"
 
-				elseif fmi2FreeInstance(c) <> <fmi2OK>
-				then exit "Failed to free instance"
+				let mk_(s, c2) = fmi2Terminate(c) in
+					if s <> <fmi2OK>
+					then exit "Failed to terminate simulation"
+					else c := c2;
+
+				let - = fmi2FreeInstance(c) in skip		-- void function
 			)
+		)
 	);
