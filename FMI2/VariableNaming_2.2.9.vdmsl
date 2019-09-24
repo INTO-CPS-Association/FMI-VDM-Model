@@ -46,7 +46,7 @@ functions
 	 * Parser functions are passed a source string and return a tuple of a bool
 	 * which indicates whether the symbol was correctly parsed, and the 
 	 * remaining string after the symbol was parsed. If the parse fails, the
-	 * remaining string is the same as the original input.
+	 * remaining string is the same as the original input (see post exp).
 	 *
 	 * This follows the EBNF grammar in section 2.2.9, p64.
 	 */
@@ -66,7 +66,8 @@ functions
 					then mk_(true, tail(2, ..., len tail))
 					else mk_(false, source)
 			else mk_(false, source)
-		else identifier(source);
+		else identifier(source)
+	post RESULT.#1 <=> source <> RESULT.#2;
 
 	-- identifier = B-name [ arrayIndices ] {"." B-name [ arrayIndices ] }
 	identifier: seq of char -> bool * seq of char
@@ -82,6 +83,7 @@ functions
 						else mk_(true, tail2)
 					else mk_(true, tail)
 			else mk_(false, source)
+	post RESULT.#1 <=> source <> RESULT.#2
 	measure len source;
 
 	-- B-name = nondigit { digit | nondigit } | Q-name
@@ -90,7 +92,8 @@ functions
 		let mk_(ok, tail) = qname(source) in
 			if ok
 			then mk_(ok, tail)
-			else alphanum(source);
+			else alphanum(source)
+	post RESULT.#1 <=> source <> RESULT.#2;
 
 	-- nondigit { digit | nondigit }
 	-- nondigit = "_" | letters "a" to "z" | letters "A" to "Z"
@@ -102,7 +105,8 @@ functions
 				and forall i in set {2, ..., acount} &
 					source(i) in set elems (DIGITS ^ NONDIGITS)
 			then mk_(true, source(acount + 1, ..., len source))
-			else mk_(false, source);
+			else mk_(false, source)
+	post RESULT.#1 <=> source <> RESULT.#2;
 
 	-- Q-name = "’" ( Q-char | escape ) { Q-char | escape } "’"
 	qname: seq of char -> bool * seq of char
@@ -112,7 +116,8 @@ functions
 			if ok and tail <> [] and hd tail = '\''
 			then mk_(true, tail(2, ..., len tail))
 			else mk_(false, source)
-		else mk_(false, source);
+		else mk_(false, source)
+	post RESULT.#1 <=> source <> RESULT.#2;
 
 	-- ( Q-char | escape ) { Q-char | escape }
 	qcharsOrEscapes: seq of char -> bool * seq of char
@@ -121,6 +126,7 @@ functions
 			if ok and tail <> []
 			then let mk_(-, tail2) = qcharsOrEscapes(tail) in mk_(true, tail2)
 			else mk_(false, source)
+	post RESULT.#1 <=> source <> RESULT.#2
 	measure len source;
 
 	-- ( Q-char | escape )
@@ -132,7 +138,8 @@ functions
 			else let mk_(ok2, tail2) = escape(source) in
 				if ok2
 				then mk_(true, tail2)
-				else mk_(false, source);
+				else mk_(false, source)
+	post RESULT.#1 <=> source <> RESULT.#2;
 
 	-- Q-char = nondigit | digit | "!" | "#" | "$" | "%" | "&" | "(" | ")" |
 	--		"*" | "+" | "," | "-" | "." | "/" | ":" |
@@ -142,7 +149,8 @@ functions
 	qchar(source) ==
 		if source <> [] and hd source in set elems (QCHARS ^ DIGITS ^ NONDIGITS)
 		then mk_(true, source(2, ..., len source))
-		else mk_(false, source);
+		else mk_(false, source)
+	post RESULT.#1 <=> source <> RESULT.#2;
 
 	-- unsignedInteger = digit { digit }
 	unsigned: seq of char -> bool * seq of char
@@ -150,7 +158,8 @@ functions
 		let dcount = startsWith(source, DIGITS) in
 			if dcount > 0
 			then mk_(true, source(dcount + 1, ..., len source))
-			else mk_(false, source);
+			else mk_(false, source)
+	post RESULT.#1 <=> source <> RESULT.#2;
 
 	-- escape = "\’" | "\"" | "\?" | "\\" | "\a" | "\b" |
 	--		"\f" | "\n" | "\r" | "\t" | "\v"
@@ -159,7 +168,8 @@ functions
 		if len source > 1 and hd source = '\\'
 			and source(2) in set elems ESCAPES
 		then mk_(true, source(3, ..., len source))
-		else mk_(false, source);
+		else mk_(false, source)
+	post RESULT.#1 <=> source <> RESULT.#2;
 
 	-- arrayIndices = "[" unsignedInteger {"," unsignedInteger} "]"
 	arrayIndices: seq of char -> bool * seq of char
@@ -169,7 +179,8 @@ functions
 			if ok and tail <> [] and hd tail = ']'
 			then mk_(true, tail(2, ..., len tail))
 			else mk_(false, source)
-		else mk_(false, source);
+		else mk_(false, source)
+	post RESULT.#1 <=> source <> RESULT.#2;
 
 	-- unsignedInteger {"," unsignedInteger}
 	unsignedSeq: seq of char -> bool * seq of char
@@ -182,6 +193,7 @@ functions
 				else mk_(true, tail)
 			else mk_(false, source)
 		else mk_(false, source)
+	post RESULT.#1 <=> source <> RESULT.#2
 	measure len source;
 
 	-- Return the size of the stem of source that contains chars from the matching string.
