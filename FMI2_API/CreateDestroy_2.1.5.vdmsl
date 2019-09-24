@@ -54,7 +54,21 @@ functions
 				eModelVariables,
 				{ i | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables) },
 				{ u.index | u in seq initialUnknowns },
-				if loggingOn then {} else nil
+				if loggingOn then {} else nil,
+				[
+					if sv.variable.start <> nil
+					then sv.variable.start
+					else
+						-- Set default value for variable type
+						if is_Real(sv.variable) then 0.0
+						else if is_Integer(sv.variable) then 0
+						else if is_Boolean(sv.variable) then false
+						else if is_String(sv.variable) then ""
+						else if is_Enumeration(sv.variable) then 0
+						else undefined
+
+					| sv in seq eModelVariables
+				]
 			)
 	pre
 		instanceName <> ""

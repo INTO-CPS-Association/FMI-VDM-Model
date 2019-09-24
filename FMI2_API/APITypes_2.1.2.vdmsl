@@ -66,6 +66,11 @@ types
 		eModelVariables			: seq1 of ScalarVariable
 		continuousTimeStates	: set of nat1
 		initialUnknowns			: set of nat1
-		logCategories			: [set of fmi2String];
+		logCategories			: [set of fmi2String]
+		variables				: seq1 of fmi2Real | fmi2Integer | fmi2Boolean | fmi2Char | fmi2String
+	inv c ==
+		len c.variables = len c.eModelVariables
+		and card c.continuousTimeStates <= len c.variables
+		and card c.initialUnknowns <= len c.variables;
 
 	fmi2ComponentEnvironment = FMIModelDescription;

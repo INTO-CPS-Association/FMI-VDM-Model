@@ -50,24 +50,32 @@ functions
 
 	fmi2ExitInitializationMode: fmi2Component +> fmi2Status * fmi2Component
 	fmi2ExitInitializationMode(c) ==
-		mk_(<fmi2OK>, mu(c, fmuState |-> <EVENT_MODE>))
+		mk_(<fmi2OK>, mu(c, fmuState |->
+			if c.fmuType = <fmi2CoSimulation>
+			then <STEP_COMPLETE>
+			else <EVENT_MODE>))
 	pre
 		c.fmuState = <INITIALIZATION>
 	post
-		RESULT.#2.fmuState = <EVENT_MODE>;
+		RESULT.#2.fmuState =
+			if c.fmuType = <fmi2CoSimulation>
+			then <STEP_COMPLETE>
+			else <EVENT_MODE>;
 
 	fmi2Terminate: fmi2Component +> fmi2Status * fmi2Component
 	fmi2Terminate(c) ==
 		mk_(<fmi2OK>, mu(c, fmuState |-> <TERMINATED>))
 	pre
-		c.fmuState = <EVENT_MODE>
+		c.fmuType = <fmi2CoSimulation> and c.fmuState in set {<STEP_COMPLETE>, <STEP_FAILED>}
+		or
+		c.fmuType = <fmi2ModelExchange> and c.fmuState in set {<EVENT_MODE>, <CT_MODE>}
 	post
 		RESULT.#2.fmuState = <TERMINATED>;
 
 	fmi2Reset: fmi2Component +> fmi2Status * fmi2Component
 	fmi2Reset(c) ==
-		mk_(<fmi2OK>, mu(c, fmuState |-> <START>))
+		mk_(<fmi2OK>, mu(c, fmuState |-> <INSTANTIATED>))
 	pre
 		c.fmuState = <TERMINATED>
 	post
-		RESULT.#2.fmuState = <START>;
+		RESULT.#2.fmuState = <INSTANTIATED>;

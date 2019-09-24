@@ -79,7 +79,9 @@ operations
 				else c := c2;
 
 			(
-				dcl time : real := startTime, h : real := 1, hh : real := 1;
+				dcl time : real := startTime,
+					h    : real := 1,
+					hh   : real := h;
 
 				while time < endTime do
 				(
@@ -91,8 +93,10 @@ operations
 						then let mk_(s2, terminated) = fmi2GetBooleanStatus(c2, <fmi2Terminated>) in
 							if s2 <> <fmi2OK>
 							then exit "Cannot get terminated status"
+
 							elseif terminated
 							then exit "Simulation requested termination"
+
 							else exit "Could not complete simulation"
 
 						elseif s <> <fmi2OK>
