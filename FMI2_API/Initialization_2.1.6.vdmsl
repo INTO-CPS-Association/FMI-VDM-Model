@@ -38,7 +38,7 @@ functions
 		c.fmuState = <INSTANTIATED>
 		and (stopTimeDefined => stopTime > startTime)
 	post
-		c.fmuState = <INSTANTIATED>;
+		RESULT.#2.fmuState = <INSTANTIATED>;
 
 	fmi2EnterInitializationMode: fmi2Component +> fmi2Status * fmi2Component
 	fmi2EnterInitializationMode(c) ==

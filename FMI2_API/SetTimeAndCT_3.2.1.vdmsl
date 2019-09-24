@@ -31,15 +31,19 @@
  * 3.2.1 Providing Independent Variables and Re-initialization of Caching
  */
 functions
-	fmi2SetTime:fmi2Component * fmi2Real +> fmi2Status
+	fmi2SetTime:fmi2Component * fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetTime(c, time) ==
 		is not yet specified
 	pre
-		c.fmuState = <INITIALIZATION>;
+		c.fmuState = <INITIALIZATION>
+	post
+		RESULT.#2.fmuState = <INITIALIZATION>;
 
 
-	fmi2SetContinuousStates:fmi2Component * seq of fmi2Real * nat +> fmi2Status
+	fmi2SetContinuousStates:fmi2Component * seq of fmi2Real * nat +> fmi2Status * fmi2Component
 	fmi2SetContinuousStates(c, x, nx) ==
 		is not yet specified
 	pre
-		c.fmuState = <INITIALIZATION>;
+		c.fmuState = <INITIALIZATION>
+	post
+		RESULT.#2.fmuState = <INITIALIZATION>;

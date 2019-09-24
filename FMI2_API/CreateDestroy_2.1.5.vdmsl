@@ -32,11 +32,13 @@
  */
 types
 	fmi2CallbackFunctions ::
-		logger					: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> ?
+		logger					: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> <VOID>
 		allocateMemory			: nat1 * nat1 +> token
-		freeMemory				: token +> ?
-		stepFinished			: fmi2ComponentEnvironment * fmi2Status +> ?
-		componentEnvironment	: fmi2ComponentEnvironment;
+		freeMemory				: token +> <VOID>
+		stepFinished			: fmi2ComponentEnvironment * fmi2Status +> <VOID>
+		componentEnvironment	: fmi2ComponentEnvironment
+	inv f ==
+		isValidFMIModelDescription(f.componentEnvironment);
 
 
 functions

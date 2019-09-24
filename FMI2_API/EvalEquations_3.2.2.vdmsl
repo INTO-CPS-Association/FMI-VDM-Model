@@ -39,7 +39,7 @@ types
 		nextEventTimeDefined				: fmi2Boolean
 		nextEventTime						: [fmi2Real]
 	inv
-		info == info.nextEventTimeDefined => info.nextEventTime <> nil;
+		info == info.nextEventTimeDefined <=> info.nextEventTime <> nil;
 
 functions
 	fmi2EnterEventMode: fmi2Component +> fmi2Status

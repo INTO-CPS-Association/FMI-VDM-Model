@@ -31,7 +31,7 @@
  * Tests of the API.
  */
 functions
-	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> ?
+	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> <VOID>
 	logger(-, -, -, -, -) ==
 		is not yet specified;
 
@@ -39,11 +39,11 @@ functions
 	allocateMemory(-, -) ==
 		is not yet specified;
 
-	freeMemory: token +> ?
+	freeMemory: token +> <VOID>
 	freeMemory(-) ==
 		is not yet specified;
 
-	stepFinished: fmi2ComponentEnvironment * fmi2Status +> ?
+	stepFinished: fmi2ComponentEnvironment * fmi2Status +> <VOID>
 	stepFinished(-, -) ==
 		is not yet specified;
 
@@ -110,7 +110,7 @@ operations
 					then exit "Failed to terminate simulation"
 					else c := c2;
 
-				let - = fmi2FreeInstance(c) in skip		-- void function
+				let - = fmi2FreeInstance(c) in skip		-- ignore <VOID> function result
 			)
 		)
 	);
