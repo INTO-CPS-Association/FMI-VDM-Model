@@ -161,7 +161,9 @@ functions
 		isValidStructuredName("xyz.abc.def[1,2,3]"),
 		isValidStructuredName("'!!!\\?'.a10[1,2,3]"),
 		isValidStructuredName("a20[1,2,3].def[1]"),
-		isValidStructuredName("'\\\"\\?\\\\'")
+		isValidStructuredName("'\\\"\\?\\\\'"),
+		not isValidStructuredName("a[1,]"),
+		not isValidStructuredName("[1]")
 	];
 
 values
