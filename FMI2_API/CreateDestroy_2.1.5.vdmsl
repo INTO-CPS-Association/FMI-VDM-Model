@@ -56,7 +56,9 @@ functions
 				eModelVariables,
 				{ i | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables) },
 				{ u.index | u in seq initialUnknowns },
-				if loggingOn then {} else nil,
+				if loggingOn and callbacks.componentEnvironment.logCategories <> nil
+				then { cat.name | cat in seq callbacks.componentEnvironment.logCategories }
+				else nil,
 				[
 					if sv.variable.start <> nil
 					then sv.variable.start
@@ -91,9 +93,14 @@ functions
 
 	fmi2SetDebugLogging: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status * fmi2Component
 	fmi2SetDebugLogging(c, loggingOn, nCategories, categories) ==
-		if loggingOn
-		then mk_(<fmi2OK>, mu(c, logCategories |-> c.logCategories union elems categories))
-		else mk_(<fmi2OK>, mu(c, logCategories |-> c.logCategories \ elems categories))
+		mk_(<fmi2OK>,
+			mu(c, logCategories |->
+				if loggingOn
+				then
+					if nCategories = 0
+					then [ cat.name | cat in seq c.callbacks.componentEnvironment.logCategories ]
+					else elems categories
+				else nil))
 	pre
 		c.fmuState not in set {<START>, <END>}
 		and nCategories = len categories
@@ -106,6 +113,4 @@ functions
 					exists lc in seq logcats &
 						lc.name = cname)
 	post
-		forall rcat in set RESULT.#2.logCategories &
-			exists lcat in seq c.callbacks.componentEnvironment.logCategories &
-				lcat.name = rcat;
+		loggingOn => RESULT.#2.logCategories = elems categories;
