@@ -32,8 +32,9 @@
  */
 functions
 	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> <VOID>
-	logger(-, -, -, -, -) ==
-		is not yet specified;
+	logger(-, -, -, category, message) ==
+		-- @Printf("%s: %s\n", category, message)
+		<VOID>;
 
 	allocateMemory: nat1 * nat1 +> token
 	allocateMemory(-, -) ==

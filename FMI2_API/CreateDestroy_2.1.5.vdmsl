@@ -113,4 +113,4 @@ functions
 					exists lc in seq logcats &
 						lc.name = cname)
 	post
-		loggingOn => RESULT.#2.logCategories = elems categories;
+		RESULT.#2.logCategories = if loggingOn then elems categories else nil;
