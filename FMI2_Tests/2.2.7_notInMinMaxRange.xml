@@ -6,6 +6,9 @@
 		<ScalarVariable name="varname" valueReference="0">
 			<Real min="10" max="5" start="1" />
 		</ScalarVariable>
+		<ScalarVariable name="var2" valueReference="0">
+			<Real min="10" max="5" />
+		</ScalarVariable>
 	</ModelVariables>
 	<ModelStructure>
 	</ModelStructure>

@@ -109,7 +109,12 @@ functions
 		start <> nil =>
 			--@OnFail("2.2.7 start %s is not within min %s/max %s", start, min, max)
 			( (min <> nil => min <= start) and
-			  (max <> nil => max >= start) )
+			  (max <> nil => max >= start) ),
+
+		start = nil =>
+			--@OnFail("2.2.7 Warning: implicit start of 0 is not within min %s/max %s", min, max)
+			( (min <> nil => min <= 0) and
+			  (max <> nil => max >= 0) ) or true	-- NOTE warning
 	} = {true}
 	pre is_(min, [real]) and is_(max, [real]) and is_(start, [real]);	-- ie. numerics
 

@@ -1,6 +1,6 @@
 ------------------------------ 2.2.1_initialUnknowns1.xml
 VDMCheck.sh:
-true
+No errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -13,7 +13,7 @@ Checker reported:
 ------------------------------ 2.2.1_initialUnknowns2.xml
 VDMCheck.sh:
 2.2.8 InitialUnknowns must include: {2}
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -26,7 +26,7 @@ Checker reported:
 ------------------------------ 2.2.1_initialUnknowns3.xml
 VDMCheck.sh:
 2.2.8 InitialUnknowns are not sorted: [3, 2]
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -43,7 +43,7 @@ VDMCheck.sh:
 2.2.1 ScalarVariables invalid
 2.2.8 Derivatives section does not match Real/derivative variables at line 13
 2.2.8 Derivatives indexes out of range at line 13
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Start attribute is required for this causality, variability and initial combination
@@ -66,7 +66,7 @@ VDMCheck.sh:
 2.2.7 ScalarVariable "v1" invalid at line 6
 2.2.1 ScalarVariables invalid
 2.2.8 Derivatives declared, but no Real/derivative variables at line 13
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Start attribute is required for this causality, variability and initial combination
@@ -88,7 +88,7 @@ VDMCheck.sh:
 2.2.7 ScalarVariable "v1" invalid at line 6
 2.2.1 ScalarVariables invalid
 2.2.8 Real/derivative variables but no Derivatives declared at line 13
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Start attribute is required for this causality, variability and initial combination
@@ -102,7 +102,7 @@ Checker reported:
 ------------------------------ 2.2.1_invalidMultipleSet.xml
 VDMCheck.sh:
 2.2.7 ScalarVariable "varname", canHandleMultipleSetPerTimeInstant invalid at line 6
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -115,7 +115,7 @@ Checker reported:
 ------------------------------ 2.2.1_invalidOutputs1.xml
 VDMCheck.sh:
 2.2.8 Outputs should be {1, 2} at line 13
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -131,7 +131,7 @@ VDMCheck.sh:
 2.2.7 ScalarVariable "v1" invalid at line 6
 2.2.1 ScalarVariables invalid
 2.2.8 Outputs should be omitted at line 10
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Start attribute is required for this causality, variability and initial combination
@@ -145,7 +145,7 @@ Checker reported:
 ------------------------------ 2.2.1_noModelType.xml
 VDMCheck.sh:
 2.2.1 Neither ModelExchange nor CoSimulation specified
-false
+Errors found.
 ------------
 fmuCheck:
 [FATAL][FMI2XML] Neither ModelExchange nor CoSimulation element were parsed correctly. FMU kind not known.
@@ -167,7 +167,7 @@ VDMCheck.sh:
 2.2.7 ScalarVariable "v4", BooleanType not referenced by Boolean variable "T4" at line 22
 2.2.7 ScalarVariable "v5", EnumerationType not referenced by Enumeration variable "T5" at line 25
 2.2.1 ScalarVariables typecheck against TypeDefinitions failed
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Declared type T1 does not match variable type. Ignoring.
@@ -196,7 +196,7 @@ parsing aborted
 VDMCheck.sh:
 2.2.2 UnitDefinitions names are not unique: {"wibble"}
 2.2.1 UnitDefinitions invalid
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -209,7 +209,7 @@ Checker reported:
 ------------------------------ 2.2.3_invalidTypeName.xml
 VDMCheck.sh:
 2.2.3 TypeDefinition and ScalarVariable names overlap: "abc" at line 6
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -229,7 +229,7 @@ VDMCheck.sh:
 2.2.3 SimpleType "enum", EnumerationType item name/values do not form a bijection
 2.2.3 TypeDefinition "enum" invalid at line 12
 2.2.1 TypeDefinitions invalid
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Enum items 'a' and 'c' within enumeration 'enum' have the same value 1
@@ -244,7 +244,7 @@ Checker reported:
 VDMCheck.sh:
 2.2.4 LogCategory names are not unique: {"one"}
 2.2.1 LogCategories invalid
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -259,7 +259,7 @@ VDMCheck.sh:
 2.2.5 DefaultExperiment stop time must be later than start time at line 5
 2.2.5 DefaultExperiment stepSize must be less than start-stop interval at line 5
 2.2.1 DefaultExperiment invalid at line 5
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -273,7 +273,7 @@ Checker reported:
 VDMCheck.sh:
 2.2.6 VendorAnnotations tool names are not unique: {"one"}
 2.2.1 VendorAnnotations invalid
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -298,7 +298,7 @@ VDMCheck.sh:
 2.2.7 start 200 is not within min 100/max 1
 2.2.7 Variable "v2" min/max/start/nominal invalid at line 9
 2.2.1 Effective ScalarVariables invalid
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Invalid combination of variability continuous and causality parameter. Setting variability to 'fixed'
@@ -315,7 +315,7 @@ VDMCheck.sh:
 2.2.7 ScalarVariables define more than one independent variable: {"varname"}
 2.2.7 ScalarVariable names are not unique: {"varname"}
 2.2.1 ScalarVariables invalid
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Two variables with the same name varname found. This is not allowed.
@@ -334,8 +334,11 @@ VDMCheck.sh:
 2.2.7 min 10 is not <= max 5
 2.2.7 start 1 is not within min 10/max 5
 2.2.7 Variable "varname" min/max/start/nominal invalid at line 6
+2.2.7 min 10 is not <= max 5
+2.2.7 Warning: implicit start of 0 is not within min 10/max 5
+2.2.7 Variable "var2" min/max/start/nominal invalid at line 9
 2.2.1 Effective ScalarVariables invalid
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Start attribute is not allowed for variables with initial='calculated'
@@ -356,7 +359,7 @@ VDMCheck.sh:
 2.2.8 ModelStructure has invalid Unknowns
 2.2.8 InitialUnknowns are not of kind dependent or constant
 2.2.1 ModelStructure invalid at line 13
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] XML element 'Unknown': different number of items (1 and 0) in the lists for 'dependencies' and 'dependenciesKind'
@@ -377,7 +380,7 @@ VDMCheck.sh:
 2.2.9 Structured name "der(-)" invalid at line 6
 2.2.9 Structured name "123" invalid at line 9
 2.2.9 Structured name "'\\z'" invalid at line 12
-false
+Errors found.
 ------------
 fmuCheck:
 [ERROR][FMI2XML] Invalid structured ScalarVariable name "der(-)": syntax error, unexpected $undefined, expecting NONDIGIT or Q_NAME
@@ -394,7 +397,7 @@ Checker reported:
 VDMCheck.sh:
 3.3.1 ModelExchange source file names are not unique: {"abc"}
 2.2.1 ModelExchange invalid at line 4
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -408,7 +411,7 @@ Checker reported:
 VDMCheck.sh:
 4.3.1 CoSimulation source file names are not unique: {"abc"}
 2.2.1 CoSimulation invalid at line 4
-false
+Errors found.
 ------------
 fmuCheck:
 FMU check summary:
@@ -420,7 +423,7 @@ Checker reported:
 "time"
 ------------------------------ minimal.xml
 VDMCheck.sh:
-true
+No errors found.
 ------------
 fmuCheck:
 FMU check summary:
