@@ -42,52 +42,147 @@ types
 		info == info.nextEventTimeDefined <=> info.nextEventTime <> nil;
 
 functions
-	fmi2EnterEventMode: fmi2Component +> fmi2Status
-	fmi2EnterEventMode(c) ==
+	fmi2EnterEventMode_Impl: fmi2Component +> fmi2Status
+	fmi2EnterEventMode_Impl(c) ==
 		is not yet specified
 	pre
 		c.fmuState = <INITIALIZATION>
 	post
 		RESULT = <fmi2OK> => c.fmuState = <EVENT_MODE>;
 
+	fmi2EnterEventMode: fmi2Component +> fmi2Status
+	fmi2EnterEventMode(c) ==
+		if c.fmuState <> <INITIALIZATION>
+		then -- @Printf("Cannot call fmi2EnterEventMode in state %s\n", c.fmuState)
+			<fmi2Error>
+	 	else
+	 		fmi2EnterEventMode_Impl(c);
+
+
+
+	fmi2NewDiscreteStates_Impl: fmi2Component * fmi2EventInfo +> fmi2Status
+	fmi2NewDiscreteStates_Impl(c, fmi2eventInfo) ==
+		is not yet specified
+	pre
+		c.fmuState = <EVENT_MODE>;
+
 	fmi2NewDiscreteStates: fmi2Component * fmi2EventInfo +> fmi2Status
 	fmi2NewDiscreteStates(c, fmi2eventInfo) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2NewDiscreteStates in state %s\n", c.fmuState)
+			<fmi2Error>
+	 	else
+	 		fmi2NewDiscreteStates_Impl(c, fmi2eventInfo);
+
+
+
+	fmi2EnterContinuousTimeMode_Impl: fmi2Component +> fmi2Status
+	fmi2EnterContinuousTimeMode_Impl(c) ==
 		is not yet specified
 	pre
 		c.fmuState = <EVENT_MODE>;
 
 	fmi2EnterContinuousTimeMode: fmi2Component +> fmi2Status
 	fmi2EnterContinuousTimeMode(c) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2EnterContinuousTimeMode in state %s\n", c.fmuState)
+			<fmi2Error>
+	 	else
+	 		fmi2EnterContinuousTimeMode_Impl(c);
+
+
+
+	fmi2CompletedIntegratorStep_Impl: fmi2Component * fmi2Boolean +> fmi2Status * fmi2Boolean * fmi2Boolean
+	fmi2CompletedIntegratorStep_Impl(c, noSetFMUStatePriorToCurrentPoint) ==
 		is not yet specified
 	pre
 		c.fmuState = <EVENT_MODE>;
 
 	fmi2CompletedIntegratorStep: fmi2Component * fmi2Boolean +> fmi2Status * fmi2Boolean * fmi2Boolean
 	fmi2CompletedIntegratorStep(c, noSetFMUStatePriorToCurrentPoint) ==
-		is not yet specified
-	pre
-		c.fmuState = <EVENT_MODE>;
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2CompletedIntegratorStep in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, undefined, undefined)
+	 	else
+	 		fmi2CompletedIntegratorStep_Impl(c, noSetFMUStatePriorToCurrentPoint);
 
-	fmi2GetDerivatives: fmi2Component * seq of fmi2Real * nat +> fmi2Status
-	fmi2GetDerivatives(c, derivatives, nx) ==
-		is not yet specified
-	pre
-		c.fmuState = <EVENT_MODE>;
 
-	fmi2GetEventIndicators: fmi2Component * seq of fmi2Real * nat +> fmi2Status
-	fmi2GetEventIndicators(c, eventIndicators, ni) ==
-		is not yet specified
-	pre
-		c.fmuState = <EVENT_MODE>;
 
-	fmi2GetContinuousStates: fmi2Component * seq of fmi2Real * nat +> fmi2Status
-	fmi2GetContinuousStates(c, x, nx) ==
+	fmi2GetDerivatives_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetDerivatives_Impl(c, nx) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>;
+		c.fmuState = <EVENT_MODE>
+		and nx = card c.continuousTimeStates;	-- ??
 
-	fmi2GetNominalsOfContinuousStates: fmi2Component * seq of fmi2Real * nat +> fmi2Status
-	fmi2GetNominalsOfContinuousStates(c, x_nominal, nx) ==
+	fmi2GetDerivatives: fmi2Component * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetDerivatives(c, nx) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2GetDerivatives in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, undefined)
+		elseif nx <> card c.continuousTimeStates
+		then -- @Printf("Wrong number of derivates requested, expecting %s\n", card c.continuousTimeStates)
+			mk_(<fmi2Error>, undefined)
+	 	else
+	 		fmi2GetDerivatives_Impl(c, nx);
+
+
+
+	fmi2GetEventIndicators_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetEventIndicators_Impl(c, ni) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>;
+		c.fmuState = <EVENT_MODE>
+		and ni = card c.continuousTimeStates;	-- ??
+
+	fmi2GetEventIndicators: fmi2Component * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetEventIndicators(c, ni) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2GetEventIndicators in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, undefined)
+		elseif ni <> card c.continuousTimeStates
+		then -- @Printf("Wrong number of derivates requested, expecting %s\n", card c.continuousTimeStates)
+			mk_(<fmi2Error>, undefined)
+	 	else
+	 		fmi2GetEventIndicators_Impl(c, ni);
+
+
+
+	fmi2GetContinuousStates_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetContinuousStates_Impl(c, nx) ==
+		is not yet specified
+	pre
+		c.fmuState = <EVENT_MODE>
+		and nx = card c.continuousTimeStates;	-- ??
+
+	fmi2GetContinuousStates: fmi2Component * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetContinuousStates(c, nx) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2GetContinuousStates in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, undefined)
+		elseif nx <> card c.continuousTimeStates
+		then -- @Printf("Wrong number of derivates requested, expecting %s\n", card c.continuousTimeStates)
+			mk_(<fmi2Error>, undefined)
+	 	else
+	 		fmi2GetContinuousStates_Impl(c, nx);
+
+
+
+	fmi2GetNominalsOfContinuousStates_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetNominalsOfContinuousStates_Impl(c, nx) ==
+		is not yet specified
+	pre
+		c.fmuState = <EVENT_MODE>
+		and nx = card c.continuousTimeStates;	-- ??
+
+	fmi2GetNominalsOfContinuousStates: fmi2Component * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetNominalsOfContinuousStates(c, nx) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2GetNominalsOfContinuousStates in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, undefined)
+		elseif nx <> card c.continuousTimeStates
+		then -- @Printf("Wrong number of derivates requested, expecting %s\n", card c.continuousTimeStates)
+			mk_(<fmi2Error>, undefined)
+	 	else
+	 		fmi2GetNominalsOfContinuousStates_Impl(c, nx);
+	

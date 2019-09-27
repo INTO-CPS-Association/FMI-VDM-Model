@@ -31,17 +31,50 @@
  * 4.2.2 Computation
  */
 functions
-	fmi2DoStep: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * fmi2Component
-	fmi2DoStep(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
+	/**
+	 * Implementation of fmi2DoStep. See API method below.
+	 */
+	fmi2DoStep_Impl: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * fmi2Component
+	fmi2DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
 		mk_(<fmi2OK>, c)	-- TODO!
 	pre
 		c.fmuState = <STEP_COMPLETE>
 		and communicationStepSize > 0.0;
-		-- and more...!
+		-- TODO more...!
 
-	fmi2CancelStep: fmi2Component +> fmi2Status
-	fmi2CancelStep(c) ==
+	/**
+	 * The fmi2DoStep API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning an fmi2Status if any checks fail.
+	 */
+	fmi2DoStep: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * fmi2Component
+	fmi2DoStep(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
+		if c.fmuState <> <STEP_COMPLETE>
+		then -- @Printf("Cannot call fmi2DoStep in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, c)
+		elseif communicationStepSize <= 0.0
+		then -- @Printf("Communication step size must be >0\n")
+			mk_(<fmi2Error>, c)
+		else
+			fmi2DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint);
+
+
+	/**
+	 * Implementation of fmi2CancelStep. See API method below.
+	 */
+	fmi2CancelStep_Impl: fmi2Component +> fmi2Status
+	fmi2CancelStep_Impl(c) ==
 		is not yet specified
 	pre
 		c.fmuState = <STEP_IN_PROGRESS>;
 
+	/**
+	 * The fmi2CancelStep API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning an fmi2Status if any checks fail.
+	 */
+	fmi2CancelStep: fmi2Component +> fmi2Status
+	fmi2CancelStep(c) ==
+		if c.fmuState <> <STEP_COMPLETE>
+		then -- @Printf("Cannot call fmi2CancelStep in state %s\n", c.fmuState)
+			<fmi2Error>
+	 	else
+	 		fmi2CancelStep_Impl(c);
