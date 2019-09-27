@@ -40,11 +40,13 @@ types
 	inv f ==
 		isValidFMIModelDescription(f.componentEnvironment);
 
-
 functions
-	fmi2Instantiate: fmi2String * fmi2Type * fmi2String * fmi2String *
-					 fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> [fmi2Component]
-	fmi2Instantiate(instanceName, fmuType, fmuGUID, -/*fmuResourceLocation*/, callbacks, -/*visible*/, loggingOn) ==
+	/**
+	 * Implementation of fmi2Instantiate. See API method below.
+	 */
+	fmi2Instantiate_Impl: fmi2String * fmi2Type * fmi2String * fmi2String *
+					 fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> fmi2Component
+	fmi2Instantiate_Impl(instanceName, fmuType, fmuGUID, -/*fmuResourceLocation*/, callbacks, -/*visible*/, loggingOn) ==
 		let eModelVariables = effectiveScalarVariables(callbacks.componentEnvironment),
 			initialUnknowns = nilSeq[Unknown](callbacks.componentEnvironment.modelStructure.initialUnknowns)
 		in
@@ -85,14 +87,57 @@ functions
 		and RESULT.fmuType = fmuType;
 
 
-	fmi2FreeInstance: fmi2Component +> ?
-	fmi2FreeInstance(c) ==
-		nil
+	/**
+	 * The fmi2Instantiate API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning nil if any checks fail.
+	 */
+	fmi2Instantiate: fmi2String * fmi2Type * fmi2String * fmi2String *
+					 fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> [fmi2Component]
+	fmi2Instantiate(instanceName, fmuType, fmuGUID, fmuResourceLocation, callbacks, visible, loggingOn) ==
+		if instanceName = ""
+		then -- @Printf("fmi2Instantiate instanceName cannot be empty\n")
+			nil
+		elseif fmuGUID <> callbacks.componentEnvironment.attributes.guid
+		then -- @Printf("fmi2Instantiate fmuGUID does not match XML configuration\n")
+			nil
+		elseif fmuType = <fmi2CoSimulation> and callbacks.componentEnvironment.coSimulation = nil
+		then --@Printf("CoSimulation FMU must defined CoSimulation XML configuration\n")
+			nil
+		elseif fmuType = <fmi2ModelExchange> and callbacks.componentEnvironment.modelExchange = nil
+		then -- @Printf("ModelExchange FMU must define ModelExchange XML configuration\n")
+			nil
+		else
+			fmi2Instantiate_Impl(instanceName, fmuType, fmuGUID, fmuResourceLocation, callbacks, visible, loggingOn);
+
+
+	/**
+	 * Implementation of fmi2FreeInstance. See API method below.
+	 */
+	fmi2FreeInstance_Impl: fmi2Component +> <VOID>
+	fmi2FreeInstance_Impl(c) ==
+		<VOID>
 	pre
 		c.fmuState not in set {<START>, <END>};
 
-	fmi2SetDebugLogging: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status * fmi2Component
-	fmi2SetDebugLogging(c, loggingOn, nCategories, categories) ==
+	/**
+	 * The fmi2FreeInstance API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning <VOID> if any checks fail.
+	 */
+	fmi2FreeInstance: fmi2Component +> <VOID>
+	fmi2FreeInstance(c) ==
+		if c.fmuState in set {<START>, <END>}
+		then -- @Printf("Cannot call fmi2FreeInstance in state %s\n", c.fmuState)
+			<VOID>
+		else
+			fmi2FreeInstance_Impl(c);
+
+
+
+	/**
+	 * Implementation of fmi2SetDebugLogging. See API method below.
+	 */
+	fmi2SetDebugLogging_Impl: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status * fmi2Component
+	fmi2SetDebugLogging_Impl(c, loggingOn, nCategories, categories) ==
 		mk_(<fmi2OK>,
 			mu(c, logCategories |->
 				if loggingOn
@@ -106,11 +151,32 @@ functions
 		and nCategories = len categories
 		and card elems categories = nCategories
 		and (nCategories > 0 =>
-			c.logCategories <> nil
-			and let logcats = c.callbacks.componentEnvironment.logCategories in
+			let logcats = c.callbacks.componentEnvironment.logCategories in
 				logcats <> nil
 				and forall cname in seq categories &
 					exists lc in seq logcats &
 						lc.name = cname)
 	post
 		RESULT.#2.logCategories = if loggingOn then elems categories else nil;
+
+	/**
+	 * The fmi2FreeInstance API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning <VOID> if any checks fail.
+	 */
+	fmi2SetDebugLogging: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status * fmi2Component
+	fmi2SetDebugLogging(c, loggingOn, nCategories, categories) ==
+		if c.fmuState in set {<START>, <END>}
+		then -- @Printf("Cannot call fmi2SetDebugLogging in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, c)
+		elseif nCategories <> len categories or card elems categories <> nCategories
+		then -- @Printf("nCategories does not match categories length\n")
+			mk_(<fmi2Error>, c)
+		else let logcats = c.callbacks.componentEnvironment.logCategories in
+			if nCategories > 0 and logcats = nil
+			then -- @Printf("No log categories defined in XML configuration\n")
+				mk_(<fmi2Error>, c)
+			elseif exists cname in seq categories & not exists lc in seq logcats & lc.name = cname
+			then -- @Printf("Some log categories not found in XML configuration\n")
+				mk_(<fmi2Error>, c)
+			else
+				fmi2SetDebugLogging_Impl(c, loggingOn, nCategories, categories);
