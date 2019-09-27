@@ -43,7 +43,7 @@ types
 
 functions
 	fmi2Instantiate: fmi2String * fmi2Type * fmi2String * fmi2String *
-					 fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> fmi2Component
+					 fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> [fmi2Component]
 	fmi2Instantiate(instanceName, fmuType, fmuGUID, -/*fmuResourceLocation*/, callbacks, -/*visible*/, loggingOn) ==
 		let eModelVariables = effectiveScalarVariables(callbacks.componentEnvironment),
 			initialUnknowns = nilSeq[Unknown](callbacks.componentEnvironment.modelStructure.initialUnknowns)

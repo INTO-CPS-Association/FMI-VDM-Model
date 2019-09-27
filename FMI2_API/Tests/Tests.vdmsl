@@ -55,9 +55,10 @@ operations
 		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, springMassDamper) in
 		let startTime : real = 0, endTime : real = 1000 in
 		(
-			dcl c : fmi2Component;
-
-			c := fmi2Instantiate("test", <fmi2CoSimulation>, "GUID", "", callbacks, false, true);
+			dcl c : [fmi2Component] := fmi2Instantiate("test", <fmi2CoSimulation>, "GUID", "", callbacks, false, true);
+			
+			if c = nil
+			then exit "Cannot instantiate FMU";
 
 			let mk_(s, c2) = fmi2SetDebugLogging(c, true, 1, ["debug"]) in
 				if s <> <fmi2OK>
