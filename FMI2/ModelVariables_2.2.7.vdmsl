@@ -531,7 +531,7 @@ functions
 		{ sv | sv in seq svs & isStateDerivative(sv) };
 
 	/**
-	 * Test ith index variabel as a state derivative.
+	 * Test ScalarVariable as a state derivative.
 	 */
 	isStateDerivative: ScalarVariable +> bool
 	isStateDerivative(sv) ==
