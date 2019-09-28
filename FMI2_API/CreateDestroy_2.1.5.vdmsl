@@ -179,4 +179,6 @@ functions
 			then -- @Printf("Some log categories not found in XML configuration\n")
 				mk_(<fmi2Error>, c)
 			else
-				fmi2SetDebugLogging_Impl(c, loggingOn, nCategories, categories);
+				fmi2SetDebugLogging_Impl(c, loggingOn, nCategories, categories)
+	post
+		RESULT.#1 <> <fmi2OK> => RESULT.#2 = c;	-- Unchanged state for errors
