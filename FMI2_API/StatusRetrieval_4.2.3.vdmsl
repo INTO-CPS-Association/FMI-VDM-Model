@@ -34,32 +34,91 @@ types
 	fmi2StatusKind = <fmi2DoStepStatus> | <fmi2PendingStatus> | <fmi2LastSuccessfulTime> | <fmi2Terminated>;
 
 functions
-	fmi2GetStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Status
+	/**
+	 * Implementation and API for fmi2GetStatus.
+	 */
+	fmi2GetStatus_Impl: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Status
+	fmi2GetStatus_Impl(c, s) ==
+		is not yet specified
+	pre
+		c.fmuState = <EVENT_MODE>;
+
+	fmi2GetStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Status]
 	fmi2GetStatus(c, s) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2GetStatus in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		else
+			fmi2GetStatus_Impl(c, s);
+
+
+	/**
+	 * Implementation and API for fmi2GetRealStatus.
+	 */
+	fmi2GetRealStatus_Impl: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Real
+	fmi2GetRealStatus_Impl(c, s) ==
 		is not yet specified
 	pre
 		c.fmuState = <EVENT_MODE>;
 
-	fmi2GetRealStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Real
+	fmi2GetRealStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Real]
 	fmi2GetRealStatus(c, s) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2GetRealStatus in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		else
+			fmi2GetRealStatus_Impl(c, s);
+
+
+	/**
+	 * Implementation and API for fmi2GetIntegerStatus.
+	 */
+	fmi2GetIntegerStatus_Impl: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Integer
+	fmi2GetIntegerStatus_Impl(c, s) ==
 		is not yet specified
 	pre
 		c.fmuState = <EVENT_MODE>;
 
-	fmi2GetIntegerStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Integer
+	fmi2GetIntegerStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Integer]
 	fmi2GetIntegerStatus(c, s) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2GetIntegerStatus in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		else
+			fmi2GetIntegerStatus_Impl(c, s);
+
+
+	/**
+	 * Implementation and API for fmi2GetBooleanStatus.
+	 */
+	fmi2GetBooleanStatus_Impl: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Boolean
+	fmi2GetBooleanStatus_Impl(c, s) ==
 		is not yet specified
 	pre
 		c.fmuState = <EVENT_MODE>;
 
-	fmi2GetBooleanStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Boolean
+	fmi2GetBooleanStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Boolean]
 	fmi2GetBooleanStatus(c, s) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2GetBooleanStatus in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		else
+			fmi2GetBooleanStatus_Impl(c, s);
+
+
+	/**
+	 * Implementation and API for fmi2GetStringStatus.
+	 */
+	fmi2GetStringStatus_Impl: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2String
+	fmi2GetStringStatus_Impl(c, s) ==
 		is not yet specified
 	pre
 		c.fmuState = <EVENT_MODE>;
 
-	fmi2GetStringStatus: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2String
+	fmi2GetStringStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2String]
 	fmi2GetStringStatus(c, s) ==
-		is not yet specified
-	pre
-		c.fmuState = <EVENT_MODE>;
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2GetStringStatus in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		else
+			fmi2GetStringStatus_Impl(c, s);

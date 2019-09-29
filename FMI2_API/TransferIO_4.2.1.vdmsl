@@ -31,9 +31,12 @@
  * 4.2.1 Transfer of Input / Output Values and Parameters
  */
 functions
-	fmi2SetRealInputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
+	/**
+	 * Implementation and API for fmi2GetStringStatus.
+	 */
+	fmi2SetRealInputDerivatives_Impl: fmi2Component * seq of fmi2ValueReference * nat *
 								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status
-	fmi2SetRealInputDerivatives(c, vr, nvr, order, value) ==
+	fmi2SetRealInputDerivatives_Impl(c, vr, nvr, order, value) ==
 		is not yet specified
 	pre
 		c.fmuState = <EVENT_MODE>
@@ -42,9 +45,28 @@ functions
 		and nvr = len order
 		and forall o in seq order & o > 0;
 
-	fmi2GetRealOutputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
+	fmi2SetRealInputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
+								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status
+	fmi2SetRealInputDerivatives(c, vr, nvr, order, value) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2SetRealInputDerivatives in state %s\n", c.fmuState)
+			<fmi2Error>
+		elseif nvr <> len vr or nvr <> len value or nvr <> len order
+		then -- @Printf("nvr, vr, value and order are not consistent")
+			<fmi2Error>
+		elseif exists o in seq order & o <= 0
+		then -- @Printf("Order entries must all be >0")
+			<fmi2Error>
+		else
+			fmi2SetRealInputDerivatives_Impl(c, vr, nvr, order, value);
+
+
+	/**
+	 * Implementation and API for fmi2GetRealOutputDerivatives.
+	 */
+	fmi2GetRealOutputDerivatives_Impl: fmi2Component * seq of fmi2ValueReference * nat *
 								  seq of fmi2Integer +> fmi2Status * seq of fmi2Real
-	fmi2GetRealOutputDerivatives(c, vr, nvr, order) ==
+	fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order) ==
 		is not yet specified
 	pre
 		c.fmuState = <EVENT_MODE>
@@ -53,3 +75,18 @@ functions
 		and forall o in seq order & o > 0
 	post
 		RESULT.#1 = <fmi2OK> => nvr = len RESULT.#2;
+
+	fmi2GetRealOutputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
+								  seq of fmi2Integer +> fmi2Status * [seq of fmi2Real]
+	fmi2GetRealOutputDerivatives(c, vr, nvr, order) ==
+		if c.fmuState <> <EVENT_MODE>
+		then -- @Printf("Cannot call fmi2GetRealOutputDerivatives in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		elseif nvr <> len vr or nvr <> len order
+		then -- @Printf("nvr, vr and order are not consistent")
+			mk_(<fmi2Error>, nil)
+		elseif exists o in seq order & o <= 0
+		then -- @Printf("Order entries must all be >0")
+			mk_(<fmi2Error>, nil)
+		else
+			fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order);

@@ -40,38 +40,104 @@ functions
 		or c.fmuType = <fmi2ModelExchange> and c.callbacks.componentEnvironment.modelExchange.canGetAndSetFMUstate)
 		and c.fmuState = <EVENT_MODE>;
 
-	fmi2GetFMUstate: fmi2Component +> fmi2Status * fmi2FMUState
+	/**
+	 * Implementation and API for fmi2GetFMUstate.
+	 */
+	fmi2GetFMUstate_Impl: fmi2Component +> fmi2Status * fmi2FMUState
+	fmi2GetFMUstate_Impl(c) ==
+		is not yet specified
+	pre
+		canDoGetSetState(c);
+
+	fmi2GetFMUstate: fmi2Component +> fmi2Status * [fmi2FMUState]
 	fmi2GetFMUstate(c) ==
+		if not canDoGetSetState(c)
+		then -- @Printf("Can't call get/set state")
+			mk_(<fmi2Error>, nil)
+		else fmi2GetFMUstate_Impl(c);
+			
+
+	/**
+	 * Implementation and API for fmi2SetFMUstate.
+	 */
+	fmi2SetFMUstate_Impl: fmi2Component * fmi2FMUState +> fmi2Status * fmi2Component
+	fmi2SetFMUstate_Impl(c, FMUstate) ==
 		is not yet specified
 	pre
 		canDoGetSetState(c);
 
 	fmi2SetFMUstate: fmi2Component * fmi2FMUState +> fmi2Status * fmi2Component
 	fmi2SetFMUstate(c, FMUstate) ==
+		if not canDoGetSetState(c)
+		then -- @Printf("Can't call get/set state")
+			mk_(<fmi2Error>, c)
+		else fmi2SetFMUstate_Impl(c, FMUstate);
+
+
+	/**
+	 * Implementation and API for fmi2FreeFMUstate.
+	 */
+	fmi2FreeFMUstate_Impl: fmi2Component * fmi2FMUState +> fmi2Status
+	fmi2FreeFMUstate_Impl(c, FMUstate) ==
 		is not yet specified
 	pre
 		canDoGetSetState(c);
 
 	fmi2FreeFMUstate: fmi2Component * fmi2FMUState +> fmi2Status
 	fmi2FreeFMUstate(c, FMUstate) ==
+		if not canDoGetSetState(c)
+		then -- @Printf("Can't call get/set state")
+			<fmi2Error>
+		else fmi2FreeFMUstate_Impl(c, FMUstate);
+
+
+	/**
+	 * Implementation and API for fmi2SerializedFMUstateSize.
+	 */
+	fmi2SerializedFMUstateSize_Impl: fmi2Component * fmi2FMUState +> fmi2Status * nat
+	fmi2SerializedFMUstateSize_Impl(c, FMUstate) ==
 		is not yet specified
 	pre
 		canDoGetSetState(c);
 
-	fmi2SerializedFMUstateSize: fmi2Component * fmi2FMUState +> fmi2Status * nat
+	fmi2SerializedFMUstateSize: fmi2Component * fmi2FMUState +> fmi2Status * [nat]
 	fmi2SerializedFMUstateSize(c, FMUstate) ==
+		if not canDoGetSetState(c)
+		then -- @Printf("Can't call get/set state")
+			mk_(<fmi2Error>, nil)
+		else fmi2SerializedFMUstateSize_Impl(c, FMUstate);
+
+
+	/**
+	 * Implementation and API for fmi2SerializeFMUstate.
+	 */
+	fmi2SerializeFMUstate_Impl: fmi2Component * fmi2FMUState * token * nat +> fmi2Status * token
+	fmi2SerializeFMUstate_Impl(c, FMUstate, serializedState, size) ==
 		is not yet specified
 	pre
 		canDoGetSetState(c);
 
-	fmi2SerializeFMUstate: fmi2Component * fmi2FMUState * token * nat +> fmi2Status * token
+	fmi2SerializeFMUstate: fmi2Component * fmi2FMUState * token * nat +> fmi2Status * [token]
 	fmi2SerializeFMUstate(c, FMUstate, serializedState, size) ==
+		if not canDoGetSetState(c)
+		then -- @Printf("Can't call get/set state")
+			mk_(<fmi2Error>, nil)
+		else fmi2SerializeFMUstate_Impl(c, FMUstate, serializedState, size);
+
+
+	/**
+	 * Implementation and API for fmi2DeSerializeFMUstate.
+	 */
+	fmi2DeSerializeFMUstate_Impl: fmi2Component * token * nat +> fmi2Status * fmi2FMUState
+	fmi2DeSerializeFMUstate_Impl(c, serializedState, size) ==
 		is not yet specified
 	pre
 		canDoGetSetState(c);
 
-	fmi2DeSerializeFMUstate: fmi2Component * token * nat +> fmi2Status * fmi2FMUState
+	fmi2DeSerializeFMUstate: fmi2Component * token * nat +> fmi2Status * [fmi2FMUState]
 	fmi2DeSerializeFMUstate(c, serializedState, size) ==
-		is not yet specified
-	pre
-		canDoGetSetState(c);
+		if not canDoGetSetState(c)
+		then -- @Printf("Can't call get/set state")
+			mk_(<fmi2Error>, nil)
+		else fmi2DeSerializeFMUstate_Impl(c, serializedState, size);
+	

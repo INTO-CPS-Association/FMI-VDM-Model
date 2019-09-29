@@ -132,7 +132,6 @@ functions
 			fmi2FreeInstance_Impl(c);
 
 
-
 	/**
 	 * Implementation of fmi2SetDebugLogging. See API method below.
 	 */

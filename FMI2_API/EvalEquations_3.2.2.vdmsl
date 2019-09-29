@@ -42,6 +42,9 @@ types
 		info == info.nextEventTimeDefined <=> info.nextEventTime <> nil;
 
 functions
+	/**
+	 * Implementation and API for fmi2EnterEventMode.
+	 */
 	fmi2EnterEventMode_Impl: fmi2Component +> fmi2Status
 	fmi2EnterEventMode_Impl(c) ==
 		is not yet specified
@@ -59,7 +62,9 @@ functions
 	 		fmi2EnterEventMode_Impl(c);
 
 
-
+	/**
+	 * Implementation and API for fmi2NewDiscreteStates.
+	 */
 	fmi2NewDiscreteStates_Impl: fmi2Component * fmi2EventInfo +> fmi2Status
 	fmi2NewDiscreteStates_Impl(c, fmi2eventInfo) ==
 		is not yet specified
@@ -75,7 +80,9 @@ functions
 	 		fmi2NewDiscreteStates_Impl(c, fmi2eventInfo);
 
 
-
+	/**
+	 * Implementation and API for fmi2EnterContinuousTimeMode.
+	 */
 	fmi2EnterContinuousTimeMode_Impl: fmi2Component +> fmi2Status * fmi2Component
 	fmi2EnterContinuousTimeMode_Impl(c) ==
 		is not yet specified
@@ -95,7 +102,9 @@ functions
 	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
 
 
-
+	/**
+	 * Implementation and API for fmi2CompletedIntegratorStep.
+	 */
 	fmi2CompletedIntegratorStep_Impl: fmi2Component * fmi2Boolean +> fmi2Status * fmi2Boolean * fmi2Boolean
 	fmi2CompletedIntegratorStep_Impl(c, noSetFMUStatePriorToCurrentPoint) ==
 		is not yet specified
@@ -113,7 +122,9 @@ functions
 	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil and RESULT.#3 <> nil;
 
 
-
+	/**
+	 * Implementation and API for fmi2GetDerivatives.
+	 */
 	fmi2GetDerivatives_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetDerivatives_Impl(c, nx) ==
 		is not yet specified
@@ -135,7 +146,9 @@ functions
 	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
 
 
-
+	/**
+	 * Implementation and API for fmi2GetEventIndicators.
+	 */
 	fmi2GetEventIndicators_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetEventIndicators_Impl(c, ni) ==
 		is not yet specified
@@ -153,7 +166,9 @@ functions
 	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
 
 
-
+	/**
+	 * Implementation and API for fmi2GetContinuousStates.
+	 */
 	fmi2GetContinuousStates_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetContinuousStates_Impl(c, nx) ==
 		is not yet specified
@@ -175,7 +190,9 @@ functions
 	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
 
 
-
+	/**
+	 * Implementation and API for fmi2GetNominalsOfContinuousStates.
+	 */
 	fmi2GetNominalsOfContinuousStates_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetNominalsOfContinuousStates_Impl(c, nx) ==
 		is not yet specified

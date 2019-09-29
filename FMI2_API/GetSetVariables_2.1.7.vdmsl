@@ -79,10 +79,11 @@ functions
 				others -> undefined
 			end;
 
-	-- GetXXX functions
-
-	fmi2GetReal: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Real
-	fmi2GetReal(c, vrs, nvr) ==
+	/**
+	 * Implementation and API for fmi2GetReal.
+	 */
+	fmi2GetReal_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetReal_Impl(c, vrs, nvr) ==
 		is not yet specified
 	pre
 		len vrs = nvr and
@@ -91,8 +92,48 @@ functions
 		RESULT.#1 = <fmi2OK> =>
 			len RESULT.#2 = nvr;
 
-	fmi2GetInteger: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Integer
+	fmi2GetReal: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Real]
+	fmi2GetReal(c, vrs, nvr) ==
+		if len vrs <> nvr
+		then -- @Printf("vrs and nvr do not match")
+			mk_(<fmi2Error>, nil)
+		elseif not generalGetPrecondition(c, vrs)
+		then -- @Printf("Get preconditions failed")
+			mk_(<fmi2Error>, nil)
+		else
+			fmi2GetReal_Impl(c, vrs, nvr);
+
+
+	/**
+	 * Implementation and API for fmi2GetInteger.
+	 */
+	fmi2GetInteger_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Integer
+	fmi2GetInteger_Impl(c, vrs, nvr) ==
+		is not yet specified
+	pre
+		len vrs = nvr and
+		generalGetPrecondition(c, vrs)
+	post
+		RESULT.#1 <> <fmi2Discard>
+		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
+
+	fmi2GetInteger: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Integer]
 	fmi2GetInteger(c, vrs, nvr) ==
+		if len vrs <> nvr
+		then -- @Printf("vrs and nvr do not match")
+			mk_(<fmi2Error>, nil)
+		elseif not generalGetPrecondition(c, vrs)
+		then -- @Printf("Get preconditions failed")
+			mk_(<fmi2Error>, nil)
+		else
+			fmi2GetInteger_Impl(c, vrs, nvr);
+
+
+	/**
+	 * Implementation and API for fmi2GetBoolean.
+	 */
+	fmi2GetBoolean_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Boolean
+	fmi2GetBoolean_Impl(c, vrs, nvr) ==
 		is not yet specified
 	pre
 		len vrs = nvr and
@@ -101,8 +142,23 @@ functions
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
 
-	fmi2GetBoolean: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Boolean
+	fmi2GetBoolean: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Boolean]
 	fmi2GetBoolean(c, vrs, nvr) ==
+		if len vrs <> nvr
+		then -- @Printf("vrs and nvr do not match")
+			mk_(<fmi2Error>, nil)
+		elseif not generalGetPrecondition(c, vrs)
+		then -- @Printf("Get preconditions failed")
+			mk_(<fmi2Error>, nil)
+		else
+			fmi2GetBoolean_Impl(c, vrs, nvr);
+
+
+	/**
+	 * Implementation and API for fmi2GetString.
+	 */
+	fmi2GetString_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2String
+	fmi2GetString_Impl(c, vrs, nvr) ==
 		is not yet specified
 	pre
 		len vrs = nvr and
@@ -111,20 +167,48 @@ functions
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
 
-	fmi2GetString: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2String
+	fmi2GetString: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2String]
 	fmi2GetString(c, vrs, nvr) ==
+		if len vrs <> nvr
+		then -- @Printf("vrs and nvr do not match")
+			mk_(<fmi2Error>, nil)
+		elseif not generalGetPrecondition(c, vrs)
+		then -- @Printf("Get preconditions failed")
+			mk_(<fmi2Error>, nil)
+		else
+			fmi2GetString_Impl(c, vrs, nvr);
+
+
+	/**
+	 * Implementation and API for fmi2SetReal.
+	 */
+	fmi2SetReal_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status
+	fmi2SetReal_Impl(c, vrs, nvr, value) ==
 		is not yet specified
 	pre
-		len vrs = nvr and
-		generalGetPrecondition(c, vrs)
-	post
-		RESULT.#1 <> <fmi2Discard>
-		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
-
-	-- SetXXX functions
+		len vrs = nvr and len vrs = len value
+		and generalSetPrecondition(c, vrs);
 
 	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status
 	fmi2SetReal(c, vrs, nvr, value) ==
+		if len vrs <> nvr
+		then -- @Printf("vrs and nvr do not match")
+			<fmi2Error>
+		elseif len vrs <> len value
+		then -- @Printf("vrs and value do not match")
+			<fmi2Error>
+		elseif not generalSetPrecondition(c, vrs)
+		then -- @Printf("Set preconditions failed")
+			<fmi2Error>
+		else
+			fmi2SetReal_Impl(c, vrs, nvr, value);
+
+
+	/**
+	 * Implementation and API for fmi2SetInteger.
+	 */
+	fmi2SetInteger_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status
+	fmi2SetInteger_Impl(c, vrs, nvr, value) ==
 		is not yet specified
 	pre
 		len vrs = nvr and len vrs = len value
@@ -132,6 +216,24 @@ functions
 
 	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status
 	fmi2SetInteger(c, vrs, nvr, value) ==
+		if len vrs <> nvr
+		then -- @Printf("vrs and nvr do not match")
+			<fmi2Error>
+		elseif len vrs <> len value
+		then -- @Printf("vrs and value do not match")
+			<fmi2Error>
+		elseif not generalSetPrecondition(c, vrs)
+		then -- @Printf("Set preconditions failed")
+			<fmi2Error>
+		else
+			fmi2SetInteger_Impl(c, vrs, nvr, value);
+
+
+	/**
+	 * Implementation and API for fmi2SetBoolean.
+	 */
+	fmi2SetBoolean_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status
+	fmi2SetBoolean_Impl(c, vrs, nvr, value) ==
 		is not yet specified
 	pre
 		len vrs = nvr and len vrs = len value
@@ -139,6 +241,24 @@ functions
 
 	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status
 	fmi2SetBoolean(c, vrs, nvr, value) ==
+		if len vrs <> nvr
+		then -- @Printf("vrs and nvr do not match")
+			<fmi2Error>
+		elseif len vrs <> len value
+		then -- @Printf("vrs and value do not match")
+			<fmi2Error>
+		elseif not generalSetPrecondition(c, vrs)
+		then -- @Printf("Set preconditions failed")
+			<fmi2Error>
+		else
+			fmi2SetBoolean_Impl(c, vrs, nvr, value);
+
+
+	/**
+	 * Implementation and API for fmi2SetString.
+	 */
+	fmi2SetString_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status
+	fmi2SetString_Impl(c, vrs, nvr, value) ==
 		is not yet specified
 	pre
 		len vrs = nvr and len vrs = len value
@@ -146,7 +266,15 @@ functions
 
 	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status
 	fmi2SetString(c, vrs, nvr, value) ==
-		is not yet specified
-	pre
-		len vrs = nvr and len vrs = len value
-		and generalSetPrecondition(c, vrs);
+		if len vrs <> nvr
+		then -- @Printf("vrs and nvr do not match")
+			<fmi2Error>
+		elseif len vrs <> len value
+		then -- @Printf("vrs and value do not match")
+			<fmi2Error>
+		elseif not generalSetPrecondition(c, vrs)
+		then -- @Printf("Set preconditions failed")
+			<fmi2Error>
+		else
+			fmi2SetString_Impl(c, vrs, nvr, value);
+	

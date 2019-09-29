@@ -31,19 +31,41 @@
  * 3.2.1 Providing Independent Variables and Re-initialization of Caching
  */
 functions
-	fmi2SetTime:fmi2Component * fmi2Real +> fmi2Status * fmi2Component
+	/**
+	 * Implementation and API for fmi2SetTime.
+	 */
+	fmi2SetTime_Impl: fmi2Component * fmi2Real +> fmi2Status * fmi2Component
+	fmi2SetTime_Impl(c, time) ==
+		is not yet specified
+	pre
+		c.fmuState = <INITIALIZATION>
+	post
+		RESULT.#2.fmuState = <INITIALIZATION>;
+
+	fmi2SetTime: fmi2Component * fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetTime(c, time) ==
+		if c.fmuState <> <INITIALIZATION>
+		then -- @Printf("Cannot call fmi2SetTime in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, c)
+		else
+			fmi2SetTime_Impl(c, time);
+
+
+	/**
+	 * Implementation and API for fmi2SetContinuousStates.
+	 */
+	fmi2SetContinuousStates_Impl: fmi2Component * seq of fmi2Real * nat +> fmi2Status * fmi2Component
+	fmi2SetContinuousStates_Impl(c, x, nx) ==
 		is not yet specified
 	pre
 		c.fmuState = <INITIALIZATION>
 	post
 		RESULT.#2.fmuState = <INITIALIZATION>;
 
-
-	fmi2SetContinuousStates:fmi2Component * seq of fmi2Real * nat +> fmi2Status * fmi2Component
+	fmi2SetContinuousStates: fmi2Component * seq of fmi2Real * nat +> fmi2Status * fmi2Component
 	fmi2SetContinuousStates(c, x, nx) ==
-		is not yet specified
-	pre
-		c.fmuState = <INITIALIZATION>
-	post
-		RESULT.#2.fmuState = <INITIALIZATION>;
+		if c.fmuState <> <INITIALIZATION>
+		then -- @Printf("Cannot call fmi2SetContinuousStates in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, c)
+		else
+			fmi2SetContinuousStates_Impl(c, x, nx);
