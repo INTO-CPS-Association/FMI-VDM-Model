@@ -142,9 +142,16 @@ functions
 
 			(
 				md.attributes.variableNamingConvention = <structured> =>
+					dunion
 					{
-						-- @OnFail("2.2.9 Structured name %s invalid at line %s", sv.name, sv.location)
-						( isValidStructuredName(sv.name) )
+						{
+							-- @OnFail("2.2.9 Structured name %s invalid at line %s", sv.name, sv.location)
+							( isValidStructuredName(sv.name) ),
+	
+							-- @OnFail("2.2.9 'der' structured name is not a derivative")
+							( sv.name(1, ..., 4) = "der(" =>
+								is_Real(sv.variable) and sv.variable.derivative <> nil )
+						}
 
 						| sv in seq eModelVariables
 					}
