@@ -52,10 +52,10 @@ functions
 		then -- @Printf("Cannot call fmi2SetRealInputDerivatives in state %s\n", c.fmuState)
 			<fmi2Error>
 		elseif nvr <> len vr or nvr <> len value or nvr <> len order
-		then -- @Printf("nvr, vr, value and order are not consistent")
+		then -- @Printf("nvr, vr, value and order are not consistent\n")
 			<fmi2Error>
 		elseif exists o in seq order & o <= 0
-		then -- @Printf("Order entries must all be >0")
+		then -- @Printf("Order entries must all be >0\n")
 			<fmi2Error>
 		else
 			fmi2SetRealInputDerivatives_Impl(c, vr, nvr, order, value);
@@ -83,10 +83,13 @@ functions
 		then -- @Printf("Cannot call fmi2GetRealOutputDerivatives in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		elseif nvr <> len vr or nvr <> len order
-		then -- @Printf("nvr, vr and order are not consistent")
+		then -- @Printf("nvr, vr and order are not consistent\n")
 			mk_(<fmi2Error>, nil)
 		elseif exists o in seq order & o <= 0
-		then -- @Printf("Order entries must all be >0")
+		then -- @Printf("Order entries must all be >0\n")
 			mk_(<fmi2Error>, nil)
 		else
-			fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order);
+			fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
+			

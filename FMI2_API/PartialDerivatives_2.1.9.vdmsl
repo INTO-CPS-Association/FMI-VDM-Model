@@ -50,5 +50,7 @@ functions
 		then -- @Printf("Cannot call fmi2GetDirectionalDerivative in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else
-			fmi2GetDirectionalDerivative_Impl(c, vUnknown_ref, uUnknown, vKnown_ref, nKnown, dvKnown);
-	
+			fmi2GetDirectionalDerivative_Impl(c, vUnknown_ref, uUnknown, vKnown_ref, nKnown, dvKnown)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
+			

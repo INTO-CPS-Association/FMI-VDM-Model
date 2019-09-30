@@ -49,7 +49,9 @@ functions
 		then -- @Printf("Cannot call fmi2GetStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else
-			fmi2GetStatus_Impl(c, s);
+			fmi2GetStatus_Impl(c, s)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**
@@ -67,7 +69,9 @@ functions
 		then -- @Printf("Cannot call fmi2GetRealStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else
-			fmi2GetRealStatus_Impl(c, s);
+			fmi2GetRealStatus_Impl(c, s)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**
@@ -85,7 +89,9 @@ functions
 		then -- @Printf("Cannot call fmi2GetIntegerStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else
-			fmi2GetIntegerStatus_Impl(c, s);
+			fmi2GetIntegerStatus_Impl(c, s)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**
@@ -103,7 +109,9 @@ functions
 		then -- @Printf("Cannot call fmi2GetBooleanStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else
-			fmi2GetBooleanStatus_Impl(c, s);
+			fmi2GetBooleanStatus_Impl(c, s)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**
@@ -121,4 +129,7 @@ functions
 		then -- @Printf("Cannot call fmi2GetStringStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else
-			fmi2GetStringStatus_Impl(c, s);
+			fmi2GetStringStatus_Impl(c, s)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
+			

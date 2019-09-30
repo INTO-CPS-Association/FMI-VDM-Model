@@ -48,7 +48,9 @@ functions
 		then -- @Printf("Cannot call fmi2SetTime in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		else
-			fmi2SetTime_Impl(c, time);
+			fmi2SetTime_Impl(c, time)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
 
 
 	/**
@@ -68,4 +70,7 @@ functions
 		then -- @Printf("Cannot call fmi2SetContinuousStates in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		else
-			fmi2SetContinuousStates_Impl(c, x, nx);
+			fmi2SetContinuousStates_Impl(c, x, nx)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
+			

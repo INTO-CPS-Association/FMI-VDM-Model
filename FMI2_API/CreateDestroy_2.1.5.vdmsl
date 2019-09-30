@@ -101,7 +101,7 @@ functions
 		then -- @Printf("fmi2Instantiate fmuGUID does not match XML configuration\n")
 			nil
 		elseif fmuType = <fmi2CoSimulation> and callbacks.componentEnvironment.coSimulation = nil
-		then --@Printf("CoSimulation FMU must defined CoSimulation XML configuration\n")
+		then -- @Printf("CoSimulation FMU must defined CoSimulation XML configuration\n")
 			nil
 		elseif fmuType = <fmi2ModelExchange> and callbacks.componentEnvironment.modelExchange = nil
 		then -- @Printf("ModelExchange FMU must define ModelExchange XML configuration\n")

@@ -52,10 +52,13 @@ functions
 	fmi2GetFMUstate: fmi2Component +> fmi2Status * [fmi2FMUState]
 	fmi2GetFMUstate(c) ==
 		if not canDoGetSetState(c)
-		then -- @Printf("Can't call get/set state")
+		then -- @Printf("Can't call get/set state\n")
 			mk_(<fmi2Error>, nil)
-		else fmi2GetFMUstate_Impl(c);
-			
+		else
+			fmi2GetFMUstate_Impl(c)
+	 post
+	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
+
 
 	/**
 	 * Implementation and API for fmi2SetFMUstate.
@@ -69,9 +72,12 @@ functions
 	fmi2SetFMUstate: fmi2Component * fmi2FMUState +> fmi2Status * fmi2Component
 	fmi2SetFMUstate(c, FMUstate) ==
 		if not canDoGetSetState(c)
-		then -- @Printf("Can't call get/set state")
+		then -- @Printf("Can't call get/set state\n")
 			mk_(<fmi2Error>, c)
-		else fmi2SetFMUstate_Impl(c, FMUstate);
+		else
+			fmi2SetFMUstate_Impl(c, FMUstate)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
 
 
 	/**
@@ -86,9 +92,10 @@ functions
 	fmi2FreeFMUstate: fmi2Component * fmi2FMUState +> fmi2Status
 	fmi2FreeFMUstate(c, FMUstate) ==
 		if not canDoGetSetState(c)
-		then -- @Printf("Can't call get/set state")
+		then -- @Printf("Can't call get/set state\n")
 			<fmi2Error>
-		else fmi2FreeFMUstate_Impl(c, FMUstate);
+		else
+			fmi2FreeFMUstate_Impl(c, FMUstate);
 
 
 	/**
@@ -103,9 +110,12 @@ functions
 	fmi2SerializedFMUstateSize: fmi2Component * fmi2FMUState +> fmi2Status * [nat]
 	fmi2SerializedFMUstateSize(c, FMUstate) ==
 		if not canDoGetSetState(c)
-		then -- @Printf("Can't call get/set state")
+		then -- @Printf("Can't call get/set state\n")
 			mk_(<fmi2Error>, nil)
-		else fmi2SerializedFMUstateSize_Impl(c, FMUstate);
+		else
+			fmi2SerializedFMUstateSize_Impl(c, FMUstate)
+	 post
+	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
 
 
 	/**
@@ -120,9 +130,12 @@ functions
 	fmi2SerializeFMUstate: fmi2Component * fmi2FMUState * token * nat +> fmi2Status * [token]
 	fmi2SerializeFMUstate(c, FMUstate, serializedState, size) ==
 		if not canDoGetSetState(c)
-		then -- @Printf("Can't call get/set state")
+		then -- @Printf("Can't call get/set state\n")
 			mk_(<fmi2Error>, nil)
-		else fmi2SerializeFMUstate_Impl(c, FMUstate, serializedState, size);
+		else
+			fmi2SerializeFMUstate_Impl(c, FMUstate, serializedState, size)
+	 post
+	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
 
 
 	/**
@@ -137,7 +150,11 @@ functions
 	fmi2DeSerializeFMUstate: fmi2Component * token * nat +> fmi2Status * [fmi2FMUState]
 	fmi2DeSerializeFMUstate(c, serializedState, size) ==
 		if not canDoGetSetState(c)
-		then -- @Printf("Can't call get/set state")
+		then -- @Printf("Can't call get/set state\n")
 			mk_(<fmi2Error>, nil)
-		else fmi2DeSerializeFMUstate_Impl(c, serializedState, size);
+		else
+			fmi2DeSerializeFMUstate_Impl(c, serializedState, size)
+	 post
+	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
+
 	

@@ -49,10 +49,12 @@ functions
 		then -- @Printf("Cannot call fmi2SetupExperiment in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		elseif stopTimeDefined and stopTime <= startTime
-		then -- @Printf("stopTime is not > startTime")
+		then -- @Printf("stopTime is not > startTime\n")
 			mk_(<fmi2Error>, c)
 		else
-			fmi2SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime);
+			fmi2SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
 
 
 	/**
@@ -72,7 +74,9 @@ functions
 		then -- @Printf("Cannot call fmi2EnterInitializationMode in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		else
-			fmi2EnterInitializationMode_Impl(c);
+			fmi2EnterInitializationMode_Impl(c)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
 
 
 	/**
@@ -98,7 +102,9 @@ functions
 		then -- @Printf("Cannot call fmi2ExitInitializationMode in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		else
-			fmi2ExitInitializationMode_Impl(c);
+			fmi2ExitInitializationMode_Impl(c)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
 
 
 	/**
@@ -117,13 +123,15 @@ functions
 	fmi2Terminate: fmi2Component +> fmi2Status * fmi2Component
 	fmi2Terminate(c) ==
 		if c.fmuType = <fmi2CoSimulation> and c.fmuState not in set {<STEP_COMPLETE>, <STEP_FAILED>}
-		then -- @Printf("Must be in state STEP_COMPLETE or STEP_FAILED")
+		then -- @Printf("Must be in state STEP_COMPLETE or STEP_FAILED\n")
 			mk_(<fmi2Error>, c)
 		elseif c.fmuType = <fmi2ModelExchange> and c.fmuState not in set {<EVENT_MODE>, <CT_MODE>}
-		then -- @Printf("Must be in state EVENT_MODE or CT_MODE")
+		then -- @Printf("Must be in state EVENT_MODE or CT_MODE\n")
 			mk_(<fmi2Error>, c)
 		else
-			fmi2Terminate_Impl(c);
+			fmi2Terminate_Impl(c)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
 
 
 	/**
@@ -143,5 +151,7 @@ functions
 		then -- @Printf("Cannot call fmi2Reset in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		else
-			fmi2Reset_Impl(c);
+			fmi2Reset_Impl(c)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
 	
