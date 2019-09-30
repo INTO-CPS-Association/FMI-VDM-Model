@@ -36,11 +36,12 @@ functions
 	 */
 	fmi2SetTime_Impl: fmi2Component * fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetTime_Impl(c, time) ==
-		is not yet specified
+		mk_(<fmi2OK>, mu(c,
+			currentTime |-> time))
 	pre
 		c.fmuState in set STATES_fmi2SetTime
 	post
-		RESULT.#2.fmuState = <INITIALIZATION>;
+		RESULT.#2.currentTime = time;
 
 	fmi2SetTime: fmi2Component * fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetTime(c, time) ==
@@ -58,9 +59,13 @@ functions
 	 */
 	fmi2SetContinuousStates_Impl: fmi2Component * seq of fmi2Real * nat +> fmi2Status * fmi2Component
 	fmi2SetContinuousStates_Impl(c, x, nx) ==
-		is not yet specified
+		let modifiers : map nat1 to fmi2Real = { i |-> x(i) | i in set inds x } in 
+			mk_(<fmi2OK>, mu(c,
+				variables |-> c.variables ++ modifiers))
 	pre
 		c.fmuState in set STATES_fmi2SetContinuousStates
+		and nx = len x
+		and nx = len c.continuousTimeStates
 	post
 		RESULT.#2.fmuState = <INITIALIZATION>;
 
@@ -68,6 +73,12 @@ functions
 	fmi2SetContinuousStates(c, x, nx) ==
 		if c.fmuState not in set STATES_fmi2SetContinuousStates
 		then -- @Printf("Cannot call fmi2SetContinuousStates in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, c)
+		elseif nx <> len x
+		then -- @Printf("nx and x are not consistent\n");
+			mk_(<fmi2Error>, c)
+		elseif nx <> len c.continuousTimeStates
+		then -- @Printf("Expecting %s continuous state values\n", len c.continuousTimeStates)
 			mk_(<fmi2Error>, c)
 		else
 			fmi2SetContinuousStates_Impl(c, x, nx)

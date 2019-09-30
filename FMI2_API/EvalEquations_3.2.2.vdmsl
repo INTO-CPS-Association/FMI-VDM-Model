@@ -127,18 +127,18 @@ functions
 	 */
 	fmi2GetDerivatives_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetDerivatives_Impl(c, nx) ==
-		is not yet specified
+		mk_(<fmi2OK>, [ c.variables(vr) | vr in seq c.continuousTimeStates ])
 	pre
 		c.fmuState in set STATES_fmi2GetDerivatives
-		and nx = card c.continuousTimeStates;
+		and nx = len c.continuousTimeStates;
 
 	fmi2GetDerivatives: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetDerivatives(c, nx) ==
 		if c.fmuState not in set STATES_fmi2GetDerivatives
 		then -- @Printf("Cannot call fmi2GetDerivatives in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
-		elseif nx <> card c.continuousTimeStates
-		then -- @Printf("Wrong number of derivates requested, expecting %s\n", card c.continuousTimeStates)
+		elseif nx <> len c.continuousTimeStates
+		then -- @Printf("Wrong number of derivates requested, expecting %s\n", len c.continuousTimeStates)
 			mk_(<fmi2Error>, nil)
 	 	else
 	 		fmi2GetDerivatives_Impl(c, nx)
@@ -174,15 +174,15 @@ functions
 		is not yet specified
 	pre
 		c.fmuState in set STATES_fmi2GetContinuousStates
-		and nx = card c.continuousTimeStates;
+		and nx = len c.continuousTimeStates;
 
 	fmi2GetContinuousStates: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetContinuousStates(c, nx) ==
 		if c.fmuState not in set STATES_fmi2GetContinuousStates
 		then -- @Printf("Cannot call fmi2GetContinuousStates in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
-		elseif nx <> card c.continuousTimeStates
-		then -- @Printf("Wrong number of derivates requested, expecting %s\n", card c.continuousTimeStates)
+		elseif nx <> len c.continuousTimeStates
+		then -- @Printf("Wrong number of derivates requested, expecting %s\n", len c.continuousTimeStates)
 			mk_(<fmi2Error>, nil)
 	 	else
 	 		fmi2GetContinuousStates_Impl(c, nx)
@@ -198,15 +198,15 @@ functions
 		is not yet specified
 	pre
 		c.fmuState in set STATES_fmi2GetNominalsOfContinuousStates
-		and nx = card c.continuousTimeStates;
+		and nx = len c.continuousTimeStates;
 
 	fmi2GetNominalsOfContinuousStates: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetNominalsOfContinuousStates(c, nx) ==
 		if c.fmuState not in set STATES_fmi2GetNominalsOfContinuousStates
 		then -- @Printf("Cannot call fmi2GetNominalsOfContinuousStates in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
-		elseif nx <> card c.continuousTimeStates
-		then -- @Printf("Wrong number of derivates requested, expecting %s\n", card c.continuousTimeStates)
+		elseif nx <> len c.continuousTimeStates
+		then -- @Printf("Wrong number of derivates requested, expecting %s\n", len c.continuousTimeStates)
 			mk_(<fmi2Error>, nil)
 	 	else
 	 		fmi2GetNominalsOfContinuousStates_Impl(c, nx)

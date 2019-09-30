@@ -64,7 +64,7 @@ types
 		fmuState				: fmi2State
 		callbacks				: fmi2CallbackFunctions
 		eModelVariables			: seq1 of ScalarVariable
-		continuousTimeStates	: set of nat1
+		continuousTimeStates	: seq of nat1
 		initialUnknowns			: set of nat1
 		logCategories			: [set1 of fmi2String]	-- nil means logging off
 		variables				: seq1 of (fmi2Real | fmi2Integer | fmi2Boolean | fmi2String)
@@ -73,8 +73,8 @@ types
 		currentTime				: real
 	inv c ==
 		len c.variables = len c.eModelVariables
-		and card c.continuousTimeStates <= len c.variables
-		and card c.initialUnknowns <= len c.variables
+		and (forall vr in seq c.continuousTimeStates & vr <= len c.variables)
+		and (forall vr in set c.initialUnknowns & vr <= len c.variables)
 		and c.currentTime >= c.startTime
 		and (c.stopTime <> nil => c.stopTime > c.startTime and c.currentTime <= c.stopTime);
 

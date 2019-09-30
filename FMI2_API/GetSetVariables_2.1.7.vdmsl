@@ -86,8 +86,10 @@ functions
 	fmi2GetReal_Impl(c, vrs, nvr) ==
 		is not yet specified
 	pre
-		len vrs = nvr and
-		generalGetPrecondition(c, vrs)
+		len vrs = nvr
+		and generalGetPrecondition(c, vrs)
+		and forall vr in seq vrs &
+			vr <= len c.variables and is_Real(c.variables(vr))
 	post
 		RESULT.#1 = <fmi2OK> =>
 			len RESULT.#2 = nvr;
@@ -99,6 +101,9 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif not generalGetPrecondition(c, vrs)
 		then -- @Printf("Get preconditions failed\n")
+			mk_(<fmi2Error>, nil)
+		elseif exists vr in seq vrs & vr > len c.variables or not is_Real(c.variables(vr))
+		then -- @Printf("Value references are not all Real variables\n")
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetReal_Impl(c, vrs, nvr)
@@ -113,8 +118,10 @@ functions
 	fmi2GetInteger_Impl(c, vrs, nvr) ==
 		is not yet specified
 	pre
-		len vrs = nvr and
-		generalGetPrecondition(c, vrs)
+		len vrs = nvr
+		and generalGetPrecondition(c, vrs)
+		and forall vr in seq vrs &
+			vr <= len c.variables and is_Integer(c.variables(vr))
 	post
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
@@ -126,6 +133,9 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif not generalGetPrecondition(c, vrs)
 		then -- @Printf("Get preconditions failed\n")
+			mk_(<fmi2Error>, nil)
+		elseif exists vr in seq vrs & vr > len c.variables or not is_Integer(c.variables(vr))
+		then -- @Printf("Value references are not all Integer variables\n")
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetInteger_Impl(c, vrs, nvr)
@@ -140,8 +150,10 @@ functions
 	fmi2GetBoolean_Impl(c, vrs, nvr) ==
 		is not yet specified
 	pre
-		len vrs = nvr and
-		generalGetPrecondition(c, vrs)
+		len vrs = nvr
+		and generalGetPrecondition(c, vrs)
+		and forall vr in seq vrs &
+			vr <= len c.variables and is_Boolean(c.variables(vr))
 	post
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
@@ -153,6 +165,9 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif not generalGetPrecondition(c, vrs)
 		then -- @Printf("Get preconditions failed\n")
+			mk_(<fmi2Error>, nil)
+		elseif exists vr in seq vrs & vr > len c.variables or not is_Boolean(c.variables(vr))
+		then -- @Printf("Value references are not all Boolean variables\n")
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetBoolean_Impl(c, vrs, nvr)
@@ -167,8 +182,10 @@ functions
 	fmi2GetString_Impl(c, vrs, nvr) ==
 		is not yet specified
 	pre
-		len vrs = nvr and
-		generalGetPrecondition(c, vrs)
+		len vrs = nvr
+		and generalGetPrecondition(c, vrs)
+		and forall vr in seq vrs &
+			vr <= len c.variables and is_String(c.variables(vr))
 	post
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
@@ -180,6 +197,9 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif not generalGetPrecondition(c, vrs)
 		then -- @Printf("Get preconditions failed\n")
+			mk_(<fmi2Error>, nil)
+		elseif exists vr in seq vrs & vr > len c.variables or not is_String(c.variables(vr))
+		then -- @Printf("Value references are not all String variables\n")
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetString_Impl(c, vrs, nvr)
@@ -195,7 +215,9 @@ functions
 		is not yet specified
 	pre
 		len vrs = nvr and len vrs = len value
-		and generalSetPrecondition(c, vrs);
+		and generalSetPrecondition(c, vrs)
+		and forall vr in seq vrs &
+			vr <= len c.variables and is_Real(c.variables(vr));
 
 	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status
 	fmi2SetReal(c, vrs, nvr, value) ==
@@ -207,6 +229,9 @@ functions
 			<fmi2Error>
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
+			<fmi2Error>
+		elseif exists vr in seq vrs & vr > len c.variables or not is_Real(c.variables(vr))
+		then -- @Printf("Value references are not all Real variables\n")
 			<fmi2Error>
 		else
 			fmi2SetReal_Impl(c, vrs, nvr, value);
@@ -220,7 +245,9 @@ functions
 		is not yet specified
 	pre
 		len vrs = nvr and len vrs = len value
-		and generalSetPrecondition(c, vrs);
+		and generalSetPrecondition(c, vrs)
+		and forall vr in seq vrs &
+			vr <= len c.variables and is_Integer(c.variables(vr));
 
 	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status
 	fmi2SetInteger(c, vrs, nvr, value) ==
@@ -232,6 +259,9 @@ functions
 			<fmi2Error>
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
+			<fmi2Error>
+		elseif exists vr in seq vrs & vr > len c.variables or not is_Integer(c.variables(vr))
+		then -- @Printf("Value references are not all Integer variables\n")
 			<fmi2Error>
 		else
 			fmi2SetInteger_Impl(c, vrs, nvr, value);
@@ -245,7 +275,9 @@ functions
 		is not yet specified
 	pre
 		len vrs = nvr and len vrs = len value
-		and generalSetPrecondition(c, vrs);
+		and generalSetPrecondition(c, vrs)
+		and forall vr in seq vrs &
+			vr <= len c.variables and is_Boolean(c.variables(vr));
 
 	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status
 	fmi2SetBoolean(c, vrs, nvr, value) ==
@@ -257,6 +289,9 @@ functions
 			<fmi2Error>
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
+			<fmi2Error>
+		elseif exists vr in seq vrs & vr > len c.variables or not is_Boolean(c.variables(vr))
+		then -- @Printf("Value references are not all Boolean variables\n")
 			<fmi2Error>
 		else
 			fmi2SetBoolean_Impl(c, vrs, nvr, value);
@@ -270,7 +305,9 @@ functions
 		is not yet specified
 	pre
 		len vrs = nvr and len vrs = len value
-		and generalSetPrecondition(c, vrs);
+		and generalSetPrecondition(c, vrs)
+		and forall vr in seq vrs &
+			vr <= len c.variables and is_String(c.variables(vr));
 
 	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status
 	fmi2SetString(c, vrs, nvr, value) ==
@@ -282,6 +319,9 @@ functions
 			<fmi2Error>
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
+			<fmi2Error>
+		elseif exists vr in seq vrs & vr > len c.variables or not is_String(c.variables(vr))
+		then -- @Printf("Value references are not all String variables\n")
 			<fmi2Error>
 		else
 			fmi2SetString_Impl(c, vrs, nvr, value);

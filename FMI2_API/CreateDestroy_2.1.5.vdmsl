@@ -56,7 +56,7 @@ functions
 				<INSTANTIATED>,
 				callbacks,
 				eModelVariables,
-				{ i | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables) },
+				[ i | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables) ],
 				{ u.index | u in seq initialUnknowns },
 				if loggingOn and callbacks.componentEnvironment.logCategories <> nil
 				then { cat.name | cat in seq callbacks.componentEnvironment.logCategories }
