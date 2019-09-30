@@ -1,0 +1,90 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 3.2.3 State machine (and API tables)
+ * 4.2.4 State machine (and API tables)
+ */
+values
+--------------------------------------------------------------------------------
+-- Function calls for both Model-exchange and Co-simulation
+--------------------------------------------------------------------------------
+STATES_fmi2GetTypesPlatform         = { <START>, <END>, <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_IN_PROGRESS>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
+STATES_fmi2GetVersion               = STATES_fmi2GetTypesPlatform;
+STATES_fmi2SetDebugLogging          = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_IN_PROGRESS>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
+STATES_fmi2Instantiate              = { <START>, <END> };
+STATES_fmi2FreeInstance             = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
+STATES_fmi2SetupExperiment          = { <INSTANTIATED> };
+STATES_fmi2EnterInitializationMode  = { <INSTANTIATED> };
+STATES_fmi2ExitInitializationMode   = { <INITIALIZATION> };
+STATES_fmi2Terminate                = { <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_FAILED> };
+STATES_fmi2Reset                    = STATES_fmi2FreeInstance;
+STATES_fmi2GetReal                  = { <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
+STATES_fmi2GetInteger               = STATES_fmi2GetReal;
+STATES_fmi2GetBoolean               = STATES_fmi2GetReal;
+STATES_fmi2GetString                = STATES_fmi2GetReal;
+STATES_fmi2SetReal                  = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE> };
+STATES_fmi2SetInteger               = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <STEP_COMPLETE> };
+STATES_fmi2SetBoolean               = STATES_fmi2SetInteger;
+STATES_fmi2SetString                = STATES_fmi2SetInteger;
+STATES_fmi2GetFMUstate              = STATES_fmi2FreeInstance;
+STATES_fmi2SetFMUstate              = STATES_fmi2FreeInstance;
+STATES_fmi2FreeFMUstate             = STATES_fmi2FreeInstance;
+STATES_fmi2SerializedFMUstateSize   = STATES_fmi2FreeInstance;
+STATES_fmi2SerializeFMUstate        = STATES_fmi2FreeInstance;
+STATES_fmi2DeSerializeFMUstate      = STATES_fmi2FreeInstance;
+STATES_fmi2GetDirectionalDerivative = { <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> }; 
+
+------------------------------------------------------------------------------
+-- Function calls for Model-exchange
+------------------------------------------------------------------------------
+STATES_fmi2EnterEventMode           = { <EVENT_MODE>, <CT_MODE> };
+STATES_fmi2NewDiscreteStates        = { <EVENT_MODE> };
+STATES_fmi2EnterContinuousTimeMode  = { <EVENT_MODE> };
+STATES_fmi2CompletedIntegratorStep  = { <CT_MODE> };
+STATES_fmi2SetTime                  = { <EVENT_MODE>, <CT_MODE> };
+STATES_fmi2SetContinuousStates      = { <CT_MODE> };
+STATES_fmi2GetEventIndicators       = { <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <TERMINATED>, <ERROR> };
+STATES_fmi2GetContinuousStates      = STATES_fmi2GetEventIndicators;
+STATES_fmi2GetDerivatives           = { <EVENT_MODE>, <CT_MODE>, <TERMINATED>, <ERROR> };
+STATES_fmi2GetNominalsOfContinuousStates = {  <INSTANTIATED>, <EVENT_MODE>, <CT_MODE>, <TERMINATED>, <ERROR> };
+
+------------------------------------------------------------------------------
+-- Function calls for Co-simulation
+------------------------------------------------------------------------------
+STATES_fmi2SetRealInputDerivatives  = { <INSTANTIATED>, <INITIALIZATION>, <STEP_COMPLETE> };
+STATES_fmi2GetRealOutputDerivatives = { <STEP_COMPLETE>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
+STATES_fmi2DoStep                   = { <STEP_COMPLETE> };
+STATES_fmi2CancelStep               = { <STEP_IN_PROGRESS> };
+STATES_fmi2GetStatus                = { <STEP_COMPLETE>, <STEP_IN_PROGRESS>, <STEP_FAILED>, <TERMINATED> };
+STATES_fmi2GetRealStatus            = STATES_fmi2GetStatus;
+STATES_fmi2GetIntegerStatus         = STATES_fmi2GetStatus;
+STATES_fmi2GetBooleanStatus         = STATES_fmi2GetStatus;
+STATES_fmi2GetStringStatus          = STATES_fmi2GetStatus;
+
