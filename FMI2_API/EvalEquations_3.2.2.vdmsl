@@ -49,13 +49,13 @@ functions
 	fmi2EnterEventMode_Impl(c) ==
 		is not yet specified
 	pre
-		c.fmuState = <INITIALIZATION>
+		c.fmuState in set STATES_fmi2EnterEventMode
 	post
 		RESULT = <fmi2OK> => c.fmuState = <EVENT_MODE>;
 
 	fmi2EnterEventMode: fmi2Component +> fmi2Status
 	fmi2EnterEventMode(c) ==
-		if c.fmuState <> <INITIALIZATION>
+		if c.fmuState not in set STATES_fmi2EnterEventMode
 		then -- @Printf("Cannot call fmi2EnterEventMode in state %s\n", c.fmuState)
 			<fmi2Error>
 	 	else
@@ -69,11 +69,11 @@ functions
 	fmi2NewDiscreteStates_Impl(c, fmi2eventInfo) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>;
+		c.fmuState in set STATES_fmi2NewDiscreteStates;
 
 	fmi2NewDiscreteStates: fmi2Component * fmi2EventInfo +> fmi2Status
 	fmi2NewDiscreteStates(c, fmi2eventInfo) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2NewDiscreteStates
 		then -- @Printf("Cannot call fmi2NewDiscreteStates in state %s\n", c.fmuState)
 			<fmi2Error>
 	 	else
@@ -87,13 +87,13 @@ functions
 	fmi2EnterContinuousTimeMode_Impl(c) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>
+		c.fmuState in set STATES_fmi2EnterContinuousTimeMode
 	post
 		RESULT.#2.fmuState = <CT_MODE>;
 
 	fmi2EnterContinuousTimeMode: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2EnterContinuousTimeMode(c) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2EnterContinuousTimeMode
 		then -- @Printf("Cannot call fmi2EnterContinuousTimeMode in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 	 	else
@@ -109,11 +109,11 @@ functions
 	fmi2CompletedIntegratorStep_Impl(c, noSetFMUStatePriorToCurrentPoint) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>;
+		c.fmuState in set STATES_fmi2CompletedIntegratorStep;
 
 	fmi2CompletedIntegratorStep: fmi2Component * fmi2Boolean +> fmi2Status * [fmi2Boolean] * [fmi2Boolean]
 	fmi2CompletedIntegratorStep(c, noSetFMUStatePriorToCurrentPoint) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2CompletedIntegratorStep
 		then -- @Printf("Cannot call fmi2CompletedIntegratorStep in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil, nil)
 	 	else
@@ -129,12 +129,12 @@ functions
 	fmi2GetDerivatives_Impl(c, nx) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>
+		c.fmuState in set STATES_fmi2GetDerivatives
 		and nx = card c.continuousTimeStates;
 
 	fmi2GetDerivatives: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetDerivatives(c, nx) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetDerivatives
 		then -- @Printf("Cannot call fmi2GetDerivatives in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		elseif nx <> card c.continuousTimeStates
@@ -153,11 +153,11 @@ functions
 	fmi2GetEventIndicators_Impl(c, ni) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>;
+		c.fmuState in set STATES_fmi2GetEventIndicators;
 
 	fmi2GetEventIndicators: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetEventIndicators(c, ni) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetEventIndicators
 		then -- @Printf("Cannot call fmi2GetEventIndicators in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 	 	else
@@ -173,12 +173,12 @@ functions
 	fmi2GetContinuousStates_Impl(c, nx) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>
+		c.fmuState in set STATES_fmi2GetContinuousStates
 		and nx = card c.continuousTimeStates;
 
 	fmi2GetContinuousStates: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetContinuousStates(c, nx) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetContinuousStates
 		then -- @Printf("Cannot call fmi2GetContinuousStates in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		elseif nx <> card c.continuousTimeStates
@@ -197,12 +197,12 @@ functions
 	fmi2GetNominalsOfContinuousStates_Impl(c, nx) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>
+		c.fmuState in set STATES_fmi2GetNominalsOfContinuousStates
 		and nx = card c.continuousTimeStates;
 
 	fmi2GetNominalsOfContinuousStates: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetNominalsOfContinuousStates(c, nx) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetNominalsOfContinuousStates
 		then -- @Printf("Cannot call fmi2GetNominalsOfContinuousStates in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		elseif nx <> card c.continuousTimeStates

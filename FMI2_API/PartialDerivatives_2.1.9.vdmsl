@@ -39,14 +39,14 @@ functions
 	fmi2GetDirectionalDerivative_Impl(c, vUnknown_ref, uUnknown, vKnown_ref, nKnown, dvKnown) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>
+		c.fmuState in set STATES_fmi2GetDirectionalDerivative
 	post
 		RESULT.#1 = <fmi2OK> => len RESULT.#2 = nKnown;
 
 	fmi2GetDirectionalDerivative: fmi2Component * seq of fmi2ValueReference * nat *
 				seq of fmi2ValueReference * nat* seq of fmi2Real +> fmi2Status * [seq of fmi2Real]
 	fmi2GetDirectionalDerivative(c, vUnknown_ref, uUnknown, vKnown_ref, nKnown, dvKnown) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetDirectionalDerivative
 		then -- @Printf("Cannot call fmi2GetDirectionalDerivative in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else

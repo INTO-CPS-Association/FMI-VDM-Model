@@ -39,7 +39,7 @@ functions
 	fmi2SetRealInputDerivatives_Impl(c, vr, nvr, order, value) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>
+		c.fmuState in set STATES_fmi2SetRealInputDerivatives
 		and nvr = len vr
 		and nvr = len value
 		and nvr = len order
@@ -48,7 +48,7 @@ functions
 	fmi2SetRealInputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
 								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status
 	fmi2SetRealInputDerivatives(c, vr, nvr, order, value) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2SetRealInputDerivatives
 		then -- @Printf("Cannot call fmi2SetRealInputDerivatives in state %s\n", c.fmuState)
 			<fmi2Error>
 		elseif nvr <> len vr or nvr <> len value or nvr <> len order
@@ -69,7 +69,7 @@ functions
 	fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>
+		c.fmuState in set STATES_fmi2GetRealOutputDerivatives
 		and nvr = len vr
 		and nvr = len order
 		and forall o in seq order & o > 0
@@ -79,7 +79,7 @@ functions
 	fmi2GetRealOutputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
 								  seq of fmi2Integer +> fmi2Status * [seq of fmi2Real]
 	fmi2GetRealOutputDerivatives(c, vr, nvr, order) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetRealOutputDerivatives
 		then -- @Printf("Cannot call fmi2GetRealOutputDerivatives in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		elseif nvr <> len vr or nvr <> len order

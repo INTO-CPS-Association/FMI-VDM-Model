@@ -41,11 +41,11 @@ functions
 	fmi2GetStatus_Impl(c, s) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>;
+		c.fmuState in set STATES_fmi2GetStatus;
 
 	fmi2GetStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Status]
 	fmi2GetStatus(c, s) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetStatus
 		then -- @Printf("Cannot call fmi2GetStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else
@@ -61,11 +61,11 @@ functions
 	fmi2GetRealStatus_Impl(c, s) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>;
+		c.fmuState in set STATES_fmi2GetRealStatus;
 
 	fmi2GetRealStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Real]
 	fmi2GetRealStatus(c, s) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetRealStatus
 		then -- @Printf("Cannot call fmi2GetRealStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else
@@ -81,11 +81,11 @@ functions
 	fmi2GetIntegerStatus_Impl(c, s) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>;
+		c.fmuState in set STATES_fmi2GetIntegerStatus;
 
 	fmi2GetIntegerStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Integer]
 	fmi2GetIntegerStatus(c, s) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetIntegerStatus
 		then -- @Printf("Cannot call fmi2GetIntegerStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else
@@ -101,11 +101,11 @@ functions
 	fmi2GetBooleanStatus_Impl(c, s) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>;
+		c.fmuState in set STATES_fmi2GetBooleanStatus;
 
 	fmi2GetBooleanStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Boolean]
 	fmi2GetBooleanStatus(c, s) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetBooleanStatus
 		then -- @Printf("Cannot call fmi2GetBooleanStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else
@@ -121,11 +121,11 @@ functions
 	fmi2GetStringStatus_Impl(c, s) ==
 		is not yet specified
 	pre
-		c.fmuState = <EVENT_MODE>;
+		c.fmuState in set STATES_fmi2GetStringStatus;
 
 	fmi2GetStringStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2String]
 	fmi2GetStringStatus(c, s) ==
-		if c.fmuState <> <EVENT_MODE>
+		if c.fmuState not in set STATES_fmi2GetStringStatus
 		then -- @Printf("Cannot call fmi2GetStringStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
 		else

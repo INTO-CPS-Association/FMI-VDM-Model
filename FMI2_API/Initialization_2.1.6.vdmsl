@@ -36,16 +36,18 @@ functions
 	 */
 	fmi2SetupExperiment_Impl: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
-		mk_(<fmi2OK>, c)	-- TODO!
+		mk_(<fmi2OK>, mu(c,
+			startTime |-> startTime,
+			stopTime  |-> if stopTimeDefined then stopTime else nil))
 	pre
-		c.fmuState = <INSTANTIATED>
+		c.fmuState in set STATES_fmi2SetupExperiment
 		and (stopTimeDefined => stopTime > startTime)
 	post
 		RESULT.#2.fmuState = <INSTANTIATED>;
 
 	fmi2SetupExperiment: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetupExperiment(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
-		if c.fmuState <> <INSTANTIATED>
+		if c.fmuState not in set STATES_fmi2SetupExperiment
 		then -- @Printf("Cannot call fmi2SetupExperiment in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		elseif stopTimeDefined and stopTime <= startTime
@@ -64,13 +66,13 @@ functions
 	fmi2EnterInitializationMode_Impl(c) ==
 		mk_(<fmi2OK>, mu(c, fmuState |-> <INITIALIZATION>))
 	pre
-		c.fmuState = <INSTANTIATED>
+		c.fmuState in set STATES_fmi2EnterInitializationMode
 	post
 		RESULT.#2.fmuState = <INITIALIZATION>;
 
 	fmi2EnterInitializationMode: fmi2Component +> fmi2Status * fmi2Component
 	fmi2EnterInitializationMode(c) ==
-		if c.fmuState <> <INSTANTIATED>
+		if c.fmuState not in set STATES_fmi2EnterInitializationMode
 		then -- @Printf("Cannot call fmi2EnterInitializationMode in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		else
@@ -89,7 +91,7 @@ functions
 			then <STEP_COMPLETE>
 			else <EVENT_MODE>))
 	pre
-		c.fmuState = <INITIALIZATION>
+		c.fmuState in set STATES_fmi2ExitInitializationMode
 	post
 		RESULT.#2.fmuState =
 			if c.fmuType = <fmi2CoSimulation>
@@ -98,7 +100,7 @@ functions
 
 	fmi2ExitInitializationMode: fmi2Component +> fmi2Status * fmi2Component
 	fmi2ExitInitializationMode(c) ==
-		if c.fmuState <> <INITIALIZATION>
+		if c.fmuState not in set STATES_fmi2ExitInitializationMode
 		then -- @Printf("Cannot call fmi2ExitInitializationMode in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		else
@@ -114,19 +116,14 @@ functions
 	fmi2Terminate_Impl(c) ==
 		mk_(<fmi2OK>, mu(c, fmuState |-> <TERMINATED>))
 	pre
-		c.fmuType = <fmi2CoSimulation> and c.fmuState in set {<STEP_COMPLETE>, <STEP_FAILED>}
-		or
-		c.fmuType = <fmi2ModelExchange> and c.fmuState in set {<EVENT_MODE>, <CT_MODE>}
+		c.fmuState in set STATES_fmi2Terminate
 	post
 		RESULT.#2.fmuState = <TERMINATED>;
 
 	fmi2Terminate: fmi2Component +> fmi2Status * fmi2Component
 	fmi2Terminate(c) ==
-		if c.fmuType = <fmi2CoSimulation> and c.fmuState not in set {<STEP_COMPLETE>, <STEP_FAILED>}
-		then -- @Printf("Must be in state STEP_COMPLETE or STEP_FAILED\n")
-			mk_(<fmi2Error>, c)
-		elseif c.fmuType = <fmi2ModelExchange> and c.fmuState not in set {<EVENT_MODE>, <CT_MODE>}
-		then -- @Printf("Must be in state EVENT_MODE or CT_MODE\n")
+		if c.fmuState not in set STATES_fmi2Terminate
+		then -- @Printf("Cannot call fmi2Terminate in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		else
 			fmi2Terminate_Impl(c)
@@ -141,13 +138,13 @@ functions
 	fmi2Reset_Impl(c) ==
 		mk_(<fmi2OK>, mu(c, fmuState |-> <INSTANTIATED>))
 	pre
-		c.fmuState = <TERMINATED>
+		c.fmuState in set STATES_fmi2Reset
 	post
 		RESULT.#2.fmuState = <INSTANTIATED>;
 
 	fmi2Reset: fmi2Component +> fmi2Status * fmi2Component
 	fmi2Reset(c) ==
-		if c.fmuState <> <TERMINATED>
+		if c.fmuState not in set STATES_fmi2Reset
 		then -- @Printf("Cannot call fmi2Reset in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		else

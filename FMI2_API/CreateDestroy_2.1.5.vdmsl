@@ -74,7 +74,10 @@ functions
 						else undefined
 
 					| sv in seq eModelVariables
-				]
+				],
+				0,		-- start time
+				nil,	-- no stop
+				0		-- current = start
 			)
 	pre
 		instanceName <> ""
@@ -117,7 +120,7 @@ functions
 	fmi2FreeInstance_Impl(c) ==
 		<VOID>
 	pre
-		c.fmuState not in set {<START>, <END>};
+		c.fmuState in set STATES_fmi2FreeInstance;
 
 	/**
 	 * The fmi2FreeInstance API. This performs sufficient checks to pass the precondition on the
@@ -125,7 +128,7 @@ functions
 	 */
 	fmi2FreeInstance: fmi2Component +> <VOID>
 	fmi2FreeInstance(c) ==
-		if c.fmuState in set {<START>, <END>}
+		if c.fmuState not in set STATES_fmi2FreeInstance
 		then -- @Printf("Cannot call fmi2FreeInstance in state %s\n", c.fmuState)
 			<VOID>
 		else
@@ -146,7 +149,7 @@ functions
 					else elems categories
 				else nil))
 	pre
-		c.fmuState not in set {<START>, <END>}
+		c.fmuState in set STATES_fmi2SetDebugLogging
 		and nCategories = len categories
 		and card elems categories = nCategories
 		and (nCategories > 0 =>
@@ -164,7 +167,7 @@ functions
 	 */
 	fmi2SetDebugLogging: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status * fmi2Component
 	fmi2SetDebugLogging(c, loggingOn, nCategories, categories) ==
-		if c.fmuState in set {<START>, <END>}
+		if c.fmuState not in set STATES_fmi2SetDebugLogging
 		then -- @Printf("Cannot call fmi2SetDebugLogging in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, c)
 		elseif nCategories <> len categories or card elems categories <> nCategories
