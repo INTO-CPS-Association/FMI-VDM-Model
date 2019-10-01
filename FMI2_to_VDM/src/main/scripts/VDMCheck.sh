@@ -93,7 +93,7 @@ esac
 		exit 2
 	fi
 	
-	if ! java -jar fmi2vdm-0.0.2.jar "$XML" "$VAR" >$VDM
+	if ! java -jar fmi2vdm-${project.version}.jar "$XML" "$VAR" >$VDM
 	then
 		echo "Problem converting modelDescription.xml to VDM-SL?"
 		exit 2

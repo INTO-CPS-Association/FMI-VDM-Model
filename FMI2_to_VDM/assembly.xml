@@ -13,10 +13,12 @@
 		<file>
 			<source>src/main/scripts/VDMCheck.sh</source>
 			<destName>VDMCheck.sh</destName>
+			<filtered>true</filtered>
 		</file>
 		<file>
 			<source>src/main/scripts/VDMCheck.ps1</source>
 			<destName>VDMCheck.ps1</destName>
+			<filtered>true</filtered>
 		</file>
 		<file>
 			<source>../LICENCE</source>
