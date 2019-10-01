@@ -8,13 +8,13 @@
 		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>
 	</properties>
 
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 
 	<dependencies>
 		<dependency>
 			<groupId>fmi2</groupId>
 			<artifactId>vdm-model</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fujitsu</groupId>
