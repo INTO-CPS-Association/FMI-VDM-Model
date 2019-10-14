@@ -161,7 +161,9 @@ Checker reported:
 	3 Fatal error(s) occurred during processing
 ------------------------------ 2.2.1_typeCheckFail.xml
 VDMCheck.sh:
+2.2.7 ScalarVariable "v1" min/max exceeds RealType "T1" at line 13
 2.2.7 ScalarVariable "v1", RealType not referenced by Real variable "T1" at line 13
+2.2.7 ScalarVariable "v2" min/max exceeds IntegerType "T2" at line 16
 2.2.7 ScalarVariable "v2", IntegerType not referenced by Integer variable "T2" at line 16
 2.2.7 ScalarVariable "v3", StringType not referenced by String variable "T3" at line 19
 2.2.7 ScalarVariable "v4", BooleanType not referenced by Boolean variable "T4" at line 22
@@ -378,6 +380,7 @@ Checker reported:
 ------------------------------ 2.2.9_invalidStructNames.xml
 VDMCheck.sh:
 2.2.9 Structured name "der(-)" invalid at line 6
+2.2.9 Name "der(-)" is not a derivative at line 6
 2.2.9 Structured name "123" invalid at line 9
 2.2.9 Structured name "'\\z'" invalid at line 12
 Errors found.

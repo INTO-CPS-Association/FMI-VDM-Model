@@ -11,10 +11,10 @@
 	</TypeDefinitions>
 	<ModelVariables>
 		<ScalarVariable name="v1" variability="discrete" initial="approx" valueReference="0">
-			<Integer declaredType="T1" start="100" />
+			<Integer declaredType="T1" start="100" max="1234" />
 		</ScalarVariable>
 		<ScalarVariable name="v2" variability="discrete" initial="approx" valueReference="1">
-			<Real declaredType="T2" start="100" />
+			<Real declaredType="T2" start="100" min="1" />
 		</ScalarVariable>
 		<ScalarVariable name="v3" variability="discrete" initial="calculated" valueReference="2">
 			<Boolean declaredType="T3" />

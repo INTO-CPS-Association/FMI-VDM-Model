@@ -327,6 +327,26 @@ functions
 							{ st.name | st in set matchingTypes } ) */
 						( card matchingTypes = 1 ),
 
+						-- The match is has compatible values in the ScalarVariable
+						card matchingTypes = 1 => let { simpleType } = matchingTypes in
+							cases simpleType.type:
+								mk_RealType(-, -, -, -, min, max, -, -) ->
+									/* @OnFail("2.2.7 ScalarVariable %s min/max exceeds RealType %s at line %s",
+										sv.name, sv.variable.declaredType, sv.location) */
+									( (min <> nil and sv.variable.min <> nil => min <= sv.variable.min)
+										and
+									  (max <> nil and sv.variable.max <> nil => max >= sv.variable.max) ),
+
+								mk_IntegerType(-, min, max) ->
+									/* @OnFail("2.2.7 ScalarVariable %s min/max exceeds IntegerType %s at line %s",
+										sv.name, sv.variable.declaredType, sv.location) */
+									( (min <> nil and sv.variable.min <> nil => min <= sv.variable.min)
+										and
+									  (max <> nil and sv.variable.max <> nil => max >= sv.variable.max) ),
+									
+								others -> true
+							end,
+
 						-- The match is the same type as the ScalarVariable type and for numerics,
 						card matchingTypes = 1 => let { simpleType } = matchingTypes in
 							cases simpleType.type:
