@@ -34,8 +34,16 @@ types
 	-- XSD p45, description p46
 	Causality	= <parameter> | <calculatedParameter> | <input> | <output> | <local> | <independent>;
 
-	-- XSD p45, description p46
-	Variability	= <constant> | <fixed> | <tunable> | <discrete> | <continuous>;
+	-- XSD p45, description p46, ordering p53
+	Variability	= <constant> | <fixed> | <tunable> | <discrete> | <continuous>
+	ord a < b ==
+		cases a:
+			<constant>   -> b in set {<fixed>, <tunable>, <discrete>, <continuous>},
+			<fixed>      -> b in set {<tunable>, <discrete>, <continuous>},
+			<tunable>    -> b in set {<discrete>, <continuous>},
+			<discrete>   -> b = <continuous>,
+			<continuous> -> false
+		end;
 
 	-- XSD p45, description p46
 	Initial		= <exact> | <approx> | <calculated>;
@@ -324,7 +332,25 @@ functions
 					( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
 
 					-- @OnFail("2.2.7 Aliases of reference %s/%s must all have same unit/baseUnits", ref.#1, ref.#2)
-					( card { a.variable.unit | a in set aliases & is_Real(a.variable) } <= 1 )
+					( card { a.variable.unit | a in set aliases & is_Real(a.variable) } <= 1 ),
+
+					/*
+					 * In case of different variability among the set of alias variables, and if that set of aliases
+					 * does not contain an input or parameter, the variability should be the highest of the variables
+					 * in the set, e.g. continuous > discrete > tunable > fixed. If the set includes a parameter or
+					 * input the aliases will have the stated variability of that parameter or input.
+					 */
+					 let vars = { a.variability | a in set aliases } in
+					 	if exists a in set aliases & a.causality in set {<input>, <parameter>}
+					 	then
+					 		let a in set aliases be st a.causality in set {<input>, <parameter>} in
+				 				/* @OnFail("2.2.7 Aliases of reference %s/%s must all be %s, because of %s",
+				 						ref.#1, ref.#2, a.variability, a.name) */
+				 				( vars = { a.variability } )
+					 	else
+					 		let highest in set vars be st not exists v in set vars & v > highest in
+					 			-- @OnFail("2.2.7 Aliases of reference %s/%s must all be %s", ref.#1, ref.#2, highest)
+					 			( vars = { highest } )
 				}
 
 				| ref in set dom refmap & card refmap(ref) > 1
@@ -394,14 +420,39 @@ functions
 		else v;
 
 	/**
-	 * Generate all of the effective ScalarVariables.
+	 * Generate all of the effective ScalarVariables. Note that an effective "time"
+	 * variable is created if there are no independent variables defined.
 	 */
 	effectiveScalarVariables: FMIModelDescription +> seq1 of ScalarVariable
 	effectiveScalarVariables(model) ==
-	[
-		effectiveScalarVariable(sv, model.typeDefinitions)
-		| sv in seq model.modelVariables
-	];
+		let evs =
+		[
+			effectiveScalarVariable(sv, model.typeDefinitions)
+			| sv in seq model.modelVariables
+		]
+		in
+			if not exists esv in seq evs & esv.causality = <independent>
+			then evs ^
+				[
+					-- If no variable is defined as "independent", it is implicitly
+					-- present with name = "time" and unit = "s" (2.2.7, p47)
+
+					mk_ScalarVariable
+					(
+						0,
+						"time",
+						let allvrs = { sv.valueReference | sv in seq evs } in
+							let vr in set {1, ..., len evs + 1} be st vr not in set allvrs in vr,
+						"Implicit independent time variable",
+						<independent>,
+						<continuous>,
+						nil,
+						nil,
+						mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil),	-- Unit "s"?
+						nil
+					)
+				]
+			else evs;
 
 	/**
 	 * Generate the effective value of a ScalarVariable, accounting for fields inherited from

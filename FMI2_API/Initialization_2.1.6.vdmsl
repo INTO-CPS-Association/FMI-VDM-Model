@@ -37,8 +37,9 @@ functions
 	fmi2SetupExperiment_Impl: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
 		mk_(<fmi2OK>, mu(c,
-			startTime |-> startTime,
-			stopTime  |-> if stopTimeDefined then stopTime else nil))
+			startTime	|-> startTime,
+			stopTime	|-> if stopTimeDefined then stopTime else nil,
+			currentTime	|-> startTime))
 	pre
 		c.fmuState in set STATES_fmi2SetupExperiment
 		and (stopTimeDefined => stopTime > startTime)
@@ -67,6 +68,7 @@ functions
 		mk_(<fmi2OK>, mu(c, fmuState |-> <INITIALIZATION>))
 	pre
 		c.fmuState in set STATES_fmi2EnterInitializationMode
+		and c.startTime <> nil
 	post
 		RESULT.#2.fmuState = <INITIALIZATION>;
 
@@ -74,6 +76,9 @@ functions
 	fmi2EnterInitializationMode(c) ==
 		if c.fmuState not in set STATES_fmi2EnterInitializationMode
 		then -- @Printf("Cannot call fmi2EnterInitializationMode in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, c)
+		elseif c.startTime = nil
+		then -- @Printf("fmi2SetupExperiment has not been called (startTime is nil)?\n")
 			mk_(<fmi2Error>, c)
 		else
 			fmi2EnterInitializationMode_Impl(c)

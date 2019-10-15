@@ -75,9 +75,14 @@ functions
 	isValidType: SimpleType +> bool
 	isValidType(stype) ==
 		cases stype.type:
-			mk_RealType(-, -, -, -, min, max, -, -) ->
+			mk_RealType(-, unit, dunit, -, min, max, -, -) ->
+			{
 				-- @OnFail("2.2.3 SimpleType %s, Real max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
+				
+				-- @OnFail("2.2.3 SimpleType %s, Real unit must be defined for displayUnit %s", stype.name, dunit)
+				( dunit <> nil => unit <> nil )
+			} = {true},
 
 			mk_IntegerType(-, min, max) ->
 				-- @OnFail("2.2.3 SimpleType %s, Integer max %s not >= min %s", stype.name, max, min)

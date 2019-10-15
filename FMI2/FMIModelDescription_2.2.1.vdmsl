@@ -173,18 +173,11 @@ functions
 				md.typeDefinitions <> nil =>
 					{
 						is_RealType(std.type) =>
-						{
-							/* @OnFail("2.2.3 SimpleType %s, unit must be defined for displayUnit %s at line %s",
-								std.name, std.type.displayUnit, std.location) */
-							( std.type.displayUnit <> nil => std.type.unit <> nil ),
-
 							std.type.unit <> nil =>
 								/* @OnFail("2.2.3 SimpleType %s, Real unit %s not defined in UnitDefinitions at line %s",
 									std.name, std.type.unit, std.location) */
 								( md.unitDefinitions <> nil
 								  and exists u in seq md.unitDefinitions & u.name = std.type.unit )
-						}
-						= {true}
 
 						| std in set md.typeDefinitions
 					} = {true}
@@ -343,7 +336,7 @@ functions
 									( (min <> nil and sv.variable.min <> nil => min <= sv.variable.min)
 										and
 									  (max <> nil and sv.variable.max <> nil => max >= sv.variable.max) ),
-									
+
 								others -> true
 							end,
 

@@ -92,13 +92,13 @@ functions
 					| sv in seq eModelVariables
 				],
 				
-				-- start time
-				0,
-				
-				-- no stop time by default
+				-- start time, set by fmi2SetupExperiment
 				nil,
 				
-				-- current time = start time initially
+				-- stop time, optionally set by fmi2SetupExperiment
+				nil,
+				
+				-- current time, set by fmi2SetupExperiment
 				0		
 			)
 	pre
@@ -181,7 +181,12 @@ functions
 					exists lc in seq logcats &
 						lc.name = cname)
 	post
-		RESULT.#2.logCategories = if loggingOn then elems categories else nil;
+		RESULT.#2.logCategories =
+			if loggingOn
+			then if nCategories = 0
+				then [ cat.name | cat in seq c.callbacks.componentEnvironment.logCategories ]
+				else elems categories
+			else nil;
 
 	/**
 	 * The fmi2FreeInstance API. This performs sufficient checks to pass the precondition on the
