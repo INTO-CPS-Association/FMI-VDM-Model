@@ -147,10 +147,9 @@ functions
 						{
 							-- @OnFail("2.2.9 Structured name %s invalid at line %s", sv.name, sv.location)
 							( isValidStructuredName(sv.name) ),
-	
-							-- @OnFail("2.2.9 Name %s is not a derivative at line %s", sv.name, sv.location)
-							( sv.name(1, ..., 4) = "der(" =>
-								is_Real(sv.variable) and sv.variable.derivative <> nil )
+
+							-- @OnFail("2.2.9 Name %s is not Real at line %s", sv.name, sv.location)
+							( sv.name(1, ..., 4) = "der(" => is_Real(sv.variable) )
 						}
 
 						| sv in seq eModelVariables
