@@ -39,7 +39,8 @@ functions
 		mk_(<fmi2OK>, mu(c,
 			currentTime |-> c.currentTime + communicationStepSize))
 	pre
-		c.fmuState in set STATES_fmi2DoStep
+		c.fmuType = <fmi2CoSimulation>
+		and c.fmuState in set STATES_fmi2DoStep
 		and communicationStepSize > 0.0;
 		-- TODO more...!
 
@@ -47,14 +48,17 @@ functions
 	 * The fmi2DoStep API. This performs sufficient checks to pass the precondition on the
 	 * implementation function, returning an fmi2Status if any checks fail.
 	 */
-	fmi2DoStep: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * fmi2Component
+	fmi2DoStep: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * [fmi2Component]
 	fmi2DoStep(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
-		if c.fmuState not in set STATES_fmi2DoStep
+		if c.fmuType <> <fmi2CoSimulation>
+		then -- @Printf("Cannot call fmi2DoStep for fmi2ModelExchange\n")
+			mk_(<fmi2Error>, nil)
+		elseif c.fmuState not in set STATES_fmi2DoStep
 		then -- @Printf("Cannot call fmi2DoStep in state %s\n", c.fmuState)
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif communicationStepSize <= 0.0
 		then -- @Printf("Communication step size must be >0\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint)
 	 post
@@ -68,7 +72,8 @@ functions
 	fmi2CancelStep_Impl(c) ==
 		is not yet specified
 	pre
-		c.fmuState in set STATES_fmi2CancelStep;
+		c.fmuType = <fmi2CoSimulation>
+		and c.fmuState in set STATES_fmi2CancelStep;
 
 	/**
 	 * The fmi2CancelStep API. This performs sufficient checks to pass the precondition on the
@@ -76,7 +81,10 @@ functions
 	 */
 	fmi2CancelStep: fmi2Component +> fmi2Status
 	fmi2CancelStep(c) ==
-		if c.fmuState not in set STATES_fmi2CancelStep
+		if c.fmuType <> <fmi2CoSimulation>
+		then -- @Printf("Cannot call fmi2CancelStep for fmi2ModelExchange\n")
+			<fmi2Error>
+		elseif c.fmuState not in set STATES_fmi2CancelStep
 		then -- @Printf("Cannot call fmi2CancelStep in state %s\n", c.fmuState)
 			<fmi2Error>
 	 	else

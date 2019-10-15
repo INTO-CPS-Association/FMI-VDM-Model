@@ -54,27 +54,27 @@ functions
 			(
 				-- The FMU type
 				fmuType,
-				
+
 				-- The initial state
 				<INSTANTIATED>,
-				
+
 				-- The callbacks passed in
 				callbacks,
-				
+
 				-- The effective ScalarVariables, after all defaults and inherited values set
 				eModelVariables,
-				
+
 				-- The continuous time states (indexes)
 				[ i | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables) ],
-				
+
 				-- The initial unknowns (indexes), which may be an empty set
 				{ u.index | u in seq initialUnknowns },
-				
+
 				-- The initial setting of log categories (nil means debugging is disabled)
 				if loggingOn and callbacks.componentEnvironment.logCategories <> nil
 				then { cat.name | cat in seq callbacks.componentEnvironment.logCategories }
 				else nil,
-				
+
 				-- The state vector, indexed by SV number, created from the effective SVs
 				-- Initially either the start value given, or the default start value for the type.
 				[
@@ -91,15 +91,15 @@ functions
 
 					| sv in seq eModelVariables
 				],
-				
+
 				-- start time, set by fmi2SetupExperiment
 				nil,
-				
+
 				-- stop time, optionally set by fmi2SetupExperiment
 				nil,
-				
+
 				-- current time, set by fmi2SetupExperiment
-				0		
+				nil
 			)
 	pre
 		instanceName <> ""

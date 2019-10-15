@@ -63,12 +63,12 @@ types
 		fmuType					: fmi2Type
 		fmuState				: fmi2State
 		callbacks				: fmi2CallbackFunctions
-		
+
 		-- convenience fields
 		eModelVariables			: seq1 of ScalarVariable
 		continuousTimeStates	: seq of nat1
 		initialUnknowns			: set of nat1
-		
+
 		-- state and settings
 		logCategories			: [set1 of fmi2String]	-- nil means logging off
 		variables				: seq1 of (fmi2Real | fmi2Integer | fmi2Boolean | fmi2String)
