@@ -34,16 +34,18 @@ types
 	-- XSD p45, description p46
 	Causality	= <parameter> | <calculatedParameter> | <input> | <output> | <local> | <independent>;
 
-	-- XSD p45, description p46, ordering p53
+	-- XSD p45, description p46, ordering p53 (2.0.1)
 	Variability	= <constant> | <fixed> | <tunable> | <discrete> | <continuous>
 	ord a < b ==
-		cases a:
-			<constant>   -> b in set {<fixed>, <tunable>, <discrete>, <continuous>},
-			<fixed>      -> b in set {<tunable>, <discrete>, <continuous>},
-			<tunable>    -> b in set {<discrete>, <continuous>},
-			<discrete>   -> b = <continuous>,
-			<continuous> -> false
-		end;
+		let value =
+		{
+			<constant>   |-> 1,
+			<fixed>      |-> 2,
+			<tunable>    |-> 3,
+			<discrete>   |-> 4,
+			<continuous> |-> 5
+		}
+		in value(a) < value(b);
 
 	-- XSD p45, description p46
 	Initial		= <exact> | <approx> | <calculated>;
