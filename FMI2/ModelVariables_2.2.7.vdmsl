@@ -346,13 +346,13 @@ functions
 					 	if exists a in set aliases & a.causality in set {<input>, <parameter>}
 					 	then
 					 		let a in set aliases be st a.causality in set {<input>, <parameter>} in
-				 				/* @OnFail("2.2.7 Aliases of reference %s/%s must all be %s, because of %s",
+				 				/* @OnFail("2.2.7 Warning: aliases of reference %s/%s must all be %s, because of %s",
 				 						ref.#1, ref.#2, a.variability, a.name) */
-				 				( vars = { a.variability } )
+				 				( vars = { a.variability } ) or true
 					 	else
 					 		let highest in set vars be st not exists v in set vars & v > highest in
-					 			-- @OnFail("2.2.7 Aliases of reference %s/%s must all be %s", ref.#1, ref.#2, highest)
-					 			( vars = { highest } )
+					 			-- @OnFail("2.2.7 Warning: aliases of reference %s/%s must all be %s", ref.#1, ref.#2, highest)
+					 			( vars = { highest } ) or true
 				}
 
 				| ref in set dom refmap & card refmap(ref) > 1
