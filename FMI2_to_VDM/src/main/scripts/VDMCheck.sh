@@ -71,7 +71,7 @@ case $(file -b --mime-type $FILE) in
 		fi
 	;;
 		
-	application/xml)
+	application/xml|text/xml)
 		cp $FILE $XML
 	;;
 		
