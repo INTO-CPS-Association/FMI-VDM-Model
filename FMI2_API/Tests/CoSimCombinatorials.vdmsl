@@ -1,0 +1,197 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * Combinatorial tests of the co-simulation API.
+ */
+types
+	API =
+		<fmi2Instantiate> |
+		<fmi2SetupExperiment> |
+		<fmi2SetINI> |
+		<fmi2EnterInitializationMode> |
+		<fmi2SetIN> |
+		<fmi2SetINIE> |
+		<fmi2GetINIT> |
+		<fmi2ExitInitializationMode> |
+		<fmi2GetX> |
+		<fmi2DoStep> |
+		<fmi2GetS>|
+		<fmi2Terminate> |
+		<fmi2FreeInstance> |
+		<fmi2Reset>;
+
+values
+	stateMachine : map fmi2State to map API to set of fmi2State =
+	{
+		<START> |->
+		{
+			<fmi2Instantiate>				|-> { <INSTANTIATED> }
+		},
+
+		<INSTANTIATED> |->
+		{
+			<fmi2SetupExperiment>			|-> { <INSTANTIATED> },
+			<fmi2SetINI>					|-> { <INSTANTIATED> },
+			<fmi2EnterInitializationMode>	|-> { <INITIALIZATION> },
+			<fmi2Reset>						|-> { <INSTANTIATED> }
+		},
+
+		<INITIALIZATION> |->
+		{
+			<fmi2SetIN>						|-> { <INITIALIZATION> },
+			<fmi2SetINIE>					|-> { <INITIALIZATION> },
+			<fmi2GetINIT>					|-> { <INITIALIZATION> },
+			<fmi2ExitInitializationMode>	|-> { <STEP_COMPLETE> },
+			<fmi2Reset>						|-> { <INSTANTIATED> }
+		},
+
+		<STEP_COMPLETE> |->
+		{
+			<fmi2GetX>						|-> { <STEP_COMPLETE> },
+			<fmi2DoStep>					|-> { <STEP_COMPLETE>, <STEP_FAILED> }, -- <STEP_IN_PROGRESS> },
+			<fmi2Terminate>					|-> { <TERMINATED> },
+			<fmi2Reset>						|-> { <INSTANTIATED> }
+		},
+
+		<STEP_FAILED> |->
+		{
+			<fmi2GetX>						|-> { <STEP_FAILED> },
+			<fmi2GetS>						|-> { <STEP_FAILED> },
+			<fmi2Terminate>					|-> { <TERMINATED> },
+			<fmi2Reset>						|-> { <INSTANTIATED> }
+		},
+
+		<TERMINATED> |->
+		{
+			<fmi2GetX>						|-> { <TERMINATED> },
+			<fmi2GetS>						|-> { <TERMINATED> },
+			<fmi2FreeInstance>				|-> { <END> },
+			<fmi2Reset>						|-> { <INSTANTIATED> }
+		},
+
+		<END> |->
+		{
+			|->
+		}
+	};
+
+functions
+	isOK: fmi2State * seq of API * API +> bool
+	isOK(cstate, prev, api) ==
+		let pset = elems prev,
+			getset = {<fmi2SetINI>, <fmi2SetIN>, <fmi2SetINIE>, <fmi2GetINIT>, <fmi2GetX>, <fmi2GetS>},
+			lastapi = if prev = [] then nil else prev(len prev)
+		in
+			cases api:
+				<fmi2Instantiate> ->
+					prev = [],
+
+				<fmi2SetupExperiment> ->
+					<fmi2SetupExperiment> not in set pset,
+
+				<fmi2EnterInitializationMode> ->
+					<fmi2SetupExperiment> in set pset,
+
+				<fmi2SetINI> ->
+					(cstate = <INSTANTIATED> => <fmi2SetupExperiment> in set pset)
+					and lastapi not in set getset,
+
+				<fmi2Reset> ->
+					lastapi = <fmi2DoStep>,	-- Only reset after dosteps for now?
+
+				<fmi2SetIN>,
+				<fmi2SetINIE>,
+				<fmi2GetINIT>,
+				<fmi2GetX>,
+				<fmi2GetS> ->
+					-- Just call one at a time, to simplify traces
+					lastapi not in set getset,
+
+				others -> true	-- No restrictions
+			end;
+
+operations
+	process: API ==> ()
+	process(-) == skip;
+
+traces
+CoSimTests:
+let s1 = <START> in
+let a1 in set dom stateMachine(s1) be st isOK(s1, [], a1) in
+(
+process(a1);
+let s2 in set stateMachine(s1)(a1) in
+let a2 in set dom stateMachine(s2) be st isOK(s2, [a1], a2) in
+(
+process(a2);
+let s3 in set stateMachine(s2)(a2) in
+let a3 in set dom stateMachine(s3) be st isOK(s3, [a1, a2], a3) in
+(
+process(a3);
+let s4 in set stateMachine(s3)(a3) in
+let a4 in set dom stateMachine(s4) be st isOK(s4, [a1, a2, a3], a4) in
+(
+process(a4);
+let s5 in set stateMachine(s4)(a4) in
+let a5 in set dom stateMachine(s5) be st isOK(s5, [a1, a2, a3, a4], a5) in
+(
+process(a5);
+let s6 in set stateMachine(s5)(a5) in
+let a6 in set dom stateMachine(s6) be st isOK(s6, [a1, a2, a3, a4, a5], a6) in
+(
+process(a6);
+let s7 in set stateMachine(s6)(a6) in
+let a7 in set dom stateMachine(s7) be st isOK(s7, [a1, a2, a3, a4, a5, a6], a7) in
+(
+process(a7);
+let s8 in set stateMachine(s7)(a7) in
+let a8 in set dom stateMachine(s8) be st isOK(s8, [a1, a2, a3, a4, a5, a6, a7], a8) in
+(
+process(a8);
+let s9 in set stateMachine(s8)(a8) in
+let a9 in set dom stateMachine(s9) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8], a9) in
+(
+process(a9);
+let s10 in set stateMachine(s9)(a9) in
+let a10 in set dom stateMachine(s10) be st isOK(s10, [a1, a2, a3, a4, a5, a6, a7, a8, a9], a10) in
+(
+process(a10);
+let s11 in set stateMachine(s10)(a10) in
+let a11 in set dom stateMachine(s11) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10], a11) in
+(
+process(a11);
+let s12 in set stateMachine(s11)(a11) in
+let a12 in set dom stateMachine(s12) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11], a12) in
+(
+process(a12);
+)
+)
+)
+)))))))));
