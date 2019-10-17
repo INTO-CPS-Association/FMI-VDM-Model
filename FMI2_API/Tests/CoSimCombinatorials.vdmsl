@@ -184,11 +184,11 @@ CoSimTests:
 	(
 	process(a10);
 	let s11 in set stateMachine(s10)(a10) in
-	let a11 in set dom stateMachine(s11) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10], a11) in
+	let a11 in set dom stateMachine(s11) be st isOK(s11, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10], a11) in
 	(
 	process(a11);
 	let s12 in set stateMachine(s11)(a11) in
-	let a12 in set dom stateMachine(s12) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11], a12) in
+	let a12 in set dom stateMachine(s12) be st isOK(s12, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11], a12) in
 	(
 	process(a12);
 	)

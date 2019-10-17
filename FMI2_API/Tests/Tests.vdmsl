@@ -56,7 +56,7 @@ operations
 		let startTime : real = 0, endTime : real = 1000 in
 		(
 			dcl c : [fmi2Component] := fmi2Instantiate("test", <fmi2CoSimulation>, "GUID", "", callbacks, false, true);
-			
+
 			if c = nil
 			then exit "Cannot instantiate FMU";
 
