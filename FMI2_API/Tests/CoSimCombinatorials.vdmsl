@@ -143,55 +143,53 @@ operations
 
 traces
 CoSimTests:
-let s1 = <START> in
-let a1 in set dom stateMachine(s1) be st isOK(s1, [], a1) in
-(
-process(a1);
-let s2 in set stateMachine(s1)(a1) in
-let a2 in set dom stateMachine(s2) be st isOK(s2, [a1], a2) in
-(
-process(a2);
-let s3 in set stateMachine(s2)(a2) in
-let a3 in set dom stateMachine(s3) be st isOK(s3, [a1, a2], a3) in
-(
-process(a3);
-let s4 in set stateMachine(s3)(a3) in
-let a4 in set dom stateMachine(s4) be st isOK(s4, [a1, a2, a3], a4) in
-(
-process(a4);
-let s5 in set stateMachine(s4)(a4) in
-let a5 in set dom stateMachine(s5) be st isOK(s5, [a1, a2, a3, a4], a5) in
-(
-process(a5);
-let s6 in set stateMachine(s5)(a5) in
-let a6 in set dom stateMachine(s6) be st isOK(s6, [a1, a2, a3, a4, a5], a6) in
-(
-process(a6);
-let s7 in set stateMachine(s6)(a6) in
-let a7 in set dom stateMachine(s7) be st isOK(s7, [a1, a2, a3, a4, a5, a6], a7) in
-(
-process(a7);
-let s8 in set stateMachine(s7)(a7) in
-let a8 in set dom stateMachine(s8) be st isOK(s8, [a1, a2, a3, a4, a5, a6, a7], a8) in
-(
-process(a8);
-let s9 in set stateMachine(s8)(a8) in
-let a9 in set dom stateMachine(s9) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8], a9) in
-(
-process(a9);
-let s10 in set stateMachine(s9)(a9) in
-let a10 in set dom stateMachine(s10) be st isOK(s10, [a1, a2, a3, a4, a5, a6, a7, a8, a9], a10) in
-(
-process(a10);
-let s11 in set stateMachine(s10)(a10) in
-let a11 in set dom stateMachine(s11) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10], a11) in
-(
-process(a11);
-let s12 in set stateMachine(s11)(a11) in
-let a12 in set dom stateMachine(s12) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11], a12) in
-(
-process(a12);
-)
-)
-)
-)))))))));
+	let s1 = <START> in
+	let a1 in set dom stateMachine(s1) be st isOK(s1, [], a1) in
+	(
+	process(a1);
+	let s2 in set stateMachine(s1)(a1) in
+	let a2 in set dom stateMachine(s2) be st isOK(s2, [a1], a2) in
+	(
+	process(a2);
+	let s3 in set stateMachine(s2)(a2) in
+	let a3 in set dom stateMachine(s3) be st isOK(s3, [a1, a2], a3) in
+	(
+	process(a3);
+	let s4 in set stateMachine(s3)(a3) in
+	let a4 in set dom stateMachine(s4) be st isOK(s4, [a1, a2, a3], a4) in
+	(
+	process(a4);
+	let s5 in set stateMachine(s4)(a4) in
+	let a5 in set dom stateMachine(s5) be st isOK(s5, [a1, a2, a3, a4], a5) in
+	(
+	process(a5);
+	let s6 in set stateMachine(s5)(a5) in
+	let a6 in set dom stateMachine(s6) be st isOK(s6, [a1, a2, a3, a4, a5], a6) in
+	(
+	process(a6);
+	let s7 in set stateMachine(s6)(a6) in
+	let a7 in set dom stateMachine(s7) be st isOK(s7, [a1, a2, a3, a4, a5, a6], a7) in
+	(
+	process(a7);
+	let s8 in set stateMachine(s7)(a7) in
+	let a8 in set dom stateMachine(s8) be st isOK(s8, [a1, a2, a3, a4, a5, a6, a7], a8) in
+	(
+	process(a8);
+	let s9 in set stateMachine(s8)(a8) in
+	let a9 in set dom stateMachine(s9) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8], a9) in
+	(
+	process(a9);
+	let s10 in set stateMachine(s9)(a9) in
+	let a10 in set dom stateMachine(s10) be st isOK(s10, [a1, a2, a3, a4, a5, a6, a7, a8, a9], a10) in
+	(
+	process(a10);
+	let s11 in set stateMachine(s10)(a10) in
+	let a11 in set dom stateMachine(s11) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10], a11) in
+	(
+	process(a11);
+	let s12 in set stateMachine(s11)(a11) in
+	let a12 in set dom stateMachine(s12) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11], a12) in
+	(
+	process(a12);
+	)
+	)))))))))));
