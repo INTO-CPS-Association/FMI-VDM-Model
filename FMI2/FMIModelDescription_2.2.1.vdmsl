@@ -231,10 +231,20 @@ functions
 				in
 					if outputIndexes <> {}
 					then
-						/* @OnFail("2.2.8 Outputs should be %s at line %s",
-							outputIndexes, md.modelStructure.location) */
-						( md.modelStructure.outputs <> nil
-						  and { u.index | u in seq md.modelStructure.outputs } = outputIndexes )
+						/* @OnFail("2.2.8 Ouput variables but no ouputs declared at line %s",
+							md.modelStructure.location) */
+						( md.modelStructure.outputs <> nil )
+
+						and let structIndexes = { u.index | u in seq md.modelStructure.outputs } in
+						{
+							/* @OnFail("2.2.8 Outputs section does not match output variables at line %s",
+								md.modelStructure.location) */
+							( structIndexes = outputIndexes ),
+
+							/* @OnFail("2.2.8 Output indexes out of range at line %s",
+								md.modelStructure.location) */
+							( forall i in set structIndexes & i <= len eModelVariables )
+						} = {true}
 					else
 						/* @OnFail("2.2.8 Outputs should be omitted at line %s",
 							md.modelStructure.location) */
