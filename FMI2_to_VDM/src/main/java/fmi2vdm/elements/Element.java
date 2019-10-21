@@ -151,7 +151,8 @@ abstract public class Element
 	
 	public void add(Element element)
 	{
-		System.err.println("Cannot add " + element.getClass().getSimpleName() + " to " + getClass().getSimpleName());
+		FMI2SaxParser.error("Cannot add " + element.getClass().getSimpleName() + " to " + getClass().getSimpleName() +
+				 " at line %d", element.lineNumber);
 	}
 	
 	protected void printOptional(String indent, Element element, String tail)

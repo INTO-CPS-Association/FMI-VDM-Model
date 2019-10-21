@@ -63,9 +63,9 @@ public class FMI2SaxParser
 		}
 	}
 	
-	public static void error(String message)
+	public static void error(String message, Object... args)
 	{
-		System.err.println(message);
+		System.err.printf(message + "\n", args);
 		errors++;
 	}
 }

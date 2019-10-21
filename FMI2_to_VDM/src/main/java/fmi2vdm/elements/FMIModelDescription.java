@@ -33,6 +33,8 @@ import java.util.Date;
 
 import org.xml.sax.Locator;
 
+import fmi2vdm.FMI2SaxParser;
+
 public class FMIModelDescription extends Element
 {
 	private final String xmlfile;
@@ -63,11 +65,25 @@ public class FMIModelDescription extends Element
 	{
 		if (element instanceof CoSimulation)
 		{
-			coSimulation = (CoSimulation) element;
+			if (coSimulation != null)
+			{
+				FMI2SaxParser.error("Only one CoSimulation element permitted at line %d", element.lineNumber);
+			}
+			else
+			{
+				coSimulation = (CoSimulation) element;
+			}
 		}
 		else if (element instanceof ModelExchange)
 		{
-			modelExchange = (ModelExchange) element;
+			if (modelExchange != null)
+			{
+				FMI2SaxParser.error("Only one ModelExchange element permitted at line %d", element.lineNumber);
+			}
+			else
+			{
+				modelExchange = (ModelExchange) element;
+			}
 		}
 		else if (element instanceof UnitDefinitions)
 		{
