@@ -252,30 +252,32 @@ functions
 			),
 
 			(
-				let derivativeIndexes = { svi | svi in set inds eModelVariables &
-					is_Real(eModelVariables(svi).variable)
-					and eModelVariables(svi).variable.derivative <> nil }
-				in
-					if derivativeIndexes <> {}
-					then
-						/* @OnFail("2.2.8 Real/derivative variables but no Derivatives declared at line %s",
-							md.modelStructure.location) */
-						( md.modelStructure.derivatives <> nil )
-
-						and let structIndexes = { u.index | u in seq md.modelStructure.derivatives } in
-						{
-							/* @OnFail("2.2.8 Derivatives section does not match Real/derivative variables at line %s",
+				md.modelExchange <> nil
+				or (md.coSimulation <> nil and nilBool(md.coSimulation.providesDirectionalDerivative)) =>
+					let derivativeIndexes = { svi | svi in set inds eModelVariables &
+						is_Real(eModelVariables(svi).variable)
+						and eModelVariables(svi).variable.derivative <> nil }
+					in
+						if derivativeIndexes <> {}
+						then
+							/* @OnFail("2.2.8 Real/derivative variables but no Derivatives declared at line %s",
 								md.modelStructure.location) */
-							( structIndexes = derivativeIndexes ),
+							( md.modelStructure.derivatives <> nil )
 
-							/* @OnFail("2.2.8 Derivatives indexes out of range at line %s",
+							and let structIndexes = { u.index | u in seq md.modelStructure.derivatives } in
+							{
+								/* @OnFail("2.2.8 Derivatives section does not match Real/derivative variables at line %s",
+									md.modelStructure.location) */
+								( structIndexes = derivativeIndexes ),
+
+								/* @OnFail("2.2.8 Derivatives indexes out of range at line %s",
+									md.modelStructure.location) */
+								( forall i in set structIndexes & i <= len eModelVariables )
+							} = {true}
+						else
+							/* @OnFail("2.2.8 Derivatives declared, but no Real/derivative variables at line %s",
 								md.modelStructure.location) */
-							( forall i in set structIndexes & i <= len eModelVariables )
-						} = {true}
-					else
-						/* @OnFail("2.2.8 Derivatives declared, but no Real/derivative variables at line %s",
-							md.modelStructure.location) */
-						( md.modelStructure.derivatives = nil )
+							( md.modelStructure.derivatives = nil )
 			),
 
 			-- InitalUnknowns must include all output (approx/calculated), calculatedParameters and 
