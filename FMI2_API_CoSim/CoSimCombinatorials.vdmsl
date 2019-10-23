@@ -178,7 +178,17 @@ operations
 					then exit "Cannot set up experiment"
 					else c := c2,
 
-			<fmi2SetINI> -> skip,
+			<fmi2SetINI> ->
+				let vars = [ i | i in set inds c.eModelVariables &
+					let v = c.eModelVariables(i) in
+						v.variability <> <constant>
+						and v.initial in set { <exact>, <approx> }] in
+					if vars = []
+					then skip
+					else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
+						if s <> <fmi2OK>
+						then exit "Cannot set INI variables"
+						else c := c2,
 
 			<fmi2EnterInitializationMode> ->
 				let mk_(s, c2) = fmi2EnterInitializationMode(c) in
@@ -266,9 +276,6 @@ CoSimTests:
 	let a5 in set dom stateMachine(s5) be st isOK(s5, [a1, a2, a3, a4], a5) in
 	(
 	process(a5);
-	)))));
-
-	/*************
 	let s6 in set stateMachine(s5)(a5) in
 	let a6 in set dom stateMachine(s6) be st isOK(s6, [a1, a2, a3, a4, a5], a6) in
 	(
@@ -289,6 +296,8 @@ CoSimTests:
 	let a10 in set dom stateMachine(s10) be st isOK(s10, [a1, a2, a3, a4, a5, a6, a7, a8, a9], a10) in
 	(
 	process(a10);
+	))))))))))
+	/*************
 	let s11 in set stateMachine(s10)(a10) in
 	let a11 in set dom stateMachine(s11) be st isOK(s11, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10], a11) in
 	(

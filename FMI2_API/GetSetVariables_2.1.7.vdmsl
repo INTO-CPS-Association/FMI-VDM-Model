@@ -84,12 +84,12 @@ functions
 	 */
 	fmi2GetReal_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetReal_Impl(c, vrs, nvr) ==
-		is not yet specified
+		mk_(<fmi2OK>, [ c.variables(i) | i in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
 		and forall vr in seq vrs &
-			vr <= len c.variables and is_Real(c.variables(vr))
+			vr <= len c.variables and is_fmi2Real(c.variables(vr))
 	post
 		RESULT.#1 = <fmi2OK> =>
 			len RESULT.#2 = nvr;
@@ -102,7 +102,7 @@ functions
 		elseif not generalGetPrecondition(c, vrs)
 		then -- @Printf("Get preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs & vr > len c.variables or not is_Real(c.variables(vr))
+		elseif exists vr in seq vrs & vr > len c.variables or not is_fmi2Real(c.variables(vr))
 		then -- @Printf("Value references are not all Real variables\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -116,12 +116,12 @@ functions
 	 */
 	fmi2GetInteger_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Integer
 	fmi2GetInteger_Impl(c, vrs, nvr) ==
-		is not yet specified
+		mk_(<fmi2OK>, [ c.variables(i) | i in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
 		and forall vr in seq vrs &
-			vr <= len c.variables and is_Integer(c.variables(vr))
+			vr <= len c.variables and is_fmi2Integer(c.variables(vr))
 	post
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
@@ -134,7 +134,7 @@ functions
 		elseif not generalGetPrecondition(c, vrs)
 		then -- @Printf("Get preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs & vr > len c.variables or not is_Integer(c.variables(vr))
+		elseif exists vr in seq vrs & vr > len c.variables or not is_fmi2Integer(c.variables(vr))
 		then -- @Printf("Value references are not all Integer variables\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -148,12 +148,12 @@ functions
 	 */
 	fmi2GetBoolean_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Boolean
 	fmi2GetBoolean_Impl(c, vrs, nvr) ==
-		is not yet specified
+		mk_(<fmi2OK>, [ c.variables(i) | i in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
 		and forall vr in seq vrs &
-			vr <= len c.variables and is_Boolean(c.variables(vr))
+			vr <= len c.variables and is_fmi2Boolean(c.variables(vr))
 	post
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
@@ -166,7 +166,7 @@ functions
 		elseif not generalGetPrecondition(c, vrs)
 		then -- @Printf("Get preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs & vr > len c.variables or not is_Boolean(c.variables(vr))
+		elseif exists vr in seq vrs & vr > len c.variables or not is_fmi2Boolean(c.variables(vr))
 		then -- @Printf("Value references are not all Boolean variables\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -180,12 +180,12 @@ functions
 	 */
 	fmi2GetString_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2String
 	fmi2GetString_Impl(c, vrs, nvr) ==
-		is not yet specified
+		mk_(<fmi2OK>, [ c.variables(i) | i in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
 		and forall vr in seq vrs &
-			vr <= len c.variables and is_String(c.variables(vr))
+			vr <= len c.variables and is_fmi2String(c.variables(vr))
 	post
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
@@ -198,7 +198,7 @@ functions
 		elseif not generalGetPrecondition(c, vrs)
 		then -- @Printf("Get preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs & vr > len c.variables or not is_String(c.variables(vr))
+		elseif exists vr in seq vrs & vr > len c.variables or not is_fmi2String(c.variables(vr))
 		then -- @Printf("Value references are not all String variables\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -210,29 +210,31 @@ functions
 	/**
 	 * Implementation and API for fmi2SetReal.
 	 */
-	fmi2SetReal_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status
+	fmi2SetReal_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetReal_Impl(c, vrs, nvr, value) ==
-		is not yet specified
+		let updates = { vrs(i) |-> value(i) | i in set inds vrs } in
+			mk_(<fmi2OK>, mu(c,
+				variables |-> c.variables ++ updates))
 	pre
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
 		and forall vr in seq vrs &
-			vr <= len c.variables and is_Real(c.variables(vr));
+			vr <= len c.variables and is_fmi2Real(c.variables(vr));
 
-	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status
+	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetReal(c, vrs, nvr, value) ==
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
-			<fmi2Error>
-		elseif exists vr in seq vrs & vr > len c.variables or not is_Real(c.variables(vr))
+			mk_(<fmi2Error>, c)
+		elseif exists vr in seq vrs & vr > len c.variables or not is_fmi2Real(c.variables(vr))
 		then -- @Printf("Value references are not all Real variables\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		else
 			fmi2SetReal_Impl(c, vrs, nvr, value);
 
@@ -240,29 +242,31 @@ functions
 	/**
 	 * Implementation and API for fmi2SetInteger.
 	 */
-	fmi2SetInteger_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status
+	fmi2SetInteger_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status * fmi2Component
 	fmi2SetInteger_Impl(c, vrs, nvr, value) ==
-		is not yet specified
+		let updates = { vrs(i) |-> value(i) | i in set inds vrs } in
+			mk_(<fmi2OK>, mu(c,
+				variables |-> c.variables ++ updates))
 	pre
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
 		and forall vr in seq vrs &
-			vr <= len c.variables and is_Integer(c.variables(vr));
+			vr <= len c.variables and is_fmi2Integer(c.variables(vr));
 
-	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status
+	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status * fmi2Component
 	fmi2SetInteger(c, vrs, nvr, value) ==
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
-			<fmi2Error>
-		elseif exists vr in seq vrs & vr > len c.variables or not is_Integer(c.variables(vr))
+			mk_(<fmi2Error>, c)
+		elseif exists vr in seq vrs & vr > len c.variables or not is_fmi2Integer(c.variables(vr))
 		then -- @Printf("Value references are not all Integer variables\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		else
 			fmi2SetInteger_Impl(c, vrs, nvr, value);
 
@@ -270,29 +274,31 @@ functions
 	/**
 	 * Implementation and API for fmi2SetBoolean.
 	 */
-	fmi2SetBoolean_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status
+	fmi2SetBoolean_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status * fmi2Component
 	fmi2SetBoolean_Impl(c, vrs, nvr, value) ==
-		is not yet specified
+		let updates = { vrs(i) |-> value(i) | i in set inds vrs } in
+			mk_(<fmi2OK>, mu(c,
+				variables |-> c.variables ++ updates))
 	pre
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
 		and forall vr in seq vrs &
-			vr <= len c.variables and is_Boolean(c.variables(vr));
+			vr <= len c.variables and is_fmi2Boolean(c.variables(vr));
 
-	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status
+	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status * fmi2Component
 	fmi2SetBoolean(c, vrs, nvr, value) ==
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
-			<fmi2Error>
-		elseif exists vr in seq vrs & vr > len c.variables or not is_Boolean(c.variables(vr))
+			mk_(<fmi2Error>, c)
+		elseif exists vr in seq vrs & vr > len c.variables or not is_fmi2Boolean(c.variables(vr))
 		then -- @Printf("Value references are not all Boolean variables\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		else
 			fmi2SetBoolean_Impl(c, vrs, nvr, value);
 
@@ -300,29 +306,30 @@ functions
 	/**
 	 * Implementation and API for fmi2SetString.
 	 */
-	fmi2SetString_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status
+	fmi2SetString_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status * fmi2Component
 	fmi2SetString_Impl(c, vrs, nvr, value) ==
-		is not yet specified
+		let updates = { vrs(i) |-> value(i) | i in set inds vrs } in
+			mk_(<fmi2OK>, mu(c,
+				variables |-> c.variables ++ updates))
 	pre
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
 		and forall vr in seq vrs &
-			vr <= len c.variables and is_String(c.variables(vr));
+			vr <= len c.variables and is_fmi2String(c.variables(vr));
 
-	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status
+	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status * fmi2Component
 	fmi2SetString(c, vrs, nvr, value) ==
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
-			<fmi2Error>
-		elseif exists vr in seq vrs & vr > len c.variables or not is_String(c.variables(vr))
+			mk_(<fmi2Error>, c)
+		elseif exists vr in seq vrs & vr > len c.variables or not is_fmi2String(c.variables(vr))
 		then -- @Printf("Value references are not all String variables\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, c)
 		else
 			fmi2SetString_Impl(c, vrs, nvr, value);
-	
