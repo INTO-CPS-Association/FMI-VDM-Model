@@ -1,0 +1,96 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * Test FMU configuration.
+ */
+values
+	springMassDamper = mk_FMIModelDescription
+	(
+		-- Attributes
+		mk_ModelAttributes(0, "2.0", "MassSpringDamper", "GUID", nil, nil, nil, nil, nil, nil, nil, <structured>, nil),
+
+		-- Model types
+		nil,
+		mk_CoSimulation(0, "MSD", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil),
+
+		-- Unit definitions
+		nil,
+
+		-- TypeDefinitions
+		{
+			mk_SimpleType(0, "Modelica.SIunits.Inertia",         nil, mk_RealType(nil, nil, nil, nil, 0, nil, nil, nil)),
+			mk_SimpleType(0, "Modelica.SIunits.Torque",          nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil)),
+			mk_SimpleType(0, "Modelica.SIunits.AngularVelocity", nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil)),
+			mk_SimpleType(0, "Modelica.SIunits.Angle",           nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil))
+		},
+
+		-- Log categories
+		[
+			mk_Category(0, "debug", "debug output")
+		],
+
+		-- Default experiment
+		nil,
+
+		-- Vendor annotations
+		nil,
+
+		-- ScalarVariables
+		[
+/* 1 */		mk_ScalarVariable(1, "inertial.J", 0, nil, <parameter>, <fixed>, nil, nil,
+					mk_Real("Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
+
+/* 2 */		mk_ScalarVariable(2, "torque.tau", 1, nil, <input>, nil, nil, nil,
+					mk_Real("Modelica.SIunits.Torque", nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
+
+/* 3 */		mk_ScalarVariable(3, "inertial.phi", 2, nil, <output>, nil, nil, nil,
+					mk_Real("Modelica.SIunits.Angle", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
+
+/* 4 */		mk_ScalarVariable(4, "inertial.w", 3, nil, <output>, nil, nil, nil,
+					mk_Real("Modelica.SIunits.AngularVelocity", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil)
+		],
+
+		mk_ModelStructure
+		(
+			0,
+			-- Outputs
+			[
+				mk_Unknown(0, 3, nil, nil),
+				mk_Unknown(0, 4, nil, nil)
+			],
+			-- Derivatives
+			nil,
+			-- InitialUnknowns
+			[
+				mk_Unknown(0, 3, nil, nil),
+				mk_Unknown(0, 4, nil, nil)
+			]
+		)
+	);

@@ -137,9 +137,83 @@ functions
 				others -> true	-- No restrictions
 			end;
 
+	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> <VOID>
+	logger(-, -, -, category, message) ==
+		-- @Printf("%s: %s\n", category, message)
+		<VOID>;
+
+	allocateMemory: nat1 * nat1 +> token
+	allocateMemory(-, -) ==
+		is not yet specified;
+
+	freeMemory: token +> <VOID>
+	freeMemory(-) ==
+		is not yet specified;
+
+	stepFinished: fmi2ComponentEnvironment * fmi2Status +> <VOID>
+	stepFinished(-, -) ==
+		is not yet specified;
+
 operations
 	process: API ==> ()
-	process(-) == skip;
+	process(api) ==
+		cases api:
+			<fmi2Instantiate> ->
+				let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, springMassDamper) in
+				let r = fmi2Instantiate("CosimTest", <fmi2CoSimulation>, "GUID", "", callbacks, false, true) in
+				(
+					if r = nil
+					then exit "Cannot instantiate FMU"
+					else c := r;
+
+					let mk_(s, c2) = fmi2SetDebugLogging(c, true, 1, ["debug"]) in
+						if s <> <fmi2OK>
+						then exit "Cannot initialize logging"
+						else c := c2
+				),
+
+			<fmi2SetupExperiment> ->
+				let mk_(s, c2) = fmi2SetupExperiment(c, false, 0, 0, true, 1234) in
+					if s <> <fmi2OK>
+					then exit "Cannot set up experiment"
+					else c := c2,
+
+			<fmi2SetINI> -> skip,
+
+			<fmi2EnterInitializationMode> ->
+				let mk_(s, c2) = fmi2EnterInitializationMode(c) in
+					if s <> <fmi2OK>
+					then exit "Cannot enter initialization mode"
+					else c := c2,
+
+			<fmi2SetIN> -> skip,
+
+			<fmi2SetINIE> -> skip,
+
+			<fmi2GetINIT> -> skip,
+
+			<fmi2ExitInitializationMode> ->
+				let mk_(s, c2) = fmi2ExitInitializationMode(c) in 
+					if s <> <fmi2OK>
+					then exit "Cannot exit initialization mode"
+					else c := c2,
+
+			<fmi2GetX> -> skip,
+
+			<fmi2DoStep> -> skip,
+
+			<fmi2GetS>-> skip,
+
+			<fmi2Terminate> -> skip,
+
+			<fmi2FreeInstance> -> skip,
+
+			<fmi2Reset> -> skip
+		end
+
+state Sigma of
+	c	: fmi2Component
+end
 
 traces
 CoSimTests:
@@ -155,6 +229,8 @@ CoSimTests:
 	let a3 in set dom stateMachine(s3) be st isOK(s3, [a1, a2], a3) in
 	(
 	process(a3);
+	)))
+	/*************
 	let s4 in set stateMachine(s3)(a3) in
 	let a4 in set dom stateMachine(s4) be st isOK(s4, [a1, a2, a3], a4) in
 	(
@@ -193,3 +269,4 @@ CoSimTests:
 	process(a12);
 	)
 	)))))))))));
+	*************/
