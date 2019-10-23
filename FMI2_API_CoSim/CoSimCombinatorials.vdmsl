@@ -193,26 +193,55 @@ operations
 			<fmi2GetINIT> -> skip,
 
 			<fmi2ExitInitializationMode> ->
-				let mk_(s, c2) = fmi2ExitInitializationMode(c) in 
+				let mk_(s, c2) = fmi2ExitInitializationMode(c) in
+				(
 					if s <> <fmi2OK>
 					then exit "Cannot exit initialization mode"
-					else c := c2,
+					else c := c2;
+
+					time := 0
+				),
 
 			<fmi2GetX> -> skip,
 
-			<fmi2DoStep> -> skip,
+			<fmi2DoStep> ->
+				let mk_(s, c2) = fmi2DoStep(c, time, 1, true) in
+					if s = <fmi2Discard>
+					then let mk_(s2, terminated) = fmi2GetBooleanStatus(c2, <fmi2Terminated>) in
+						if s2 <> <fmi2OK>
+						then exit "Cannot get terminated status"
+
+						elseif terminated
+						then exit "Simulation requested termination"
+
+						else exit "Could not complete simulation"
+
+					elseif s <> <fmi2OK>
+					then exit "Could not complete simulation"
+
+					else ( time := time + 1; c := c2 ),
 
 			<fmi2GetS>-> skip,
 
-			<fmi2Terminate> -> skip,
+			<fmi2Terminate> ->
+				let mk_(s, c2) = fmi2Terminate(c) in
+					if s <> <fmi2OK>
+					then exit "Failed to terminate simulation"
+					else c := c2,
 
-			<fmi2FreeInstance> -> skip,
+			<fmi2FreeInstance> ->
+				let - = fmi2FreeInstance(c) in skip,		-- ignore <VOID> function result
 
-			<fmi2Reset> -> skip
+			<fmi2Reset> ->
+				let mk_(s, c2) = fmi2Reset(c) in
+					if s <> <fmi2OK>
+					then exit "Failed to reset simulation"
+					else c := c2
 		end
 
 state Sigma of
-	c	: fmi2Component
+	c		: fmi2Component
+	time	: real
 end
 
 traces
@@ -229,8 +258,6 @@ CoSimTests:
 	let a3 in set dom stateMachine(s3) be st isOK(s3, [a1, a2], a3) in
 	(
 	process(a3);
-	)))
-	/*************
 	let s4 in set stateMachine(s3)(a3) in
 	let a4 in set dom stateMachine(s4) be st isOK(s4, [a1, a2, a3], a4) in
 	(
@@ -239,6 +266,9 @@ CoSimTests:
 	let a5 in set dom stateMachine(s5) be st isOK(s5, [a1, a2, a3, a4], a5) in
 	(
 	process(a5);
+	)))));
+
+	/*************
 	let s6 in set stateMachine(s5)(a5) in
 	let a6 in set dom stateMachine(s6) be st isOK(s6, [a1, a2, a3, a4, a5], a6) in
 	(
