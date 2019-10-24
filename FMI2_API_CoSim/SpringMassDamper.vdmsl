@@ -38,7 +38,7 @@ values
 
 		-- Model types
 		nil,
-		mk_CoSimulation(0, "MSD", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil),
+		mk_CoSimulation(0, "MSD", nil, nil, nil, nil, nil, nil, nil, true, true, nil, nil),
 
 		-- Unit definitions
 		nil,

@@ -35,6 +35,7 @@ types
 		<fmi2Instantiate> |
 		<fmi2SetupExperiment> |
 		<fmi2SetINI> |
+		<fmi2F> |
 		<fmi2EnterInitializationMode> |
 		<fmi2SetIN> |
 		<fmi2SetINIE> |
@@ -57,14 +58,16 @@ values
 
 		<INSTANTIATED> |->
 		{
-			<fmi2SetupExperiment>			|-> { <INSTANTIATED> },
+			<fmi2F>							|-> { <INSTANTIATED> },
 			<fmi2SetINI>					|-> { <INSTANTIATED> },
+			<fmi2SetupExperiment>			|-> { <INSTANTIATED> },
 			<fmi2EnterInitializationMode>	|-> { <INITIALIZATION> },
 			<fmi2Reset>						|-> { <INSTANTIATED> }
 		},
 
 		<INITIALIZATION> |->
 		{
+			<fmi2F>							|-> { <INITIALIZATION> },
 			<fmi2SetIN>						|-> { <INITIALIZATION> },
 			<fmi2SetINIE>					|-> { <INITIALIZATION> },
 			<fmi2GetINIT>					|-> { <INITIALIZATION> },
@@ -74,7 +77,9 @@ values
 
 		<STEP_COMPLETE> |->
 		{
+			<fmi2F>							|-> { <STEP_COMPLETE> },
 			<fmi2GetX>						|-> { <STEP_COMPLETE> },
+			<fmi2SetIN>						|-> { <STEP_COMPLETE> },
 			<fmi2DoStep>					|-> { <STEP_COMPLETE>, <STEP_FAILED> }, -- <STEP_IN_PROGRESS> },
 			<fmi2Terminate>					|-> { <TERMINATED> },
 			<fmi2Reset>						|-> { <INSTANTIATED> }
@@ -82,6 +87,7 @@ values
 
 		<STEP_FAILED> |->
 		{
+			<fmi2F>							|-> { <STEP_FAILED> },
 			<fmi2GetX>						|-> { <STEP_FAILED> },
 			<fmi2GetS>						|-> { <STEP_FAILED> },
 			<fmi2Terminate>					|-> { <TERMINATED> },
@@ -90,6 +96,7 @@ values
 
 		<TERMINATED> |->
 		{
+			<fmi2F>							|-> { <TERMINATED> },
 			<fmi2GetX>						|-> { <TERMINATED> },
 			<fmi2GetS>						|-> { <TERMINATED> },
 			<fmi2FreeInstance>				|-> { <END> },
@@ -106,7 +113,7 @@ functions
 	isOK: fmi2State * seq of API * API +> bool
 	isOK(cstate, prev, api) ==
 		let pset = elems prev,
-			getset = {<fmi2SetINI>, <fmi2SetIN>, <fmi2SetINIE>, <fmi2GetINIT>, <fmi2GetX>, <fmi2GetS>},
+			getset = {<fmi2SetINI>, <fmi2SetIN>, <fmi2SetINIE>, <fmi2GetINIT>, <fmi2GetX>, <fmi2GetS>, <fmi2F>},
 			lastapi = if prev = [] then nil else prev(len prev)
 		in
 			cases api:
@@ -130,7 +137,8 @@ functions
 				<fmi2SetINIE>,
 				<fmi2GetINIT>,
 				<fmi2GetX>,
-				<fmi2GetS> ->
+				<fmi2GetS>,
+				<fmi2F> ->
 					-- Just call one at a time, to simplify traces
 					lastapi not in set getset,
 
@@ -189,6 +197,44 @@ operations
 						if s <> <fmi2OK>
 						then exit "Cannot set INI variables"
 						else c := c2,
+
+			<fmi2F> ->	-- Perform all significant read-only calls
+			(
+				let mk_(s, c2) = fmi2SetDebugLogging(c, true, 1, ["debug"]) in
+					if s <> <fmi2OK>
+					then exit "Cannot initialize logging"
+					else c := c2;
+
+				let mk_(s, fmustate) = fmi2GetFMUstate(c) in
+				(
+					if s <> <fmi2OK>
+					then exit "Cannot get FMU state";
+
+					let mk_(s2, size) = fmi2SerializedFMUstateSize(c, fmustate) in
+					(
+						if s2 <> <fmi2OK>
+						then exit "Cannot get serialized state size";
+
+						let mk_(s3, serializedState) = fmi2SerializeFMUstate(c, fmustate, size) in
+						(
+							if s3 <> <fmi2OK>
+							then exit "Cannot serialise state";
+
+							let mk_(s4, fmustate2) = fmi2DeSerializeFMUstate(c, serializedState, size) in
+							(
+								if s4 <> <fmi2OK>
+								then exit "Cannot deserialise state";
+
+								if fmustate2 <> fmustate
+								then exit "Deserialized state has changed"
+							)	
+						)
+					);
+
+					if fmi2FreeFMUstate(c, fmustate) <> <fmi2OK>
+					then exit "Cannot free FMU state"
+				)
+			),
 
 			<fmi2EnterInitializationMode> ->
 				let mk_(s, c2) = fmi2EnterInitializationMode(c) in
