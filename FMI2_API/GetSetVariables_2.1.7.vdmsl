@@ -39,12 +39,12 @@ functions
 		cases c.fmuState:
 			<INSTANTIATED>		-> false,
 			<INITIALIZATION>	-> varsINIT(c, vrs),
-			<EVENT_MODE>		-> true,
-			<CT_MODE>			-> true,
-			<STEP_COMPLETE>		-> true,
+			<EVENT_MODE>		-> varsX(c, vrs),
+			<CT_MODE>			-> varsX(c, vrs),
+			<STEP_COMPLETE>		-> varsX(c, vrs),
 			<STEP_IN_PROGRESS>	-> false,
-			<STEP_FAILED>		-> true,
-			<STEP_CANCELLED>	-> true,
+			<STEP_FAILED>		-> varsX(c, vrs),
+			<STEP_CANCELLED>	-> varsX(c, vrs),
 			<TERMINATED>		-> true,
 			<ERROR>				-> true,
 

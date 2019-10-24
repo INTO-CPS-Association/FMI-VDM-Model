@@ -187,10 +187,7 @@ operations
 					else c := c2,
 
 			<fmi2SetINI> ->
-				let vars = [ i | i in set inds c.eModelVariables &
-					let v = c.eModelVariables(i) in
-						v.variability <> <constant>
-						and v.initial in set { <exact>, <approx> }] in
+				let vars = [ vr | vr in set inds c.eModelVariables & isINI(c, vr) ] in
 					if vars = []
 					then skip
 					else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
@@ -242,11 +239,31 @@ operations
 					then exit "Cannot enter initialization mode"
 					else c := c2,
 
-			<fmi2SetIN> -> skip,
+			<fmi2SetIN> ->
+				let vars = [ vr | vr in set inds c.eModelVariables & isIN(c, vr) ] in
+					if vars = []
+					then skip
+					else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
+						if s <> <fmi2OK>
+						then exit "Cannot set IN variables"
+						else c := c2,
 
-			<fmi2SetINIE> -> skip,
+			<fmi2SetINIE> ->
+				let vars = [ vr | vr in set inds c.eModelVariables & isINIE(c, vr) ] in
+					if vars = []
+					then skip
+					else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
+						if s <> <fmi2OK>
+						then exit "Cannot set INIE variables"
+						else c := c2,
 
-			<fmi2GetINIT> -> skip,
+			<fmi2GetINIT> ->
+				let vars = [ vr | vr in set inds c.eModelVariables & isINIT(c, vr) ] in
+					if vars = []
+					then skip
+					else let mk_(s, -) = fmi2GetReal(c, vars, len vars) in
+						if s <> <fmi2OK>
+						then exit "Cannot get INIT variables",
 
 			<fmi2ExitInitializationMode> ->
 				let mk_(s, c2) = fmi2ExitInitializationMode(c) in
@@ -258,7 +275,13 @@ operations
 					time := 0
 				),
 
-			<fmi2GetX> -> skip,
+			<fmi2GetX> ->
+				let vars = [ vr | vr in set inds c.eModelVariables & isX(c, vr) ] in
+					if vars = []
+					then skip
+					else let mk_(s, -) = fmi2GetReal(c, vars, len vars) in
+						if s <> <fmi2OK>
+						then exit "Cannot get X variables",
 
 			<fmi2DoStep> ->
 				let mk_(s, c2) = fmi2DoStep(c, time, 1, true) in
@@ -277,7 +300,16 @@ operations
 
 					else ( time := time + 1; c := c2 ),
 
-			<fmi2GetS>-> skip,
+			<fmi2GetS> ->	-- Do some get status calls
+			(
+				let mk_(s, -) = fmi2GetStatus(c, <fmi2DoStepStatus>) in
+					if s <> <fmi2OK>
+					then exit "Cannot get status";
+
+				let mk_(s, -) = fmi2GetRealStatus(c, <fmi2LastSuccessfulTime>) in
+					if s <> <fmi2OK>
+					then exit "Cannot get Real status";
+			),
 
 			<fmi2Terminate> ->
 				let mk_(s, c2) = fmi2Terminate(c) in

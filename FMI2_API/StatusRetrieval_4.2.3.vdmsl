@@ -39,18 +39,22 @@ functions
 	 */
 	fmi2GetStatus_Impl: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Status
 	fmi2GetStatus_Impl(c, s) ==
-		is not yet specified
+		mk_(<fmi2OK>, <fmi2Pending>)	-- TODO: async interface
 	pre
 		c.fmuType = <fmi2CoSimulation>
-		and c.fmuState in set STATES_fmi2GetStatus;
+		and c.fmuState in set STATES_fmi2GetStatus
+		and s = <fmi2DoStepStatus>;
 
 	fmi2GetStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Status]
 	fmi2GetStatus(c, s) ==
 		if c.fmuType <> <fmi2CoSimulation>
-		then -- @Printf("Cannot call fmi2CancelStep for fmi2ModelExchange\n")
+		then -- @Printf("Cannot call fmi2GetStatus for fmi2ModelExchange\n")
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2GetStatus
 		then -- @Printf("Cannot call fmi2GetStatus in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		elseif s <> <fmi2DoStepStatus>
+		then -- @Printf("Cannot fmi2GetStatus of %s\n", s)
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetStatus_Impl(c, s)
@@ -63,10 +67,11 @@ functions
 	 */
 	fmi2GetRealStatus_Impl: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Real
 	fmi2GetRealStatus_Impl(c, s) ==
-		is not yet specified
+		mk_(<fmi2OK>, c.currentTime)	-- TODO: last successful <> current
 	pre
 		c.fmuType = <fmi2CoSimulation>
-		and c.fmuState in set STATES_fmi2GetRealStatus;
+		and c.fmuState in set STATES_fmi2GetRealStatus
+		and s = <fmi2LastSuccessfulTime>;
 
 	fmi2GetRealStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Real]
 	fmi2GetRealStatus(c, s) ==
@@ -75,6 +80,9 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2GetRealStatus
 		then -- @Printf("Cannot call fmi2GetRealStatus in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		elseif s <> <fmi2LastSuccessfulTime>
+		then -- @Printf("Cannot fmi2GetRealStatus of %s\n", s)
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetRealStatus_Impl(c, s)
@@ -87,7 +95,7 @@ functions
 	 */
 	fmi2GetIntegerStatus_Impl: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Integer
 	fmi2GetIntegerStatus_Impl(c, s) ==
-		is not yet specified
+		is not yet specified	-- No Integer statuses at present
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2GetIntegerStatus;
@@ -100,6 +108,9 @@ functions
 		elseif c.fmuState not in set STATES_fmi2GetIntegerStatus
 		then -- @Printf("Cannot call fmi2GetIntegerStatus in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
+		elseif true		-- No Integer statuses at present
+		then -- @Printf("Cannot fmi2GetIntegerStatus of %s\n", s)
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetIntegerStatus_Impl(c, s)
 	 post
@@ -111,10 +122,11 @@ functions
 	 */
 	fmi2GetBooleanStatus_Impl: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2Boolean
 	fmi2GetBooleanStatus_Impl(c, s) ==
-		is not yet specified
+		mk_(<fmi2OK>, c.fmuState = <TERMINATED>)
 	pre
 		c.fmuType = <fmi2CoSimulation>
-		and c.fmuState in set STATES_fmi2GetBooleanStatus;
+		and c.fmuState in set STATES_fmi2GetBooleanStatus
+		and s = <fmi2Terminated>;
 
 	fmi2GetBooleanStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2Boolean]
 	fmi2GetBooleanStatus(c, s) ==
@@ -123,6 +135,9 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2GetBooleanStatus
 		then -- @Printf("Cannot call fmi2GetBooleanStatus in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		elseif s <> <fmi2Terminated>
+		then -- @Printf("Cannot fmi2GetBooleanStatus of %s\n", s)
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetBooleanStatus_Impl(c, s)
@@ -135,10 +150,11 @@ functions
 	 */
 	fmi2GetStringStatus_Impl: fmi2Component * fmi2StatusKind +> fmi2Status * fmi2String
 	fmi2GetStringStatus_Impl(c, s) ==
-		is not yet specified
+		mk_(<fmi2OK>, "pending undefined")	-- TODO: async processing 
 	pre
 		c.fmuType = <fmi2CoSimulation>
-		and c.fmuState in set STATES_fmi2GetStringStatus;
+		and c.fmuState in set STATES_fmi2GetStringStatus
+		and s = <fmi2PendingStatus>;
 
 	fmi2GetStringStatus: fmi2Component * fmi2StatusKind +> fmi2Status * [fmi2String]
 	fmi2GetStringStatus(c, s) ==
@@ -147,6 +163,9 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2GetStringStatus
 		then -- @Printf("Cannot call fmi2GetStringStatus in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		elseif s <> <fmi2PendingStatus>
+		then -- @Printf("Cannot fmi2GetStringStatus of %s\n", s)
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetStringStatus_Impl(c, s)

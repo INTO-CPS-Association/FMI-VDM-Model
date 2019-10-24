@@ -37,61 +37,89 @@ functions
 
 	varsSEA: fmi2Component * seq of fmi2ValueReference +> bool
 	varsSEA(c, vrs) ==
-		forall vr in seq vrs &
-			vr <= len c.eModelVariables
-			and c.eModelVariables(vr).variability <> <constant>
-			and c.eModelVariables(vr).initial in set { <exact>, <approx> };
+		forall vr in seq vrs & vr <= len c.eModelVariables and isSEA(c, vr);
+
+	isSEA: fmi2Component * fmi2ValueReference +> bool
+	isSEA(c, vr) ==
+		c.eModelVariables(vr).variability <> <constant>
+		and c.eModelVariables(vr).initial in set { <exact>, <approx> };
+
 
 	varsSE: fmi2Component * seq of fmi2ValueReference +> bool
 	varsSE(c, vrs) ==
-		forall vr in seq vrs &
-			vr <= len c.eModelVariables
-			and c.eModelVariables(vr).variability <> <constant>
-			and (c.eModelVariables(vr).causality = <input>
-				 or c.eModelVariables(vr).initial = <exact>);
+		forall vr in seq vrs & vr <= len c.eModelVariables and isSE(c, vr);
+
+	isSE: fmi2Component * fmi2ValueReference +> bool
+	isSE(c, vr) ==
+		c.eModelVariables(vr).variability <> <constant>
+		and (c.eModelVariables(vr).causality = <input>
+			 or c.eModelVariables(vr).initial = <exact>);
+
 
 	varsINC: fmi2Component * seq of fmi2ValueReference +> bool
 	varsINC(c, vrs) ==
-		forall vr in seq vrs &
-			vr <= len c.eModelVariables
-			and c.eModelVariables(vr).causality = <input>
-			and c.eModelVariables(vr).variability = <continuous>;
+		forall vr in seq vrs & vr <= len c.eModelVariables and isINC(c, vr);
+
+	isINC: fmi2Component * fmi2ValueReference +> bool
+	isINC(c, vr) ==
+		c.eModelVariables(vr).causality = <input>
+		and c.eModelVariables(vr).variability = <continuous>;
+
 
 	varsINI: fmi2Component * seq of fmi2ValueReference +> bool
 	varsINI(c, vrs) ==
-		forall vr in seq vrs &
-			vr <= len c.eModelVariables
-			and (vr in set c.initialUnknowns
-				or (c.eModelVariables(vr).variability <> <constant>
-					and c.eModelVariables(vr).initial in set { <exact>, <approx> }));
+		forall vr in seq vrs & vr <= len c.eModelVariables and isINI(c, vr);
+
+	isINI: fmi2Component * fmi2ValueReference +> bool
+	isINI(c, vr) ==
+		vr in set c.initialUnknowns
+		or (c.eModelVariables(vr).variability <> <constant>
+			and c.eModelVariables(vr).initial in set { <exact>, <approx> });
+
 
 	varsIN: fmi2Component * seq of fmi2ValueReference +> bool
 	varsIN(c, vrs) ==
+		forall vr in seq vrs & vr <= len c.eModelVariables and isIN(c, vr);
+
+	isIN: fmi2Component * fmi2ValueReference +> bool
+	isIN(c, vr) ==
 		if c.fmuType = <fmi2ModelExchange>
 		then
-			forall vr in seq vrs &
-				vr <= len c.eModelVariables
-				and ((c.eModelVariables(vr).variability = <discrete>
-					  and c.eModelVariables(vr).causality = <input>)
-					or c.eModelVariables(vr).variability = <tunable>)
+			(c.eModelVariables(vr).variability = <discrete>
+				and c.eModelVariables(vr).causality = <input>)
+			or c.eModelVariables(vr).variability = <tunable>
 		else
-			forall vr in seq vrs &
-				vr <= len c.eModelVariables
-				and (vr in set c.initialUnknowns
-					 or (c.eModelVariables(vr).causality = <input>
-					 	 or (c.eModelVariables(vr).causality = <parameter>
-							 and c.eModelVariables(vr).variability = <tunable>)));
+			vr in set c.initialUnknowns
+			or (c.eModelVariables(vr).causality = <input>
+			 	 or (c.eModelVariables(vr).causality = <parameter>
+					 and c.eModelVariables(vr).variability = <tunable>));
+
 
 	varsINIT: fmi2Component * seq of fmi2ValueReference +> bool
 	varsINIT(c, vrs) ==
-		forall vr in seq vrs &
-			vr <= len c.eModelVariables
-			and (c.eModelVariables(vr).causality = <output>
-				 or vr in set c.initialUnknowns);
+		forall vr in seq vrs & vr <= len c.eModelVariables and isINIT(c, vr);
+
+	isINIT: fmi2Component * fmi2ValueReference +> bool
+	isINIT(c, vr) ==
+		c.eModelVariables(vr).causality = <output>
+		or vr in set c.initialUnknowns;
+
 
 	varsINIE: fmi2Component * seq of fmi2ValueReference +> bool
 	varsINIE(c, vrs) ==
-		forall vr in seq vrs &
-			vr <= len c.eModelVariables
-			and c.eModelVariables(vr).variability <> <constant>
-			and c.eModelVariables(vr).initial = <exact>;
+		forall vr in seq vrs & vr <= len c.eModelVariables and isINIE(c, vr);
+
+	isINIE: fmi2Component * fmi2ValueReference +> bool
+	isINIE(c, vr) ==
+		c.eModelVariables(vr).variability <> <constant>
+		and c.eModelVariables(vr).initial = <exact>;
+
+
+	varsX: fmi2Component * seq of fmi2ValueReference +> bool
+	varsX(c, vrs) ==
+		forall vr in seq vrs & vr <= len c.eModelVariables and isX(c, vr);
+
+	isX: fmi2Component * fmi2ValueReference +> bool
+	isX(c, vr) ==
+		c.eModelVariables(vr).causality = <output>
+		and isStateDerivative(c.eModelVariables(vr));
