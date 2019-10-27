@@ -92,4 +92,3 @@ functions
 			fmi2SetContinuousStates_Impl(c, x, nx)
 	 post
 	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
-			

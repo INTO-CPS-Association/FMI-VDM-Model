@@ -33,7 +33,7 @@
  */
 functions
 	-- State transition validation functions, where XXX in the Standard is a
-	-- function called varsXXX, returning a boolean.
+	-- pair of predicates called varsXXX and isXXX.
 
 	varsSEA: fmi2Component * seq of fmi2ValueReference +> bool
 	varsSEA(c, vrs) ==
@@ -62,7 +62,8 @@ functions
 
 	isINC: fmi2Component * fmi2ValueReference +> bool
 	isINC(c, vr) ==
-		c.eModelVariables(vr).causality = <input>
+		is_Real(c.eModelVariables(vr))
+		and c.eModelVariables(vr).causality = <input>
 		and c.eModelVariables(vr).variability = <continuous>;
 
 
@@ -122,4 +123,5 @@ functions
 	isX: fmi2Component * fmi2ValueReference +> bool
 	isX(c, vr) ==
 		c.eModelVariables(vr).causality = <output>
-		and isStateDerivative(c.eModelVariables(vr));
+		and (isStateDerivative(c.eModelVariables(vr))
+			 or isContinuousTimeState(vr, c.eModelVariables));

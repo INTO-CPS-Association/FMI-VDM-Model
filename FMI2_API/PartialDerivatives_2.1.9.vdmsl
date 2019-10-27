@@ -53,4 +53,3 @@ functions
 			fmi2GetDirectionalDerivative_Impl(c, vUnknown_ref, uUnknown, vKnown_ref, nKnown, dvKnown)
 	 post
 	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
-			
