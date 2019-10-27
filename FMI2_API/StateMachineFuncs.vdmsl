@@ -73,7 +73,8 @@ functions
 
 	isINI: fmi2Component * fmi2ValueReference +> bool
 	isINI(c, vr) ==
-		vr in set c.initialUnknowns
+		(c.eModelVariables(vr).causality = <input>
+			and c.eModelVariables(vr).variable.derivative <> nil)
 		or (c.eModelVariables(vr).variability <> <constant>
 			and c.eModelVariables(vr).initial in set { <exact>, <approx> });
 
@@ -114,14 +115,3 @@ functions
 	isINIE(c, vr) ==
 		c.eModelVariables(vr).variability <> <constant>
 		and c.eModelVariables(vr).initial = <exact>;
-
-
-	varsX: fmi2Component * seq of fmi2ValueReference +> bool
-	varsX(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isX(c, vr);
-
-	isX: fmi2Component * fmi2ValueReference +> bool
-	isX(c, vr) ==
-		c.eModelVariables(vr).causality = <output>
-		and (isStateDerivative(c.eModelVariables(vr))
-			 or isContinuousTimeState(vr, c.eModelVariables));

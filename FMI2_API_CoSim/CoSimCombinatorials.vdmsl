@@ -146,9 +146,8 @@ functions
 			end;
 
 	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> <VOID>
-	logger(-, -, -, category, message) ==
-		-- @Printf("%s: %s\n", category, message)
-		<VOID>;
+	logger(-, -, -, -, -) ==
+		is not yet specified;
 
 	allocateMemory: nat1 * nat1 +> token
 	allocateMemory(-, -) ==
@@ -187,22 +186,36 @@ operations
 					else c := c2,
 
 			<fmi2SetINI> ->
-				let vars = [ vr | vr in set inds c.eModelVariables & isINI(c, vr) ] in
-					if vars = []
-					then skip
-					else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
-						if s <> <fmi2OK>
-						then exit "Cannot set INI variables"
-						else c := c2,
+				let inis = [ vr | vr in set inds c.eModelVariables & isINI(c, vr)
+												 and is_real(c.variables(vr)) ] in
+				(
+					let vars = [ vr | vr in seq inis & c.eModelVariables(vr).variable.derivative = nil ] in
+						if vars = []
+						then skip
+						else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
+							if s <> <fmi2OK>
+							then exit "Cannot set INI variables"
+							else c := c2;
+
+					if nilBool(c.callbacks.componentEnvironment.coSimulation.canInterpolateInputs)
+					then let ders = [ vr | vr in seq inis & c.eModelVariables(vr).variable.derivative <> nil ] in
+						if ders = []
+						then skip
+						else let s = fmi2SetRealInputDerivatives(c, ders, len ders,
+												[1 | - in seq ders ], [ v * 1.23 | v in seq ders ]) in
+							if s <> <fmi2OK>
+							then exit "Cannot set INI derivatives"
+				),
 
 			<fmi2F> ->	-- Perform all significant read-only calls
 			(
 				let mk_(s, c2) = fmi2SetDebugLogging(c, true, 1, ["debug"]) in
 					if s <> <fmi2OK>
-					then exit "Cannot initialize logging"
+					then exit "Cannot set debug logging"
 					else c := c2;
 
-				let mk_(s, fmustate) = fmi2GetFMUstate(c) in
+				if nilBool(c.callbacks.componentEnvironment.coSimulation.canGetAndSetFMUstate)
+				then let mk_(s, fmustate) = fmi2GetFMUstate(c) in
 				(
 					if s <> <fmi2OK>
 					then exit "Cannot get FMU state";
@@ -224,7 +237,7 @@ operations
 
 								if fmustate2 <> fmustate
 								then exit "Deserialized state has changed"
-							)	
+							)
 						)
 					);
 
@@ -240,13 +253,26 @@ operations
 					else c := c2,
 
 			<fmi2SetIN> ->
-				let vars = [ vr | vr in set inds c.eModelVariables & isIN(c, vr) ] in
-					if vars = []
-					then skip
-					else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
-						if s <> <fmi2OK>
-						then exit "Cannot set IN variables"
-						else c := c2,
+				let ins = [ vr | vr in set inds c.eModelVariables & isIN(c, vr)
+												 and is_real(c.variables(vr)) ] in
+				(
+					let vars = [ vr | vr in seq ins & c.eModelVariables(vr).variable.derivative = nil ] in
+						if vars = []
+						then skip
+						else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
+							if s <> <fmi2OK>
+							then exit "Cannot set IN variables"
+							else c := c2;
+
+					if nilBool(c.callbacks.componentEnvironment.coSimulation.canInterpolateInputs)
+					then let ders = [ vr | vr in seq ins & c.eModelVariables(vr).variable.derivative <> nil ] in
+						if ders = []
+						then skip
+						else let s = fmi2SetRealInputDerivatives(c, ders, len ders,
+												[1 | - in seq ders ], [ v * 1.23 | v in seq ders ]) in
+							if s <> <fmi2OK>
+							then exit "Cannot set IN derivatives"
+				),
 
 			<fmi2SetINIE> ->
 				let vars = [ vr | vr in set inds c.eModelVariables & isINIE(c, vr) ] in
@@ -258,12 +284,32 @@ operations
 						else c := c2,
 
 			<fmi2GetINIT> ->
+			(
 				let vars = [ vr | vr in set inds c.eModelVariables & isINIT(c, vr) ] in
 					if vars = []
 					then skip
 					else let mk_(s, -) = fmi2GetReal(c, vars, len vars) in
 						if s <> <fmi2OK>
-						then exit "Cannot get INIT variables",
+						then exit "Cannot get INIT variables";
+
+				let vars = [ u.index | u in seq nilSeq[Unknown](c.callbacks.componentEnvironment.modelStructure.derivatives) ] in
+					if vars = []
+					then skip
+					else let mk_(s, -) = fmi2GetContinuousStates(c, len c.continuousTimeStates) in
+						if s <> <fmi2OK>
+						then exit "Cannot get INIT continuous states";
+
+				if nilBool(c.callbacks.componentEnvironment.coSimulation.providesDirectionalDerivative)
+				then let outputs = nilSeq[Unknown](c.callbacks.componentEnvironment.modelStructure.outputs),
+					unknown = [ u.index | u in seq outputs ],
+					known = conc [ u.dependencies | u in seq outputs ] in
+					if unknown = []
+					then skip
+					else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknown, len unknown, known, len known,
+						[ c.variables(v) | v in seq known ]) in
+						if s <> <fmi2OK>
+						then exit "Cannot get INIT directional derivatives"
+			),
 
 			<fmi2ExitInitializationMode> ->
 				let mk_(s, c2) = fmi2ExitInitializationMode(c) in
@@ -276,12 +322,34 @@ operations
 				),
 
 			<fmi2GetX> ->
-				let vars = [ vr | vr in set inds c.eModelVariables & isX(c, vr) ] in
-					if vars = []
-					then skip
-					else let mk_(s, -) = fmi2GetReal(c, vars, len vars) in
-						if s <> <fmi2OK>
-						then exit "Cannot get X variables",
+				let vars = [ vr | vr in set inds c.eModelVariables & is_real(c.variables(vr)) ] in
+				(
+					let reals = [ vr | vr in seq vars & c.eModelVariables(vr).variable.derivative = nil ] in
+						if reals = []
+						then skip
+						else let mk_(s, -) = fmi2GetReal(c, reals, len reals) in
+							if s <> <fmi2OK>
+							then exit "Cannot get X variables";
+
+					let iders = [ vr | vr in seq vars & c.eModelVariables(vr).variable.derivative <> nil
+						and c.eModelVariables(vr).causality = <output> ] in
+						if iders = []
+						then skip
+						else let mk_(s, -) = fmi2GetRealOutputDerivatives(c, iders, len iders, [1 | - in seq iders]) in
+							if s <> <fmi2OK>
+							then exit "Cannot get X real output derivatives";
+
+					if nilBool(c.callbacks.componentEnvironment.coSimulation.providesDirectionalDerivative)
+					then let outputs = nilSeq[Unknown](c.callbacks.componentEnvironment.modelStructure.outputs),
+						unknown = [ u.index | u in seq outputs ],
+						known = conc [ u.dependencies | u in seq outputs ] in
+						if unknown = []
+						then skip
+						else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknown, len unknown, known, len known,
+							[ c.variables(v) | v in seq known ]) in
+							if s <> <fmi2OK>
+							then exit "Cannot get X directional derivatives"
+				),
 
 			<fmi2DoStep> ->
 				let mk_(s, c2) = fmi2DoStep(c, time, 1, true) in
@@ -366,6 +434,8 @@ CoSimTests:
 	let a8 in set dom stateMachine(s8) be st isOK(s8, [a1, a2, a3, a4, a5, a6, a7], a8) in
 	(
 	process(a8);
+	))))))))
+	/***********
 	let s9 in set stateMachine(s8)(a8) in
 	let a9 in set dom stateMachine(s9) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8], a9) in
 	(
