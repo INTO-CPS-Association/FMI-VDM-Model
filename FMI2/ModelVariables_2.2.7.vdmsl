@@ -296,6 +296,16 @@ functions
 
 		| sv in seq svs
 	}
+	/*******
+	union
+	{
+		let ders = { v | v in set inds svs & is_Real(svs(v).variable) and svs(v).variable.derivative = sv } in
+			-- @OnFail("2.2.7 Variable has multiple derivatives: %s derivatives %s", svs(sv).name, ders)
+			( card ders <= 1 )
+
+		| sv in set inds svs
+	}
+	*******/
 	union
 	{
 		/* @OnFail("2.2.7 Invalid ScalarVariable aliasing") */
