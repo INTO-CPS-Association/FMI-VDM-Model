@@ -35,9 +35,9 @@ functions
 	 * Implementation and API for fmi2GetDirectionalDerivative.
 	 */
 	fmi2GetDirectionalDerivative_Impl: fmi2Component * seq of fmi2ValueReference * nat *
-				seq of fmi2ValueReference * nat* seq of fmi2Real +> fmi2Status * seq of fmi2Real
+				seq of fmi2ValueReference * nat * seq of fmi2Real +> fmi2Status * seq of fmi2Real
 	fmi2GetDirectionalDerivative_Impl(c, vUnknown_ref, nUnknown, vKnown_ref, nKnown, dvKnown) ==
-		is not yet specified
+		mk_(<fmi2OK>, dvKnown)	-- TODO!
 	pre
 		c.fmuState in set STATES_fmi2GetDirectionalDerivative
 		and nUnknown = len vUnknown_ref
