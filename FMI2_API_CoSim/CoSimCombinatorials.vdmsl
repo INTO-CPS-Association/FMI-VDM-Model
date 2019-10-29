@@ -201,10 +201,11 @@ operations
 					then let ders = [ vr | vr in seq inis & c.eModelVariables(vr).variable.derivative <> nil ] in
 						if ders = []
 						then skip
-						else let s = fmi2SetRealInputDerivatives(c, ders, len ders,
+						else let mk_(s, c2) = fmi2SetRealInputDerivatives(c, ders, len ders,
 												[1 | - in seq ders ], [ v * 1.23 | v in seq ders ]) in
 							if s <> <fmi2OK>
 							then exit "Cannot set INI derivatives"
+							else c := c2
 				),
 
 			<fmi2F> ->	-- Perform all significant read-only calls
@@ -268,10 +269,11 @@ operations
 					then let ders = [ vr | vr in seq ins & c.eModelVariables(vr).variable.derivative <> nil ] in
 						if ders = []
 						then skip
-						else let s = fmi2SetRealInputDerivatives(c, ders, len ders,
+						else let mk_(s, c2) = fmi2SetRealInputDerivatives(c, ders, len ders,
 												[1 | - in seq ders ], [ v * 1.23 | v in seq ders ]) in
 							if s <> <fmi2OK>
 							then exit "Cannot set IN derivatives"
+							else c := c2
 				),
 
 			<fmi2SetINIE> ->

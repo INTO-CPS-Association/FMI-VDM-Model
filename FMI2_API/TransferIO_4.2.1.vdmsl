@@ -32,35 +32,52 @@
  */
 functions
 	/**
-	 * Implementation and API for fmi2GetStringStatus.
+	 * Implementation and API for fmi2SetRealInputDerivatives.
 	 */
 	fmi2SetRealInputDerivatives_Impl: fmi2Component * seq of fmi2ValueReference * nat *
-								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status
+								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetRealInputDerivatives_Impl(c, vr, nvr, order, value) ==
-		is not yet specified
+		let updates = { iota dv in set inds c.eModelVariables &		-- Assume only one??
+							is_Real(c.eModelVariables(dv).variable)
+							and c.eModelVariables(dv).variable.derivative = vr(i) |-> value(i)
+						| i in set inds vr }
+		in
+			mk_(<fmi2OK>, mu(c, variables |-> c.variables ++ updates ))
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2SetRealInputDerivatives
 		and nvr = len vr
 		and nvr = len value
 		and nvr = len order
-		and forall o in seq order & o > 0;
+		and (forall o in seq order & o > 0)
+		and (forall v in seq vr &
+			c.eModelVariables(v).causality = <input>
+			and exists dv in seq c.eModelVariables &
+				is_Real(dv.variable) and dv.variable.derivative = v);
 
 	fmi2SetRealInputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
-								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status
+								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status * [fmi2Component]
 	fmi2SetRealInputDerivatives(c, vr, nvr, order, value) ==
 		if c.fmuType <> <fmi2CoSimulation>
 		then -- @Printf("Cannot call fmi2SetRealInputDerivatives for fmi2ModelExchange\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2SetRealInputDerivatives
 		then -- @Printf("Cannot call fmi2SetRealInputDerivatives in state %s\n", c.fmuState)
-			<fmi2Error>
+			mk_(<fmi2Error>, nil)
 		elseif nvr <> len vr or nvr <> len value or nvr <> len order
 		then -- @Printf("nvr, vr, value and order are not consistent\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, nil)
 		elseif exists o in seq order & o <= 0
 		then -- @Printf("Order entries must all be >0\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, nil)
+		elseif exists v in seq vr & c.eModelVariables(v).causality <> <input>
+		then -- @Printf("Some arguments are not inputs\n")
+			mk_(<fmi2Error>, nil)
+		elseif exists v in seq vr &
+			not exists dv in seq c.eModelVariables &
+				is_Real(dv.variable) and dv.variable.derivative = v
+		then -- @Printf("Some inputs do not have derivatives\n")
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetRealInputDerivatives_Impl(c, vr, nvr, order, value);
 
@@ -71,13 +88,22 @@ functions
 	fmi2GetRealOutputDerivatives_Impl: fmi2Component * seq of fmi2ValueReference * nat *
 								  seq of fmi2Integer +> fmi2Status * seq of fmi2Real
 	fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order) ==
-		is not yet specified
+		let rindexes = [ iota dv in set inds c.eModelVariables &		-- Assume only one??
+							is_Real(c.eModelVariables(dv).variable)
+							and c.eModelVariables(dv).variable.derivative = vr(i)
+						| i in set inds vr ]
+		in 
+			mk_(<fmi2OK>, [ c.variables(v) | v in seq rindexes ])
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2GetRealOutputDerivatives
 		and nvr = len vr
 		and nvr = len order
-		and forall o in seq order & o > 0
+		and (forall o in seq order & o > 0)
+		and (forall v in seq vr &
+			c.eModelVariables(v).causality = <output>
+			and exists dv in seq c.eModelVariables &
+				is_Real(dv.variable) and dv.variable.derivative = v)
 	post
 		RESULT.#1 = <fmi2OK> => nvr = len RESULT.#2;
 
@@ -95,6 +121,14 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif exists o in seq order & o <= 0
 		then -- @Printf("Order entries must all be >0\n")
+			mk_(<fmi2Error>, nil)
+		elseif exists v in seq vr & c.eModelVariables(v).causality <> <output>
+		then -- @Printf("Some arguments are not outputs\n")
+			mk_(<fmi2Error>, nil)
+		elseif exists v in seq vr &
+			not exists dv in seq c.eModelVariables &
+				is_Real(dv.variable) and dv.variable.derivative = v
+		then -- @Printf("Some outputs do not have derivatives\n")
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order)
