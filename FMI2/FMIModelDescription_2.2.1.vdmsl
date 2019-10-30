@@ -255,8 +255,7 @@ functions
 				md.modelExchange <> nil
 				or (md.coSimulation <> nil and nilBool(md.coSimulation.providesDirectionalDerivative)) =>
 					let derivativeIndexes = { svi | svi in set inds eModelVariables &
-						is_Real(eModelVariables(svi).variable)
-						and eModelVariables(svi).variable.derivative <> nil }
+						isStateDerivative(eModelVariables(svi)) }
 					in
 						if derivativeIndexes <> {}
 						then
