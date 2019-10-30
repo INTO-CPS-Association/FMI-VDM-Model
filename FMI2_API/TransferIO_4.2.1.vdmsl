@@ -37,10 +37,25 @@ functions
 	fmi2SetRealInputDerivatives_Impl: fmi2Component * seq of fmi2ValueReference * nat *
 								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetRealInputDerivatives_Impl(c, vr, nvr, order, value) ==
-		let updates = { iota dv in set inds c.eModelVariables &		-- Assume only one??
-							is_Real(c.eModelVariables(dv).variable)
-							and c.eModelVariables(dv).variable.derivative = vr(i) |-> value(i)
-						| i in set inds vr }
+		let updates =
+			merge
+			{
+				{
+					v |-> value(ref) | v in set inds c.eModelVariables
+
+					/*
+					 * This implementation assumes that input derivatives are all declared as
+					 * ScalarVariables. If this is not the case, and the input derivatives can
+					 * be hidden, then there has to be another "internal state" vector in
+					 * the fmi2Component that holds such values (which are not directly settable,
+					 * and must have meta data to describe which SV they are derivatives of).
+					 */
+					& let mk_(o, b) = getDerivativeBase(v, c.eModelVariables) in
+						exists j in set inds vr & vr(j) = b and order(j) = o
+				}
+
+				| ref in seq vr
+			}
 		in
 			mk_(<fmi2OK>, mu(c, variables |-> c.variables ++ updates ))
 	pre
@@ -50,10 +65,13 @@ functions
 		and nvr = len value
 		and nvr = len order
 		and (forall o in seq order & o > 0)
-		and (forall v in seq vr &
-			c.eModelVariables(v).causality = <input>
-			and exists dv in seq c.eModelVariables &
-				is_Real(dv.variable) and dv.variable.derivative = v);
+		and (forall v in seq vr & c.eModelVariables(v).causality = <input>)
+
+		-- Assuming that input derivatives must exist as SVs with "derivative" set
+		and (forall i in set inds vr &
+			exists dv in set inds c.eModelVariables &
+				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
+					o = order(i) and b = vr(i));
 
 	fmi2SetRealInputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
 								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status * [fmi2Component]
@@ -73,11 +91,15 @@ functions
 		elseif exists v in seq vr & c.eModelVariables(v).causality <> <input>
 		then -- @Printf("Some arguments are not inputs\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists v in seq vr &
-			not exists dv in seq c.eModelVariables &
-				is_Real(dv.variable) and dv.variable.derivative = v
-		then -- @Printf("Some inputs do not have derivatives\n")
+
+		-- Assuming that input derivatives must exist as SVs with "derivative" set
+		elseif not forall i in set inds vr &
+			exists dv in set inds c.eModelVariables &
+				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
+					o = order(i) and b = vr(i)
+		then -- @Printf("Some inputs do not have derivatives of the right order\n")
 			mk_(<fmi2Error>, nil)
+
 		else
 			fmi2SetRealInputDerivatives_Impl(c, vr, nvr, order, value);
 
@@ -88,10 +110,21 @@ functions
 	fmi2GetRealOutputDerivatives_Impl: fmi2Component * seq of fmi2ValueReference * nat *
 								  seq of fmi2Integer +> fmi2Status * seq of fmi2Real
 	fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order) ==
-		let rindexes = [ iota dv in set inds c.eModelVariables &		-- Assume only one??
-							is_Real(c.eModelVariables(dv).variable)
-							and c.eModelVariables(dv).variable.derivative = vr(i)
-						| i in set inds vr ]
+		let rindexes =
+			[
+				vr(i) | i in set inds vr
+
+				/*
+				 * This implementation assumes that output derivatives are all declared as
+				 * ScalarVariables. If this is not the case, and the output derivatives can
+				 * be hidden, then there has to be another "internal state" vector in
+				 * the fmi2Component that holds such values (which are not directly gettable,
+				 * and must have meta data to describe which SV they are derivatives of).
+				 */
+				& exists dv in set inds c.eModelVariables &
+					let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
+						b = vr(i) and o = order(i)
+			]
 		in 
 			mk_(<fmi2OK>, [ c.variables(v) | v in seq rindexes ])
 	pre
@@ -100,10 +133,13 @@ functions
 		and nvr = len vr
 		and nvr = len order
 		and (forall o in seq order & o > 0)
-		and (forall v in seq vr &
-			c.eModelVariables(v).causality = <output>
-			and exists dv in seq c.eModelVariables &
-				is_Real(dv.variable) and dv.variable.derivative = v)
+		and (forall v in seq vr & c.eModelVariables(v).causality = <output>)
+
+		-- Assuming that output derivatives must exist as SVs with "derivative" set
+		and (forall i in set inds vr &
+			exists1 dv in set inds c.eModelVariables &
+				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
+					o = order(i) and b = vr(i))
 	post
 		RESULT.#1 = <fmi2OK> => nvr = len RESULT.#2;
 
@@ -125,11 +161,15 @@ functions
 		elseif exists v in seq vr & c.eModelVariables(v).causality <> <output>
 		then -- @Printf("Some arguments are not outputs\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists v in seq vr &
-			not exists dv in seq c.eModelVariables &
-				is_Real(dv.variable) and dv.variable.derivative = v
-		then -- @Printf("Some outputs do not have derivatives\n")
+
+		-- Assuming that output derivatives must exist as SVs with "derivative" set
+		elseif not forall i in set inds vr &
+			exists dv in set inds c.eModelVariables &
+				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
+					o = order(i) and b = vr(i)
+		then -- @Printf("Some outputs do not have derivatives of the right order\n")
 			mk_(<fmi2Error>, nil)
+
 		else
 			fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order)
 	 post

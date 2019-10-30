@@ -599,3 +599,14 @@ functions
 	isStateDerivative: ScalarVariable +> bool
 	isStateDerivative(sv) ==
 		is_Real(sv.variable) and sv.variable.derivative <> nil;
+
+	/**
+	 * Get derivative order of a variable.
+	 */
+	getDerivativeBase: nat1 * seq of ScalarVariable +> nat * nat1
+	getDerivativeBase(vr, svs) ==
+		if not is_Real(svs(vr).variable) or svs(vr).variable.derivative = nil
+		then mk_(0, vr)
+		else let mk_(o, r) = getDerivativeBase(svs(vr).variable.derivative, svs) in
+			mk_(o+1, r)
+	measure is not yet specified;
