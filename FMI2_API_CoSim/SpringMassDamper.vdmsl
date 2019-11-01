@@ -68,7 +68,7 @@ values
 					mk_Real("Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
 
 /* 2 */		mk_ScalarVariable(2, "torque.tau", 1, nil, <input>, nil, nil, nil,
-					mk_Real("Modelica.SIunits.Torque", nil, nil, nil, nil, nil, nil, nil, nil, 0, 1, nil), nil),
+					mk_Real("Modelica.SIunits.Torque", nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
 
 /* 3 */		mk_ScalarVariable(3, "inertial.phi", 2, nil, <output>, nil, nil, nil,
 					mk_Real("Modelica.SIunits.Angle", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
@@ -87,7 +87,7 @@ values
 			],
 			-- Derivatives
 			[
-				mk_Unknown(0, 2, nil, nil),
+				-- mk_Unknown(0, 2, nil, nil),
 				mk_Unknown(0, 4, nil, nil)
 			],
 			-- InitialUnknowns

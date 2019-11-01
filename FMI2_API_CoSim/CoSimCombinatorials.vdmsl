@@ -166,7 +166,9 @@ operations
 	process(api) ==
 		cases api:
 			<fmi2Instantiate> ->
-				let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, springMassDamper) in
+				let solver = mk_SolverData([ mk_SolverDerivative(1, 1, <input>) ]) in
+				let cenv = mk_fmi2ComponentEnvironment(solver, springMassDamper) in
+				let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
 				let r = fmi2Instantiate("CosimTest", <fmi2CoSimulation>, "GUID", "", callbacks, false, true) in
 				(
 					if r = nil
@@ -199,7 +201,7 @@ operations
 						then exit "Cannot set INI variables"
 						else c := c2;
 
-				if nilBool(c.callbacks.componentEnvironment.coSimulation.canInterpolateInputs)
+				if nilBool(c.callbacks.componentEnvironment.model.coSimulation.canInterpolateInputs)
 				then let ders = [ vr | vr in set inds c.eModelVariables &
 					c.eModelVariables(vr).causality = <input>
 					and exists dv in seq c.eModelVariables &
@@ -222,7 +224,7 @@ operations
 					then exit "Cannot set debug logging"
 					else c := c2;
 
-				if nilBool(c.callbacks.componentEnvironment.coSimulation.canGetAndSetFMUstate)
+				if nilBool(c.callbacks.componentEnvironment.model.coSimulation.canGetAndSetFMUstate)
 				then let mk_(s, fmustate) = fmi2GetFMUstate(c) in
 				(
 					if s <> <fmi2OK>
@@ -274,7 +276,7 @@ operations
 						then exit "Cannot set IN variables"
 						else c := c2;
 
-				if nilBool(c.callbacks.componentEnvironment.coSimulation.canInterpolateInputs)
+				if nilBool(c.callbacks.componentEnvironment.model.coSimulation.canInterpolateInputs)
 				then let ders = [ vr | vr in set inds c.eModelVariables &
 					c.eModelVariables(vr).causality = <input>
 					and exists dv in seq c.eModelVariables &
@@ -317,8 +319,8 @@ operations
 						then exit "Cannot get INIT continuous states";
 				*****/
 
-				if nilBool(c.callbacks.componentEnvironment.coSimulation.providesDirectionalDerivative)
-				then let outputs = nilSeq[Unknown](c.callbacks.componentEnvironment.modelStructure.outputs),
+				if nilBool(c.callbacks.componentEnvironment.model.coSimulation.providesDirectionalDerivative)
+				then let outputs = nilSeq[Unknown](c.callbacks.componentEnvironment.model.modelStructure.outputs),
 					unknown = [ u.index | u in seq outputs ],
 					known = conc [ nilSeq[nat1](u.dependencies) | u in seq outputs ] in
 					if unknown = []
@@ -361,8 +363,8 @@ operations
 							if s <> <fmi2OK>
 							then exit "Cannot get X real output derivatives";
 
-					if nilBool(c.callbacks.componentEnvironment.coSimulation.providesDirectionalDerivative)
-					then let outputs = nilSeq[Unknown](c.callbacks.componentEnvironment.modelStructure.outputs),
+					if nilBool(c.callbacks.componentEnvironment.model.coSimulation.providesDirectionalDerivative)
+					then let outputs = nilSeq[Unknown](c.callbacks.componentEnvironment.model.modelStructure.outputs),
 						unknown = [ u.index | u in seq outputs ],
 						known = conc [ nilSeq[nat1](u.dependencies) | u in seq outputs ] in
 						if unknown = []

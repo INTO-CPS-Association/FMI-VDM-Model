@@ -39,8 +39,8 @@ functions
 	canDoGetSetState(c, states) ==
 		c.fmuState in set states
 		and if c.fmuType = <fmi2CoSimulation>
-		then nilBool(c.callbacks.componentEnvironment.coSimulation.canGetAndSetFMUstate)
-		else nilBool(c.callbacks.componentEnvironment.modelExchange.canGetAndSetFMUstate);
+		then nilBool(c.callbacks.componentEnvironment.model.coSimulation.canGetAndSetFMUstate)
+		else nilBool(c.callbacks.componentEnvironment.model.modelExchange.canGetAndSetFMUstate);
 
 	/**
 	 * Implementation and API for fmi2GetFMUstate.

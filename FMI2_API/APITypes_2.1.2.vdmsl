@@ -68,20 +68,21 @@ types
 		eModelVariables			: seq1 of ScalarVariable
 		continuousTimeStates	: seq of nat1
 		initialUnknowns			: set of nat1
+		solverDerivatives		: seq of SolverDerivative
 
 		-- state and settings
 		logCategories			: [set1 of fmi2String]	-- nil means logging off
 		variables				: seq1 of (fmi2Real | fmi2Integer | fmi2Boolean | fmi2String)
+		solver					: seq of fmi2Real
 		startTime				: [real]
 		stopTime				: [real]
 		currentTime				: [real]
 
 	inv c ==
 		len c.variables = len c.eModelVariables
+		and len c.solver = len c.callbacks.componentEnvironment.solver.derivatives
 		and (forall vr in seq c.continuousTimeStates & vr <= len c.variables)
 		and (forall vr in set c.initialUnknowns & vr <= len c.variables)
 		and (c.currentTime <> nil <=> c.startTime <> nil)
 		and (c.currentTime <> nil => c.currentTime >= c.startTime)
 		and (c.stopTime <> nil and c.startTime <> nil => c.stopTime > c.startTime and c.currentTime <= c.stopTime);
-
-	fmi2ComponentEnvironment = FMIModelDescription;
