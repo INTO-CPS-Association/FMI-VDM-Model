@@ -346,7 +346,8 @@ operations
 							if s <> <fmi2OK>
 							then exit "Cannot get X variables";
 
-					let iders = [ vr | vr in seq vars &
+					if nilNat(c.callbacks.componentEnvironment.model.coSimulation.maxOutputDerivativeOrder) = 1
+					then let iders = [ vr | vr in seq vars &
 						c.eModelVariables(vr).causality = <output>
 						and exists dv in seq c.eModelVariables &
 							is_Real(dv.variable)
