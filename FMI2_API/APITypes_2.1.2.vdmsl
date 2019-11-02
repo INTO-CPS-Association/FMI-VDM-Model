@@ -73,14 +73,14 @@ types
 		-- state and settings
 		logCategories			: [set1 of fmi2String]	-- nil means logging off
 		variables				: seq1 of (fmi2Real | fmi2Integer | fmi2Boolean | fmi2String)
-		solver					: seq of fmi2Real
+		derivatives				: seq of fmi2Real		-- Solver derivative data
 		startTime				: [real]
 		stopTime				: [real]
 		currentTime				: [real]
 
 	inv c ==
 		len c.variables = len c.eModelVariables
-		and len c.solver = len c.callbacks.componentEnvironment.solver.derivatives
+		and len c.derivatives = len c.callbacks.componentEnvironment.solver.derivatives
 		and (forall vr in seq c.continuousTimeStates & vr <= len c.variables)
 		and (forall vr in set c.initialUnknowns & vr <= len c.variables)
 		and (c.currentTime <> nil <=> c.startTime <> nil)

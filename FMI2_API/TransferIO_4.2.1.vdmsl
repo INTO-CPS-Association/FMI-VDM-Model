@@ -40,10 +40,11 @@ functions
 		let svUpdates = merge
 			{
 				{
+					-- Update all SVs that are the Nth derivative of vr(ref)
 					v |-> value(ref) | v in set inds c.eModelVariables
 
 					& let mk_(o, b) = getDerivativeBase(v, c.eModelVariables) in
-						exists j in set inds vr & vr(j) = b and order(j) = o
+						b = vr(ref) and o = order(ref)
 				}
 
 				| ref in seq vr
@@ -52,17 +53,18 @@ functions
 			solverUpdates = merge
 			{
 				{
+					-- Update all solver data that is the Nth derivative of vr(ref)
 					v |-> value(ref) | v in set inds c.solverDerivatives
 
-					& c.solverDerivatives(v) = mk_SolverDerivative(ref, order(ref), <input>)
+					& c.solverDerivatives(v) = mk_SolverDerivative(vr(ref), order(ref), <input>)
 				}
 
 				| ref in seq vr
 			}
 		in
 			mk_(<fmi2OK>, mu(c,
-				variables	|-> c.variables ++ svUpdates,
-				solver		|-> c.solver ++ solverUpdates ))
+				variables	|-> c.variables		++ svUpdates,
+				derivatives	|-> c.derivatives	++ solverUpdates ))
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2SetRealInputDerivatives
@@ -72,7 +74,7 @@ functions
 		and (forall o in seq order & o > 0)
 		and (forall v in seq vr & c.eModelVariables(v).causality = <input>)
 
-		-- Assuming that input derivatives must exist as SVs with "derivative" set,
+		-- Input derivatives must exist as SVs with "derivative" set,
 		-- or be defined in solver data (but not both!)
 		and (forall i in set inds vr &
 			(exists sd in seq c.solverDerivatives &
@@ -101,13 +103,13 @@ functions
 		then -- @Printf("Some arguments are not inputs\n")
 			mk_(<fmi2Error>, nil)
 
-		-- Assuming that input derivatives must exist as SVs with "derivative" set
+		-- Input derivatives must exist as SVs with "derivative" set
 		-- or be defined in solver data (but not both!)
 		elseif not forall i in set inds vr &
 			(exists sd in seq c.solverDerivatives &
 				sd.index = vr(i) and sd.order = order(i))
 			<=>
-			exists dv in set inds c.eModelVariables &
+			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
 					o = order(i) and b = vr(i)
 		then -- @Printf("Some inputs do not have derivatives of the right order\n")
@@ -123,23 +125,25 @@ functions
 	fmi2GetRealOutputDerivatives_Impl: fmi2Component * seq of fmi2ValueReference * nat *
 								  seq of fmi2Integer +> fmi2Status * seq of fmi2Real
 	fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order) ==
-		let rindexes =
-			[
-				vr(i) | i in set inds vr
+		let reals =
+		[
+			let sdis = [ sdi | sdi in set inds c.solverDerivatives &
+				c.solverDerivatives(sdi) = mk_SolverDerivative(vr(i), order(i), <output>) ]
+			in
+				if sdis <> []	-- May be multiple matches, but should be all the same
+				then
+					c.derivatives(hd sdis)
+				else
+					let svis = [ svi | svi in set inds c.eModelVariables &
+						let mk_(o, b) = getDerivativeBase(svi, c.eModelVariables) in
+							b = vr(i) and o = order(i) ]
+					in
+						c.variables(hd svis)	-- Precondition guarantees len >0
 
-				/*
-				 * This implementation assumes that output derivatives are all declared as
-				 * ScalarVariables. If this is not the case, and the output derivatives can
-				 * be hidden, then there has to be another "internal state" vector in
-				 * the fmi2Component that holds such values (which are not directly gettable,
-				 * and must have meta data to describe which SV they are derivatives of).
-				 */
-				& exists dv in set inds c.eModelVariables &
-					let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
-						b = vr(i) and o = order(i)
-			]
+			| i in set inds vr
+		]
 		in 
-			mk_(<fmi2OK>, [ c.variables(v) | v in seq rindexes ])
+			mk_(<fmi2OK>, reals)
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2GetRealOutputDerivatives
@@ -148,9 +152,13 @@ functions
 		and (forall o in seq order & o > 0)
 		and (forall v in seq vr & c.eModelVariables(v).causality = <output>)
 
-		-- Assuming that output derivatives must exist as SVs with "derivative" set
+		-- Output derivatives must exist as SVs with "derivative" set,
+		-- or be defined in solver data (but not both!)
 		and (forall i in set inds vr &
-			exists1 dv in set inds c.eModelVariables &
+			(exists sd in seq c.solverDerivatives &
+				sd.index = vr(i) and sd.order = order(i))
+			<=>
+			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
 					o = order(i) and b = vr(i))
 	post
@@ -175,9 +183,13 @@ functions
 		then -- @Printf("Some arguments are not outputs\n")
 			mk_(<fmi2Error>, nil)
 
-		-- Assuming that output derivatives must exist as SVs with "derivative" set
+		-- Output derivatives must exist as SVs with "derivative" set
+		-- or be defined in solver data (but not both!)
 		elseif not forall i in set inds vr &
-			exists dv in set inds c.eModelVariables &
+			(exists sd in seq c.solverDerivatives &
+				sd.index = vr(i) and sd.order = order(i))
+			<=>
+			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
 					o = order(i) and b = vr(i)
 		then -- @Printf("Some outputs do not have derivatives of the right order\n")

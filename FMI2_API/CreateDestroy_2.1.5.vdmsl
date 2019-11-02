@@ -91,7 +91,7 @@ functions
 				-- The initial unknowns (indexes), which may be an empty set
 				{ u.index | u in seq initialUnknowns },
 
-				-- The solver data passed
+				-- The solver derivatives passed
 				[ sd | sd in seq callbacks.componentEnvironment.solver.derivatives ],
 
 				-- The initial setting of log categories (nil means debugging is disabled)
