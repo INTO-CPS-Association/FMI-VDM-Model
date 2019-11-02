@@ -35,7 +35,7 @@ functions
 	 * Implementation and API for fmi2SetupExperiment.
 	 */
 	fmi2SetupExperiment_Impl: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status * fmi2Component
-	fmi2SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
+	fmi2SetupExperiment_Impl(c, -/*toleranceDefined*/, -/*tolerance*/, startTime, stopTimeDefined, stopTime) ==
 		mk_(<fmi2OK>, mu(c,
 			startTime	|-> startTime,
 			stopTime	|-> if stopTimeDefined then stopTime else nil,

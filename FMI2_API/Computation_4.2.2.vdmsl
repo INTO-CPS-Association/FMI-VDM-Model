@@ -35,14 +35,17 @@ functions
 	 * Implementation of fmi2DoStep. See API method below.
 	 */
 	fmi2DoStep_Impl: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * fmi2Component
-	fmi2DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
+	fmi2DoStep_Impl(c, -/*currentCommunicationPoint*/, communicationStepSize, -/*noSetFMUStatePriorToCurrentPoint*/) ==
+		-- TODO: calculate variables for next time step!
 		mk_(<fmi2OK>, mu(c,
 			currentTime |-> c.currentTime + communicationStepSize))
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2DoStep
-		and communicationStepSize > 0.0;
-		-- TODO more...!
+		and communicationStepSize > 0.0
+	post
+		-- After a step, all of the same-order derivatives of an SV must be the same
+		true; -- TODO!
 
 	/**
 	 * The fmi2DoStep API. This performs sufficient checks to pass the precondition on the
