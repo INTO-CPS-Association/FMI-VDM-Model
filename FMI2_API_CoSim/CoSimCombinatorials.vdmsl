@@ -207,6 +207,8 @@ operations
 					and exists dv in seq c.eModelVariables &
 						is_Real(dv.variable)
 						and dv.variable.derivative = vr ]
+					^
+					[ sd.index | sd in seq c.solverDerivatives & sd.type = <input> ]
 				in
 					if ders = []
 					then skip
@@ -282,6 +284,8 @@ operations
 					and exists dv in seq c.eModelVariables &
 						is_Real(dv.variable)
 						and dv.variable.derivative = vr ]
+					^
+					[ sd.index | sd in seq c.solverDerivatives & sd.type = <input> ]
 				in
 					if ders = []
 					then skip
@@ -309,15 +313,6 @@ operations
 					else let mk_(s, -) = fmi2GetReal(c, vars, len vars) in
 						if s <> <fmi2OK>
 						then exit "Cannot get INIT variables";
-
-				/**** Model Exchange only??
-				let vars = [ u.index | u in seq nilSeq[Unknown](c.callbacks.componentEnvironment.modelStructure.derivatives) ] in
-					if vars = []
-					then skip
-					else let mk_(s, -) = fmi2GetContinuousStates(c, len c.continuousTimeStates) in
-						if s <> <fmi2OK>
-						then exit "Cannot get INIT continuous states";
-				*****/
 
 				if nilBool(c.callbacks.componentEnvironment.model.coSimulation.providesDirectionalDerivative)
 				then let outputs = nilSeq[Unknown](c.callbacks.componentEnvironment.model.modelStructure.outputs),
@@ -356,6 +351,8 @@ operations
 						and exists dv in seq c.eModelVariables &
 							is_Real(dv.variable)
 							and dv.variable.derivative = vr ]
+						^
+						[ sd.index | sd in seq c.solverDerivatives & sd.type = <output> ]
 					in
 						if iders = []
 						then skip
