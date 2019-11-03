@@ -64,7 +64,7 @@ values
 
 		-- ScalarVariables
 		[
-/* 1 */		mk_ScalarVariable(1, "inertial.J", 0, nil, <parameter>, <fixed>, nil, nil,
+/* 1 */		mk_ScalarVariable(1, "inertial.J", 0, nil, <parameter>, <tunable>, nil, nil,
 					mk_Real("Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
 
 /* 2 */		mk_ScalarVariable(2, "torque.tau", 1, nil, <input>, nil, nil, nil,
@@ -74,6 +74,9 @@ values
 					mk_Real("Modelica.SIunits.Angle", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
 
 /* 4 */		mk_ScalarVariable(4, "inertial.w", 3, nil, <output>, nil, nil, nil,
+					mk_Real("Modelica.SIunits.AngularVelocity", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
+
+/* 5 */		mk_ScalarVariable(5, "Alias.inertial.w", 3, nil, <output>, nil, nil, nil,
 					mk_Real("Modelica.SIunits.AngularVelocity", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
@@ -83,7 +86,8 @@ values
 			-- Outputs
 			[
 				mk_Unknown(0, 3, nil, nil),
-				mk_Unknown(0, 4, nil, nil)
+				mk_Unknown(0, 4, nil, nil),
+				mk_Unknown(0, 5, nil, nil)		-- Alias?
 			],
 			-- Derivatives
 			nil,

@@ -72,6 +72,7 @@ types
 
 		-- state and settings
 		logCategories			: [set1 of fmi2String]	-- nil means logging off
+		indexmap				: map nat1 to nat1		-- map SV index to variables index
 		variables				: seq1 of (fmi2Real | fmi2Integer | fmi2Boolean | fmi2String)
 		derivatives				: seq of fmi2Real		-- Solver derivative data
 		startTime				: [real]
@@ -79,10 +80,11 @@ types
 		currentTime				: [real]
 
 	inv c ==
-		len c.variables = len c.eModelVariables
-		and len c.derivatives = len c.callbacks.componentEnvironment.solver.derivatives
-		and (forall vr in seq c.continuousTimeStates & vr <= len c.variables)
-		and (forall vr in set c.initialUnknowns & vr <= len c.variables)
+		len c.variables = card rng c.indexmap
+		and (forall vr in seq c.continuousTimeStates & vr <= len c.eModelVariables)
+		and (forall vr in set c.initialUnknowns & vr <= len c.eModelVariables)
+		and (forall sd in seq c.solverDerivatives & sd.index <= len c.eModelVariables)
+		and (len c.derivatives = len c.solverDerivatives)
 		and (c.currentTime <> nil <=> c.startTime <> nil)
 		and (c.currentTime <> nil => c.currentTime >= c.startTime)
 		and (c.stopTime <> nil and c.startTime <> nil => c.stopTime > c.startTime and c.currentTime <= c.stopTime);

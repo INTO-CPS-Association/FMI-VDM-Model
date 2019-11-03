@@ -41,25 +41,25 @@ functions
 			{
 				{
 					-- Update all SVs that are the Nth derivative of vr(ref)
-					v |-> value(ref) | v in set inds c.eModelVariables
+					c.indexmap(v) |-> value(ref) | v in set inds c.eModelVariables
 
 					& let mk_(o, b) = getDerivativeBase(v, c.eModelVariables) in
 						b = vr(ref) and o = order(ref)
 				}
 
-				| ref in seq vr
+				| ref in set inds vr
 			},
 
 			solverUpdates = merge
 			{
 				{
 					-- Update all solver data that is the Nth derivative of vr(ref)
-					v |-> value(ref) | v in set inds c.solverDerivatives
+					c.indexmap(v) |-> value(ref) | v in set inds c.solverDerivatives
 
 					& c.solverDerivatives(v) = mk_SolverDerivative(vr(ref), order(ref), <input>)
 				}
 
-				| ref in seq vr
+				| ref in set inds vr
 			}
 		in
 			mk_(<fmi2OK>, mu(c,
@@ -138,7 +138,7 @@ functions
 						let mk_(o, b) = getDerivativeBase(svi, c.eModelVariables) in
 							b = vr(i) and o = order(i) ]
 					in
-						c.variables(hd svis)	-- Precondition guarantees len >0
+						c.variables(c.indexmap(hd svis))	-- Precondition guarantees len >0
 
 			| i in set inds vr
 		]

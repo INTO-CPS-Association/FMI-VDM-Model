@@ -76,7 +76,15 @@ functions
 	fmi2Instantiate_Impl(instanceName, fmuType, fmuGUID, -/*fmuResourceLocation*/, callbacks, -/*visible*/, loggingOn) ==
 		let model = callbacks.componentEnvironment.model,
 			eModelVariables = effectiveScalarVariables(model),
-			initialUnknowns = nilSeq[Unknown](model.modelStructure.initialUnknowns)
+			initialUnknowns = nilSeq[Unknown](model.modelStructure.initialUnknowns),
+			vorder = setToSeq[nat * seq1 of char](dom getAliasRefMap(eModelVariables)),
+			indexmap =
+			{
+				svi |->	iota i in set inds vorder &
+					vorder(i) = aliasTag(eModelVariables(svi))
+
+				| svi in set inds eModelVariables
+			}
 		in
 			mk_fmi2Component
 			(
@@ -106,21 +114,26 @@ functions
 				then { cat.name | cat in seq model.logCategories }
 				else nil,
 
-				-- The state vector, indexed by SV number, created from the effective SVs
+				-- The reference map of SV indexes to variable indexes (below)
+				indexmap,
+
+				-- The state vector, indexed via the indexmap, created from the effective SVs
 				-- Initially either the start value given, or the default start value for the type.
 				[
-					if sv.variable.start <> nil
-					then sv.variable.start
-					else
-						-- Set default value for variable type
-						if is_Real(sv.variable) then 0.0
-						else if is_Integer(sv.variable) then 0
-						else if is_Boolean(sv.variable) then false
-						else if is_String(sv.variable) then ""
-						else if is_Enumeration(sv.variable) then 0
-						else undefined
+					let svi in set dom indexmap be st indexmap(svi) = v in
+					let sv = eModelVariables(svi) in
+						if sv.variable.start <> nil
+						then sv.variable.start	-- All aliases have the same start
+						else
+							-- Set default value for variable type
+							if is_Real(sv.variable) then 0.0
+							else if is_Integer(sv.variable) then 0
+							else if is_Boolean(sv.variable) then false
+							else if is_String(sv.variable) then ""
+							else if is_Enumeration(sv.variable) then 0
+							else undefined
 
-					| sv in seq eModelVariables
+					| v in set rng indexmap
 				],
 
 				-- The solver data vector, indexed by SolverData's index

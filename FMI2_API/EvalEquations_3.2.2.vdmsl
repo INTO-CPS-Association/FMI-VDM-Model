@@ -143,7 +143,7 @@ functions
 	 */
 	fmi2GetDerivatives_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetDerivatives_Impl(c, nx) ==
-		mk_(<fmi2OK>, [ c.variables(vr) | vr in seq c.continuousTimeStates ])
+		mk_(<fmi2OK>, [ c.variables(c.indexmap(vr)) | vr in seq c.continuousTimeStates ])
 	pre
 		c.fmuType = <fmi2ModelExchange>
 		and c.fmuState in set STATES_fmi2GetDerivatives
