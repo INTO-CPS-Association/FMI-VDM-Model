@@ -64,7 +64,7 @@ types
 		fmuState				: fmi2State
 		callbacks				: fmi2CallbackFunctions
 
-		-- convenience fields
+		-- convenience read-only fields, copied from elsewhere
 		eModelVariables			: seq1 of ScalarVariable
 		continuousTimeStates	: seq of nat1
 		initialUnknowns			: set of nat1

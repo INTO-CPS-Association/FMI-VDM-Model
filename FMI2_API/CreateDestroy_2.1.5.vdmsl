@@ -48,10 +48,17 @@ types
 
 		-- And the solver data does not contain any derivatives of SVs that are
 		-- already represented in the SV list
-		and forall sd in seq cenv.solver.derivatives &
+		and (forall sd in seq cenv.solver.derivatives &
 			not exists sv in set inds cenv.model.modelVariables &
 				let mk_(o, b) = getDerivativeBase(sv, cenv.model.modelVariables) in
-					sd.order = o and sd.index = b;
+					sd.order = o and sd.index = b)
+
+		-- And CoSim solver data output derivative orders do not exceed
+		-- maxOutputDerivativeOrder
+		and (cenv.model.coSimulation <> nil =>
+			let max = cenv.model.coSimulation.maxOutputDerivativeOrder in
+				max <> nil => forall sd in seq cenv.solver.derivatives &
+					sd.type = <output> => sd.order <= max);
 
 	fmi2CallbackFunctions ::
 		logger					: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> <VOID>
