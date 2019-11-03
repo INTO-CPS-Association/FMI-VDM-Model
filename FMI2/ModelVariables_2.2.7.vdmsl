@@ -296,32 +296,12 @@ functions
 
 		| sv in seq svs
 	}
-	/*******
-	union
-	{
-		let ders = { v | v in set inds svs & is_Real(svs(v).variable) and svs(v).variable.derivative = sv } in
-			-- @OnFail("2.2.7 Variable has multiple derivatives: %s derivatives %s", svs(sv).name, ders)
-			( card ders <= 1 )
-
-		| sv in set inds svs
-	}
-	*******/
 	union
 	{
 		/* @OnFail("2.2.7 Invalid ScalarVariable aliasing") */
 		(
-			let refmap =
-			{
-				mk_(sv.valueReference, typeName(sv.variable)) |->
-				{
-					v | v in seq svs
-					& v.valueReference = sv.valueReference
-						and sameTypes(v.variable, sv.variable)
-				}
-
-				| sv in seq svs
-			}
-			in card dom refmap < len svs => dunion	-- Must be some aliases
+			let refmap = getAliasRefMap(svs) in
+			card dom refmap < len svs => dunion	-- Must be some aliases
 			{
 				let aliases = refmap(ref) in
 				{
@@ -610,3 +590,22 @@ functions
 		else let mk_(o, r) = getDerivativeBase(svs(vr).variable.derivative, svs) in
 			mk_(o+1, r)
 	measure is not yet specified;
+
+	/**
+	 * Get the alias refmap, from valueReference/type pairs to sets of SVs
+	 */
+	getAliasRefMap: seq1 of ScalarVariable -> map nat * seq of char to set of ScalarVariable
+	getAliasRefMap(svs) ==
+		let tags = { svi |-> aliasTag(svs(svi)) | svi in set inds svs } in
+		{
+			tags(svi) |-> { svs(v) | v in set inds svs & tags(v) = tags(svi) }
+			| svi in set inds svs
+		};
+
+	/**
+	 * Generate an alias "tag" for a ScalarVariable, made of the valueReference and
+	 * the type of the variable. All aliases of a variable have the same tag.
+	 */
+	aliasTag: ScalarVariable +> nat * seq1 of char
+	aliasTag(sv) ==
+		mk_(sv.valueReference, typeName(sv.variable));

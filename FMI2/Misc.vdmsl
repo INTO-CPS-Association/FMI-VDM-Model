@@ -72,3 +72,11 @@ functions
 		else let e in set s in
 			card e + count[@T](s \ {e})
 	measure card s;
+
+	setToSeq[@T]: set of @T +> seq of @T
+	setToSeq(s) ==
+		if s = {}
+		then []
+		else let e in set s in
+			[e] ^ setToSeq[@T](s \ {e})
+	measure card s;
