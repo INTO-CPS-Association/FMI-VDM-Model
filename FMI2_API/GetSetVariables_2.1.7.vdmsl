@@ -218,23 +218,34 @@ functions
 	pre
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
-		and forall vr in seq vrs &
-			vr <= len c.eModelVariables and is_Real(c.eModelVariables(vr).variable);
+		and (forall vr in seq vrs &
+			vr <= len c.eModelVariables and is_Real(c.eModelVariables(vr).variable))
+		and (forall i in set inds vrs &
+			let min = c.eModelVariables(vrs(i)).variable.min,
+				max = c.eModelVariables(vrs(i)).variable.max
+			in
+				(min <> nil => value(i) >= min)	and (max <> nil => value(i) <= max));
 
-	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status * fmi2Component
+	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status * [fmi2Component]
 	fmi2SetReal(c, vrs, nvr, value) ==
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & vr > len c.eModelVariables or not is_Real(c.eModelVariables(vr).variable)
 		then -- @Printf("Value references are not all Real variables\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
+		elseif exists i in set inds vrs &
+			let min = c.eModelVariables(vrs(i)).variable.min,
+				max = c.eModelVariables(vrs(i)).variable.max in
+			(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
+		then -- @Printf("Values not all within min/max for variables\n")
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetReal_Impl(c, vrs, nvr, value);
 
@@ -251,22 +262,33 @@ functions
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
 		and forall vr in seq vrs &
-			vr <= len c.eModelVariables and is_Integer(c.eModelVariables(vr).variable);
+			vr <= len c.eModelVariables and is_Integer(c.eModelVariables(vr).variable)
+		and (forall i in set inds vrs &
+			let min = c.eModelVariables(vrs(i)).variable.min,
+				max = c.eModelVariables(vrs(i)).variable.max
+			in
+				(min <> nil => value(i) >= min)	and (max <> nil => value(i) <= max));
 
-	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status * fmi2Component
+	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status * [fmi2Component]
 	fmi2SetInteger(c, vrs, nvr, value) ==
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & vr > len c.eModelVariables or not is_Integer(c.eModelVariables(vr).variable)
 		then -- @Printf("Value references are not all Integer variables\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
+		elseif exists i in set inds vrs &
+			let min = c.eModelVariables(vrs(i)).variable.min,
+				max = c.eModelVariables(vrs(i)).variable.max in
+			(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
+		then -- @Printf("Values not all within min/max for variables\n")
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetInteger_Impl(c, vrs, nvr, value);
 
@@ -274,7 +296,7 @@ functions
 	/**
 	 * Implementation and API for fmi2SetBoolean.
 	 */
-	fmi2SetBoolean_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status * fmi2Component
+	fmi2SetBoolean_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status * [fmi2Component]
 	fmi2SetBoolean_Impl(c, vrs, nvr, value) ==
 		let updates = { c.indexmap(vrs(i)) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
@@ -285,20 +307,20 @@ functions
 		and forall vr in seq vrs &
 			vr <= len c.eModelVariables and is_Boolean(c.eModelVariables(vr).variable);
 
-	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status * fmi2Component
+	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status * [fmi2Component]
 	fmi2SetBoolean(c, vrs, nvr, value) ==
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & vr > len c.eModelVariables or not is_Boolean(c.eModelVariables(vr).variable)
 		then -- @Printf("Value references are not all Boolean variables\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetBoolean_Impl(c, vrs, nvr, value);
 
@@ -317,19 +339,19 @@ functions
 		and forall vr in seq vrs &
 			vr <= len c.eModelVariables and is_String(c.eModelVariables(vr).variable);
 
-	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status * fmi2Component
+	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status * [fmi2Component]
 	fmi2SetString(c, vrs, nvr, value) ==
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif not generalSetPrecondition(c, vrs)
 		then -- @Printf("Set preconditions failed\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & vr > len c.eModelVariables or not is_String(c.eModelVariables(vr).variable)
 		then -- @Printf("Value references are not all String variables\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetString_Impl(c, vrs, nvr, value);

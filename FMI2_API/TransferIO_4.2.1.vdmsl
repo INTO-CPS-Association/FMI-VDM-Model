@@ -72,7 +72,9 @@ functions
 		and nvr = len value
 		and nvr = len order
 		and (forall o in seq order & o > 0)
-		and (forall v in seq vr & c.eModelVariables(v).causality = <input>)
+		and (forall v in seq vr &
+			c.eModelVariables(v).causality = <input>
+			and is_Real(c.eModelVariables(v).variable))
 
 		-- Input derivatives must exist as SVs with "derivative" set,
 		-- or be defined in solver data (but not both!)
@@ -82,7 +84,16 @@ functions
 			<=>
 			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
-					o = order(i) and b = vr(i));
+					o = order(i) and b = vr(i))
+
+		-- If each input derivative is a variable, the new value must be within min/max
+		and (forall i in set inds vr &
+			forall dv in set inds c.eModelVariables &
+				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
+					o = order(i) and b = vr(i) =>
+						let min = c.eModelVariables(vr(i)).variable.min,
+							max = c.eModelVariables(vr(i)).variable.max in
+						(min <> nil => value(i) >= min) and (max <> nil => value(i) <= max));
 
 	fmi2SetRealInputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
 								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status * [fmi2Component]
@@ -99,8 +110,10 @@ functions
 		elseif exists o in seq order & o <= 0
 		then -- @Printf("Order entries must all be >0\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists v in seq vr & c.eModelVariables(v).causality <> <input>
-		then -- @Printf("Some arguments are not inputs\n")
+		elseif exists v in seq vr &
+			c.eModelVariables(v).causality <> <input>
+			and is_Real(c.eModelVariables(v).variable)
+		then -- @Printf("Some arguments are not Real inputs\n")
 			mk_(<fmi2Error>, nil)
 
 		-- Input derivatives must exist as SVs with "derivative" set
@@ -113,6 +126,17 @@ functions
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
 					o = order(i) and b = vr(i)
 		then -- @Printf("Some inputs do not have derivatives of the right order\n")
+			mk_(<fmi2Error>, nil)
+
+		-- If each input derivative is a variable, the new value must be within min/max
+		elseif exists i in set inds vr &
+			exists dv in set inds c.eModelVariables &
+				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
+					o = order(i) and b = vr(i) and
+						let min = c.eModelVariables(vr(i)).variable.min,
+							max = c.eModelVariables(vr(i)).variable.max in
+						(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
+		then -- @Printf("Values not all within min/max for variables\n")
 			mk_(<fmi2Error>, nil)
 
 		else
