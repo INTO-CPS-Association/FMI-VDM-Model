@@ -4,7 +4,8 @@ This repository contains a VDM model of the FMI version 2.0 standard, plus suppo
 
 * **FMI2** - a VDM-SL model of the static semantics of FMU modelDescription XML files
 * **FMI2_API** - a VDM-SL model of the dynamic semantics of the FMI 2.0 API
-* **FMI2_API_CoSim** - a VDM-SL model to test the dynamic semantics
+* **FMI2_API_CoSim** - a VDM-SL model to test the dynamic semantics of co-simulation FMUs
+* **FMI2_API_ModelEx** - a VDM-SL model to test the dynamic semantics of model-exchange FMUs
 * **FMI2_Tests** - a set of test XML files for the static semantics
 * **COSIM** - a VDM-SL model of the interaction of a set of FMUs
 * **FMI2_to_VDM** - a Java tool to convert modeDescription XML files to VDM-SL and check them
