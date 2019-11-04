@@ -89,7 +89,7 @@ values
 			<fmi2GetX>						|-> { <EVENT_MODE> },
 			<fmi2SetIN>						|-> { <EVENT_MODE> },
 			<fmi2SetINC>					|-> { <EVENT_MODE> },
-			<fmi2NewDiscreteStates>			|-> { <CT_MODE> },
+			<fmi2NewDiscreteStates>			|-> { <CT_MODE> },		-- This is conditional TODO!!
 			<fmi2Terminate>					|-> { <TERMINATED> },
 			<fmi2Reset>						|-> { <INSTANTIATED> }
 		},
@@ -250,7 +250,9 @@ operations
 					then exit "Cannot free FMU state"
 				);
 
-				let mk_(s, -) = fmi2GetNominalsOfContinuousStates(c, 1) in
+				-- Can't do this in all "F" states?
+				if c.fmuState <> <INITIALIZATION>
+				then let mk_(s, -) = fmi2GetNominalsOfContinuousStates(c, len c.continuousTimeStates) in
 					if s <> <fmi2OK>
 					then exit "Cannot GetNominalsOfContinuousStates"
 			),
@@ -281,7 +283,7 @@ operations
 						if s <> <fmi2OK>
 						then exit "Cannot get INIT directional derivatives";
 
-				let mk_(s, -) = fmi2GetContinuousStates(c, 0) in
+				let mk_(s, -) = fmi2GetContinuousStates(c, len c.continuousTimeStates) in
 					if s <> <fmi2OK>
 					then exit "Cannot GetContinuousStates";
 			),
@@ -300,12 +302,13 @@ operations
 						else c := c2,
 
 			<fmi2GetDerivatives> ->
-				let mk_(s, -) = fmi2GetDerivatives(c, 0) in
-						if s <> <fmi2OK>
-						then exit "Cannot GetX derivatives",
+				let mk_(s, -) = fmi2GetDerivatives(c, len c.continuousTimeStates) in
+					if s <> <fmi2OK>
+					then exit "Cannot GetX derivatives",
 
 			<fmi2GetEventIndicators> ->
-				let mk_(s, -) = fmi2GetEventIndicators(c, 0) in
+				let mk_(s, -) = fmi2GetEventIndicators(c,
+						nilNat(c.callbacks.componentEnvironment.model.attributes.numberOfEventIndicators)) in
 					if s <> <fmi2OK>
 					then exit "Cannot GetX EventIndicators",
 
@@ -342,9 +345,10 @@ operations
 						else c := c2,
 
 			<fmi2NewDiscreteStates> ->
-				let s = fmi2NewDiscreteStates(c, mk_fmi2EventInfo(false, false, false, false, false, nil)) in
+				let mk_(s, c2) = fmi2NewDiscreteStates(c, mk_fmi2EventInfo(true, false, false, false, false, nil)) in
 					if s <> <fmi2OK>
-					then exit "Cannot NewDiscreteStates",
+					then exit "Cannot NewDiscreteStates"
+					else c := c2,
 
 			<fmi2EnterContinuousTimeMode> ->
 				let mk_(s, -) = fmi2EnterContinuousTimeMode(c) in
@@ -357,7 +361,8 @@ operations
 					then exit "Cannot SetTime",
 
 			<fmi2SetContinuousStates> ->
-				let mk_(s, -) = fmi2SetContinuousStates(c, [0,0,0], 0) in
+				let mk_(s, -) = fmi2SetContinuousStates(c,
+									[0 | - in seq c.continuousTimeStates ], len c.continuousTimeStates) in
 					if s <> <fmi2OK>
 					then exit "Cannot SetContinuousStates",
 
@@ -367,9 +372,10 @@ operations
 					then exit "Cannot CompletedIntegratorStep",
 
 			<fmi2EnterEventMode> ->
-				let s = fmi2EnterEventMode(c) in
+				let mk_(s, c2) = fmi2EnterEventMode(c) in
 					if s <> <fmi2OK>
-					then exit "Cannot EnterEventMode",
+					then exit "Cannot EnterEventMode"
+					else c := c2,
 
 			<fmi2GetX> ->
 				let vars = [ vr | vr in set inds c.eModelVariables & is_Real(c.eModelVariables(vr).variable) ] in
@@ -381,15 +387,16 @@ operations
 							if s <> <fmi2OK>
 							then exit "Cannot GetX variables";
 
-					let mk_(s, -) = fmi2GetDerivatives(c, 0) in
-							if s <> <fmi2OK>
-							then exit "Cannot GetX derivatives";
+					let mk_(s, -) = fmi2GetDerivatives(c, len c.continuousTimeStates) in
+						if s <> <fmi2OK>
+						then exit "Cannot GetX derivatives";
 
-					let mk_(s, -) = fmi2GetContinuousStates(c, 0) in
+					let mk_(s, -) = fmi2GetContinuousStates(c, len c.continuousTimeStates) in
 						if s <> <fmi2OK>
 						then exit "Cannot GetX ContinuousStates";
 
-					let mk_(s, -) = fmi2GetEventIndicators(c, 0) in
+					let mk_(s, -) = fmi2GetEventIndicators(c,
+							nilNat(c.callbacks.componentEnvironment.model.attributes.numberOfEventIndicators)) in
 						if s <> <fmi2OK>
 						then exit "Cannot GetX EventIndicators";
 
@@ -448,8 +455,6 @@ ModelExTests:
 	let a5 in set dom stateMachine(s5) be st isOK(s5, [a1, a2, a3, a4], a5) in
 	(
 	process(a5);
-	)))))
-	/******
 	let s6 in set stateMachine(s5)(a5) in
 	let a6 in set dom stateMachine(s6) be st isOK(s6, [a1, a2, a3, a4, a5], a6) in
 	(

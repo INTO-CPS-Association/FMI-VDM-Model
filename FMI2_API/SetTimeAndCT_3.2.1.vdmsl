@@ -40,22 +40,20 @@ functions
 			currentTime |-> time))
 	pre
 		c.fmuType = <fmi2ModelExchange>
-		and c.fmuState in set STATES_fmi2SetTime
-	post
-		RESULT.#2.currentTime = time;
+		and c.fmuState in set STATES_fmi2SetTime;
 
-	fmi2SetTime: fmi2Component * fmi2Real +> fmi2Status * fmi2Component
+	fmi2SetTime: fmi2Component * fmi2Real +> fmi2Status * [fmi2Component]
 	fmi2SetTime(c, time) ==
 		if c.fmuType <> <fmi2ModelExchange>
 		then -- @Printf("Cannot call fmi2SetTime for fmi2CoSimulation\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2SetTime
 		then -- @Printf("Cannot call fmi2SetTime in state %s\n", c.fmuState)
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetTime_Impl(c, time)
 	 post
-	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**
@@ -70,9 +68,7 @@ functions
 		c.fmuType = <fmi2ModelExchange>
 		and c.fmuState in set STATES_fmi2SetContinuousStates
 		and nx = len x
-		and nx = len c.continuousTimeStates
-	post
-		RESULT.#2.fmuState = <INITIALIZATION>;
+		and nx = len c.continuousTimeStates;
 
 	fmi2SetContinuousStates: fmi2Component * seq of fmi2Real * nat +> fmi2Status * [fmi2Component]
 	fmi2SetContinuousStates(c, x, nx) ==
@@ -91,4 +87,4 @@ functions
 		else
 			fmi2SetContinuousStates_Impl(c, x, nx)
 	 post
-	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;

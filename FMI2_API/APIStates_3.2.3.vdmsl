@@ -72,7 +72,7 @@ STATES_fmi2SetTime                  = { <EVENT_MODE>, <CT_MODE> };
 STATES_fmi2SetContinuousStates      = { <CT_MODE> };
 STATES_fmi2GetEventIndicators       = { <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <TERMINATED>, <ERROR> };
 STATES_fmi2GetContinuousStates      = STATES_fmi2GetEventIndicators;
-STATES_fmi2GetDerivatives           = { <EVENT_MODE>, <CT_MODE>, <TERMINATED>, <ERROR> };
+STATES_fmi2GetDerivatives           = { <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <TERMINATED>, <ERROR> };
 STATES_fmi2GetNominalsOfContinuousStates = {  <INSTANTIATED>, <EVENT_MODE>, <CT_MODE>, <TERMINATED>, <ERROR> };
 
 ------------------------------------------------------------------------------
