@@ -195,7 +195,7 @@ functions
 	 */
 	fmi2GetContinuousStates_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetContinuousStates_Impl(c, nx) ==
-		is not yet specified
+		mk_(<fmi2OK>, [ c.variables(c.indexmap(v)) | v in seq c.continuousTimeStates ])
 	pre
 		c.fmuType = <fmi2ModelExchange>
 		and c.fmuState in set STATES_fmi2GetContinuousStates
@@ -223,7 +223,7 @@ functions
 	 */
 	fmi2GetNominalsOfContinuousStates_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetNominalsOfContinuousStates_Impl(c, nx) ==
-		is not yet specified
+		mk_(<fmi2OK>, [ 0 | - in seq c.continuousTimeStates ])	-- TODO!
 	pre
 		c.fmuType = <fmi2ModelExchange>
 		and c.fmuState in set STATES_fmi2GetNominalsOfContinuousStates
