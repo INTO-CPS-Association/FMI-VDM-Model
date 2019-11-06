@@ -48,7 +48,7 @@ values
 		--		canSerializeFMUstate				: [bool]
 		--		providesDirectionalDerivative		: [bool]
 		--		sourceFiles							: [seq1 of SourceFile];
-		mk_ModelExchange(0, "MSD", nil, nil, nil, nil, nil, nil, nil, nil),
+		mk_ModelExchange(0, "MSD", nil, false, nil, nil, nil, nil, nil, nil),
 		nil,
 
 		-- Unit definitions

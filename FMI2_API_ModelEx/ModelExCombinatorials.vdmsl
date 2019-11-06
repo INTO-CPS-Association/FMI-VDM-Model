@@ -44,7 +44,8 @@ types
 		<fmi2ExitInitializationMode> |
 		<fmi2SetIN> |
 		<fmi2SetINC> |
-		<fmi2NewDiscreteStates> |
+		<fmi2NewDiscreteStatesCT> |
+		<fmi2NewDiscreteStatesEM> |
 		<fmi2EnterContinuousTimeMode> |
 		<fmi2SetTime> |
 		<fmi2SetContinuousStates> |
@@ -89,7 +90,8 @@ values
 			<fmi2GetX>						|-> { <EVENT_MODE> },
 			<fmi2SetIN>						|-> { <EVENT_MODE> },
 			<fmi2SetINC>					|-> { <EVENT_MODE> },
-			<fmi2NewDiscreteStates>			|-> { <CT_MODE> },		-- This is conditional TODO!!
+			<fmi2NewDiscreteStatesCT>		|-> { <CT_MODE> },
+			<fmi2NewDiscreteStatesEM>		|-> { <EVENT_MODE> },
 			<fmi2Terminate>					|-> { <TERMINATED> },
 			<fmi2Reset>						|-> { <INSTANTIATED> }
 		},
@@ -101,7 +103,7 @@ values
 			<fmi2SetINC>					|-> { <CT_MODE> },
 			<fmi2SetTime>					|-> { <CT_MODE> },
 			<fmi2SetContinuousStates>		|-> { <CT_MODE> },
-			<fmi2CompletedIntegratorStep>	|-> { <CT_MODE> },
+			<fmi2CompletedIntegratorStep>	|-> { <EVENT_MODE> },
 			<fmi2EnterEventMode>			|-> { <EVENT_MODE> },
 			<fmi2Terminate>					|-> { <TERMINATED> },
 			<fmi2Reset>						|-> { <INSTANTIATED> }
@@ -137,6 +139,12 @@ functions
 
 				<fmi2EnterInitializationMode> ->
 					<fmi2SetupExperiment> in set pset,
+
+				<fmi2EnterContinuousTimeMode> ->
+					lastapi = <fmi2NewDiscreteStatesCT>,
+
+				<fmi2EnterEventMode> ->
+					lastapi = <fmi2CompletedIntegratorStep>,
 
 				<fmi2SetSEA> ->
 					(cstate = <INSTANTIATED> => <fmi2SetupExperiment> in set pset)
@@ -219,7 +227,7 @@ operations
 					then exit "Cannot set debug logging"
 					else c := c2;
 
-				if nilBool(c.callbacks.componentEnvironment.model.modelExchange.canGetAndSetFMUstate)
+				if nilBool(c.model.modelExchange.canGetAndSetFMUstate)
 				then let mk_(s, fmustate) = fmi2GetFMUstate(c) in
 				(
 					if s <> <fmi2OK>
@@ -272,8 +280,8 @@ operations
 						if s <> <fmi2OK>
 						then exit "Cannot get INIT variables";
 
-				if nilBool(c.callbacks.componentEnvironment.model.modelExchange.providesDirectionalDerivative)
-				then let outputs = nilSeq[Unknown](c.callbacks.componentEnvironment.model.modelStructure.outputs),
+				if nilBool(c.model.modelExchange.providesDirectionalDerivative)
+				then let outputs = nilSeq[Unknown](c.model.modelStructure.outputs),
 					unknown = [ u.index | u in seq outputs ],
 					known = conc [ nilSeq[nat1](u.dependencies) | u in seq outputs ] in
 					if unknown = []
@@ -308,7 +316,7 @@ operations
 
 			<fmi2GetEventIndicators> ->
 				let mk_(s, -) = fmi2GetEventIndicators(c,
-						nilNat(c.callbacks.componentEnvironment.model.attributes.numberOfEventIndicators)) in
+						nilNat(c.model.attributes.numberOfEventIndicators)) in
 					if s <> <fmi2OK>
 					then exit "Cannot GetX EventIndicators",
 
@@ -344,8 +352,19 @@ operations
 						then exit "Cannot set INC variables"
 						else c := c2,
 
-			<fmi2NewDiscreteStates> ->
-				let mk_(s, c2) = fmi2NewDiscreteStates(c, mk_fmi2EventInfo(true, false, false, false, false, nil)) in
+			<fmi2NewDiscreteStatesCT> ->
+				let mk_(s, c2, info) = fmi2NewDiscreteStates(c) in
+					if s <> <fmi2OK>
+					then exit "Cannot NewDiscreteStates"
+					elseif not info.newDiscreteStatesNeeded
+					then let mk_(s2, c3) = fmi2EnterContinuousTimeMode(c2) in
+						if s2 <> <fmi2OK>
+						then exit "Cannot fmi2EnterContinuousTimeMode"
+						else c := c3
+					else c := c2,
+
+			<fmi2NewDiscreteStatesEM> ->
+				let mk_(s, c2, -) = fmi2NewDiscreteStates(c) in
 					if s <> <fmi2OK>
 					then exit "Cannot NewDiscreteStates"
 					else c := c2,
@@ -367,9 +386,14 @@ operations
 					then exit "Cannot SetContinuousStates",
 
 			<fmi2CompletedIntegratorStep> ->
-				let mk_(s, -, -) = fmi2CompletedIntegratorStep(c, true) in
+				let mk_(s, enterEM, -) = fmi2CompletedIntegratorStep(c, true) in
 					if s <> <fmi2OK>
-					then exit "Cannot CompletedIntegratorStep",
+					then exit "Cannot CompletedIntegratorStep"
+					else if enterEM
+					then let mk_(s2, c2) = fmi2EnterEventMode(c) in
+						if s2 <> <fmi2OK>
+						then exit "Cannot fmi2EnterEventMode"
+						else c := c2,
 
 			<fmi2EnterEventMode> ->
 				let mk_(s, c2) = fmi2EnterEventMode(c) in
@@ -396,12 +420,12 @@ operations
 						then exit "Cannot GetX ContinuousStates";
 
 					let mk_(s, -) = fmi2GetEventIndicators(c,
-							nilNat(c.callbacks.componentEnvironment.model.attributes.numberOfEventIndicators)) in
+							nilNat(c.model.attributes.numberOfEventIndicators)) in
 						if s <> <fmi2OK>
 						then exit "Cannot GetX EventIndicators";
 
-					if nilBool(c.callbacks.componentEnvironment.model.modelExchange.providesDirectionalDerivative)
-					then let outputs = nilSeq[Unknown](c.callbacks.componentEnvironment.model.modelStructure.outputs),
+					if nilBool(c.model.modelExchange.providesDirectionalDerivative)
+					then let outputs = nilSeq[Unknown](c.model.modelStructure.outputs),
 						unknown = [ u.index | u in seq outputs ],
 						known = conc [ nilSeq[nat1](u.dependencies) | u in seq outputs ] in
 						if unknown = []
@@ -439,54 +463,61 @@ ModelExTests:
 	let a1 in set dom stateMachine(s1) be st isOK(s1, [], a1) in
 	(
 	process(a1);
+	-- ) /***
 	let s2 in set stateMachine(s1)(a1) in
 	let a2 in set dom stateMachine(s2) be st isOK(s2, [a1], a2) in
 	(
 	process(a2);
+	-- )) /***
 	let s3 in set stateMachine(s2)(a2) in
 	let a3 in set dom stateMachine(s3) be st isOK(s3, [a1, a2], a3) in
 	(
 	process(a3);
+	-- ))) /***
 	let s4 in set stateMachine(s3)(a3) in
 	let a4 in set dom stateMachine(s4) be st isOK(s4, [a1, a2, a3], a4) in
 	(
 	process(a4);
+	-- )))) /***
 	let s5 in set stateMachine(s4)(a4) in
 	let a5 in set dom stateMachine(s5) be st isOK(s5, [a1, a2, a3, a4], a5) in
 	(
 	process(a5);
+	-- ))))) /***
 	let s6 in set stateMachine(s5)(a5) in
 	let a6 in set dom stateMachine(s6) be st isOK(s6, [a1, a2, a3, a4, a5], a6) in
 	(
 	process(a6);
+	-- )))))) /***
 	let s7 in set stateMachine(s6)(a6) in
 	let a7 in set dom stateMachine(s7) be st isOK(s7, [a1, a2, a3, a4, a5, a6], a7) in
 	(
 	process(a7);
+	-- ))))))) /***
 	let s8 in set stateMachine(s7)(a7) in
 	let a8 in set dom stateMachine(s8) be st isOK(s8, [a1, a2, a3, a4, a5, a6, a7], a8) in
 	(
 	process(a8);
-	))))))))
-	/***********
+	-- )))))))) /***
 	let s9 in set stateMachine(s8)(a8) in
 	let a9 in set dom stateMachine(s9) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8], a9) in
 	(
 	process(a9);
+	))))))))) /***
 	let s10 in set stateMachine(s9)(a9) in
 	let a10 in set dom stateMachine(s10) be st isOK(s10, [a1, a2, a3, a4, a5, a6, a7, a8, a9], a10) in
 	(
 	process(a10);
-	))))))))))
-	/*************
+	-- )))))))))) /***
 	let s11 in set stateMachine(s10)(a10) in
 	let a11 in set dom stateMachine(s11) be st isOK(s11, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10], a11) in
 	(
 	process(a11);
+	-- )))))))))) /***
 	let s12 in set stateMachine(s11)(a11) in
 	let a12 in set dom stateMachine(s12) be st isOK(s12, [a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11], a12) in
 	(
 	process(a12);
 	)
 	)))))))))));
-	*************/
+	-- ***/

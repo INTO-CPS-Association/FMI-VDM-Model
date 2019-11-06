@@ -97,6 +97,9 @@ functions
 				-- The callbacks passed in
 				callbacks,
 
+				-- The XML model
+				model,
+
 				-- The effective ScalarVariables, after all defaults and inherited values set
 				eModelVariables,
 
@@ -139,6 +142,11 @@ functions
 				-- The solver data vector, indexed by SolverData's index
 				[
 					0.0 | - in seq callbacks.componentEnvironment.solver.derivatives
+				],
+
+				-- The eventIndicators
+				[
+					0.0 | - in set {1, ..., nilNat(model.attributes.numberOfEventIndicators)}
 				],
 
 				-- start time, set by fmi2SetupExperiment
@@ -217,7 +225,7 @@ functions
 				if loggingOn
 				then
 					if nCategories = 0
-					then [ cat.name | cat in seq c.callbacks.componentEnvironment.model.logCategories ]
+					then [ cat.name | cat in seq c.model.logCategories ]
 					else elems categories
 				else nil))
 	pre
@@ -225,7 +233,7 @@ functions
 		and nCategories = len categories
 		and card elems categories = nCategories
 		and (nCategories > 0 =>
-			let logcats = c.callbacks.componentEnvironment.model.logCategories in
+			let logcats = c.model.logCategories in
 				logcats <> nil
 				and forall cname in seq categories &
 					exists lc in seq logcats &
@@ -234,7 +242,7 @@ functions
 		RESULT.#2.logCategories =
 			if loggingOn
 			then if nCategories = 0
-				then [ cat.name | cat in seq c.callbacks.componentEnvironment.model.logCategories ]
+				then [ cat.name | cat in seq c.model.logCategories ]
 				else elems categories
 			else nil;
 
@@ -250,7 +258,7 @@ functions
 		elseif nCategories <> len categories or card elems categories <> nCategories
 		then -- @Printf("nCategories does not match categories length\n")
 			mk_(<fmi2Error>, c)
-		else let logcats = c.callbacks.componentEnvironment.model.logCategories in
+		else let logcats = c.model.logCategories in
 			if nCategories > 0 and logcats = nil
 			then -- @Printf("No log categories defined in XML configuration\n")
 				mk_(<fmi2Error>, c)

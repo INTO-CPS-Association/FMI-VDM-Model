@@ -69,25 +69,32 @@ functions
 	/**
 	 * Implementation and API for fmi2NewDiscreteStates.
 	 */
-	fmi2NewDiscreteStates_Impl: fmi2Component * fmi2EventInfo +> fmi2Status * fmi2Component
-	fmi2NewDiscreteStates_Impl(c, info) ==
-		if info.newDiscreteStatesNeeded
-		then fmi2EnterContinuousTimeMode(c)
-		else mk_(<fmi2OK>, c)
+	fmi2NewDiscreteStates_Impl: fmi2Component +> fmi2Status * fmi2Component * fmi2EventInfo
+	fmi2NewDiscreteStates_Impl(c) ==
+		mk_(<fmi2OK>, mu(c, currentTime |-> c.currentTime + 1),
+				mk_fmi2EventInfo(
+					false,	-- newDiscreteStatesNeeded
+					false,	-- terminateSimulation
+					false,	-- nominalsOfContinuousStatesChanged
+					false,	-- valuesOfContinuousStatesChanged
+					false,	-- nextEventTimeDefined
+					nil		-- nextEventTime
+				)
+			)
 	pre
 		c.fmuType = <fmi2ModelExchange>
 		and c.fmuState in set STATES_fmi2NewDiscreteStates;
 
-	fmi2NewDiscreteStates: fmi2Component * fmi2EventInfo +> fmi2Status * [fmi2Component]
-	fmi2NewDiscreteStates(c, fmi2eventInfo) ==
+	fmi2NewDiscreteStates: fmi2Component +> fmi2Status * [fmi2Component] * [fmi2EventInfo]
+	fmi2NewDiscreteStates(c) ==
 		if c.fmuType <> <fmi2ModelExchange>
 		then -- @Printf("Cannot call fmi2NewDiscreteStates for fmi2CoSimulation\n")
-			mk_(<fmi2Error>, nil)
+			mk_(<fmi2Error>, nil, nil)
 		elseif c.fmuState not in set STATES_fmi2NewDiscreteStates
 		then -- @Printf("Cannot call fmi2NewDiscreteStates in state %s\n", c.fmuState)
-			mk_(<fmi2Error>, nil)
+			mk_(<fmi2Error>, nil, nil)
 	 	else
-	 		fmi2NewDiscreteStates_Impl(c, fmi2eventInfo);
+	 		fmi2NewDiscreteStates_Impl(c);
 
 
 	/**
@@ -121,10 +128,11 @@ functions
 	 */
 	fmi2CompletedIntegratorStep_Impl: fmi2Component * fmi2Boolean +> fmi2Status * fmi2Boolean * fmi2Boolean
 	fmi2CompletedIntegratorStep_Impl(c, -) ==
-		mk_(<fmi2OK>, true, true)	-- TODO!!
+		mk_(<fmi2OK>, true, false)	-- TODO!!
 	pre
 		c.fmuType = <fmi2ModelExchange>
-		and c.fmuState in set STATES_fmi2CompletedIntegratorStep;
+		and c.fmuState in set STATES_fmi2CompletedIntegratorStep
+		and not nilBool(c.model.modelExchange.completedIntegratorStepNotNeeded);
 
 	fmi2CompletedIntegratorStep: fmi2Component * fmi2Boolean +> fmi2Status * [fmi2Boolean] * [fmi2Boolean]
 	fmi2CompletedIntegratorStep(c, noSetFMUStatePriorToCurrentPoint) ==
@@ -133,6 +141,9 @@ functions
 			mk_(<fmi2Error>, nil, nil)
 		elseif c.fmuState not in set STATES_fmi2CompletedIntegratorStep
 		then -- @Printf("Cannot call fmi2CompletedIntegratorStep in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil, nil)
+		elseif nilBool(c.model.modelExchange.completedIntegratorStepNotNeeded)
+		then -- @Printf("fmi2CompletedIntegratorStep not needed\n")
 			mk_(<fmi2Error>, nil, nil)
 	 	else
 	 		fmi2CompletedIntegratorStep_Impl(c, noSetFMUStatePriorToCurrentPoint)
@@ -145,6 +156,7 @@ functions
 	 */
 	fmi2GetDerivatives_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetDerivatives_Impl(c, nx) ==
+		-- Compute derivatives TODO
 		mk_(<fmi2OK>, [ c.variables(c.indexmap(vr)) | vr in seq c.continuousTimeStates ])
 	pre
 		c.fmuType = <fmi2ModelExchange>
@@ -173,11 +185,12 @@ functions
 	 */
 	fmi2GetEventIndicators_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetEventIndicators_Impl(c, ni) ==
-		mk_(<fmi2OK>, [ 0 | - in set {1, ..., ni} ])	-- TODO!
+		-- Compute event indicators TODO
+		mk_(<fmi2OK>, [ 0 | - in set {1, ..., ni} ])
 	pre
 		c.fmuType = <fmi2ModelExchange>
 		and c.fmuState in set STATES_fmi2GetEventIndicators
-		and ni = nilNat(c.callbacks.componentEnvironment.model.attributes.numberOfEventIndicators);
+		and ni = nilNat(c.model.attributes.numberOfEventIndicators);
 
 	fmi2GetEventIndicators: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetEventIndicators(c, ni) ==
@@ -187,7 +200,7 @@ functions
 		elseif c.fmuState not in set STATES_fmi2GetEventIndicators
 		then -- @Printf("Cannot call fmi2GetEventIndicators in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
-		elseif ni <> nilNat(c.callbacks.componentEnvironment.model.attributes.numberOfEventIndicators)
+		elseif ni <> nilNat(c.model.attributes.numberOfEventIndicators)
 		then -- @Printf("Wrong number of event indicators passed\n")
 			mk_(<fmi2Error>, nil)
 	 	else
@@ -229,7 +242,7 @@ functions
 	 */
 	fmi2GetNominalsOfContinuousStates_Impl: fmi2Component * nat +> fmi2Status * seq of fmi2Real
 	fmi2GetNominalsOfContinuousStates_Impl(c, nx) ==
-		mk_(<fmi2OK>, [ 0 | - in seq c.continuousTimeStates ])	-- TODO!
+		mk_(<fmi2OK>, [ 1.0 | - in seq c.continuousTimeStates ])	-- TODO!
 	pre
 		c.fmuType = <fmi2ModelExchange>
 		and c.fmuState in set STATES_fmi2GetNominalsOfContinuousStates
