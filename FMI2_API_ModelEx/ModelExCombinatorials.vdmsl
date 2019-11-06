@@ -498,12 +498,12 @@ ModelExTests:
 	let a8 in set dom stateMachine(s8) be st isOK(s8, [a1, a2, a3, a4, a5, a6, a7], a8) in
 	(
 	process(a8);
-	-- )))))))) /***
+	)))))))) /***
 	let s9 in set stateMachine(s8)(a8) in
 	let a9 in set dom stateMachine(s9) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8], a9) in
 	(
 	process(a9);
-	))))))))) /***
+	-- ))))))))) /***
 	let s10 in set stateMachine(s9)(a9) in
 	let a10 in set dom stateMachine(s10) be st isOK(s10, [a1, a2, a3, a4, a5, a6, a7, a8, a9], a10) in
 	(

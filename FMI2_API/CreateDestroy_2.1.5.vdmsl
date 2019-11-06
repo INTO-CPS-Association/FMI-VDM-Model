@@ -104,7 +104,7 @@ functions
 				eModelVariables,
 
 				-- The continuous time states (indexes)
-				[ i | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables) ],
+				[ d.index | d in seq nilSeq[Unknown](model.modelStructure.derivatives) ],
 
 				-- The initial unknowns (indexes), which may be an empty set
 				{ u.index | u in seq initialUnknowns },
