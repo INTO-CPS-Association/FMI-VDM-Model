@@ -83,7 +83,7 @@ operations
 
 			(
 				dcl time : real := startTime,
-					h    : real := 1,
+					h	: real := 1,
 					hh   : real := h;
 
 				while time < endTime do
@@ -108,7 +108,7 @@ operations
 							else exit "Could not complete simulation"
 
 						elseif s <> <fmi2OK>
-						then exit "Could not complete simulation"
+						then exit "Could not step simulation"
 
 						else ( time := time + hh; c := c2 )
 				);
@@ -120,5 +120,186 @@ operations
 
 				let - = fmi2FreeInstance(c) in skip		-- ignore <VOID> function result
 			)
+		)
+	);
+
+	modelEx: () ==> ()
+	modelEx() ==
+	(
+		let solver = mk_SolverData([ mk_SolverDerivative(1, 1, <input>) ]) in
+		let cenv = mk_fmi2ComponentEnvironment(solver, springMassDamper) in
+		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
+		let startTime : real = 0, endTime : real = 1000 in
+		(
+			dcl c : [fmi2Component] := fmi2Instantiate("test", <fmi2ModelExchange>, "GUID", "", callbacks, false, true);
+
+			if c = nil
+			then exit "Cannot instantiate FMU";
+
+			let mk_(s, c2) = fmi2SetDebugLogging(c, true, 1, ["debug"]) in
+				if s <> <fmi2OK>
+				then exit "Cannot initialize logging"
+				else c := c2;
+
+			let mk_(s, c2) = fmi2SetupExperiment(c, false, 0, startTime, true, endTime) in
+				if s <> <fmi2OK>
+				then exit "Cannot set up experiment"
+				else c := c2;
+
+			let mk_(s, c2) = fmi2EnterInitializationMode(c) in
+				if s <> <fmi2OK>
+				then exit "Cannot enter initialization mode"
+				else c := c2;
+
+			let mk_(s, c2) = fmi2ExitInitializationMode(c) in 
+				if s <> <fmi2OK>
+				then exit "Cannot exit initialization mode"
+				else c := c2;
+
+			(
+				dcl time : real := startTime,
+					h    : real := 1,
+					hh   : real := h,
+					tPre : real,
+					dt   : real;
+
+				dcl eventInfo : fmi2EventInfo := mk_fmi2EventInfo(false, false, false, false, false, nil);
+
+				dcl timeEvent  : bool,
+					stateEvent : bool,
+					stepEvent  : bool;
+
+				dcl states       : seq of real,
+					derivatives  : seq of real,
+					events       : seq of real := [ 0 | - in seq c.eventIndicators ],
+					preEvents    : seq of real;
+
+				while eventInfo.newDiscreteStatesNeeded and not eventInfo.terminateSimulation do
+					let mk_(s, c2, i) = fmi2NewDiscreteStates(c) in
+						if s <> <fmi2OK>
+						then exit "Cannot call NewDiscreteStates"
+						else ( c := c2; eventInfo := i );
+
+				if eventInfo.terminateSimulation
+				then exit "Simulation requested termination";
+
+				let mk_(s, c2) = fmi2EnterContinuousTimeMode(c) in
+					if s <> <fmi2OK>
+					then exit "Cannot fmi2EnterContinuousTimeMode"
+					else c := c2;
+
+				while time < endTime do
+				(
+					if h > endTime - time
+					then hh := endTime - time;
+
+					let mk_(s, cs) = fmi2GetContinuousStates(c, 1) in
+						if s <> <fmi2OK>
+						then exit "Cannot fmi2GetContinuousStates"
+						else states := cs;
+
+					let mk_(s, dv) = fmi2GetDerivatives(c, 1) in
+						if s <> <fmi2OK>
+						then exit "Cannot fmi2GetDerivatives"
+						else derivatives := dv;
+
+					-- advance time
+					tPre := time;
+					time := if time+h < endTime then time+h else endTime;
+					timeEvent := eventInfo.nextEventTimeDefined and (eventInfo.nextEventTime < time);
+
+					if timeEvent
+					then time := eventInfo.nextEventTime;
+
+					dt := time - tPre;
+
+					let mk_(s, c2) = fmi2SetTime(c, time) in
+						if s <> <fmi2OK>
+						then exit "could not set time"
+						else c := c2;
+
+					-- perform one step
+					for all i in set inds states do
+						states(i) := states(i) + dt * derivatives(i); -- forward Euler method
+
+					let mk_(s, c2) = fmi2SetContinuousStates(c, states, len states) in
+						if s <> <fmi2OK>
+						then exit "could not set states"
+						else c := c2;
+
+					-- check for state event
+					preEvents := events;
+
+					let mk_(s, ev) = fmi2GetEventIndicators(c, len events) in
+						if s <> <fmi2OK>
+						then exit "could not retrieve event indicators"
+						else events := ev;
+
+					stateEvent := false;
+
+					for all i in set inds events do
+						stateEvent := stateEvent or (preEvents(i) * events(i) < 0);
+
+					-- check for step event, e.g. dynamic state selection
+					let mk_(s, se, terminateSimulation) = fmi2CompletedIntegratorStep(c, true) in
+					(
+						if s <> <fmi2OK>
+						then exit "could not complete intgrator step";
+
+						if terminateSimulation
+						then exit "model requested termination";
+
+						stepEvent := se
+					);
+
+					-- handle events
+					if timeEvent or stateEvent or stepEvent then
+					(
+						let mk_(s, c2) = fmi2EnterEventMode(c) in
+							if s <> <fmi2OK>
+							then exit "Cannot enter event mode"
+							else c := c2;
+
+						/***
+						if timeEvent
+						then nTimeEvents := nTimeEvent + 1;
+
+						if stateEvent
+						then nStateEvents := nStateEvents + 1;
+
+						if stepEvent
+						then nStepEvents := nStepEvents + 1;
+						***/
+
+						-- event iteration in one step, ignoring intermediate results
+						eventInfo.newDiscreteStatesNeeded := true;
+						eventInfo.terminateSimulation := false;
+
+						while eventInfo.newDiscreteStatesNeeded and not eventInfo.terminateSimulation do
+							-- update discrete states
+							let mk_(s, c2, i) = fmi2NewDiscreteStates(c) in
+								if s <> <fmi2OK>
+								then exit "could not set a new discrete state"
+								else ( c := c2; eventInfo := i );
+
+						if eventInfo.terminateSimulation
+						then exit "model requested termination";
+					);
+
+					let mk_(s, c2) = fmi2EnterContinuousTimeMode(c) in
+						if s <> <fmi2OK>
+						then exit "Cannot fmi2EnterContinuousTimeMode"
+						else c := c2;
+				);
+
+				-- nSteps := nSteps + 1;
+			);
+
+			let mk_(s, c2) = fmi2Terminate(c) in
+				if s <> <fmi2OK>
+				then exit "Failed to terminate simulation"
+				else c := c2;
+
+			let - = fmi2FreeInstance(c) in skip		-- ignore <VOID> function result
 		)
 	);

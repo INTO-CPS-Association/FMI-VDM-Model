@@ -62,7 +62,7 @@ functions
 
 	isINC: fmi2Component * fmi2ValueReference +> bool
 	isINC(c, vr) ==
-		is_Real(c.eModelVariables(vr))
+		is_Real(c.eModelVariables(vr).variable)
 		and c.eModelVariables(vr).causality = <input>
 		and c.eModelVariables(vr).variability = <continuous>;
 

@@ -65,7 +65,7 @@ functions
 		else
 			fmi2DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint)
 	 post
-	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**

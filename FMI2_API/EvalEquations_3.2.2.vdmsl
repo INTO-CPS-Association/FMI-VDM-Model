@@ -71,7 +71,7 @@ functions
 	 */
 	fmi2NewDiscreteStates_Impl: fmi2Component +> fmi2Status * fmi2Component * fmi2EventInfo
 	fmi2NewDiscreteStates_Impl(c) ==
-		mk_(<fmi2OK>, mu(c, currentTime |-> c.currentTime + 1),
+		mk_(<fmi2OK>, c,
 				mk_fmi2EventInfo(
 					false,	-- newDiscreteStatesNeeded
 					false,	-- terminateSimulation
