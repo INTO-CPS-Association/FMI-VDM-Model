@@ -231,7 +231,7 @@ functions
 				in
 					if outputIndexes <> {}
 					then
-						/* @OnFail("2.2.8 Ouput variables but no ouputs declared at line %s",
+						/* @OnFail("2.2.8 Output variables but no outputs declared at line %s",
 							md.modelStructure.location) */
 						( md.modelStructure.outputs <> nil )
 
