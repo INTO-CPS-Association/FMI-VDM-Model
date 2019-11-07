@@ -205,13 +205,13 @@ operations
 
 					-- advance time
 					tPre := time;
-					time := if time+h < endTime then time+h else endTime;
 					timeEvent := eventInfo.nextEventTimeDefined and (eventInfo.nextEventTime < time);
 
 					if timeEvent
-					then time := eventInfo.nextEventTime;
-
-					dt := time - tPre;
+					then time := eventInfo.nextEventTime
+					elseif time + h < endTime
+					then time := time + h
+					else time := endTime;
 
 					let mk_(s, c2) = fmi2SetTime(c, time) in
 						if s <> <fmi2OK>
@@ -219,6 +219,8 @@ operations
 						else c := c2;
 
 					-- perform one step
+					dt := time - tPre;
+
 					for all i in set inds states do
 						states(i) := states(i) + dt * derivatives(i); -- forward Euler method
 
@@ -235,10 +237,8 @@ operations
 						then exit "could not retrieve event indicators"
 						else events := ev;
 
-					stateEvent := false;
-
-					for all i in set inds events do
-						stateEvent := stateEvent or (preEvents(i) * events(i) < 0);
+					stateEvent := exists i in set inds events &
+						(preEvents(i) * events(i) < 0);
 
 					-- check for step event, e.g. dynamic state selection
 					let mk_(s, se, terminateSimulation) = fmi2CompletedIntegratorStep(c, true) in
@@ -260,17 +260,6 @@ operations
 							then exit "Cannot enter event mode"
 							else c := c2;
 
-						/***
-						if timeEvent
-						then nTimeEvents := nTimeEvent + 1;
-
-						if stateEvent
-						then nStateEvents := nStateEvents + 1;
-
-						if stepEvent
-						then nStepEvents := nStepEvents + 1;
-						***/
-
 						-- event iteration in one step, ignoring intermediate results
 						eventInfo.newDiscreteStatesNeeded := true;
 						eventInfo.terminateSimulation := false;
@@ -283,16 +272,14 @@ operations
 								else ( c := c2; eventInfo := i );
 
 						if eventInfo.terminateSimulation
-						then exit "model requested termination";
+						then exit "model requested termination"
 					);
 
 					let mk_(s, c2) = fmi2EnterContinuousTimeMode(c) in
 						if s <> <fmi2OK>
 						then exit "Cannot fmi2EnterContinuousTimeMode"
-						else c := c2;
-				);
-
-				-- nSteps := nSteps + 1;
+						else c := c2
+				)
 			);
 
 			let mk_(s, c2) = fmi2Terminate(c) in
