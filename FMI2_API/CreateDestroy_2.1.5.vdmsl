@@ -279,7 +279,7 @@ functions
 		then -- @Printf("nCategories does not match categories length\n")
 			mk_(<fmi2Error>, nil)
 		else let logcats = c.model.logCategories in
-			if nCategories > 0 and logcats = nil
+			if logcats = nil
 			then -- @Printf("No log categories defined in XML configuration\n")
 				mk_(<fmi2Error>, nil)
 			elseif exists cname in seq categories & not exists lc in seq logcats & lc.name = cname
