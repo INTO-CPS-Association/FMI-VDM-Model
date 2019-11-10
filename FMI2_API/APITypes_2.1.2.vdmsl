@@ -40,6 +40,9 @@ types
 	fmi2String = seq of fmi2Char;
 	-- fmi2Byte = ?;
 
+	-- A possible value for a ScalarVariable
+	fmi2Value = fmi2Real | fmi2Integer | fmi2Boolean | fmi2String;
+
 	fmi2Type = <fmi2ModelExchange> | <fmi2CoSimulation>;
 
 	fmi2Status = <fmi2OK> | <fmi2Warning> | <fmi2Discard> | <fmi2Error> | <fmi2Fatal> | <fmi2Pending>;
@@ -63,6 +66,7 @@ types
 		fmuType					: fmi2Type
 		fmuState				: fmi2State
 		callbacks				: fmi2CallbackFunctions
+		calculate				: fmi2Component -> fmi2Status * [fmi2Component]
 
 		-- convenience read-only fields, copied from elsewhere
 		model					: FMIModelDescription
@@ -74,12 +78,14 @@ types
 		-- state and settings
 		logCategories			: [set1 of fmi2String]	-- nil means logging off
 		indexmap				: map nat1 to nat1		-- map SV index to variables index
-		variables				: seq1 of (fmi2Real | fmi2Integer | fmi2Boolean | fmi2String)
+		variables				: seq1 of fmi2Value		-- Raw SV data values
 		derivatives				: seq of fmi2Real		-- Solver derivative data
 		eventIndicators			: seq of fmi2Real		-- ME events
+		dirty					: bool					-- True is SVs set, but not recalculated
+		tolerance				: [fmi2Real]			-- From DefaultExperiment or fmi2SetupExperiment
 		startTime				: [real]
 		stopTime				: [real]
-		currentTime				: [real]
+		currentTime				: [real]				-- TODO should be independent SV?
 
 	inv c ==
 		len c.variables = card rng c.indexmap

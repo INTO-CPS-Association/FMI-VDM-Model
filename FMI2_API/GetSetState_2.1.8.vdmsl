@@ -71,15 +71,15 @@ functions
 	pre
 		canDoGetSetState(c, STATES_fmi2SetFMUstate);
 
-	fmi2SetFMUstate: fmi2Component * fmi2FMUState +> fmi2Status * fmi2Component
+	fmi2SetFMUstate: fmi2Component * fmi2FMUState +> fmi2Status * [fmi2Component]
 	fmi2SetFMUstate(c, FMUstate) ==
 		if not canDoGetSetState(c, STATES_fmi2SetFMUstate)
 		then -- @Printf("Can't call fmi2SetFMUstate\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetFMUstate_Impl(c, FMUstate)
 	 post
-	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**

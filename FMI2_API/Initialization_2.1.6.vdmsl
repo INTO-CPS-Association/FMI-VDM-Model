@@ -35,29 +35,37 @@ functions
 	 * Implementation and API for fmi2SetupExperiment.
 	 */
 	fmi2SetupExperiment_Impl: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status * fmi2Component
-	fmi2SetupExperiment_Impl(c, -/*toleranceDefined*/, -/*tolerance*/, startTime, stopTimeDefined, stopTime) ==
+	fmi2SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
 		mk_(<fmi2OK>, mu(c,
+			tolerance	|-> if toleranceDefined then tolerance
+							elseif c.model.defaultExperiment <> nil
+							then c.model.defaultExperiment.tolerance
+							else nil,
 			startTime	|-> startTime,
 			stopTime	|-> if stopTimeDefined then stopTime else nil,
-			currentTime	|-> startTime))
+			currentTime	|-> startTime))		-- TODO should set independent variable?
 	pre
 		c.fmuState in set STATES_fmi2SetupExperiment
 		and (stopTimeDefined => stopTime > startTime)
+		and (toleranceDefined => tolerance >= 0)
 	post
 		RESULT.#2.fmuState = <INSTANTIATED>;
 
-	fmi2SetupExperiment: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status * fmi2Component
+	fmi2SetupExperiment: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status * [fmi2Component]
 	fmi2SetupExperiment(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
 		if c.fmuState not in set STATES_fmi2SetupExperiment
 		then -- @Printf("Cannot call fmi2SetupExperiment in state %s\n", c.fmuState)
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif stopTimeDefined and stopTime <= startTime
 		then -- @Printf("stopTime is not > startTime\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
+		elseif toleranceDefined and tolerance < 0
+		then -- @Printf("Tolerance must be >= 0\n")
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime)
 	 post
-	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**
@@ -72,29 +80,33 @@ functions
 	post
 		RESULT.#2.fmuState = <INITIALIZATION>;
 
-	fmi2EnterInitializationMode: fmi2Component +> fmi2Status * fmi2Component
+	fmi2EnterInitializationMode: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2EnterInitializationMode(c) ==
 		if c.fmuState not in set STATES_fmi2EnterInitializationMode
 		then -- @Printf("Cannot call fmi2EnterInitializationMode in state %s\n", c.fmuState)
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif c.startTime = nil
 		then -- @Printf("fmi2SetupExperiment has not been called (startTime is nil)?\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2EnterInitializationMode_Impl(c)
 	 post
-	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**
 	 * Implementation and API for fmi2ExitInitializationMode.
 	 */
-	fmi2ExitInitializationMode_Impl: fmi2Component +> fmi2Status * fmi2Component
+	fmi2ExitInitializationMode_Impl: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2ExitInitializationMode_Impl(c) ==
-		mk_(<fmi2OK>, mu(c, fmuState |->
-			if c.fmuType = <fmi2CoSimulation>
-			then <STEP_COMPLETE>
-			else <EVENT_MODE>))
+		let mk_(s, c2) = if c.dirty then c.calculate(c) else mk_(<fmi2OK>, c) in
+			if s <> <fmi2OK>
+			then mk_(s, nil)
+			else mk_(<fmi2OK>, mu(c2,
+				fmuState |->
+					if c.fmuType = <fmi2CoSimulation>
+					then <STEP_COMPLETE>
+					else <EVENT_MODE>))
 	pre
 		c.fmuState in set STATES_fmi2ExitInitializationMode
 	post
@@ -103,15 +115,15 @@ functions
 			then <STEP_COMPLETE>
 			else <EVENT_MODE>;
 
-	fmi2ExitInitializationMode: fmi2Component +> fmi2Status * fmi2Component
+	fmi2ExitInitializationMode: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2ExitInitializationMode(c) ==
 		if c.fmuState not in set STATES_fmi2ExitInitializationMode
 		then -- @Printf("Cannot call fmi2ExitInitializationMode in state %s\n", c.fmuState)
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2ExitInitializationMode_Impl(c)
 	 post
-	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**
@@ -125,15 +137,15 @@ functions
 	post
 		RESULT.#2.fmuState = <TERMINATED>;
 
-	fmi2Terminate: fmi2Component +> fmi2Status * fmi2Component
+	fmi2Terminate: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2Terminate(c) ==
 		if c.fmuState not in set STATES_fmi2Terminate
 		then -- @Printf("Cannot call fmi2Terminate in state %s\n", c.fmuState)
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2Terminate_Impl(c)
 	 post
-	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 
 
 	/**
@@ -141,19 +153,22 @@ functions
 	 */
 	fmi2Reset_Impl: fmi2Component +> fmi2Status * fmi2Component
 	fmi2Reset_Impl(c) ==
-		mk_(<fmi2OK>, mu(c, fmuState |-> <INSTANTIATED>))
+		mk_(<fmi2OK>, mu(c,
+			variables	|-> startValues(c.indexmap, effectiveScalarVariables(c.model)),
+			dirty		|-> true,
+			fmuState	|-> <INSTANTIATED>))
 	pre
 		c.fmuState in set STATES_fmi2Reset
 	post
 		RESULT.#2.fmuState = <INSTANTIATED>;
 
-	fmi2Reset: fmi2Component +> fmi2Status * fmi2Component
+	fmi2Reset: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2Reset(c) ==
 		if c.fmuState not in set STATES_fmi2Reset
 		then -- @Printf("Cannot call fmi2Reset in state %s\n", c.fmuState)
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2Reset_Impl(c)
 	 post
-	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = c;
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
 	

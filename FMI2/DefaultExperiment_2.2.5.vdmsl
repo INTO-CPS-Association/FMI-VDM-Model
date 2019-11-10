@@ -42,12 +42,14 @@ functions
 	isValidDefaultExperiment: [DefaultExperiment] +> bool
 	isValidDefaultExperiment(e) ==
 		e <> nil =>
-			e.startTime <> nil and e.stopTime <> nil =>
 			{
+				-- @OnFail("2.2.5 DefalutExperiment tolerance must be >= 0 at line %s", e.location)
+				( e.tolerance <> nil => e.tolerance >= 0),
+
 				-- @OnFail("2.2.5 DefaultExperiment stop time must be later than start time at line %s", e.location)
-				( e.stopTime > e.startTime ),
+				( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime ),
 
 				-- @OnFail("2.2.5 DefaultExperiment stepSize must be less than start-stop interval at line %s", e.location)
-				( e.stepSize <> nil =>
+				( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
 					e.stopTime - e.startTime > e.stepSize )
 			} = {true};

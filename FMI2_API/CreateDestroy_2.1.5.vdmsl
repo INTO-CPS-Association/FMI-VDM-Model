@@ -42,6 +42,7 @@ types
 	fmi2ComponentEnvironment ::
 		solver					: SolverData
 		model					: FMIModelDescription
+		calculate				: fmi2Component -> fmi2Status * [fmi2Component]
 	inv cenv ==
 		-- The FMI model is valid
 		isValidFMIModelDescription(cenv.model)
@@ -97,19 +98,22 @@ functions
 				-- The callbacks passed in
 				callbacks,
 
+				-- The calculate function
+				callbacks.componentEnvironment.calculate,
+
 				-- The XML model
 				model,
 
 				-- The effective ScalarVariables, after all defaults and inherited values set
 				eModelVariables,
 
-				-- The continuous time states (indexes)
+				-- The continuous time state indexes
 				[ d.index | d in seq nilSeq[Unknown](model.modelStructure.derivatives) ],
 
-				-- The initial unknowns (indexes), which may be an empty set
+				-- The initial unknown indexes, which may be an empty set
 				{ u.index | u in seq initialUnknowns },
 
-				-- The solver derivatives passed
+				-- The solver derivative indexes
 				[ sd | sd in seq callbacks.componentEnvironment.solver.derivatives ],
 
 				-- The initial setting of log categories (nil means debugging is disabled)
@@ -122,22 +126,7 @@ functions
 
 				-- The state vector, indexed via the indexmap, created from the effective SVs
 				-- Initially either the start value given, or the default start value for the type.
-				[
-					let svi in set dom indexmap be st indexmap(svi) = v in
-					let sv = eModelVariables(svi) in
-						if sv.variable.start <> nil
-						then sv.variable.start	-- All aliases have the same start
-						else
-							-- Set default value for variable type
-							if is_Real(sv.variable) then 0.0
-							else if is_Integer(sv.variable) then 0
-							else if is_Boolean(sv.variable) then false
-							else if is_String(sv.variable) then ""
-							else if is_Enumeration(sv.variable) then 0
-							else undefined
-
-					| v in set rng indexmap
-				],
+				startValues(indexmap, eModelVariables),
 
 				-- The solver data vector, indexed by SolverData's index
 				[
@@ -148,6 +137,12 @@ functions
 				[
 					0.0 | - in set {1, ..., nilNat(model.attributes.numberOfEventIndicators)}
 				],
+
+				-- Initially dirty, because "start" values above need calculate call
+				true,
+
+				-- tolerance, set by fmi2SetupExperiment (defaults to model DefaultExperiment)
+				nil,
 
 				-- start time, set by fmi2SetupExperiment
 				nil,
@@ -192,13 +187,35 @@ functions
 			else
 				fmi2Instantiate_Impl(instanceName, fmuType, fmuGUID, fmuResourceLocation, callbacks, visible, loggingOn);
 
+	/**
+	 * Calculate the initial vector of SV values, given their "start" attributes.
+	 * Called by fmi2Instantiate and fmi2Reset.
+	 */
+	startValues: map nat1 to nat1 * seq1 of ScalarVariable +> seq1 of fmi2Value
+	startValues(indexmap, eModelVariables) ==
+	[
+		let svi in set dom indexmap be st indexmap(svi) = v in	-- Choose any alias
+		let sv = eModelVariables(svi) in
+			if sv.variable.start <> nil
+			then sv.variable.start	-- All aliases have the same start
+			else
+				-- Set default value for variable type
+				if is_Real(sv.variable) then 0.0
+				else if is_Integer(sv.variable) then 0
+				else if is_Boolean(sv.variable) then false
+				else if is_String(sv.variable) then ""
+				else if is_Enumeration(sv.variable) then 0
+				else undefined
+
+		| v in set rng indexmap
+	];
 
 	/**
 	 * Implementation of fmi2FreeInstance. See API method below.
 	 */
 	fmi2FreeInstance_Impl: fmi2Component +> <VOID>
 	fmi2FreeInstance_Impl(c) ==
-		<VOID>
+		<VOID>	-- Logically calls c.model.callbacks.freeMemory()
 	pre
 		c.fmuState in set STATES_fmi2FreeInstance;
 
@@ -206,9 +223,12 @@ functions
 	 * The fmi2FreeInstance API. This performs sufficient checks to pass the precondition on the
 	 * implementation function, returning <VOID> if any checks fail.
 	 */
-	fmi2FreeInstance: fmi2Component +> <VOID>
+	fmi2FreeInstance: [fmi2Component] +> <VOID>
 	fmi2FreeInstance(c) ==
-		if c.fmuState not in set STATES_fmi2FreeInstance
+		if c = nil
+		then -- The function ignores a "null" argument
+			<VOID>
+		elseif c.fmuState not in set STATES_fmi2FreeInstance
 		then -- @Printf("Cannot call fmi2FreeInstance in state %s\n", c.fmuState)
 			<VOID>
 		else
@@ -250,22 +270,22 @@ functions
 	 * The fmi2FreeInstance API. This performs sufficient checks to pass the precondition on the
 	 * implementation function, returning <VOID> if any checks fail.
 	 */
-	fmi2SetDebugLogging: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status * fmi2Component
+	fmi2SetDebugLogging: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status * [fmi2Component]
 	fmi2SetDebugLogging(c, loggingOn, nCategories, categories) ==
 		if c.fmuState not in set STATES_fmi2SetDebugLogging
 		then -- @Printf("Cannot call fmi2SetDebugLogging in state %s\n", c.fmuState)
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		elseif nCategories <> len categories or card elems categories <> nCategories
 		then -- @Printf("nCategories does not match categories length\n")
-			mk_(<fmi2Error>, c)
+			mk_(<fmi2Error>, nil)
 		else let logcats = c.model.logCategories in
 			if nCategories > 0 and logcats = nil
 			then -- @Printf("No log categories defined in XML configuration\n")
-				mk_(<fmi2Error>, c)
+				mk_(<fmi2Error>, nil)
 			elseif exists cname in seq categories & not exists lc in seq logcats & lc.name = cname
 			then -- @Printf("Some log categories not found in XML configuration\n")
-				mk_(<fmi2Error>, c)
+				mk_(<fmi2Error>, nil)
 			else
 				fmi2SetDebugLogging_Impl(c, loggingOn, nCategories, categories)
 	post
-		RESULT.#1 <> <fmi2OK> => RESULT.#2 = c;	-- Unchanged state for errors
+		RESULT.#1 <> <fmi2OK> => RESULT.#2 = nil;
