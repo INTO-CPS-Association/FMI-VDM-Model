@@ -30,22 +30,49 @@
 /**
  * 4.2.2 Computation
  */
+values
+	SUBSTEP_ITERATIONS = 10
+
 functions
 	/**
 	 * Implementation of fmi2DoStep. See API method below.
 	 */
-	fmi2DoStep_Impl: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * fmi2Component
-	fmi2DoStep_Impl(c, -/*currentCommunicationPoint*/, communicationStepSize, -/*noSetFMUStatePriorToCurrentPoint*/) ==
-		-- TODO: calculate variables for next time step!
-		mk_(<fmi2OK>, mu(c,
-			currentTime |-> c.currentTime + communicationStepSize))
+	fmi2DoStep_Impl: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * [fmi2Component]
+	fmi2DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, -/*noSetFMUStatePriorToCurrentPoint*/) ==
+		let c2 = mu(c, currentTime |-> currentCommunicationPoint) in
+		let mk_(s, c3) = iterateStep(c2,
+			SUBSTEP_ITERATIONS,
+			communicationStepSize/SUBSTEP_ITERATIONS,
+			currentCommunicationPoint + communicationStepSize)
+		in
+			if s <> <fmi2OK>
+			then mk_(s, nil)
+			else mk_(s, c3)
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2DoStep
 		and communicationStepSize > 0.0
+		and currentCommunicationPoint >= 0.0
 	post
-		-- After a step, all of the same-order derivatives of an SV must be the same
-		true; -- TODO!
+		RESULT.#1 = <fmi2OK> =>
+			epsilon(RESULT.#2.currentTime, currentCommunicationPoint + communicationStepSize);
+
+	/**
+	 * Adjust the time by a substep and re-calculate the states and events, repeating
+	 * until the communication step size has been reached.
+	 */
+	iterateStep: fmi2Component * nat * fmi2Real * fmi2Real -> fmi2Status * [fmi2Component]
+	iterateStep(c, loops, h, upto) ==
+		if loops = 0
+		then mk_(<fmi2OK>, c)
+		else
+			let time2 = if c.currentTime + h > upto then upto else c.currentTime + h in
+			let c2 = mu(c, currentTime |-> time2) in
+			let mk_(s, c3) = c.calculateDoStep(c2) in
+				if s <> <fmi2OK>
+				then mk_(s, nil)
+				else iterateStep(c3, loops-1, h, upto)
+	measure loops;
 
 	/**
 	 * The fmi2DoStep API. This performs sufficient checks to pass the precondition on the
@@ -62,6 +89,9 @@ functions
 		elseif communicationStepSize <= 0.0
 		then -- @Printf("Communication step size must be >0\n")
 			mk_(<fmi2Error>, nil)
+		elseif currentCommunicationPoint < 0.0
+		then -- @Printf("Curret communication point must be >=0\n")
+			mk_(<fmi2Error>, nil)
 		else
 			fmi2DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint)
 	 post
@@ -71,9 +101,9 @@ functions
 	/**
 	 * Implementation of fmi2CancelStep. See API method below.
 	 */
-	fmi2CancelStep_Impl: fmi2Component +> fmi2Status
+	fmi2CancelStep_Impl: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2CancelStep_Impl(c) ==
-		is not yet specified
+		mk_(<fmi2OK>, mu(c, fmuState |-> <STEP_CANCELLED>))
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2CancelStep;
@@ -82,13 +112,15 @@ functions
 	 * The fmi2CancelStep API. This performs sufficient checks to pass the precondition on the
 	 * implementation function, returning an fmi2Status if any checks fail.
 	 */
-	fmi2CancelStep: fmi2Component +> fmi2Status
+	fmi2CancelStep: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2CancelStep(c) ==
 		if c.fmuType <> <fmi2CoSimulation>
 		then -- @Printf("Cannot call fmi2CancelStep for fmi2ModelExchange\n")
-			<fmi2Error>
+			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2CancelStep
 		then -- @Printf("Cannot call fmi2CancelStep in state %s\n", c.fmuState)
-			<fmi2Error>
+			mk_(<fmi2Error>, nil)
 	 	else
-	 		fmi2CancelStep_Impl(c);
+	 		fmi2CancelStep_Impl(c)
+	 post
+	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;

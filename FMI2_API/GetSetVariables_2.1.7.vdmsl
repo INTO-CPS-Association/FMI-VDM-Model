@@ -82,17 +82,19 @@ functions
 	/**
 	 * Implementation and API for fmi2GetReal.
 	 */
-	fmi2GetReal_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Real
+	fmi2GetReal_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetReal_Impl(c, vrs, nvr) ==
-		mk_(<fmi2OK>, [ c.variables(c.indexmap(i)) | i in seq vrs ])
+		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
+			if s <> <fmi2OK>
+			then mk_(s, nil)
+			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(i)) | i in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
 		and forall vr in seq vrs &
 			vr <= len c.eModelVariables and is_Real(c.eModelVariables(vr).variable)
 	post
-		RESULT.#1 = <fmi2OK> =>
-			len RESULT.#2 = nvr;
+		RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr;
 
 	fmi2GetReal: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetReal(c, vrs, nvr) ==
@@ -114,9 +116,12 @@ functions
 	/**
 	 * Implementation and API for fmi2GetInteger.
 	 */
-	fmi2GetInteger_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Integer
+	fmi2GetInteger_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Integer]
 	fmi2GetInteger_Impl(c, vrs, nvr) ==
-		mk_(<fmi2OK>, [ c.variables(c.indexmap(i)) | i in seq vrs ])
+		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
+			if s <> <fmi2OK>
+			then mk_(s, nil)
+			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(i)) | i in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
@@ -146,9 +151,12 @@ functions
 	/**
 	 * Implementation and API for fmi2GetBoolean.
 	 */
-	fmi2GetBoolean_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2Boolean
+	fmi2GetBoolean_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Boolean]
 	fmi2GetBoolean_Impl(c, vrs, nvr) ==
-		mk_(<fmi2OK>, [ c.variables(c.indexmap(i)) | i in seq vrs ])
+		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
+			if s <> <fmi2OK>
+			then mk_(s, nil)
+			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(i)) | i in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
@@ -178,9 +186,12 @@ functions
 	/**
 	 * Implementation and API for fmi2GetString.
 	 */
-	fmi2GetString_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * seq of fmi2String
+	fmi2GetString_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2String]
 	fmi2GetString_Impl(c, vrs, nvr) ==
-		mk_(<fmi2OK>, [ c.variables(c.indexmap(i)) | i in seq vrs ])
+		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
+			if s <> <fmi2OK>
+			then mk_(s, nil)
+			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(i)) | i in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
@@ -214,12 +225,15 @@ functions
 	fmi2SetReal_Impl(c, vrs, nvr, value) ==
 		let updates = { c.indexmap(vrs(i)) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
-				variables |-> c.variables ++ updates))
+				variables |-> c.variables ++ updates,
+				dirty     |-> true))
 	pre
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
 		and (forall vr in seq vrs &
 			vr <= len c.eModelVariables and is_Real(c.eModelVariables(vr).variable))
+		and (forall vr in seq vrs &
+			c.eModelVariables(vr).causality <> <independent>)
 		and (forall i in set inds vrs &
 			let min = c.eModelVariables(vrs(i)).variable.min,
 				max = c.eModelVariables(vrs(i)).variable.max
@@ -246,8 +260,13 @@ functions
 			(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
 		then -- @Printf("Values not all within min/max for variables\n")
 			mk_(<fmi2Error>, nil)
+		elseif exists vr in seq vrs & c.eModelVariables(vr).causality = <independent>
+		then -- @Printf("Cannot set value of independent variable\n")
+			mk_(<fmi2Error>, nil)
 		else
-			fmi2SetReal_Impl(c, vrs, nvr, value);
+			fmi2SetReal_Impl(c, vrs, nvr, value)
+	 post
+	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
 
 
 	/**
@@ -257,7 +276,8 @@ functions
 	fmi2SetInteger_Impl(c, vrs, nvr, value) ==
 		let updates = { c.indexmap(vrs(i)) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
-				variables |-> c.variables ++ updates))
+				variables |-> c.variables ++ updates,
+				dirty     |-> true))
 	pre
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
@@ -290,7 +310,9 @@ functions
 		then -- @Printf("Values not all within min/max for variables\n")
 			mk_(<fmi2Error>, nil)
 		else
-			fmi2SetInteger_Impl(c, vrs, nvr, value);
+			fmi2SetInteger_Impl(c, vrs, nvr, value)
+	 post
+	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
 
 
 	/**
@@ -300,7 +322,8 @@ functions
 	fmi2SetBoolean_Impl(c, vrs, nvr, value) ==
 		let updates = { c.indexmap(vrs(i)) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
-				variables |-> c.variables ++ updates))
+				variables |-> c.variables ++ updates,
+				dirty     |-> true))
 	pre
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
@@ -322,7 +345,9 @@ functions
 		then -- @Printf("Value references are not all Boolean variables\n")
 			mk_(<fmi2Error>, nil)
 		else
-			fmi2SetBoolean_Impl(c, vrs, nvr, value);
+			fmi2SetBoolean_Impl(c, vrs, nvr, value)
+	 post
+	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;
 
 
 	/**
@@ -332,7 +357,8 @@ functions
 	fmi2SetString_Impl(c, vrs, nvr, value) ==
 		let updates = { c.indexmap(vrs(i)) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
-				variables |-> c.variables ++ updates))
+				variables |-> c.variables ++ updates,
+				dirty     |-> true))
 	pre
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
@@ -354,4 +380,6 @@ functions
 		then -- @Printf("Value references are not all String variables\n")
 			mk_(<fmi2Error>, nil)
 		else
-			fmi2SetString_Impl(c, vrs, nvr, value);
+			fmi2SetString_Impl(c, vrs, nvr, value)
+	 post
+	 	RESULT.#1 = <fmi2OK> <=> RESULT.#2 <> nil;

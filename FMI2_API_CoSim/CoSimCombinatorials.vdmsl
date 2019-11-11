@@ -161,9 +161,13 @@ functions
 	stepFinished(-, -) ==
 		is not yet specified;
 
-	calculate: fmi2Component -> fmi2Status * [fmi2Component]
-	calculate(c) ==
+	calculateValues: fmi2Component -> fmi2Status * [fmi2Component]
+	calculateValues(c) ==
 		mk_(<fmi2OK>, mu(c, dirty |-> false));	-- TODO!
+
+	calculateDoStep: fmi2Component -> fmi2Status * [fmi2Component]
+	calculateDoStep(c) ==
+		mk_(<fmi2OK>, c);	-- TODO!
 
 operations
 	process: API ==> ()
@@ -171,7 +175,7 @@ operations
 		cases api:
 			<fmi2Instantiate> ->
 				let solver = mk_SolverData([ mk_SolverDerivative(1, 1, <input>) ]) in
-				let cenv = mk_fmi2ComponentEnvironment(solver, springMassDamper, calculate) in
+				let cenv = mk_fmi2ComponentEnvironment(solver, springMassDamper, calculateValues, calculateDoStep) in
 				let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
 				let r = fmi2Instantiate("CosimTest", <fmi2CoSimulation>, "GUID", "", callbacks, false, true) in
 				(

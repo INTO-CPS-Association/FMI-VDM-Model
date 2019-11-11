@@ -99,7 +99,7 @@ functions
 	 */
 	fmi2ExitInitializationMode_Impl: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2ExitInitializationMode_Impl(c) ==
-		let mk_(s, c2) = if c.dirty then c.calculate(c) else mk_(<fmi2OK>, c) in
+		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
 			else mk_(<fmi2OK>, mu(c2,

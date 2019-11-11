@@ -32,7 +32,7 @@
  * 2.1.3 Status Returned by Functions
  */
 types
-	fmi2ValueReference = nat;
+	fmi2ValueReference = nat1;
 	fmi2Real = real;
 	fmi2Integer = int;
 	fmi2Boolean = bool;
@@ -40,7 +40,7 @@ types
 	fmi2String = seq of fmi2Char;
 	-- fmi2Byte = ?;
 
-	-- A possible value for a ScalarVariable
+	-- Possible values for a ScalarVariable
 	fmi2Value = fmi2Real | fmi2Integer | fmi2Boolean | fmi2String;
 
 	fmi2Type = <fmi2ModelExchange> | <fmi2CoSimulation>;
@@ -66,26 +66,27 @@ types
 		fmuType					: fmi2Type
 		fmuState				: fmi2State
 		callbacks				: fmi2CallbackFunctions
-		calculate				: fmi2Component -> fmi2Status * [fmi2Component]
+		calculateValues			: fmi2Component -> fmi2Status * [fmi2Component]	-- before get, when dirty
+		calculateDoStep			: fmi2Component -> fmi2Status * [fmi2Component]	-- during doStep
 
-		-- convenience read-only fields, copied from elsewhere
+		-- convenience read-only fields, copied from componentEnvironment
 		model					: FMIModelDescription
 		eModelVariables			: seq1 of ScalarVariable
-		continuousTimeStates	: seq of nat1
-		initialUnknowns			: set of nat1
+		continuousTimeStates	: seq of fmi2ValueReference
+		initialUnknowns			: set of fmi2ValueReference
 		solverDerivatives		: seq of SolverDerivative
 
 		-- state and settings
-		logCategories			: [set1 of fmi2String]	-- nil means logging off
-		indexmap				: map nat1 to nat1		-- map SV index to variables index
-		variables				: seq1 of fmi2Value		-- Raw SV data values
-		derivatives				: seq of fmi2Real		-- Solver derivative data
-		eventIndicators			: seq of fmi2Real		-- ME events
-		dirty					: bool					-- True is SVs set, but not recalculated
-		tolerance				: [fmi2Real]			-- From DefaultExperiment or fmi2SetupExperiment
+		logCategories			: [set1 of fmi2String]				-- nil means logging off
+		indexmap				: map fmi2ValueReference to nat1	-- map SV index to variables index
+		variables				: seq1 of fmi2Value					-- Raw SV data values
+		derivatives				: seq of fmi2Real					-- Solver derivative data
+		eventIndicators			: seq of fmi2Real					-- ME events
+		dirty					: bool								-- True if SVs updated but not recalculated
+		tolerance				: [fmi2Real]						-- From DefaultExperiment or fmi2SetupExperiment
 		startTime				: [real]
 		stopTime				: [real]
-		currentTime				: [real]				-- TODO should be independent SV?
+		currentTime				: [real]	-- TODO should be independent SV?
 
 	inv c ==
 		len c.variables = card rng c.indexmap

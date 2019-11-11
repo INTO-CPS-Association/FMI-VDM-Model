@@ -80,3 +80,11 @@ functions
 		else let e in set s in
 			[e] ^ setToSeq[@T](s \ {e})
 	measure card s;
+
+	epsilon: real * real +> bool
+	epsilon(a, b) ==
+		let EPSILON = 1e-8 in
+		let diff = a - b in
+			if diff < 0
+			then diff > -EPSILON
+			else diff < EPSILON;

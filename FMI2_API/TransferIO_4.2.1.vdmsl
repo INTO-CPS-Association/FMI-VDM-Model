@@ -68,6 +68,7 @@ functions
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2SetRealInputDerivatives
+		and nilBool(c.model.coSimulation.canInterpolateInputs)
 		and nvr = len vr
 		and nvr = len value
 		and nvr = len order
@@ -103,6 +104,9 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2SetRealInputDerivatives
 		then -- @Printf("Cannot call fmi2SetRealInputDerivatives in state %s\n", c.fmuState)
+			mk_(<fmi2Error>, nil)
+		elseif not nilBool(c.model.coSimulation.canInterpolateInputs)
+		then -- @Printf("Cannot inperpolate inputs\n")
 			mk_(<fmi2Error>, nil)
 		elseif nvr <> len vr or nvr <> len value or nvr <> len order
 		then -- @Printf("nvr, vr, value and order are not consistent\n")
@@ -154,7 +158,10 @@ functions
 			let sdis = [ sdi | sdi in set inds c.solverDerivatives &
 				c.solverDerivatives(sdi) = mk_SolverDerivative(vr(i), order(i), <output>) ]
 			in
-				if sdis <> []	-- May be multiple matches, but should be all the same
+				if order(i) > c.model.coSimulation.maxOutputDerivativeOrder
+				then
+					0
+				elseif sdis <> []	-- May be multiple matches, but should be all the same
 				then
 					c.derivatives(hd sdis)
 				else

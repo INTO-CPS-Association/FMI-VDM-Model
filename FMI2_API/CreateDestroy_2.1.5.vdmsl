@@ -32,8 +32,8 @@
  */
 types
 	SolverDerivative ::
-		index					: nat1		-- SV index of base variable
-		order					: nat1		-- Order of solver's derivative
+		index					: fmi2ValueReference	-- SV index of base variable
+		order					: nat1					-- Order of solver's derivative
 		type					: <input> | <output>;
 
 	SolverData ::
@@ -42,7 +42,8 @@ types
 	fmi2ComponentEnvironment ::
 		solver					: SolverData
 		model					: FMIModelDescription
-		calculate				: fmi2Component -> fmi2Status * [fmi2Component]
+		calculateValues			: fmi2Component -> fmi2Status * [fmi2Component]
+		calculateDoStep			: fmi2Component -> fmi2Status * [fmi2Component]
 	inv cenv ==
 		-- The FMI model is valid
 		isValidFMIModelDescription(cenv.model)
@@ -98,8 +99,9 @@ functions
 				-- The callbacks passed in
 				callbacks,
 
-				-- The calculate function
-				callbacks.componentEnvironment.calculate,
+				-- The recalculation functions
+				callbacks.componentEnvironment.calculateValues,
+				callbacks.componentEnvironment.calculateDoStep,
 
 				-- The XML model
 				model,
@@ -191,7 +193,7 @@ functions
 	 * Calculate the initial vector of SV values, given their "start" attributes.
 	 * Called by fmi2Instantiate and fmi2Reset.
 	 */
-	startValues: map nat1 to nat1 * seq1 of ScalarVariable +> seq1 of fmi2Value
+	startValues: map fmi2ValueReference to nat1 * seq1 of ScalarVariable +> seq1 of fmi2Value
 	startValues(indexmap, eModelVariables) ==
 	[
 		let svi in set dom indexmap be st indexmap(svi) = v in	-- Choose any alias
