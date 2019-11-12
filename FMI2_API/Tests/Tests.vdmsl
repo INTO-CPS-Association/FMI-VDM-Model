@@ -28,7 +28,7 @@
  */
 
 /**
- * Tests of the API.
+ * Simple tests of the API, based on the BouncingBall models from the fmu-sdk.
  */
 functions
 	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> <VOID>
@@ -47,30 +47,22 @@ functions
 	stepFinished(-, -) ==
 		is not yet specified;
 
-	calculateValues: fmi2Component -> fmi2Status * [fmi2Component]
-	calculateValues(c) ==
-		mk_(<fmi2OK>, mu(c, dirty |-> false));	-- TODO!
-
-	calculateDoStep: fmi2Component -> fmi2Status * [fmi2Component]
-	calculateDoStep(c) ==
-		mk_(<fmi2OK>, c);	-- TODO!
-
-
 operations
 	coSimulate: () ==> ()
 	coSimulate() ==
 	(
-		let solver = mk_SolverData([ mk_SolverDerivative(1, 1, <input>) ]) in
-		let cenv = mk_fmi2ComponentEnvironment(solver, springMassDamper, calculateValues, calculateDoStep) in
+		let solver = mk_SolverData([]) in
+		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall_CS, calculateValues, calculateDoStep, calculateEvents) in
 		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
 		let startTime : real = 0, endTime : real = 1000 in
 		(
-			dcl c : [fmi2Component] := fmi2Instantiate("test", <fmi2CoSimulation>, "GUID", "", callbacks, false, true);
+			dcl c : [fmi2Component] := fmi2Instantiate("bouncingBall_CS",
+				<fmi2CoSimulation>, "{8c4e810f-3df3-4a00-8276-176fa3c9f003}", "", callbacks, false, true);
 
 			if c = nil
 			then exit "Cannot instantiate FMU";
 
-			let mk_(s, c2) = fmi2SetDebugLogging(c, true, 1, ["debug"]) in
+			let mk_(s, c2) = fmi2SetDebugLogging(c, true, 1, ["logAll"]) in
 				if s <> <fmi2OK>
 				then exit "Cannot initialize logging"
 				else c := c2;
@@ -92,18 +84,13 @@ operations
 
 			(
 				dcl time : real := startTime,
-					h	: real := 1,
+					h    : real := 1,
 					hh   : real := h;
 
 				while time < endTime do
 				(
 					if h > endTime - time
 					then hh := endTime - time;
-
-					let mk_(s, c2) = fmi2SetReal(c, [1], 1, [1.23]) in
-						if s <> <fmi2OK>
-						then exit "Cannot set Real"
-						else c := c2;
 
 					let mk_(s, c2) = fmi2DoStep(c, time, hh, true) in
 						if s = <fmi2Discard>
@@ -135,17 +122,18 @@ operations
 	modelEx: () ==> ()
 	modelEx() ==
 	(
-		let solver = mk_SolverData([ mk_SolverDerivative(1, 1, <input>) ]) in
-		let cenv = mk_fmi2ComponentEnvironment(solver, springMassDamper, calculateValues, calculateDoStep) in
+		let solver = mk_SolverData([]) in
+		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall_ME, calculateValues, calculateDoStep, calculateEvents) in
 		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
 		let startTime : real = 0, endTime : real = 1000 in
 		(
-			dcl c : [fmi2Component] := fmi2Instantiate("test", <fmi2ModelExchange>, "GUID", "", callbacks, false, true);
+			dcl c : [fmi2Component] := fmi2Instantiate("bouncingBall_ME",
+				<fmi2ModelExchange>, "{8c4e810f-3df3-4a00-8276-176fa3c9f003}", "", callbacks, false, true);
 
 			if c = nil
 			then exit "Cannot instantiate FMU";
 
-			let mk_(s, c2) = fmi2SetDebugLogging(c, true, 1, ["debug"]) in
+			let mk_(s, c2) = fmi2SetDebugLogging(c, true, 1, ["logAll"]) in
 				if s <> <fmi2OK>
 				then exit "Cannot initialize logging"
 				else c := c2;
@@ -202,12 +190,12 @@ operations
 					if h > endTime - time
 					then hh := endTime - time;
 
-					let mk_(s, cs) = fmi2GetContinuousStates(c, 1) in
+					let mk_(s, cs) = fmi2GetContinuousStates(c, 2) in
 						if s <> <fmi2OK>
 						then exit "Cannot fmi2GetContinuousStates"
 						else states := cs;
 
-					let mk_(s, dv) = fmi2GetDerivatives(c, 1) in
+					let mk_(s, dv) = fmi2GetDerivatives(c, 2) in
 						if s <> <fmi2OK>
 						then exit "Cannot fmi2GetDerivatives"
 						else derivatives := dv;

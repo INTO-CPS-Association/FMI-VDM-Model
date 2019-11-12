@@ -43,7 +43,9 @@ types
 		solver					: SolverData
 		model					: FMIModelDescription
 		calculateValues			: fmi2Component -> fmi2Status * [fmi2Component]
-		calculateDoStep			: fmi2Component -> fmi2Status * [fmi2Component]
+		calculateDoStep			: fmi2Component * fmi2Real * fmi2Real -> fmi2Status * [fmi2Component]
+		calculateEvents			: fmi2Component * bool * bool -> fmi2Component
+
 	inv cenv ==
 		-- The FMI model is valid
 		isValidFMIModelDescription(cenv.model)
@@ -102,6 +104,7 @@ functions
 				-- The recalculation functions
 				callbacks.componentEnvironment.calculateValues,
 				callbacks.componentEnvironment.calculateDoStep,
+				callbacks.componentEnvironment.calculateEvents,
 
 				-- The XML model
 				model,
@@ -145,6 +148,21 @@ functions
 
 				-- tolerance, set by fmi2SetupExperiment (defaults to model DefaultExperiment)
 				nil,
+
+				-- IsNewEventIteration, used in ME only
+				false,
+
+				-- EventInfo for ME
+				if fmuType = <fmi2ModelExchange> then
+					mk_fmi2EventInfo(
+						false,	-- newDiscreteStatesNeeded
+						false,	-- terminateSimulation
+						false,	-- nominalsOfContinuousStatesChanged
+						false,	-- valuesOfContinuousStatesChanged
+						false,	-- nextEventTimeDefined
+						nil		-- nextEventTime
+					)
+				else nil,
 
 				-- start time, set by fmi2SetupExperiment
 				nil,

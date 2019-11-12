@@ -30,24 +30,16 @@
 /**
  * 4.2.2 Computation
  */
-values
-	SUBSTEP_ITERATIONS = 10
-
 functions
 	/**
 	 * Implementation of fmi2DoStep. See API method below.
 	 */
 	fmi2DoStep_Impl: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * [fmi2Component]
 	fmi2DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, -/*noSetFMUStatePriorToCurrentPoint*/) ==
-		let c2 = mu(c, currentTime |-> currentCommunicationPoint) in
-		let mk_(s, c3) = iterateStep(c2,
-			SUBSTEP_ITERATIONS,
-			communicationStepSize/SUBSTEP_ITERATIONS,
-			currentCommunicationPoint + communicationStepSize)
-		in
+		let mk_(s, c2) = c.calculateDoStep(c,  currentCommunicationPoint, communicationStepSize) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
-			else mk_(s, c3)
+			else mk_(s, c2)
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2DoStep
@@ -57,22 +49,6 @@ functions
 		RESULT.#1 = <fmi2OK> =>
 			epsilon(RESULT.#2.currentTime, currentCommunicationPoint + communicationStepSize);
 
-	/**
-	 * Adjust the time by a substep and re-calculate the states and events, repeating
-	 * until the communication step size has been reached.
-	 */
-	iterateStep: fmi2Component * nat * fmi2Real * fmi2Real -> fmi2Status * [fmi2Component]
-	iterateStep(c, loops, h, upto) ==
-		if loops = 0
-		then mk_(<fmi2OK>, c)
-		else
-			let time2 = if c.currentTime + h > upto then upto else c.currentTime + h in
-			let c2 = mu(c, currentTime |-> time2) in
-			let mk_(s, c3) = c.calculateDoStep(c2) in
-				if s <> <fmi2OK>
-				then mk_(s, nil)
-				else iterateStep(c3, loops-1, h, upto)
-	measure loops;
 
 	/**
 	 * The fmi2DoStep API. This performs sufficient checks to pass the precondition on the

@@ -1,0 +1,540 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * Model generated from fmu-sdk BouncingBall implementation.
+ */
+values
+	SUBSTEP_ITERATIONS = 10;
+
+	HEIGHT		= 1;
+	DER_H		= 2;
+	VELOCITY	= 3;
+	DER_V		= 4;
+	GRAVITY		= 5;
+	E			= 6;
+
+functions
+	calculateValues: fmi2Component -> fmi2Status * [fmi2Component]
+	calculateValues(c) ==
+		mk_(<fmi2OK>,
+			if c.fmuState = <INITIALIZATION>
+			then
+				let gravity = c.variables(GRAVITY) in
+				let updates = { DER_V |-> -gravity } in
+				mu(c, dirty |-> false, variables |-> c.variables ++ updates)
+			else
+				mu(c, dirty |-> false));
+
+	calculateDoStep: fmi2Component * fmi2Real * fmi2Real -> fmi2Status * [fmi2Component]
+	calculateDoStep(c, currentCommunicationPoint, communicationStepSize) ==
+		let h = communicationStepSize/SUBSTEP_ITERATIONS in
+		let upto = currentCommunicationPoint + communicationStepSize in
+			mk_(<fmi2OK>, iterateStep(c, SUBSTEP_ITERATIONS, h, upto));
+
+	iterateStep: fmi2Component * nat * fmi2Real * fmi2Real -> fmi2Component
+	iterateStep(c, loops, h, upto) ==
+		if loops = 0
+		then c
+		else
+			let c2 = mu(c, currentTime |-> if c.currentTime + h > upto then upto else c.currentTime + h) in
+				iterateStep(bounce(c2, h), loops - 1, h, upto)
+	measure loops;
+
+	bounce: fmi2Component * fmi2Real -> fmi2Component
+	bounce(c, h) ==
+		let height = c.variables(HEIGHT), velocity = c.variables(VELOCITY) in
+        let height2 = height + h * velocity in	-- forward Euler step
+        	-- @Printf("Setting height to %s\n", height2)
+			mu(c, variables |-> c.variables ++ { 1 |-> height2 });
+
+	calculateEvents: fmi2Component * bool * bool -> fmi2Component
+	calculateEvents(c, -, isNewEventIteration) ==
+		let height = c.variables(HEIGHT), velocity = c.variables(VELOCITY), e = c.variables(E) in
+		let prevV = if isNewEventIteration then velocity else 0 in		-- Should be prevV state
+		let tempV = -e * prevV in
+		let updates =
+			if height <= 0
+			then 
+				(
+					if velocity <> tempV
+					then { HEIGHT |-> 0, VELOCITY |-> tempV }
+					else { |-> }
+				)
+				++
+				(
+				    if velocity < 1e-3
+				    then { VELOCITY |-> 0, DER_V |-> 0 }
+				    else { |-> }
+				)
+			else
+				{ |-> } in
+		let changed = height <= 0 and velocity <> -e * prevV
+    	in
+			mu(c,
+				variables |-> c.variables ++ updates,
+				isNewEventIteration |-> false,
+				eventInfo |-> mk_fmi2EventInfo
+								(
+									false,		-- newDiscreteStatesNeeded
+									false,		-- terminateSimulation
+									false,		-- nominalsOfContinuousStatesChanged
+									changed,	-- valuesOfContinuousStatesChanged
+									false,		-- nextEventTimeDefined
+									nil			-- nextEventTime
+								));
+
+/**
+ * VDM Model generated from modelDescription_cs.xml on Tue Nov 12 14:51:46 GMT 2019
+ */
+values
+	bouncingBall_CS = mk_FMIModelDescription
+	(
+		mk_ModelAttributes
+		(
+			6,  -- Line
+			"2.0",
+			"bouncingBall",
+			"{8c4e810f-3df3-4a00-8276-176fa3c9f003}",
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			1
+		),
+
+		-- ModelExchange
+		nil,
+
+		-- CoSimulation
+		mk_CoSimulation
+		(
+			10,  -- Line
+			"bouncingBall",
+			nil,
+			true,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			[
+				mk_SourceFile
+				(
+					12,  -- Line
+					"bouncingBall.c"
+				)
+			]
+
+		),
+
+		-- UnitDefinitions
+		nil,
+
+		-- TypeDefinitions
+		nil,
+
+		-- LogCategories
+		[
+			mk_Category
+			(
+				18,  -- Line
+				"logAll",
+				nil
+			),
+			mk_Category
+			(
+				19,  -- Line
+				"logError",
+				nil
+			),
+			mk_Category
+			(
+				20,  -- Line
+				"logFmiCall",
+				nil
+			),
+			mk_Category
+			(
+				21,  -- Line
+				"logEvent",
+				nil
+			)
+		],
+
+		-- DefaultExperiment
+		nil,
+
+		-- VendorAnnotations
+		nil,
+
+		-- ModelVariables
+		[
+			mk_ScalarVariable
+			(
+				26,  -- Line
+				"h",
+				0,
+				"height, used as state",
+				<local>,
+				<continuous>,
+				<exact>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, 1.0, nil, nil),
+				nil
+			),
+			mk_ScalarVariable
+			(
+				30,  -- Line
+				"der(h)",
+				1,
+				"velocity of ball",
+				<local>,
+				<continuous>,
+				<calculated>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 1, nil),
+				nil
+			),
+			mk_ScalarVariable
+			(
+				34,  -- Line
+				"v",
+				2,
+				"velocity of ball, used as state",
+				<local>,
+				<continuous>,
+				<exact>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.0, nil, nil),
+				nil
+			),
+			mk_ScalarVariable
+			(
+				38,  -- Line
+				"der(v)",
+				3,
+				"acceleration of ball",
+				<local>,
+				<continuous>,
+				<calculated>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 3, nil),
+				nil
+			),
+			mk_ScalarVariable
+			(
+				42,  -- Line
+				"g",
+				4,
+				"acceleration of gravity",
+				<parameter>,
+				<fixed>,
+				<exact>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, 9.81, nil, nil),
+				nil
+			),
+			mk_ScalarVariable
+			(
+				46,  -- Line
+				"e",
+				5,
+				"dimensionless parameter",
+				<parameter>,
+				<tunable>,
+				<exact>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, 0.5, 1.0, nil, nil, 0.7, nil, nil),
+				nil
+			)
+		],
+
+		-- ModelStructure
+		mk_ModelStructure
+		(
+			51,  -- Line
+			nil,
+			-- Derivatives
+			[
+				mk_Unknown
+				(
+					53,  -- Line
+					2,
+					nil,
+					nil
+				),
+				mk_Unknown
+				(
+					54,  -- Line
+					4,
+					nil,
+					nil
+				)
+			],
+
+			-- InitialUnknowns
+			[
+				mk_Unknown
+				(
+					57,  -- Line
+					2,
+					nil,
+					nil
+				),
+				mk_Unknown
+				(
+					58,  -- Line
+					4,
+					nil,
+					nil
+				)
+			]
+		)
+	);
+
+/**
+ * VDM Model generated from modelDescription_me.xml on Tue Nov 12 14:52:02 GMT 2019
+ */
+values
+	bouncingBall_ME = mk_FMIModelDescription
+	(
+		mk_ModelAttributes
+		(
+			6,  -- Line
+			"2.0",
+			"bouncingBall",
+			"{8c4e810f-3df3-4a00-8276-176fa3c9f003}",
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			1
+		),
+
+		-- ModelExchange
+		mk_ModelExchange
+		(
+			9,  -- Line
+			"bouncingBall",
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			[
+				mk_SourceFile
+				(
+					11,  -- Line
+					"bouncingBall.c"
+				)
+			]
+		),
+
+		-- CoSimulation
+		nil,
+
+		-- UnitDefinitions
+		nil,
+
+		-- TypeDefinitions
+		nil,
+
+		-- LogCategories
+		[
+			mk_Category
+			(
+				16,  -- Line
+				"logAll",
+				nil
+			),
+			mk_Category
+			(
+				17,  -- Line
+				"logError",
+				nil
+			),
+			mk_Category
+			(
+				18,  -- Line
+				"logFmiCall",
+				nil
+			),
+			mk_Category
+			(
+				19,  -- Line
+				"logEvent",
+				nil
+			)
+		],
+
+		-- DefaultExperiment
+		nil,
+
+		-- VendorAnnotations
+		nil,
+
+		-- ModelVariables
+		[
+			mk_ScalarVariable
+			(
+				24,  -- Line
+				"h",
+				0,
+				"height, used as state",
+				<local>,
+				<continuous>,
+				<exact>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, 1.0, nil, nil),
+				nil
+			),
+			mk_ScalarVariable
+			(
+				28,  -- Line
+				"der(h)",
+				1,
+				"velocity of ball",
+				<local>,
+				<continuous>,
+				<calculated>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 1, nil),
+				nil
+			),
+			mk_ScalarVariable
+			(
+				32,  -- Line
+				"v",
+				2,
+				"velocity of ball, used as state",
+				<local>,
+				<continuous>,
+				<exact>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, 0.0, nil, true),
+				nil
+			),
+			mk_ScalarVariable
+			(
+				36,  -- Line
+				"der(v)",
+				3,
+				"acceleration of ball",
+				<local>,
+				<continuous>,
+				<calculated>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, 3, nil),
+				nil
+			),
+			mk_ScalarVariable
+			(
+				40,  -- Line
+				"g",
+				4,
+				"acceleration of gravity",
+				<parameter>,
+				<fixed>,
+				<exact>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, 9.81, nil, nil),
+				nil
+			),
+			mk_ScalarVariable
+			(
+				44,  -- Line
+				"e",
+				5,
+				"dimensionless parameter",
+				<parameter>,
+				<tunable>,
+				<exact>,
+				nil,
+				mk_Real(nil, nil, nil, nil, nil, 0.5, 1.0, nil, nil, 0.7, nil, nil),
+				nil
+			)
+		],
+
+		-- ModelStructure
+		mk_ModelStructure
+		(
+			49,  -- Line
+			nil,
+			-- Derivatives
+			[
+				mk_Unknown
+				(
+					51,  -- Line
+					2,
+					nil,
+					nil
+				),
+				mk_Unknown
+				(
+					52,  -- Line
+					4,
+					nil,
+					nil
+				)
+			],
+
+			-- InitialUnknowns
+			[
+				mk_Unknown
+				(
+					55,  -- Line
+					2,
+					nil,
+					nil
+				),
+				mk_Unknown
+				(
+					56,  -- Line
+					4,
+					nil,
+					nil
+				)
+			]
+		)
+	);
+
