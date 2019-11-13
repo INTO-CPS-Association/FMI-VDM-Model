@@ -52,7 +52,7 @@ operations
 	coSimulate() ==
 	(
 		let solver = mk_SolverData([]) in
-		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall_CS, calculateValues, calculateDoStep, calculateEvents) in
+		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall, calculateValues, calculateDoStep, calculateEvents) in
 		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
 		let startTime : real = 0, endTime : real = 1000 in
 		(
@@ -123,7 +123,7 @@ operations
 	modelEx() ==
 	(
 		let solver = mk_SolverData([]) in
-		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall_ME, calculateValues, calculateDoStep, calculateEvents) in
+		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall, calculateValues, calculateDoStep, calculateEvents) in
 		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
 		let startTime : real = 0, endTime : real = 1000 in
 		(

@@ -189,8 +189,8 @@ functions
 	calculateDoStep(c, -, -) ==
 		mk_(<fmi2OK>, c);	-- TODO!
 
-	calculateEvents: fmi2Component * bool * bool -> fmi2Component
-	calculateEvents(c, -, -) ==
+	calculateEvents: fmi2Component -> fmi2Component
+	calculateEvents(c) ==
 		c;	-- TODO!
 
 

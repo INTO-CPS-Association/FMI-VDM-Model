@@ -62,13 +62,12 @@ functions
 	 */
 	fmi2NewDiscreteStates_Impl: fmi2Component +> fmi2Status * fmi2Component * fmi2EventInfo
 	fmi2NewDiscreteStates_Impl(c) ==
-    	let timeEvent = c.eventInfo.nextEventTimeDefined and c.eventInfo.nextEventTime <= c.currentTime in
-    	let c2 = c.calculateEvents(c, timeEvent, c.isNewEventIteration) in
+    	let c2 = c.calculateEvents(c) in
 			mk_(<fmi2OK>, c2, c2.eventInfo)
 	pre
 		c.fmuType = <fmi2ModelExchange>
-		and c.fmuState in set STATES_fmi2NewDiscreteStates
-		and c.eventInfo <> nil;
+		and c.fmuState in set STATES_fmi2NewDiscreteStates;
+		-- and c.eventInfo <> nil;
 
 	fmi2NewDiscreteStates: fmi2Component +> fmi2Status * [fmi2Component] * [fmi2EventInfo]
 	fmi2NewDiscreteStates(c) ==
@@ -78,9 +77,9 @@ functions
 		elseif c.fmuState not in set STATES_fmi2NewDiscreteStates
 		then -- @Printf("Cannot call fmi2NewDiscreteStates in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil, nil)
-		elseif c.eventInfo = nil
-		then -- @Printf("Cannot call fmi2NewDiscreteStates with no eventInfo\n")
-			mk_(<fmi2Error>, nil, nil)
+--		elseif c.eventInfo = nil
+--		then -- @Printf("Cannot call fmi2NewDiscreteStates with no eventInfo\n")
+--			mk_(<fmi2Error>, nil, nil)
 	 	else
 	 		fmi2NewDiscreteStates_Impl(c);
 
