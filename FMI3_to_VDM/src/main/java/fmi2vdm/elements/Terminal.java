@@ -29,17 +29,84 @@
 
 package fmi2vdm.elements;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class Terminal extends Element
 {
-	protected Terminal(Locator locator)
+	private String name;
+	private String matchingRule;
+	private String terminalKind;
+	private String description;
+	private ElementList<TerminalMemberVariable> variables;
+	private ElementList<TerminalStreamMemberVariable> streams;
+
+	public Terminal(Attributes attributes, Locator locator)
 	{
 		super(locator);
+		
+		name = stringOf(attributes, "name");
+		matchingRule = stringOf(attributes, "matchingRule");
+		terminalKind = stringOf(attributes, "terminalKind");
+		description = stringOf(attributes, "description");
+	}
+	
+	@Override
+	public void add(Element element)
+	{
+		if (element instanceof TerminalMemberVariable)
+		{
+			if (variables == null)
+			{
+				variables = new ElementList<TerminalMemberVariable>();
+			}
+			
+			variables.add((TerminalMemberVariable) element);
+		}
+		else if (element instanceof TerminalStreamMemberVariable)
+		{
+			if (streams == null)
+			{
+				streams = new ElementList<TerminalStreamMemberVariable>();
+			}
+			
+			streams.add((TerminalStreamMemberVariable) element);
+		}
+		else
+		{
+			super.add(element);
+		}
 	}
 
 	@Override
 	void toVDM(String indent)
 	{
+		System.out.println(indent + "mk_Terminal");
+		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printStringAttribute(indent + "\t", name, ",\n");
+		printStringAttribute(indent + "\t", matchingRule, ",\n");
+		printStringAttribute(indent + "\t", terminalKind, ",\n");
+		printStringAttribute(indent + "\t", description, ",\n");
+		
+		if (variables != null)
+		{
+			printSequence(indent + "\t", variables, ",\n");
+		}
+		else
+		{
+			System.out.println(indent + "\tnil,");
+		}
+
+		if (streams != null)
+		{
+			printSequence(indent + "\t", streams, "\n");
+		}
+		else
+		{
+			System.out.println(indent + "\tnil");
+		}
+
+		System.out.print(indent + ")");
 	}
 }

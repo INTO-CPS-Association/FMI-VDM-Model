@@ -27,53 +27,44 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-/**
- * 2.2.2 Build Configuration
- */
-types
-	BuildConfiguration ::
-		location				: Location
-		modelIdentifier			: NormalizedString1
-		platform				: NormalizedString1
-		description				: NormalizedString1
-		sourceFileSets			: set1 of SourceFileSet
-		libraries				: set of Library;
+package fmi2vdm.elements;
 
-	SourceFileSet ::
-		location				: Location
-		language				: NormalizedString1
-		compiler				: NormalizedString1
-		compilerOptions			: AnyString
-		sourceFiles				: set1 of SourceFile
-		preprocessorDefinitions	: set of PreprocessorDefinition
-		includeDirectories		: set of IncludeDirectory;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 
-	SourceFile ::
-		location				: Location
-		name					: NormalizedString1;
+public class Icon extends Element
+{
+	private Double x1;
+	private Double y1;
+	private Double x2;
+	private Double y2;
+	private String iconSource_PNG;
+	private String iconSource_SVG;
 
-	PreprocessorDefinition ::
-		name					: NormalizedString1
-		optional				: bool
-		value					: NormalizedString1
-		description				: AnyString
-		options					: set of Option;
+	public Icon(Attributes attributes, Locator locator)
+	{
+		super(locator);
 
-	Option ::
-		value					: NormalizedString1
-		description				: AnyString;
+		x1 = doubleOf(attributes, "x1");
+		y1 = doubleOf(attributes, "y1");
+		x2 = doubleOf(attributes, "x2");
+		y2 = doubleOf(attributes, "y2");
+		iconSource_PNG = stringOf(attributes, "iconSource_PNG");
+		iconSource_SVG = stringOf(attributes, "iconSource_SVG");
+	}
 
-	IncludeDirectory ::
-		name					: NormalizedString1;
-
-	Library ::
-		location				: Location
-		name					: NormalizedString1
-		version					: NormalizedString1
-		external				: bool
-		description				: AnyString;
-
-functions
-	isValidBuildConfiguration: [seq1 of Tool] +> bool
-	isValidBuildConfiguration(tools) ==
-		is not yet specified;
+	@Override
+	void toVDM(String indent)
+	{
+		System.out.println(indent + "mk_Icon");
+		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printRawAttribute(indent + "\t", x1, ",\n");
+		printRawAttribute(indent + "\t", y1, ",\n");
+		printRawAttribute(indent + "\t", x2, ",\n");
+		printRawAttribute(indent + "\t", y2, ",\n");
+		printStringAttribute(indent + "\t", iconSource_PNG, ",\n");
+		printStringAttribute(indent + "\t", iconSource_SVG, "\n");
+		System.out.print(indent + ")");
+	}
+}

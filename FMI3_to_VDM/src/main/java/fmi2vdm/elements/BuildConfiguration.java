@@ -29,17 +29,81 @@
 
 package fmi2vdm.elements;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class BuildConfiguration extends Element
 {
-	protected BuildConfiguration(Locator locator)
+	private String modelIdentifier;
+	private String platform;
+	private String description;
+	private ElementList<SourceFileSet> sourceFileSets;
+	private ElementList<Library> libraries;
+
+	public BuildConfiguration(Attributes attributes, Locator locator)
 	{
 		super(locator);
+
+		modelIdentifier = stringOf(attributes, "modelIdentifier");
+		platform = stringOf(attributes, "platform");
+		description = stringOf(attributes, "description");
+	}
+	
+	@Override
+	public void add(Element element)
+	{
+		if (element instanceof SourceFileSet)
+		{
+			if (sourceFileSets == null)
+			{
+				sourceFileSets = new ElementList<SourceFileSet>();
+			}
+			
+			sourceFileSets.add((SourceFileSet) element);
+		}
+		else if (element instanceof Library)
+		{
+			if (libraries == null)
+			{
+				libraries = new ElementList<Library>();
+			}
+			
+			libraries.add((Library) element);
+		}
+		else
+		{
+			super.add(element);
+		}
 	}
 
 	@Override
 	void toVDM(String indent)
 	{
+		System.out.println(indent + "mk_BuildConfiguration");
+		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printStringAttribute(indent + "\t", modelIdentifier, ",\n");
+		printStringAttribute(indent + "\t", platform, ",\n");
+		printStringAttribute(indent + "\t", description, ",\n");
+		
+		if (sourceFileSets != null)
+		{
+			printSequence(indent + "\t", sourceFileSets, ",\n");
+		}
+		else
+		{
+			System.out.println(indent + "\tnil,");
+		}
+		
+		if (libraries != null)
+		{
+			printSequence(indent + "\t", libraries, "\n");
+		}
+		else
+		{
+			System.out.println(indent + "\tnil");
+		}
+		
+		System.out.print(indent + ")");
 	}
 }

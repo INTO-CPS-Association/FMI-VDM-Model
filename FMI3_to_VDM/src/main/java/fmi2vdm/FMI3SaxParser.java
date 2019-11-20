@@ -41,7 +41,7 @@ public class FMI3SaxParser
 {
 	private static int errors = 0;
 	
-	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
+	public static void main(String[] args) throws SAXException, IOException, ParserConfigurationException
 	{
 		if (args.length != 2)
 		{

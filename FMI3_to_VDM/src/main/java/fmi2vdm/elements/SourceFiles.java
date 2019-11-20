@@ -38,16 +38,16 @@ public class SourceFiles extends Element
 		super(locator);
 	}
 	
-	private ElementList<File> sourceFiles = null;
+	private ElementList<SourceFile> sourceFiles = null;
 	
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof File)
+		if (element instanceof SourceFile)
 		{
 			if (sourceFiles == null)
 			{
-				sourceFiles = new ElementList<File>();
+				sourceFiles = new ElementList<SourceFile>();
 			}
 			
 			sourceFiles.add(element);

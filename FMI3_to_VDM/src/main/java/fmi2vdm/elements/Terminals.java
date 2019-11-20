@@ -27,53 +27,40 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-/**
- * 2.2.2 Build Configuration
- */
-types
-	BuildConfiguration ::
-		location				: Location
-		modelIdentifier			: NormalizedString1
-		platform				: NormalizedString1
-		description				: NormalizedString1
-		sourceFileSets			: set1 of SourceFileSet
-		libraries				: set of Library;
+package fmi2vdm.elements;
 
-	SourceFileSet ::
-		location				: Location
-		language				: NormalizedString1
-		compiler				: NormalizedString1
-		compilerOptions			: AnyString
-		sourceFiles				: set1 of SourceFile
-		preprocessorDefinitions	: set of PreprocessorDefinition
-		includeDirectories		: set of IncludeDirectory;
+import org.xml.sax.Locator;
 
-	SourceFile ::
-		location				: Location
-		name					: NormalizedString1;
+public class Terminals extends Element
+{
+	public Terminals(Locator locator)
+	{
+		super(locator);
+	}
+	
+	@Override
+	public void add(Element element)
+	{
+		if (element instanceof Terminal)
+		{
+			if (terminals == null)
+			{
+				terminals = new ElementList<Terminal>();
+			}
+			
+			terminals.add(element);
+		}
+		else
+		{
+			super.add(element);
+		}
+	}
+	
+	private ElementList<Terminal> terminals = null;
 
-	PreprocessorDefinition ::
-		name					: NormalizedString1
-		optional				: bool
-		value					: NormalizedString1
-		description				: AnyString
-		options					: set of Option;
-
-	Option ::
-		value					: NormalizedString1
-		description				: AnyString;
-
-	IncludeDirectory ::
-		name					: NormalizedString1;
-
-	Library ::
-		location				: Location
-		name					: NormalizedString1
-		version					: NormalizedString1
-		external				: bool
-		description				: AnyString;
-
-functions
-	isValidBuildConfiguration: [seq1 of Tool] +> bool
-	isValidBuildConfiguration(tools) ==
-		is not yet specified;
+	@Override
+	void toVDM(String indent)
+	{
+		printSequence(indent, terminals, "");
+	}
+}

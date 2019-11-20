@@ -48,7 +48,7 @@ public class FMIModelDescription extends Element
 	private TypeDefinitions typeDefinitions;
 	private LogCategories logCategories;
 	private DefaultExperiment defaultExperiment;
-	private Terminal terminal;
+	private Terminals terminals;
 	private GraphicalRepresentation graphicalRepresentation;
 	private VendorAnnotations vendorAnnotations;
 	private ModelVariables modelVariables;
@@ -108,9 +108,9 @@ public class FMIModelDescription extends Element
 		{
 			defaultExperiment = (DefaultExperiment) element;
 		}
-		else if (element instanceof Terminal)
+		else if (element instanceof Terminals)
 		{
-			terminal = (Terminal)element;
+			terminals = (Terminals)element;
 		}
 		else if (element instanceof GraphicalRepresentation)
 		{
@@ -162,7 +162,7 @@ public class FMIModelDescription extends Element
 		System.out.println(",\n");
 		printOne(indent, defaultExperiment, "DefaultExperiment");
 		System.out.println(",\n");
-		printOne(indent, terminal, "Terminal");
+		printOne(indent, terminals, "Terminals");
 		System.out.println(",\n");
 		printOne(indent, graphicalRepresentation, "GraphicalRepresentation");
 		System.out.println(",\n");

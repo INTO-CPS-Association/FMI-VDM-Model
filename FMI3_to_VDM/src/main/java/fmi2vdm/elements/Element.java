@@ -147,6 +147,27 @@ abstract public class Element
 		}
 	}
 	
+	protected String[] arrayOf(String value)
+	{
+		if (value == null)
+		{
+			return null;
+		}
+		else
+		{
+			String[] array = value.split("\\s+");
+			
+			if (array.length == 1 && array[0].isEmpty())
+			{
+				return new String[0];
+			}
+			else
+			{
+				return array;
+			}
+		}
+	}
+
 	abstract void toVDM(String indent);
 	
 	public void add(Element element)

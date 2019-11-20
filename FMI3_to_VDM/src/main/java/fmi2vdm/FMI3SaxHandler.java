@@ -39,30 +39,44 @@ import fmi2vdm.elements.Any;
 import fmi2vdm.elements.BaseUnit;
 import fmi2vdm.elements.BooleanType;
 import fmi2vdm.elements.BooleanVariable;
+import fmi2vdm.elements.BuildConfiguration;
 import fmi2vdm.elements.Category;
 import fmi2vdm.elements.CoSimulation;
+import fmi2vdm.elements.CoordinateSystem;
 import fmi2vdm.elements.DefaultExperiment;
 import fmi2vdm.elements.DisplayUnit;
 import fmi2vdm.elements.EnumerationType;
 import fmi2vdm.elements.EnumerationVariable;
 import fmi2vdm.elements.FMIModelDescription;
+import fmi2vdm.elements.GraphicalRepresentation;
+import fmi2vdm.elements.GraphicalTerminal;
+import fmi2vdm.elements.Icon;
+import fmi2vdm.elements.IncludeDirectory;
 import fmi2vdm.elements.IntegerType;
 import fmi2vdm.elements.IntegerVariable;
 import fmi2vdm.elements.Item;
+import fmi2vdm.elements.Library;
 import fmi2vdm.elements.LogCategories;
 import fmi2vdm.elements.ModelAttributes;
 import fmi2vdm.elements.ModelExchange;
 import fmi2vdm.elements.ModelStructure;
 import fmi2vdm.elements.ModelVariables;
 import fmi2vdm.elements.Element;
-import fmi2vdm.elements.File;
+import fmi2vdm.elements.Option;
+import fmi2vdm.elements.PreprocessorDefinition;
+import fmi2vdm.elements.SourceFile;
 import fmi2vdm.elements.RealVariable;
 import fmi2vdm.elements.RealType;
 import fmi2vdm.elements.ScalarVariable;
 import fmi2vdm.elements.SimpleType;
+import fmi2vdm.elements.SourceFileSet;
 import fmi2vdm.elements.SourceFiles;
 import fmi2vdm.elements.StringType;
 import fmi2vdm.elements.StringVariable;
+import fmi2vdm.elements.Terminal;
+import fmi2vdm.elements.TerminalMemberVariable;
+import fmi2vdm.elements.TerminalStreamMemberVariable;
+import fmi2vdm.elements.Terminals;
 import fmi2vdm.elements.Tool;
 import fmi2vdm.elements.TypeDefinitions;
 import fmi2vdm.elements.Unit;
@@ -119,7 +133,7 @@ public class FMI3SaxHandler extends DefaultHandler
 				break;
 				
 			case "File":
-				stack.push(new File(attributes, locator));
+				stack.push(new SourceFile(attributes, locator));
 				break;
 				
 			case "UnitDefinitions":
@@ -161,9 +175,72 @@ public class FMI3SaxHandler extends DefaultHandler
 			case "ModelVariables":
 				stack.push(new ModelVariables(locator));
 				break;
+			
+			case "BuildConfiguration":
+				stack.push(new BuildConfiguration(attributes, locator));
+				break;
+				
+			case "SourceFileSet":
+				stack.push(new SourceFileSet(attributes, locator));
+				break;
+				
+			case "SourceFile":
+				stack.push(new SourceFile(attributes, locator));
+				break;
+				
+			case "PreprocessorDefinition":
+				stack.push(new PreprocessorDefinition(attributes, locator));
+				break;
+				
+			case "Option":
+				stack.push(new Option(attributes, locator));
+				break;
+				
+			case "IncludeDirectory":
+				stack.push(new IncludeDirectory(attributes, locator));
+				break;
+			
+			case "Library":
+				stack.push(new Library(attributes, locator));
+				break;
 				
 			case "DefaultExperiment":
 				stack.push(new DefaultExperiment(attributes, locator));
+				break;
+				
+			case "Terminals":
+				stack.push(new Terminals(locator));
+				break;
+				
+			case "Terminal":
+				if (stack.peek() instanceof GraphicalRepresentation)
+				{
+					stack.push(new GraphicalTerminal(attributes, locator));
+				}
+				else
+				{
+					stack.push(new Terminal(attributes, locator));	// Terminals
+				}
+				break;
+				
+			case "TerminalMemberVariable":
+				stack.push(new TerminalMemberVariable(attributes, locator));
+				break;
+				
+			case "TerminalStreamMemberVariable":
+				stack.push(new TerminalStreamMemberVariable(attributes, locator));
+				break;
+				
+			case "GraphicalRepresentation":
+				stack.push(new GraphicalRepresentation(locator));
+				break;
+				
+			case "CoordinateSystem":
+				stack.push(new CoordinateSystem(attributes, locator));
+				break;
+				
+			case "Icon":
+				stack.push(new Icon(attributes, locator));
 				break;
 				
 			case "VendorAnnotations":

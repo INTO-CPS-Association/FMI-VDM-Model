@@ -66,27 +66,6 @@ public class Unknown extends Element
 
 		dependenciesKind = arrayOf(stringOf(attributes, "dependenciesKind"));
 	}
-	
-	private String[] arrayOf(String value)
-	{
-		if (value == null)
-		{
-			return null;
-		}
-		else
-		{
-			String[] array = value.split("\\s+");
-			
-			if (array.length == 1 && array[0].isEmpty())
-			{
-				return new String[0];
-			}
-			else
-			{
-				return array;
-			}
-		}
-	}
 
 	private Integer index;
 	private int[] dependencies;

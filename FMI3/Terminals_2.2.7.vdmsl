@@ -33,7 +33,24 @@
 types
 	Terminal ::
 		location				: Location
-;
+		name					: NormalizedString1
+		matchingRule			: NormalizedString1
+		terminalKind			: [NormalizedString1]
+		description				: [AnyString]
+		variables				: [set of TerminalMemberVariable]
+		streams					: [set of TerminalStreamMemberVariable];
+
+	TerminalMemberVariable ::
+		variableKind			: NormalizedString1
+		memberName				: NormalizedString1
+		variableName			: NormalizedString1;
+
+	TerminalStreamMemberVariable ::
+		inStreamMemberName		: NormalizedString1
+		outStreamMemberName		: NormalizedString1
+		inStreamVariableName	: NormalizedString1
+		outStreamVariableName	: NormalizedString1;
+
 functions
 	isValidTerminals: [seq1 of Tool] +> bool
 	isValidTerminals(tools) ==

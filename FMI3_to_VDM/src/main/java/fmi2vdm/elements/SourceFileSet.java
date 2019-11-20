@@ -29,77 +29,100 @@
 
 package fmi2vdm.elements;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class GraphicalRepresentation extends Element
+public class SourceFileSet extends Element
 {
-	private CoordinateSystem coordinateSystem;
-	private Icon icon;
-	private GraphicalTerminal terminal;
+	private String language;
+	private String compiler;
+	private String compilerOptions;
+	private ElementList<SourceFile> sourceFiles;
+	private ElementList<PreprocessorDefinition> preprocessorDefinitions;
+	private ElementList<IncludeDirectory> includeDirectories;
 
-	public GraphicalRepresentation(Locator locator)
+	public SourceFileSet(Attributes attributes, Locator locator)
 	{
 		super(locator);
-	}
 
+		language = stringOf(attributes, "language");
+		compiler = stringOf(attributes, "compiler");
+		compilerOptions = stringOf(attributes, "compilerOptions");
+	}
+	
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof CoordinateSystem)
+		if (element instanceof SourceFile)
 		{
-			coordinateSystem = (CoordinateSystem)element;
+			if (sourceFiles == null)
+			{
+				sourceFiles = new ElementList<SourceFile>();
+			}
+			
+			sourceFiles.add((SourceFile) element);
 		}
-		else if (element instanceof Icon)
+		else if (element instanceof PreprocessorDefinition)
 		{
-			icon = (Icon)element;
+			if (preprocessorDefinitions == null)
+			{
+				preprocessorDefinitions = new ElementList<PreprocessorDefinition>();
+			}
+			
+			preprocessorDefinitions.add((PreprocessorDefinition) element);
 		}
-		else if (element instanceof GraphicalTerminal)
+		else if (element instanceof IncludeDirectory)
 		{
-			terminal = (GraphicalTerminal)element;
+			if (includeDirectories == null)
+			{
+				includeDirectories = new ElementList<IncludeDirectory>();
+			}
+			
+			includeDirectories.add((IncludeDirectory) element);
 		}
 		else
 		{
 			super.add(element);
 		}
 	}
-	
+
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_GraphicalRepresentation");
+		System.out.println(indent + "mk_SourceFileSet");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printStringAttribute(indent + "\t", language, ",\n");
+		printStringAttribute(indent + "\t", compiler, ",\n");
+		printStringAttribute(indent + "\t", compilerOptions, ",\n");
 		
-		if (coordinateSystem != null)
+		if (sourceFiles != null)
 		{
-			coordinateSystem.toVDM(indent + "\t");
-			System.out.println(",\n");
+			printSequence(indent + "\t", sourceFiles, ",\n");
 		}
 		else
 		{
 			System.out.println(indent + "\tnil,");
 		}
 		
-		if (icon != null)
+		if (preprocessorDefinitions != null)
 		{
-			icon.toVDM(indent + "\t");
-			System.out.println(",\n");
+			printSequence(indent + "\t", preprocessorDefinitions, ",\n");
 		}
 		else
 		{
 			System.out.println(indent + "\tnil,");
 		}
 		
-		if (terminal != null)
+		if (includeDirectories != null)
 		{
-			terminal.toVDM(indent + "\t");
-			System.out.println("\n");
+			printSequence(indent + "\t", includeDirectories, "\n");
 		}
 		else
 		{
 			System.out.println(indent + "\tnil");
 		}
-
+		
 		System.out.print(indent + ")");
 	}
 }

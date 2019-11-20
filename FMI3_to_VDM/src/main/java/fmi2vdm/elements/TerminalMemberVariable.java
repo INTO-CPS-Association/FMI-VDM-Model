@@ -32,23 +32,30 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class File extends Element
+public class TerminalMemberVariable extends Element
 {
-	public File(Attributes attributes, Locator locator)
+	private String variableKind;
+	private String memberName;
+	private String variableName;
+
+	public TerminalMemberVariable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		name = stringOf(attributes, "name");
+		
+		variableKind = stringOf(attributes, "variableKind");
+		memberName = stringOf(attributes, "memberName");
+		variableName = stringOf(attributes, "variableName");
 	}
 
-	private String name;
-	
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_SourceFile");
+		System.out.println(indent + "mk_TerminalMemberVariable");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, "\n");
+		printStringAttribute(indent + "\t", variableKind, ",\n");
+		printStringAttribute(indent + "\t", memberName, ",\n");
+		printStringAttribute(indent + "\t", variableName, "\n");
 		System.out.print(indent + ")");
 	}
 }

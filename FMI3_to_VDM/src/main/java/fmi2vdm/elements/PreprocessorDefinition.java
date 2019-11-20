@@ -29,33 +29,38 @@
 
 package fmi2vdm.elements;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class GraphicalRepresentation extends Element
+public class PreprocessorDefinition extends Element
 {
-	private CoordinateSystem coordinateSystem;
-	private Icon icon;
-	private GraphicalTerminal terminal;
+	private String name;
+	private Boolean optional;
+	private String value;
+	private String description;
+	private ElementList<Option> options;
 
-	public GraphicalRepresentation(Locator locator)
+	public PreprocessorDefinition(Attributes attributes, Locator locator)
 	{
 		super(locator);
-	}
 
+		name = stringOf(attributes, "name");
+		optional = boolOf(attributes, "optional");
+		value = stringOf(attributes, "value");
+		description = stringOf(attributes, "description");
+	}
+	
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof CoordinateSystem)
+		if (element instanceof Option)
 		{
-			coordinateSystem = (CoordinateSystem)element;
-		}
-		else if (element instanceof Icon)
-		{
-			icon = (Icon)element;
-		}
-		else if (element instanceof GraphicalTerminal)
-		{
-			terminal = (GraphicalTerminal)element;
+			if (options == null)
+			{
+				options = new ElementList<Option>();
+			}
+			
+			options.add((Option) element);
 		}
 		else
 		{
@@ -66,34 +71,17 @@ public class GraphicalRepresentation extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_GraphicalRepresentation");
+		System.out.println(indent + "mk_PreprocessorDefinition");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printStringAttribute(indent + "\t", name, ",\n");
+		printRawAttribute(indent + "\t", optional, ",\n");
+		printStringAttribute(indent + "\t", value, ",\n");
+		printStringAttribute(indent + "\t", description, ",\n");
 		
-		if (coordinateSystem != null)
+		if (options != null)
 		{
-			coordinateSystem.toVDM(indent + "\t");
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,");
-		}
-		
-		if (icon != null)
-		{
-			icon.toVDM(indent + "\t");
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,");
-		}
-		
-		if (terminal != null)
-		{
-			terminal.toVDM(indent + "\t");
-			System.out.println("\n");
+			printSequence(indent + "\t", options, "\n");
 		}
 		else
 		{
