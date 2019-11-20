@@ -133,8 +133,8 @@ public class GraphicalTerminal extends Element
 		printRawAttribute(indent + "\t", y1, ",\n");
 		printRawAttribute(indent + "\t", x2, ",\n");
 		printRawAttribute(indent + "\t", y2, ",\n");
-		printRawAttribute(indent + "\t", iconSource_PNG, ",\n");
-		printRawAttribute(indent + "\t", iconSource_SVG, ",\n");
+		printStringAttribute(indent + "\t", iconSource_PNG, ",\n");
+		printStringAttribute(indent + "\t", iconSource_SVG, ",\n");
 		printSequence(indent + "\t", vendorAnnotations, "\n");
 		System.out.print(indent + ")");
 	}

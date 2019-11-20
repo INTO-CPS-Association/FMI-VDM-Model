@@ -37,15 +37,17 @@ types
 		matchingRule			: NormalizedString1
 		terminalKind			: [NormalizedString1]
 		description				: [AnyString]
-		variables				: [set of TerminalMemberVariable]
-		streams					: [set of TerminalStreamMemberVariable];
+		variables				: [seq1 of TerminalMemberVariable]
+		streams					: [seq1 of TerminalStreamMemberVariable];
 
 	TerminalMemberVariable ::
+		location				: Location
 		variableKind			: NormalizedString1
 		memberName				: NormalizedString1
 		variableName			: NormalizedString1;
 
 	TerminalStreamMemberVariable ::
+		location				: Location
 		inStreamMemberName		: NormalizedString1
 		outStreamMemberName		: NormalizedString1
 		inStreamVariableName	: NormalizedString1

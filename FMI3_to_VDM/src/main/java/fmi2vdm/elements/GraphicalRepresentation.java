@@ -73,7 +73,7 @@ public class GraphicalRepresentation extends Element
 		if (coordinateSystem != null)
 		{
 			coordinateSystem.toVDM(indent + "\t");
-			System.out.println(",\n");
+			System.out.println(",");
 		}
 		else
 		{
@@ -83,7 +83,7 @@ public class GraphicalRepresentation extends Element
 		if (icon != null)
 		{
 			icon.toVDM(indent + "\t");
-			System.out.println(",\n");
+			System.out.println(",");
 		}
 		else
 		{
@@ -93,7 +93,7 @@ public class GraphicalRepresentation extends Element
 		if (terminal != null)
 		{
 			terminal.toVDM(indent + "\t");
-			System.out.println("\n");
+			System.out.println("");
 		}
 		else
 		{

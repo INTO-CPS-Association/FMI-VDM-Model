@@ -41,7 +41,7 @@ public class FMI3SaxParser
 {
 	private static int errors = 0;
 	
-	public static void main(String[] args) throws SAXException, IOException, ParserConfigurationException
+	public static void main(String[] args) // throws SAXException, IOException, ParserConfigurationException
 	{
 		if (args.length != 2)
 		{
@@ -49,12 +49,27 @@ public class FMI3SaxParser
 			System.exit(1);
 		}
 		
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser saxParser = factory.newSAXParser();
-		FMI3SaxHandler handler = new FMI3SaxHandler(args[0], args[1]);
-		saxParser.parse(args[0], handler);
-		
-		handler.getFMIModelDescription().toVDM("\t");
+		try
+		{
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			FMI3SaxHandler handler = new FMI3SaxHandler(args[0], args[1]);
+			saxParser.parse(args[0], handler);
+			
+			handler.getFMIModelDescription().toVDM("\t");
+		} catch (ParserConfigurationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		if (errors > 0)
 		{

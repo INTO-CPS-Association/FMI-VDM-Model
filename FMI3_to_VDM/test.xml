@@ -2,13 +2,13 @@
 <fmiModelDescription fmiVersion="2.0" modelName="Test FMU"
 	guid="{111-222-333-444}">
 	<CoSimulation modelIdentifier="Test FMU" />
-	<BuildConfiguration modelIdentifier="PlantModel"
+	<BuildConfiguration modelIdentifier="PlantModel" platform="unix"
 		description="Build configuration for desktop platforms">
-		<SourceFileSet language="C99">
+		<SourceFileSet language="C99" compiler="X" compilerOptions="XX">
 			<SourceFile name="fmi3Functions.c" />
 			<SourceFile name="solver.c" />
 		</SourceFileSet>
-		<SourceFileSet language="C++11">
+		<SourceFileSet language="C++11" compiler="X" compilerOptions="XX">
 			<SourceFile name="model.c" />
 			<SourceFile name="logging/src/logger.c" />
 			<PreprocessorDefinition name="FMI_VERSION"
@@ -32,7 +32,7 @@
 		</ScalarVariable>
 	</ModelVariables>
 	<Terminals>
-		<Terminal name="nnn" terminalKind="kind">
+		<Terminal name="nnn" matchingRule="rule" terminalKind="kind">
 			<TerminalMemberVariable variableKind="k1"
 				memberName="mname" variableName="vname" />
 			<TerminalMemberVariable variableKind="k2"

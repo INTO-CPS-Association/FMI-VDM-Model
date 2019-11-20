@@ -42,6 +42,7 @@ public class ModelStructure extends Element
 	private Unknowns outputs;
 	private Unknowns derivatives;
 	private Unknowns initialUnknowns;
+	private ElementList<NumberOfEventIndicators> numberOfEventindicators;
 
 	@Override
 	public void add(Element element)
@@ -68,6 +69,15 @@ public class ModelStructure extends Element
 					System.err.println("Unknown ModelStructure type: " + u.kind);
 					System.exit(1);
 			}
+		}
+		else if (element instanceof NumberOfEventIndicators)
+		{
+			if (numberOfEventindicators == null)
+			{
+				numberOfEventindicators = new ElementList<NumberOfEventIndicators>();
+			}
+			
+			numberOfEventindicators.add(element);
 		}
 		else
 		{
@@ -108,12 +118,19 @@ public class ModelStructure extends Element
 		{
 			System.out.println(indent + "\t-- InitialUnknowns");
 			initialUnknowns.toVDM(indent);
-			System.out.println();
+			System.out.println(",\n");
 		}
 		else
 		{
-			System.out.println(indent + "\tnil");
+			System.out.println(indent + "\tnil,");
 		}
+		
+		if (numberOfEventindicators != null)
+		{
+			System.out.println(indent + "\t-- NumberOfEventindicators");
+		}
+		
+		printSequence(indent + "\t", numberOfEventindicators, "\n");
 		
 		System.out.println(indent + ")");
 	}

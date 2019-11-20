@@ -32,33 +32,63 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class TerminalStreamMemberVariable extends Element
-{
-	private String inStreamMemberName;
-	private String outStreamMemberName;
-	private String inStreamVariableName;
-	private String outStreamVariableName;
+import fmi2vdm.FMI3SaxParser;
 
-	public TerminalStreamMemberVariable(Attributes attributes, Locator locator)
+public class NumberOfEventIndicators extends Element
+{
+	private int[] dependencies;
+
+	public NumberOfEventIndicators(Attributes attributes, Locator locator)
 	{
 		super(locator);
 		
-		inStreamMemberName = stringOf(attributes, "inStreamMemberName");
-		outStreamMemberName = stringOf(attributes, "outStreamMemberName");
-		inStreamVariableName = stringOf(attributes, "inStreamVariableName");
-		outStreamVariableName = stringOf(attributes, "outStreamVariableName");
+		String[] deps = arrayOf(stringOf(attributes, "dependencies"));
+		
+		if (deps == null)
+		{
+			dependencies = null;
+		}
+		else
+		{
+			dependencies = new int[deps.length];
+			for (int i=0; i<deps.length; i++)
+			{
+				try
+				{
+					dependencies[i] = Integer.parseInt(deps[i]);
+				}
+				catch (NumberFormatException e)
+				{
+					FMI3SaxParser.error(e.toString() + " at " + lineNumber);
+					dependencies[i] = new Integer(0);
+				}
+			}
+		}
 	}
 
 	@Override
 	void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_TerminalStreamMemberVariable");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", inStreamMemberName, ",\n");
-		printStringAttribute(indent + "\t", outStreamMemberName, ",\n");
-		printStringAttribute(indent + "\t", inStreamVariableName, ",\n");
-		printStringAttribute(indent + "\t", outStreamVariableName, "\n");
-		System.out.print(indent + ")");
+		System.out.println(indent + "mk_NumberOfEventIndicators(");
+		
+		if (dependencies == null)
+		{
+			System.out.println("[]");
+		}
+		else
+		{
+			System.out.print("[");
+			String sep = "";
+			
+			for (Integer d: dependencies)
+			{
+				System.out.print(sep + d);
+				sep = ", ";
+			}
+			
+			System.out.println("]");
+		}
+
+		System.out.print(")");
 	}
 }
