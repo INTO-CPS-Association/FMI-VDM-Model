@@ -1,7 +1,7 @@
-How to create FMI2 VDM-SL projects in Overture
-==============================================
+How to create FMI2 and FMI3 VDM-SL projects in Overture
+=======================================================
 
-The FMI2 and FMI2_API projects are the main Overture projects in this repository. They are referenced by other projects.
+The FMIn and FMIn_API projects are the main Overture projects in this repository. They are referenced by other projects.
 But since Overture does not support direct VDM-SL project references, this has to be achieved by hand.
 
 For example, when extracting the FMI2_API itself from Git, there will be unresolved symbols for the FMI2 project. To

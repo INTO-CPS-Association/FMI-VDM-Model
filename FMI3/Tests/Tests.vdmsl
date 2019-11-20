@@ -1,0 +1,280 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * Various model tests
+ */
+traces
+	/**
+	 * Test the ScalarInvariant invariant function with all possible inputs - should return true/false (total)
+	 * for every combination. Variable types are tested with "start" both defined and undefined.
+	 */
+	SVInvariantTotal:
+		let c : [Causality] in
+		let v : [Variability] in
+		let i : [Initial] in
+		let s in set
+		{
+			mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil),
+			mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, 1.23, nil, nil),
+			mk_Integer(nil, nil, nil, nil, nil),
+			mk_Integer(nil, nil, nil, nil, 123),
+			mk_Boolean(nil, nil),
+			mk_Boolean(nil, true),
+			mk_String(nil, nil),
+			mk_String(nil, "123")
+		} in
+		let a in set
+		{
+			mk_Tool(0, "A", mk_token(1))
+		}
+		in
+			isValidScalarVariable(mk_ScalarVariable(0, "name", 0, nil, c, v, i, nil, s, [a]));
+
+functions
+	/**
+	 * Test the ScalarVariable invariant for the table on p48, where the SV is valid or not
+	 * for particular "initial" values, given a combination of causality and variability.
+	 */
+	testCausalityVariabilityInitial: () +> bool
+	testCausalityVariabilityInitial() ==
+		let nilv   = mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil),
+		    startv = mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, 1.0, nil, nil)
+		in
+			forall causality : Causality &
+				forall variability : Variability &
+					-- @Printf("Testing %s/%s ...\n", causality, variability)
+					-- @OnFail("Test %s/%s failed", causality, variability)
+					(cases causality:
+						<parameter> ->
+							cases variability:
+								<fixed>, <tunable> ->
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <exact>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <approx>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <calculated>, nil, nilv, nil)),
+
+								<constant>, <discrete>, <continuous> ->
+									forall initial : Initial &
+										not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, initial, nil, nilv, nil))
+							end,
+
+						<calculatedParameter> ->
+							cases variability:
+								<fixed>, <tunable> ->
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <calculated>, nil, nilv, nil)) and
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <approx>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <exact>, nil, nilv, nil)),
+
+								<constant>, <discrete>, <continuous> ->
+									forall initial : Initial &
+										not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, initial, nil, nilv, nil))
+							end,
+
+						<input> ->
+							cases variability:
+								<discrete>, <continuous> ->
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, nil, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <calculated>, nil, nilv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <approx>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <exact>, nil, nilv, nil)),
+
+								<constant>, <fixed>, <tunable> ->
+									forall initial : Initial &
+										not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, initial, nil, nilv, nil))
+							end,
+
+						<output> ->
+							cases variability:
+								<constant> ->
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <exact>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <calculated>, nil, nilv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <approx>, nil, startv, nil)),
+
+								<discrete>, <continuous> ->
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <calculated>, nil, nilv, nil)) and
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <exact>, nil, startv, nil))
+									and isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <approx>, nil, startv, nil)),
+
+								<fixed>, <tunable> ->
+									forall initial : Initial &
+										not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, initial, nil, nilv, nil))
+							end,
+
+						<local> ->
+							cases variability:
+								<constant> ->
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <exact>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <calculated>, nil, nilv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <approx>, nil, startv, nil)),
+
+								<fixed>, <tunable> ->
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <calculated>, nil, nilv, nil)) and
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <approx>, nil, startv, nil)) and
+									not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <exact>, nil, startv, nil)),
+
+								<discrete>, <continuous> ->
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <calculated>, nil, nilv, nil)) and
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <approx>, nil, startv, nil)) and
+									isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, <exact>, nil, startv, nil))
+							end,
+
+						<independent> ->
+							forall initial : Initial &
+								not isValidScalarVariable(mk_ScalarVariable(0, "n", 0, nil, causality, variability, initial, nil, nilv, nil))
+					end);
+
+	testStructuredNames: () +> seq of bool
+	testStructuredNames() ==
+	[
+		isValidStructuredName("der(a.b.c,3)"),
+		isValidStructuredName("der(a)"),
+		isValidStructuredName("a"),
+		isValidStructuredName("'!#$'"),
+		isValidStructuredName("a[1]"),
+		isValidStructuredName("_abc[1,2,3]"),
+		isValidStructuredName("xyz.abc.def[1,2,3]"),
+		isValidStructuredName("'!!!\\?'.a10[1,2,3]"),
+		isValidStructuredName("a20[1,2,3].def[1]"),
+		isValidStructuredName("'\\\"\\?\\\\'"),
+		not isValidStructuredName("a[1,]"),
+		not isValidStructuredName("[1]"),
+		not isValidStructuredName("'1@")
+	];
+
+values
+--	test: () +> bool
+--	test() ==
+--	isValidFMIModelDescription
+
+	/**
+	 * This test model is based on the example on p62
+	 */
+	example = mk_FMIModelDescription
+	(
+		-- Attributes
+		mk_ModelAttributes(0, "2.0", "Example FMU", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
+
+		-- Model Types
+		mk_ModelExchange(0, "example", nil, nil, nil, nil, nil, nil, nil),
+		nil,
+
+		-- Build configuration
+		nil,
+
+		-- Unit definitions
+		nil,
+
+		-- TypeDefinitions
+		{
+			mk_SimpleType(0, "Real-1-10",       nil, mk_RealType(nil, nil, nil, nil, 1, 10, nil, nil)),
+			mk_SimpleType(0, "Real-Positive",	nil, mk_RealType(nil, nil, nil, nil, 0, nil, nil, nil)),
+			mk_SimpleType(0, "Real-Undefined",	nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil))
+		},
+
+		-- Log categories
+		nil,
+
+		-- Default experiment
+		nil,
+
+		-- Terminals
+		nil,
+
+		-- GraphicalRepresentation
+		nil,
+
+		-- Vendor annotations
+		nil,
+
+		-- ScalarVariables
+		[
+			mk_ScalarVariable(0, "p", 0, nil,		<parameter>, <fixed>,		nil, nil,
+			     mk_Real("Real-Positive", nil, nil, nil, nil,  0, 10, nil, nil, 1, nil, nil), nil),	-- 1
+			mk_ScalarVariable(0, "u1", 1, nil,		<input>, <continuous>,		nil, nil,
+			     mk_Real("Real-Positive", nil, nil, nil, nil, 0, 10, nil, nil, 1, nil, nil), nil),	-- 2
+			mk_ScalarVariable(0, "u2", 2, nil,		<input>, <continuous>,		nil, nil,
+			     mk_Real("Real-Positive", nil, nil, nil, nil, 0, 10, nil, nil, 1, nil, nil), nil),	-- 3
+			mk_ScalarVariable(0, "u3", 3, nil,		<input>, <discrete>,		nil, nil,
+			     mk_Real("Real-Positive", nil, nil, nil, nil, 0, 10, nil, nil, 1, nil, nil), nil),	-- 4
+			mk_ScalarVariable(0, "x1", 4, nil,		<input>, <continuous>,		nil, nil,
+			     mk_Real("Real-Undefined", nil, nil, nil, nil, 0, 10, nil, nil, 1, nil, nil), nil),	-- 5
+			mk_ScalarVariable(0, "x2", 5, nil,		<local>, <continuous>,		nil, nil,
+			     mk_Real("Real-Undefined", nil, nil, nil, nil, 0, 10, nil, nil, nil, nil, nil), nil),	-- 6
+			mk_ScalarVariable(0, "x3", 6, nil,		<local>, <continuous>,		nil, nil,
+			     mk_Real("Real-Undefined", nil, nil, nil, nil, 0, 10, nil, nil, nil, nil, nil), nil),	-- 7
+			mk_ScalarVariable(0, "der(x1)", 7, nil,	<calculatedParameter>, <tunable>,	nil, nil,
+			     mk_Real("Real-Positive", nil, nil, nil, nil, 0, 10, nil, nil, nil, 5, nil), nil),	-- 8
+			mk_ScalarVariable(0, "der(x2)",	8, nil,	<calculatedParameter>, <tunable>,	nil, nil,
+			     mk_Real("Real-Positive", nil, nil, nil, nil, 0, 10, nil, nil, nil, 6, nil), nil),	-- 9
+			mk_ScalarVariable(0, "der(x3)",	9, nil,	<calculatedParameter>, <tunable>,	nil, nil,
+			     mk_Real("Real-Positive", nil, nil, nil, nil, 0, 10, nil, nil, nil, 7, nil), nil),	-- 10
+			mk_ScalarVariable(0, "y", 10, nil,		<output>, <continuous>,		nil, nil,
+			     mk_Real("Real-Positive", nil, nil, nil, nil, 0, 10, nil, nil, nil, nil, nil), nil)	-- 11
+		],
+
+		mk_ModelStructure
+		(
+			0,
+			-- Outputs
+			[
+				mk_Unknown(0, 11,	[6, 7], nil)
+			],
+			-- Derivatives
+			[
+				mk_Unknown(0, 8,	[6], nil),
+				mk_Unknown(0, 9,	[2, 4, 5, 6], [<constant>, <constant>, <dependent>, <fixed>]),
+				mk_Unknown(0, 10,	[2, 3, 4, 5, 6], nil)
+			],
+			-- InitialUnknowns
+			[
+				-- mk_Unknown(0, 6,	[2, 4, 5], nil),
+				-- mk_Unknown(0, 7,	[2, 4, 5, 11], nil),
+				mk_Unknown(0, 8,	nil, nil),
+				mk_Unknown(0, 9,	nil, nil),
+				mk_Unknown(0, 10,	nil, nil),
+				mk_Unknown(0, 11,	nil, nil)
+			],
+			-- NumbeOfEventIndicators
+			nil
+		)
+	);
+
+functions
+	/**
+	 * Run all tests and check that they pass.
+	 */
+	tests: () +> seq of bool
+	tests() ==
+	[
+		testCausalityVariabilityInitial(),
+		isValidFMIModelDescription(example)
+	]
+	^	testStructuredNames()
+
+	post elems RESULT = {true};

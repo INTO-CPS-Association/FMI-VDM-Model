@@ -1,0 +1,76 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.2.2 Build Configuration
+ */
+types
+	BuildConfiguration ::
+		location				: Location
+		modelIdentifier			: NormalizedString1
+		platform				: NormalizedString1
+		description				: NormalizedString1
+		sourceFileSets			: set1 of SourceFileSet
+		libraries				: set of Library;
+
+	SourceFileSet ::
+		language				: NormalizedString1
+		compiler				: NormalizedString1
+		compilerOptions			: AnyString
+		sourceFiles				: set1 of SourceFile
+		preprocessorDefinitions	: set of PreprocessorDefinition
+		includeDoirectories		: set of IncludeDirectory;
+
+	SourceFile ::
+		name					: NormalizedString1;
+
+	PreprocessorDefinition ::
+		name					: NormalizedString1
+		optional				: bool
+		value					: NormalizedString1
+		description				: AnyString
+		options					: set of Option;
+
+	Option ::
+		value					: NormalizedString1
+		description				: AnyString;
+
+	IncludeDirectory ::
+		name					: NormalizedString1;
+
+	Library ::
+		name					: NormalizedString1
+		version					: NormalizedString1
+		external				: bool
+		description				: AnyString;
+
+functions
+	isValidBuildConfiguration: [seq1 of Tool] +> bool
+	isValidBuildConfiguration(tools) ==
+		is not yet specified;
