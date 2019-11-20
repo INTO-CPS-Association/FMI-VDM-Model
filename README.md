@@ -1,6 +1,6 @@
-# FMI2-VDM-Model
+# FMI-VDM-Model
 
-This repository contains a VDM model of the FMI version 2.0 standard, plus supporting tools. The repository contains the following projects:
+This repository contains a VDM model of the FMI standard, plus supporting tools. The repository contains the following projects:
 
 * **FMI2** - a VDM-SL model of the static semantics of FMI 2.0 modelDescription XML files
 * **FMI3** - a VDM-SL model of the static semantics of FMI 3.0 modelDescription XML files
