@@ -33,7 +33,7 @@ import java.util.Date;
 
 import org.xml.sax.Locator;
 
-import fmi2vdm.FMI2SaxParser;
+import fmi2vdm.FMI3SaxParser;
 
 public class FMIModelDescription extends Element
 {
@@ -43,10 +43,13 @@ public class FMIModelDescription extends Element
 	private ModelAttributes modelAttributes;
 	private CoSimulation coSimulation;
 	private ModelExchange modelExchange;
+	private BuildConfiguration buildConfiguration;
 	private UnitDefinitions unitDefinitions;
 	private TypeDefinitions typeDefinitions;
 	private LogCategories logCategories;
 	private DefaultExperiment defaultExperiment;
+	private Terminal terminal;
+	private GraphicalRepresentation graphicalRepresentation;
 	private VendorAnnotations vendorAnnotations;
 	private ModelVariables modelVariables;
 	private ModelStructure modelStructure;
@@ -67,7 +70,7 @@ public class FMIModelDescription extends Element
 		{
 			if (coSimulation != null)
 			{
-				FMI2SaxParser.error("Only one CoSimulation element permitted at line %d", element.lineNumber);
+				FMI3SaxParser.error("Only one CoSimulation element permitted at line %d", element.lineNumber);
 			}
 			else
 			{
@@ -78,12 +81,16 @@ public class FMIModelDescription extends Element
 		{
 			if (modelExchange != null)
 			{
-				FMI2SaxParser.error("Only one ModelExchange element permitted at line %d", element.lineNumber);
+				FMI3SaxParser.error("Only one ModelExchange element permitted at line %d", element.lineNumber);
 			}
 			else
 			{
 				modelExchange = (ModelExchange) element;
 			}
+		}
+		else if (element instanceof BuildConfiguration)
+		{
+			buildConfiguration = (BuildConfiguration)element;
 		}
 		else if (element instanceof UnitDefinitions)
 		{
@@ -100,6 +107,14 @@ public class FMIModelDescription extends Element
 		else if (element instanceof DefaultExperiment)
 		{
 			defaultExperiment = (DefaultExperiment) element;
+		}
+		else if (element instanceof Terminal)
+		{
+			terminal = (Terminal)element;
+		}
+		else if (element instanceof GraphicalRepresentation)
+		{
+			graphicalRepresentation = (GraphicalRepresentation)element;
 		}
 		else if (element instanceof VendorAnnotations)
 		{
@@ -137,6 +152,8 @@ public class FMIModelDescription extends Element
 		System.out.println(",\n");
 		printOne(indent, coSimulation, "CoSimulation");
 		System.out.println(",\n");
+		printOne(indent, buildConfiguration, "BuildConfiguration");
+		System.out.println(",\n");
 		printOne(indent, unitDefinitions, "UnitDefinitions");
 		System.out.println(",\n");
 		printOne(indent, typeDefinitions, "TypeDefinitions");
@@ -144,6 +161,10 @@ public class FMIModelDescription extends Element
 		printOne(indent, logCategories, "LogCategories");
 		System.out.println(",\n");
 		printOne(indent, defaultExperiment, "DefaultExperiment");
+		System.out.println(",\n");
+		printOne(indent, terminal, "Terminal");
+		System.out.println(",\n");
+		printOne(indent, graphicalRepresentation, "GraphicalRepresentation");
 		System.out.println(",\n");
 		printOne(indent, vendorAnnotations, "VendorAnnotations");
 		System.out.println(",\n");

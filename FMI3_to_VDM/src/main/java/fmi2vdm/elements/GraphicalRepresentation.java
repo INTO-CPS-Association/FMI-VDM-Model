@@ -27,45 +27,19 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-package fmi2vdm;
+package fmi2vdm.elements;
 
-import java.io.IOException;
+import org.xml.sax.Locator;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
-
-public class FMI2SaxParser
+public class GraphicalRepresentation extends Element
 {
-	private static int errors = 0;
-	
-	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
+	protected GraphicalRepresentation(Locator locator)
 	{
-		if (args.length != 2)
-		{
-			System.err.println("Usage: FMI2SaxParser <xml file> <VDM var name>");
-			System.exit(1);
-		}
-		
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser saxParser = factory.newSAXParser();
-		FMI2SaxHandler handler = new FMI2SaxHandler(args[0], args[1]);
-		saxParser.parse(args[0], handler);
-		
-		handler.getFMIModelDescription().toVDM("\t");
-		
-		if (errors > 0)
-		{
-			System.err.println("XML parse errors found.");
-			System.exit(1);
-		}
+		super(locator);
 	}
-	
-	public static void error(String message, Object... args)
+
+	@Override
+	void toVDM(String indent)
 	{
-		System.err.printf(message + "\n", args);
-		errors++;
 	}
 }

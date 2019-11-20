@@ -50,19 +50,6 @@ public class CoSimulation extends Element
 		canSerializeFMUstate = boolOf(attributes, "canSerializeFMUstate");
 		providesDirectionalDerivative = boolOf(attributes, "providesDirectionalDerivative");
 	}
-	
-	@Override
-	public void add(Element element)
-	{
-		if (element instanceof SourceFiles)
-		{
-			sourceFiles = (SourceFiles) element;
-		}
-		else
-		{
-			super.add(element);
-		}
-	}
 
 	private String modelIdentifier;
 	private Boolean needsExecutionTool;
@@ -75,7 +62,6 @@ public class CoSimulation extends Element
 	private Boolean canGetAndSetFMUstate;
 	private Boolean canSerializeFMUstate;
 	private Boolean providesDirectionalDerivative;
-	private SourceFiles sourceFiles;
 
 	@Override
 	void toVDM(String indent)
@@ -94,8 +80,7 @@ public class CoSimulation extends Element
 		printRawAttribute(indent + "\t", canNotUseMemoryManagementFunctions, ",\n");
 		printRawAttribute(indent + "\t", canGetAndSetFMUstate, ",\n");
 		printRawAttribute(indent + "\t", canSerializeFMUstate, ",\n");
-		printRawAttribute(indent + "\t", providesDirectionalDerivative, ",\n");
-		printOptional(indent + "\t", sourceFiles, "\n");
+		printRawAttribute(indent + "\t", providesDirectionalDerivative, "\n");
 		System.out.print(indent + ")");
 	}
 }

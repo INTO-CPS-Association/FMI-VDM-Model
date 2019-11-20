@@ -32,7 +32,7 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-import fmi2vdm.FMI2SaxParser;
+import fmi2vdm.FMI3SaxParser;
 
 public class Unknown extends Element
 {
@@ -58,7 +58,7 @@ public class Unknown extends Element
 				}
 				catch (NumberFormatException e)
 				{
-					FMI2SaxParser.error(e.toString() + " at " + lineNumber);
+					FMI3SaxParser.error(e.toString() + " at " + lineNumber);
 					dependencies[i] = new Integer(0);
 				}
 			}

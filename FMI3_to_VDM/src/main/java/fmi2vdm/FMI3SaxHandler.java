@@ -71,7 +71,7 @@ import fmi2vdm.elements.Unknown;
 import fmi2vdm.elements.Unknowns;
 import fmi2vdm.elements.VendorAnnotations;
 
-public class FMI2SaxHandler extends DefaultHandler
+public class FMI3SaxHandler extends DefaultHandler
 {
 	private final String xmlfile;
 	private final String varname;
@@ -80,7 +80,7 @@ public class FMI2SaxHandler extends DefaultHandler
 	private FMIModelDescription fmiModelDescription = null;
 	private Stack<Element> stack = new Stack<Element>();
 	
-	public FMI2SaxHandler(String xmlfile, String name)
+	public FMI3SaxHandler(String xmlfile, String name)
 	{
 		this.xmlfile = xmlfile;
 		this.varname = name;

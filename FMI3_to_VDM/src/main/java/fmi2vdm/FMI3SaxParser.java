@@ -27,52 +27,45 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-/**
- * 2.2.2 Build Configuration
- */
-types
-	BuildConfiguration ::
-		location				: Location
-		modelIdentifier			: NormalizedString1
-		platform				: NormalizedString1
-		description				: NormalizedString1
-		sourceFileSets			: set1 of SourceFileSet
-		libraries				: set of Library;
+package fmi2vdm;
 
-	SourceFileSet ::
-		location				: Location
-		language				: NormalizedString1
-		compiler				: NormalizedString1
-		compilerOptions			: AnyString
-		sourceFiles				: set1 of SourceFile
-		preprocessorDefinitions	: set of PreprocessorDefinition
-		includeDirectories		: set of IncludeDirectory;
+import java.io.IOException;
 
-	SourceFile ::
-		name					: NormalizedString1;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
-	PreprocessorDefinition ::
-		name					: NormalizedString1
-		optional				: bool
-		value					: NormalizedString1
-		description				: AnyString
-		options					: set of Option;
+import org.xml.sax.SAXException;
 
-	Option ::
-		value					: NormalizedString1
-		description				: AnyString;
-
-	IncludeDirectory ::
-		name					: NormalizedString1;
-
-	Library ::
-		location				: Location
-		name					: NormalizedString1
-		version					: NormalizedString1
-		external				: bool
-		description				: AnyString;
-
-functions
-	isValidBuildConfiguration: [seq1 of Tool] +> bool
-	isValidBuildConfiguration(tools) ==
-		is not yet specified;
+public class FMI3SaxParser
+{
+	private static int errors = 0;
+	
+	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException
+	{
+		if (args.length != 2)
+		{
+			System.err.println("Usage: FMI2SaxParser <xml file> <VDM var name>");
+			System.exit(1);
+		}
+		
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser saxParser = factory.newSAXParser();
+		FMI3SaxHandler handler = new FMI3SaxHandler(args[0], args[1]);
+		saxParser.parse(args[0], handler);
+		
+		handler.getFMIModelDescription().toVDM("\t");
+		
+		if (errors > 0)
+		{
+			System.err.println("XML parse errors found.");
+			System.exit(1);
+		}
+	}
+	
+	public static void error(String message, Object... args)
+	{
+		System.err.printf(message + "\n", args);
+		errors++;
+	}
+}

@@ -34,7 +34,7 @@ import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-import fmi2vdm.FMI2SaxParser;
+import fmi2vdm.FMI3SaxParser;
 
 abstract public class Element
 {
@@ -75,7 +75,7 @@ abstract public class Element
 			}
 			catch (NumberFormatException e)
 			{
-				FMI2SaxParser.error(e.toString() + " at " + lineNumber);
+				FMI3SaxParser.error(e.toString() + " at " + lineNumber);
 				return new Integer(0);
 			}
 		}
@@ -97,7 +97,7 @@ abstract public class Element
 				
 				if (Long.signum(uint) < 0)
 				{
-					FMI2SaxParser.error("Negative unsigned int " + value + " at " + lineNumber);
+					FMI3SaxParser.error("Negative unsigned int " + value + " at " + lineNumber);
 					return new Long(0);
 				}
 				
@@ -105,7 +105,7 @@ abstract public class Element
 			}
 			catch (NumberFormatException e)
 			{
-				FMI2SaxParser.error(e.toString() + " at " + lineNumber);
+				FMI3SaxParser.error(e.toString() + " at " + lineNumber);
 				return new Long(0);
 			}
 		}
@@ -127,7 +127,7 @@ abstract public class Element
 			}
 			catch (NumberFormatException e)
 			{
-				FMI2SaxParser.error(e.toString() + " at " + lineNumber);
+				FMI3SaxParser.error(e.toString() + " at " + lineNumber);
 				return new Double(0);
 			}
 		}
@@ -151,7 +151,7 @@ abstract public class Element
 	
 	public void add(Element element)
 	{
-		FMI2SaxParser.error("Cannot add " + element.getClass().getSimpleName() + " to " + getClass().getSimpleName() +
+		FMI3SaxParser.error("Cannot add " + element.getClass().getSimpleName() + " to " + getClass().getSimpleName() +
 				 " at line %d", element.lineNumber);
 	}
 	
