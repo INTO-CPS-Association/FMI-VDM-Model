@@ -48,6 +48,7 @@ public class IntegerType extends Type
 	private Integer max;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_IntegerType(");

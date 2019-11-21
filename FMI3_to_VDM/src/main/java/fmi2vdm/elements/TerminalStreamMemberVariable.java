@@ -50,6 +50,7 @@ public class TerminalStreamMemberVariable extends Element
 	}
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_TerminalStreamMemberVariable");

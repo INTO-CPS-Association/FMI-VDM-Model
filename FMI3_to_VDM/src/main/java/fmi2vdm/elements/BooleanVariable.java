@@ -46,6 +46,7 @@ public class BooleanVariable extends Variable
 	private Boolean start;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Boolean(");

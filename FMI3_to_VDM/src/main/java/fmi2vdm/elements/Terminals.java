@@ -59,6 +59,7 @@ public class Terminals extends Element
 	private ElementList<Terminal> terminals = null;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		printSequence(indent, terminals, "");

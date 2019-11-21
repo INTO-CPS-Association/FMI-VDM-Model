@@ -48,6 +48,7 @@ public class Item extends Element
 	private String description;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Item(");

@@ -59,6 +59,7 @@ public class LogCategories extends Element
 	}
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		printSequence(indent, logCategories, "");

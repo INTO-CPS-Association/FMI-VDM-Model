@@ -62,6 +62,7 @@ public class EnumerationType extends Type
 	private ElementList<Item> items;
 	
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_EnumerationType");

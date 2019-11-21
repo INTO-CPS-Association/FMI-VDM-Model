@@ -59,6 +59,7 @@ public class TypeDefinitions extends Element
 	}
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		printSet(indent, typeDefinitions, "");

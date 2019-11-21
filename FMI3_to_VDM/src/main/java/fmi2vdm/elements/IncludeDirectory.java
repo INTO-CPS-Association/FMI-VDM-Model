@@ -44,8 +44,13 @@ public class IncludeDirectory extends Element
 	}
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_IncludeDirectory(\"" + name + "\")");
+		System.out.println(indent + "mk_IncludeDirectory");
+		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printStringAttribute(indent + "\t", name, "\n");
+		System.out.print(indent + ")");
 	}
 }

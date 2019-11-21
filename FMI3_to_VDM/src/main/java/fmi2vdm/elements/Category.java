@@ -46,6 +46,7 @@ public class Category extends Element
 	private String description;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Category");

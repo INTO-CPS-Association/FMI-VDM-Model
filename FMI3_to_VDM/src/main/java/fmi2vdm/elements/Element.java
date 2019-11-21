@@ -168,7 +168,7 @@ abstract public class Element
 		}
 	}
 
-	abstract void toVDM(String indent);
+	public abstract void toVDM(String indent);
 	
 	public void add(Element element)
 	{

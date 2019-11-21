@@ -54,6 +54,7 @@ public class Icon extends Element
 	}
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Icon");

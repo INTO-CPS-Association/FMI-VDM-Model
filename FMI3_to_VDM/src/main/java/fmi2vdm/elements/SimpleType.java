@@ -60,6 +60,7 @@ public class SimpleType extends Element
 	private Type type;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_SimpleType");

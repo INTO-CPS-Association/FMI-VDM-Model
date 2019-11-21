@@ -58,6 +58,7 @@ public class ModelExchange extends Element
 	private Boolean providesDirectionalDerivative;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_ModelExchange");

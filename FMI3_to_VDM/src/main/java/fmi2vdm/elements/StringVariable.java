@@ -46,6 +46,7 @@ public class StringVariable extends Variable
 	private String start;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_String(");

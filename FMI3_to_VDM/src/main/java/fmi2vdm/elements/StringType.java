@@ -40,6 +40,7 @@ public class StringType extends Type
 	}
 	
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_StringType()");

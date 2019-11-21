@@ -62,6 +62,7 @@ public class BaseUnit extends Element
 	private Double offset;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_BaseUnit(");

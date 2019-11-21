@@ -59,6 +59,7 @@ public class SourceFiles extends Element
 	}
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		printSequence(indent, sourceFiles, "\n");

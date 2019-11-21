@@ -55,6 +55,7 @@ public class VendorAnnotations extends Element
 	ElementList<Tool> annotations = null;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		printSequence(indent, annotations, "");

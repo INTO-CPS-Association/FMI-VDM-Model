@@ -58,6 +58,7 @@ public class RealType extends Type
 	private Boolean unbounded;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_RealType(");

@@ -52,6 +52,7 @@ public class EnumerationVariable extends Variable
 	private Double start;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Enumeration(");

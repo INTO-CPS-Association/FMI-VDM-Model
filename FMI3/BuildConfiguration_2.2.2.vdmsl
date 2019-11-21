@@ -66,6 +66,7 @@ types
 		description				: AnyString;
 
 	IncludeDirectory ::
+		location				: Location
 		name					: NormalizedString1;
 
 	Library ::

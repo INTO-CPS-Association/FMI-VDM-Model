@@ -66,6 +66,7 @@ public class RealVariable extends Variable
 	private Boolean reinit;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Real(");

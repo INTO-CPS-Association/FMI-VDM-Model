@@ -52,6 +52,7 @@ public class IntegerVariable extends Variable
 	private Integer start;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Integer(");

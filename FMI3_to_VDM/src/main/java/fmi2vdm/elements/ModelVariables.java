@@ -60,6 +60,7 @@ public class ModelVariables extends Element
 	}
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		printSequence(indent, modelVariables, "");

@@ -64,6 +64,7 @@ public class Tool extends Element
 	private String annotation;
 
 	@Override
+	public
 	void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Tool");
