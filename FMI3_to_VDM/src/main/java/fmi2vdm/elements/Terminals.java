@@ -37,7 +37,7 @@ public class Terminals extends Element
 	{
 		super(locator);
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -47,7 +47,7 @@ public class Terminals extends Element
 			{
 				terminals = new ElementList<Terminal>();
 			}
-			
+
 			terminals.add(element);
 		}
 		else
@@ -55,12 +55,11 @@ public class Terminals extends Element
 			super.add(element);
 		}
 	}
-	
+
 	private ElementList<Terminal> terminals = null;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		printSequence(indent, terminals, "");
 	}

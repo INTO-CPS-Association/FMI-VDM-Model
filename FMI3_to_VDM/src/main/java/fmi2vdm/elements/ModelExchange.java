@@ -37,7 +37,7 @@ public class ModelExchange extends Element
 	public ModelExchange(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		modelIdentifier = stringOf(attributes, "modelIdentifier");
 		needsExecutionTool = boolOf(attributes, "needsExecutionTool");
 		completedIntegratorStepNotNeeded = boolOf(attributes, "completedIntegratorStepNotNeeded");
@@ -58,13 +58,12 @@ public class ModelExchange extends Element
 	private Boolean providesDirectionalDerivative;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_ModelExchange");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		
+
 		printStringAttribute(indent + "\t", modelIdentifier, ",\n");
 		printRawAttribute(indent + "\t", needsExecutionTool, ",\n");
 		printRawAttribute(indent + "\t", completedIntegratorStepNotNeeded, ",\n");

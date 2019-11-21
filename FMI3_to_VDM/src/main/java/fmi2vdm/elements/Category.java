@@ -37,17 +37,16 @@ public class Category extends Element
 	public Category(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		name = stringOf(attributes, "name");
 		description = stringOf(attributes, "description");
 	}
-	
+
 	private String name;
 	private String description;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Category");
 		System.out.println(indent + "(");

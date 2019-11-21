@@ -37,7 +37,7 @@ public class VendorAnnotations extends Element
 	{
 		super(locator);
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -47,16 +47,15 @@ public class VendorAnnotations extends Element
 			{
 				annotations = new ElementList<Tool>();
 			}
-			
+
 			annotations.add(element);
 		}
 	}
-	
+
 	ElementList<Tool> annotations = null;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		printSequence(indent, annotations, "");
 	}

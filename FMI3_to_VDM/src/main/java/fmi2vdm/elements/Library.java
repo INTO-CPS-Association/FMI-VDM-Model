@@ -42,7 +42,7 @@ public class Library extends Element
 	public Library(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		name = stringOf(attributes, "name");
 		version = stringOf(attributes, "version");
 		external = boolOf(attributes, "external");
@@ -50,8 +50,7 @@ public class Library extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Library");
 		System.out.println(indent + "(");

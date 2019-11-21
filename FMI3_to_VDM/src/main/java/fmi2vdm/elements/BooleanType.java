@@ -38,10 +38,9 @@ public class BooleanType extends Type
 	{
 		super(locator);
 	}
-	
+
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_BooleanType()");
 	}

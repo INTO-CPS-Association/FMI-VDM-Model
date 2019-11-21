@@ -50,7 +50,7 @@ public class ModelAttributes extends Element
 		generationDateAndTime = stringOf(attributes, "generationDateAndTime");
 		variableNamingConvention = stringOf(attributes, "variableNamingConvention");
 		numberOfEventIndicators = intOf(attributes, "numberOfEventIndicators");
-		
+
 		if (fmiVersion == null || !fmiVersion.equals("2.0"))
 		{
 			System.err.println("FMU is not FMI v2 format");
@@ -77,7 +77,7 @@ public class ModelAttributes extends Element
 		System.out.println(indent + "mk_ModelAttributes");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		
+
 		printStringAttribute(indent + "\t", fmiVersion, ",\n");
 		printStringAttribute(indent + "\t", modelName, ",\n");
 		printStringAttribute(indent + "\t", guid, ",\n");
@@ -90,7 +90,7 @@ public class ModelAttributes extends Element
 		printStringAttribute(indent + "\t", generationDateAndTime, ",\n");
 		printQuoteAttribute(indent + "\t", variableNamingConvention, ",\n");
 		printRawAttribute(indent + "\t", numberOfEventIndicators, "\n");
-		
+
 		System.out.print(indent + ")");
 	}
 }

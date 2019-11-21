@@ -37,9 +37,9 @@ public class SourceFiles extends Element
 	{
 		super(locator);
 	}
-	
+
 	private ElementList<SourceFile> sourceFiles = null;
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -49,7 +49,7 @@ public class SourceFiles extends Element
 			{
 				sourceFiles = new ElementList<SourceFile>();
 			}
-			
+
 			sourceFiles.add(element);
 		}
 		else
@@ -59,8 +59,7 @@ public class SourceFiles extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		printSequence(indent, sourceFiles, "\n");
 	}

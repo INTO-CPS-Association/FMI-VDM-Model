@@ -39,16 +39,16 @@ import fmi2vdm.FMI3SaxParser;
 abstract public class Element
 {
 	protected Integer lineNumber;
-	
+
 	protected Element(Locator locator)
 	{
 		lineNumber = locator.getLineNumber();
 	}
-	
+
 	protected String stringOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
-		
+
 		if (value == null)
 		{
 			return null;
@@ -58,11 +58,11 @@ abstract public class Element
 			return value.replace("\\", "\\\\").replace("\"", "\\\"");
 		}
 	}
-	
+
 	protected Integer intOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
-		
+
 		if (value == null)
 		{
 			return null;
@@ -80,11 +80,11 @@ abstract public class Element
 			}
 		}
 	}
-	
+
 	protected Long uintOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
-		
+
 		if (value == null)
 		{
 			return null;
@@ -94,13 +94,13 @@ abstract public class Element
 			try
 			{
 				Long uint = Long.parseLong(value);
-				
+
 				if (Long.signum(uint) < 0)
 				{
 					FMI3SaxParser.error("Negative unsigned int " + value + " at " + lineNumber);
 					return new Long(0);
 				}
-				
+
 				return uint;
 			}
 			catch (NumberFormatException e)
@@ -110,11 +110,11 @@ abstract public class Element
 			}
 		}
 	}
-	
+
 	protected Double doubleOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
-		
+
 		if (value == null)
 		{
 			return null;
@@ -132,11 +132,11 @@ abstract public class Element
 			}
 		}
 	}
-	
+
 	protected Boolean boolOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
-		
+
 		if (value == null)
 		{
 			return null;
@@ -146,7 +146,7 @@ abstract public class Element
 			return Boolean.parseBoolean(value);
 		}
 	}
-	
+
 	protected String[] arrayOf(String value)
 	{
 		if (value == null)
@@ -156,7 +156,7 @@ abstract public class Element
 		else
 		{
 			String[] array = value.split("\\s+");
-			
+
 			if (array.length == 1 && array[0].isEmpty())
 			{
 				return new String[0];
@@ -169,13 +169,13 @@ abstract public class Element
 	}
 
 	public abstract void toVDM(String indent);
-	
+
 	public void add(Element element)
 	{
-		FMI3SaxParser.error("Cannot add " + element.getClass().getSimpleName() + " to " + getClass().getSimpleName() +
-				 " at line %d", element.lineNumber);
+		FMI3SaxParser.error("Cannot add " + element.getClass().getSimpleName() + " to " + getClass().getSimpleName()
+				+ " at line %d", element.lineNumber);
 	}
-	
+
 	protected void printOptional(String indent, Element element, String tail)
 	{
 		if (element == null)
@@ -194,7 +194,7 @@ abstract public class Element
 		if (attr != null && !attr.toString().isEmpty())
 		{
 			System.out.print(indent + attr + tail);
-		} 
+		}
 		else
 		{
 			System.out.print(indent + "nil" + tail);
@@ -203,10 +203,10 @@ abstract public class Element
 
 	protected void printStringAttribute(String indent, String attr, String tail)
 	{
-		if (attr != null && ! attr.isEmpty())
+		if (attr != null && !attr.isEmpty())
 		{
 			System.out.print(indent + "\"" + attr + "\"" + tail);
-		} 
+		}
 		else
 		{
 			System.out.print(indent + "nil" + tail);
@@ -224,17 +224,17 @@ abstract public class Element
 			System.out.print(indent + "nil" + tail);
 		}
 	}
-	
+
 	protected void printSequence(String indent, List<? extends Element> items, String tail)
 	{
 		printSeqSet(indent, items, tail, "[", "]");
 	}
-	
+
 	protected void printSet(String indent, List<? extends Element> items, String tail)
 	{
 		printSeqSet(indent, items, tail, "{", "}");
 	}
-	
+
 	private void printSeqSet(String indent, List<? extends Element> items, String tail, String open, String close)
 	{
 		if (items == null || items.isEmpty())
@@ -245,14 +245,14 @@ abstract public class Element
 		{
 			System.out.println(indent + open);
 			String sep = "";
-			
-			for (Element item: items)
+
+			for (Element item : items)
 			{
 				System.out.print(sep);
 				item.toVDM(indent + "\t");
 				sep = ",\n";
 			}
-			
+
 			System.out.print("\n" + indent + close + tail);
 		}
 	}

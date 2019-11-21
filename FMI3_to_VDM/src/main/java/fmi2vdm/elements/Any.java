@@ -39,28 +39,28 @@ public class Any extends Element
 	public Any(String qName, Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append(qName);
-		
-		for (int i=0; i<attributes.getLength(); i++)
+
+		for (int i = 0; i < attributes.getLength(); i++)
 		{
 			sb.append(",");
 			sb.append(attributes.getQName(i));
 			sb.append("=");
 			sb.append(attributes.getValue(i));
 		}
-		
+
 		text = sb.toString();
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
 		// Fine - we can add anything to an "any".
 		text = text + ";" + element.toString();
 	}
-	
+
 	@Override
 	public String toString()
 	{
@@ -68,8 +68,7 @@ public class Any extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		// Ignore - see Tool.java
 	}

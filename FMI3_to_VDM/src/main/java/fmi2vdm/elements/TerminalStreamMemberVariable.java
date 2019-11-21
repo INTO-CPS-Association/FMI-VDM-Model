@@ -42,7 +42,7 @@ public class TerminalStreamMemberVariable extends Element
 	public TerminalStreamMemberVariable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		inStreamMemberName = stringOf(attributes, "inStreamMemberName");
 		outStreamMemberName = stringOf(attributes, "outStreamMemberName");
 		inStreamVariableName = stringOf(attributes, "inStreamVariableName");
@@ -50,8 +50,7 @@ public class TerminalStreamMemberVariable extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_TerminalStreamMemberVariable");
 		System.out.println(indent + "(");

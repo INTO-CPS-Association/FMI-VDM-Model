@@ -37,7 +37,7 @@ public class RealType extends Type
 	public RealType(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		quantity = stringOf(attributes, "quantity");
 		unit = stringOf(attributes, "unit");
 		displayUnit = stringOf(attributes, "displayUnit");
@@ -47,7 +47,7 @@ public class RealType extends Type
 		nominal = doubleOf(attributes, "nominal");
 		unbounded = boolOf(attributes, "unbounded");
 	}
-	
+
 	private String quantity;
 	private String unit;
 	private String displayUnit;
@@ -58,11 +58,10 @@ public class RealType extends Type
 	private Boolean unbounded;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_RealType(");
-		
+
 		printStringAttribute("", quantity, ", ");
 		printStringAttribute("", unit, ", ");
 		printStringAttribute("", displayUnit, ", ");
@@ -71,7 +70,7 @@ public class RealType extends Type
 		printRawAttribute("", max, ", ");
 		printRawAttribute("", nominal, ", ");
 		printRawAttribute("", unbounded, "");
-		
+
 		System.out.print(")");
 	}
 }

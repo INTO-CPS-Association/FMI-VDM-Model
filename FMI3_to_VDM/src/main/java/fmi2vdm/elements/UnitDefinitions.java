@@ -37,7 +37,7 @@ public class UnitDefinitions extends Element
 	{
 		super(locator);
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -47,7 +47,7 @@ public class UnitDefinitions extends Element
 			{
 				unitDefinitions = new ElementList<Unit>();
 			}
-			
+
 			unitDefinitions.add(element);
 		}
 		else
@@ -55,12 +55,11 @@ public class UnitDefinitions extends Element
 			super.add(element);
 		}
 	}
-	
+
 	private ElementList<Unit> unitDefinitions = null;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		printSequence(indent, unitDefinitions, "");
 	}

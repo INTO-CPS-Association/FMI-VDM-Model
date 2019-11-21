@@ -37,7 +37,7 @@ public class ScalarVariable extends Element
 	public ScalarVariable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		name = stringOf(attributes, "name");
 		valueReference = uintOf(attributes, "valueReference");
 		description = stringOf(attributes, "description");
@@ -46,7 +46,7 @@ public class ScalarVariable extends Element
 		initial = stringOf(attributes, "initial");
 		canHandleMultipleSetPerTimeInstant = boolOf(attributes, "canHandleMultipleSetPerTimeInstant");
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -63,7 +63,7 @@ public class ScalarVariable extends Element
 			super.add(element);
 		}
 	}
-	
+
 	private String name;
 	private Long valueReference;
 	private String description;
@@ -75,8 +75,7 @@ public class ScalarVariable extends Element
 	private VendorAnnotations annotations;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_ScalarVariable");
 		System.out.println(indent + "(");

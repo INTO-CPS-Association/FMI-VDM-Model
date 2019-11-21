@@ -37,7 +37,7 @@ public class RealVariable extends Variable
 	public RealVariable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		declaredType = stringOf(attributes, "declaredType");
 		quantity = stringOf(attributes, "quantity");
 		unit = stringOf(attributes, "unit");
@@ -51,7 +51,7 @@ public class RealVariable extends Variable
 		derivative = uintOf(attributes, "derivative");
 		reinit = boolOf(attributes, "reinit");
 	}
-	
+
 	private String declaredType;
 	private String quantity;
 	private String unit;
@@ -66,11 +66,10 @@ public class RealVariable extends Variable
 	private Boolean reinit;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Real(");
-		
+
 		printStringAttribute("", declaredType, ", ");
 		printStringAttribute("", quantity, ", ");
 		printStringAttribute("", unit, ", ");
@@ -83,7 +82,7 @@ public class RealVariable extends Variable
 		printRawAttribute("", start, ", ");
 		printRawAttribute("", derivative, ", ");
 		printRawAttribute("", reinit, "");
-		
+
 		System.out.print(")");
 	}
 }

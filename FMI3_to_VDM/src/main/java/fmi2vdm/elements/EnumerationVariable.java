@@ -37,14 +37,14 @@ public class EnumerationVariable extends Variable
 	public EnumerationVariable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		declaredType = stringOf(attributes, "declaredType");
 		quantity = stringOf(attributes, "quantity");
 		min = doubleOf(attributes, "min");
 		max = doubleOf(attributes, "max");
 		start = doubleOf(attributes, "start");
 	}
-	
+
 	private String declaredType;
 	private String quantity;
 	private Double min;
@@ -52,17 +52,16 @@ public class EnumerationVariable extends Variable
 	private Double start;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Enumeration(");
-		
+
 		printStringAttribute("", declaredType, ", ");
 		printStringAttribute("", quantity, ", ");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, ", ");
 		printRawAttribute("", start, "");
-		
+
 		System.out.print(")");
 	}
 }

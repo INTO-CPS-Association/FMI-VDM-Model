@@ -38,9 +38,9 @@ public class Unknowns extends Element
 		super(locator);
 		this.kind = kind;
 	}
-	
+
 	public final String kind;
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -50,7 +50,7 @@ public class Unknowns extends Element
 			{
 				unknowns = new ElementList<Unknown>();
 			}
-			
+
 			unknowns.add(element);
 		}
 		else
@@ -58,12 +58,11 @@ public class Unknowns extends Element
 			super.add(element);
 		}
 	}
-	
+
 	private ElementList<Unknown> unknowns = null;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		printSequence(indent + "\t", unknowns, "");
 	}

@@ -31,16 +31,15 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
-
 public class ModelVariables extends Element
 {
 	public ModelVariables(Locator locator)
 	{
 		super(locator);
 	}
-	
+
 	private ElementList<ScalarVariable> modelVariables = null;
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -50,7 +49,7 @@ public class ModelVariables extends Element
 			{
 				modelVariables = new ElementList<ScalarVariable>();
 			}
-			
+
 			modelVariables.add(element);
 		}
 		else
@@ -60,8 +59,7 @@ public class ModelVariables extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		printSequence(indent, modelVariables, "");
 	}

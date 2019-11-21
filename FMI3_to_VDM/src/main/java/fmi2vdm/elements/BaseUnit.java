@@ -37,7 +37,7 @@ public class BaseUnit extends Element
 	public BaseUnit(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		kg = intOf(attributes, "kg");
 		m = intOf(attributes, "m");
 		s = intOf(attributes, "s");
@@ -62,8 +62,7 @@ public class BaseUnit extends Element
 	private Double offset;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_BaseUnit(");
 		printRawAttribute("", kg, ", ");

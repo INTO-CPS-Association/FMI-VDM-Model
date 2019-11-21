@@ -35,17 +35,16 @@ import org.xml.sax.Locator;
 public class IncludeDirectory extends Element
 {
 	private String name;
-	
+
 	public IncludeDirectory(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		name = stringOf(attributes, "name");
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_IncludeDirectory");
 		System.out.println(indent + "(");

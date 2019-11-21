@@ -37,21 +37,20 @@ public class DefaultExperiment extends Element
 	public DefaultExperiment(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		startTime = doubleOf(attributes, "startTime");
 		stopTime = doubleOf(attributes, "stopTime");
 		tolerance = doubleOf(attributes, "tolerance");
 		stepSize = doubleOf(attributes, "stepSize");
 	}
-	
+
 	private Double startTime;
 	private Double stopTime;
 	private Double tolerance;
 	private Double stepSize;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_DefaultExperiment");
 		System.out.println(indent + "(");

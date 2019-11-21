@@ -47,30 +47,29 @@ public class GraphicalRepresentation extends Element
 	{
 		if (element instanceof CoordinateSystem)
 		{
-			coordinateSystem = (CoordinateSystem)element;
+			coordinateSystem = (CoordinateSystem) element;
 		}
 		else if (element instanceof Icon)
 		{
-			icon = (Icon)element;
+			icon = (Icon) element;
 		}
 		else if (element instanceof GraphicalTerminal)
 		{
-			terminal = (GraphicalTerminal)element;
+			terminal = (GraphicalTerminal) element;
 		}
 		else
 		{
 			super.add(element);
 		}
 	}
-	
+
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_GraphicalRepresentation");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		
+
 		if (coordinateSystem != null)
 		{
 			coordinateSystem.toVDM(indent + "\t");
@@ -80,7 +79,7 @@ public class GraphicalRepresentation extends Element
 		{
 			System.out.println(indent + "\tnil,");
 		}
-		
+
 		if (icon != null)
 		{
 			icon.toVDM(indent + "\t");
@@ -90,7 +89,7 @@ public class GraphicalRepresentation extends Element
 		{
 			System.out.println(indent + "\tnil,");
 		}
-		
+
 		if (terminal != null)
 		{
 			terminal.toVDM(indent + "\t");

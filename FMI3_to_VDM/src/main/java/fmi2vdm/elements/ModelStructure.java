@@ -31,14 +31,13 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
-
 public class ModelStructure extends Element
 {
 	public ModelStructure(Locator locator)
 	{
 		super(locator);
 	}
-	
+
 	private Unknowns outputs;
 	private Unknowns derivatives;
 	private Unknowns initialUnknowns;
@@ -50,21 +49,21 @@ public class ModelStructure extends Element
 		if (element instanceof Unknowns)
 		{
 			Unknowns u = (Unknowns) element;
-			
+
 			switch (u.kind)
 			{
-				case "Outputs":			
+				case "Outputs":
 					outputs = (Unknowns) element;
 					break;
-					
+
 				case "Derivatives":
 					derivatives = (Unknowns) element;
 					break;
-					
+
 				case "InitialUnknowns":
 					initialUnknowns = (Unknowns) element;
 					break;
-					
+
 				default:
 					System.err.println("Unknown ModelStructure type: " + u.kind);
 					System.exit(1);
@@ -76,7 +75,7 @@ public class ModelStructure extends Element
 			{
 				numberOfEventindicators = new ElementList<NumberOfEventIndicators>();
 			}
-			
+
 			numberOfEventindicators.add(element);
 		}
 		else
@@ -86,13 +85,12 @@ public class ModelStructure extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_ModelStructure");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		
+
 		if (outputs != null)
 		{
 			System.out.println(indent + "\t-- Outputs");
@@ -103,7 +101,7 @@ public class ModelStructure extends Element
 		{
 			System.out.println(indent + "\tnil,");
 		}
-		
+
 		if (derivatives != null)
 		{
 			System.out.println(indent + "\t-- Derivatives");
@@ -114,7 +112,7 @@ public class ModelStructure extends Element
 		{
 			System.out.println(indent + "\tnil,");
 		}
-		
+
 		if (initialUnknowns != null)
 		{
 			System.out.println(indent + "\t-- InitialUnknowns");
@@ -125,14 +123,14 @@ public class ModelStructure extends Element
 		{
 			System.out.println(indent + "\tnil,");
 		}
-		
+
 		if (numberOfEventindicators != null)
 		{
 			System.out.println(indent + "\t-- NumberOfEventindicators");
 		}
-		
+
 		printSequence(indent + "\t", numberOfEventindicators, "\n");
-		
+
 		System.out.println(indent + ")");
 	}
 }

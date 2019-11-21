@@ -54,14 +54,13 @@ public class SimpleType extends Element
 			super.add(element);
 		}
 	}
-	
+
 	private String name;
 	private String description;
 	private Type type;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_SimpleType");
 		System.out.println(indent + "(");

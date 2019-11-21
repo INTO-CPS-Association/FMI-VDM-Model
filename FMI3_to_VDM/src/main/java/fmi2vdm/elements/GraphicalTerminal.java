@@ -50,11 +50,11 @@ public class GraphicalTerminal extends Element
 	public GraphicalTerminal(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		name = stringOf(attributes, "name");
 		defaultConnectionStrokeSize = doubleOf(attributes, "defaultConnectionStrokes");
 		String[] colours = arrayOf(stringOf(attributes, "defaultConnectionColor"));
-		
+
 		if (colours == null)
 		{
 			defaultConnectionColor = null;
@@ -62,7 +62,7 @@ public class GraphicalTerminal extends Element
 		else
 		{
 			defaultConnectionColor = new int[colours.length];
-			for (int i=0; i<colours.length; i++)
+			for (int i = 0; i < colours.length; i++)
 			{
 				try
 				{
@@ -75,7 +75,7 @@ public class GraphicalTerminal extends Element
 				}
 			}
 		}
-		
+
 		x1 = doubleOf(attributes, "x1");
 		y1 = doubleOf(attributes, "y1");
 		x2 = doubleOf(attributes, "x2");
@@ -83,7 +83,7 @@ public class GraphicalTerminal extends Element
 		iconSource_PNG = stringOf(attributes, "iconSource_PNG");
 		iconSource_SVG = stringOf(attributes, "iconSource_SVG");
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -93,7 +93,7 @@ public class GraphicalTerminal extends Element
 			{
 				vendorAnnotations = new ElementList<Tool>();
 			}
-			
+
 			vendorAnnotations.add(element);
 		}
 		else
@@ -103,14 +103,13 @@ public class GraphicalTerminal extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_GraphicalTerminal");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", name, ",\n");
-		
+
 		if (defaultConnectionColor == null)
 		{
 			System.out.println(indent + "\tnil,");
@@ -119,13 +118,13 @@ public class GraphicalTerminal extends Element
 		{
 			System.out.print(indent + "\t[");
 			String sep = "";
-			
-			for (Integer d: defaultConnectionColor)
+
+			for (Integer d : defaultConnectionColor)
 			{
 				System.out.print(sep + d);
 				sep = ", ";
 			}
-			
+
 			System.out.println("],");
 		}
 

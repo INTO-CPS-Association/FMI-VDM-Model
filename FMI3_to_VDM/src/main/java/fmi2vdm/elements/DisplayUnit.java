@@ -37,7 +37,7 @@ public class DisplayUnit extends Element
 	public DisplayUnit(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		name = stringOf(attributes, "name");
 		factor = doubleOf(attributes, "factor");
 		offset = doubleOf(attributes, "offset");
@@ -48,8 +48,7 @@ public class DisplayUnit extends Element
 	private Double offset;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_DisplayUnit");
 		System.out.println(indent + "(");

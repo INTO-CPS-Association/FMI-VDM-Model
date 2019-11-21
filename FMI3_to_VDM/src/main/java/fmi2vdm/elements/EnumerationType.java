@@ -39,7 +39,7 @@ public class EnumerationType extends Type
 		super(locator);
 		quantity = stringOf(attributes, "quantity");
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -49,7 +49,7 @@ public class EnumerationType extends Type
 			{
 				items = new ElementList<Item>();
 			}
-			
+
 			items.add(element);
 		}
 		else
@@ -57,13 +57,12 @@ public class EnumerationType extends Type
 			super.add(element);
 		}
 	}
-	
+
 	private String quantity;
 	private ElementList<Item> items;
-	
+
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_EnumerationType");
 		System.out.println(indent + "(");

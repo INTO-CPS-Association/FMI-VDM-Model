@@ -40,44 +40,48 @@ import org.xml.sax.SAXException;
 public class FMI3SaxParser
 {
 	private static int errors = 0;
-	
-	public static void main(String[] args) // throws SAXException, IOException, ParserConfigurationException
+
+	public static void main(String[] args) // throws SAXException, IOException,
+											// ParserConfigurationException
 	{
 		if (args.length != 2)
 		{
 			System.err.println("Usage: FMI2SaxParser <xml file> <VDM var name>");
 			System.exit(1);
 		}
-		
+
 		try
 		{
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser saxParser = factory.newSAXParser();
 			FMI3SaxHandler handler = new FMI3SaxHandler(args[0], args[1]);
 			saxParser.parse(args[0], handler);
-			
+
 			handler.getFMIModelDescription().toVDM("\t");
-		} catch (ParserConfigurationException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SAXException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e)
+		}
+		catch (ParserConfigurationException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		catch (SAXException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		if (errors > 0)
 		{
 			System.err.println("XML parse errors found.");
 			System.exit(1);
 		}
 	}
-	
+
 	public static void error(String message, Object... args)
 	{
 		System.err.printf(message + "\n", args);

@@ -48,7 +48,7 @@ public class BuildConfiguration extends Element
 		platform = stringOf(attributes, "platform");
 		description = stringOf(attributes, "description");
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -58,7 +58,7 @@ public class BuildConfiguration extends Element
 			{
 				sourceFileSets = new ElementList<SourceFileSet>();
 			}
-			
+
 			sourceFileSets.add((SourceFileSet) element);
 		}
 		else if (element instanceof Library)
@@ -67,7 +67,7 @@ public class BuildConfiguration extends Element
 			{
 				libraries = new ElementList<Library>();
 			}
-			
+
 			libraries.add((Library) element);
 		}
 		else
@@ -77,8 +77,7 @@ public class BuildConfiguration extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_BuildConfiguration");
 		System.out.println(indent + "(");
@@ -86,7 +85,7 @@ public class BuildConfiguration extends Element
 		printStringAttribute(indent + "\t", modelIdentifier, ",\n");
 		printStringAttribute(indent + "\t", platform, ",\n");
 		printStringAttribute(indent + "\t", description, ",\n");
-		
+
 		if (sourceFileSets != null)
 		{
 			printSequence(indent + "\t", sourceFileSets, ",\n");
@@ -95,7 +94,7 @@ public class BuildConfiguration extends Element
 		{
 			System.out.println(indent + "\tnil,");
 		}
-		
+
 		if (libraries != null)
 		{
 			printSequence(indent + "\t", libraries, "\n");
@@ -104,7 +103,7 @@ public class BuildConfiguration extends Element
 		{
 			System.out.println(indent + "\tnil");
 		}
-		
+
 		System.out.print(indent + ")");
 	}
 }

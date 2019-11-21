@@ -46,8 +46,7 @@ public class Option extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Option");
 		System.out.println(indent + "(");

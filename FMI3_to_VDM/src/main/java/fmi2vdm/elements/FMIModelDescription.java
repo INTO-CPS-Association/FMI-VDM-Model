@@ -39,7 +39,7 @@ public class FMIModelDescription extends Element
 {
 	private final String xmlfile;
 	private final String varname;
-	
+
 	private ModelAttributes modelAttributes;
 	private CoSimulation coSimulation;
 	private ModelExchange modelExchange;
@@ -57,12 +57,12 @@ public class FMIModelDescription extends Element
 	public FMIModelDescription(String xmlfile, String varname, ModelAttributes modelAttributes, Locator locator)
 	{
 		super(locator);
-		
+
 		this.xmlfile = xmlfile;
 		this.varname = varname;
 		this.modelAttributes = modelAttributes;
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -90,7 +90,7 @@ public class FMIModelDescription extends Element
 		}
 		else if (element instanceof BuildConfiguration)
 		{
-			buildConfiguration = (BuildConfiguration)element;
+			buildConfiguration = (BuildConfiguration) element;
 		}
 		else if (element instanceof UnitDefinitions)
 		{
@@ -110,11 +110,11 @@ public class FMIModelDescription extends Element
 		}
 		else if (element instanceof Terminals)
 		{
-			terminals = (Terminals)element;
+			terminals = (Terminals) element;
 		}
 		else if (element instanceof GraphicalRepresentation)
 		{
-			graphicalRepresentation = (GraphicalRepresentation)element;
+			graphicalRepresentation = (GraphicalRepresentation) element;
 		}
 		else if (element instanceof VendorAnnotations)
 		{
@@ -141,13 +141,13 @@ public class FMIModelDescription extends Element
 		System.out.println(" * VDM Model generated from " + xmlfile + " on " + new Date());
 		System.out.println(" */");
 		System.out.println("values");
-		
+
 		System.out.println(indent + varname + " = mk_FMIModelDescription");
 		System.out.println(indent + "(");
-		
+
 		modelAttributes.toVDM(indent + "\t");
 		System.out.println(",\n");
-		
+
 		printOne(indent, modelExchange, "ModelExchange");
 		System.out.println(",\n");
 		printOne(indent, coSimulation, "CoSimulation");
@@ -178,7 +178,7 @@ public class FMIModelDescription extends Element
 	private void printOne(String indent, Element element, String title)
 	{
 		System.out.println(indent + "\t-- " + title);
-		
+
 		if (element != null)
 		{
 			element.toVDM(indent + "\t");

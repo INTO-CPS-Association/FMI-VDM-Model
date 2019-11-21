@@ -49,7 +49,7 @@ public class PreprocessorDefinition extends Element
 		value = stringOf(attributes, "value");
 		description = stringOf(attributes, "description");
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -59,7 +59,7 @@ public class PreprocessorDefinition extends Element
 			{
 				options = new ElementList<Option>();
 			}
-			
+
 			options.add((Option) element);
 		}
 		else
@@ -67,10 +67,9 @@ public class PreprocessorDefinition extends Element
 			super.add(element);
 		}
 	}
-	
+
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_PreprocessorDefinition");
 		System.out.println(indent + "(");
@@ -79,7 +78,7 @@ public class PreprocessorDefinition extends Element
 		printRawAttribute(indent + "\t", optional, ",\n");
 		printStringAttribute(indent + "\t", value, ",\n");
 		printStringAttribute(indent + "\t", description, ",\n");
-		
+
 		if (options != null)
 		{
 			printSequence(indent + "\t", options, "\n");

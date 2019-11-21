@@ -41,9 +41,9 @@ public class NumberOfEventIndicators extends Element
 	public NumberOfEventIndicators(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		String[] deps = arrayOf(stringOf(attributes, "dependencies"));
-		
+
 		if (deps == null)
 		{
 			dependencies = null;
@@ -51,7 +51,7 @@ public class NumberOfEventIndicators extends Element
 		else
 		{
 			dependencies = new int[deps.length];
-			for (int i=0; i<deps.length; i++)
+			for (int i = 0; i < deps.length; i++)
 			{
 				try
 				{
@@ -67,11 +67,10 @@ public class NumberOfEventIndicators extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_NumberOfEventIndicators(");
-		
+
 		if (dependencies == null)
 		{
 			System.out.println("[]");
@@ -80,13 +79,13 @@ public class NumberOfEventIndicators extends Element
 		{
 			System.out.print("[");
 			String sep = "";
-			
-			for (Integer d: dependencies)
+
+			for (Integer d : dependencies)
 			{
 				System.out.print(sep + d);
 				sep = ", ";
 			}
-			
+
 			System.out.println("]");
 		}
 

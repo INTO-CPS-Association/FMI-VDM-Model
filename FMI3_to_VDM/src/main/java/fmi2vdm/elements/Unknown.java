@@ -39,10 +39,10 @@ public class Unknown extends Element
 	public Unknown(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		index = intOf(attributes, "index");
 		String[] deps = arrayOf(stringOf(attributes, "dependencies"));
-		
+
 		if (deps == null)
 		{
 			dependencies = null;
@@ -50,7 +50,8 @@ public class Unknown extends Element
 		else
 		{
 			dependencies = new int[deps.length];
-			for (int i=0; i<deps.length; i++)
+
+			for (int i = 0; i < deps.length; i++)
 			{
 				try
 				{
@@ -72,14 +73,13 @@ public class Unknown extends Element
 	private String[] dependenciesKind;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Unknown");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printRawAttribute(indent + "\t", index, ",\n");
-		
+
 		if (dependencies == null)
 		{
 			System.out.println(indent + "\tnil,");
@@ -88,16 +88,16 @@ public class Unknown extends Element
 		{
 			System.out.print(indent + "\t[");
 			String sep = "";
-			
-			for (Integer d: dependencies)
+
+			for (Integer d : dependencies)
 			{
 				System.out.print(sep + d);
 				sep = ", ";
 			}
-			
+
 			System.out.println("],");
 		}
-		
+
 		if (dependenciesKind == null)
 		{
 			System.out.println(indent + "\tnil");
@@ -106,13 +106,13 @@ public class Unknown extends Element
 		{
 			System.out.print(indent + "\t[");
 			String sep = "";
-			
-			for (String dk: dependenciesKind)
+
+			for (String dk : dependenciesKind)
 			{
 				System.out.print(sep + "<" + dk + ">");
 				sep = ", ";
 			}
-			
+
 			System.out.println("]");
 		}
 

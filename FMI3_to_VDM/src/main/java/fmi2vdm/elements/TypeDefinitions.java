@@ -37,9 +37,9 @@ public class TypeDefinitions extends Element
 	{
 		super(locator);
 	}
-	
+
 	private ElementList<SimpleType> typeDefinitions = null;
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -49,7 +49,7 @@ public class TypeDefinitions extends Element
 			{
 				typeDefinitions = new ElementList<SimpleType>();
 			}
-			
+
 			typeDefinitions.add(element);
 		}
 		else
@@ -59,8 +59,7 @@ public class TypeDefinitions extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		printSet(indent, typeDefinitions, "");
 	}

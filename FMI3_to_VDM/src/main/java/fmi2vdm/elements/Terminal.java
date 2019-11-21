@@ -44,13 +44,13 @@ public class Terminal extends Element
 	public Terminal(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		name = stringOf(attributes, "name");
 		matchingRule = stringOf(attributes, "matchingRule");
 		terminalKind = stringOf(attributes, "terminalKind");
 		description = stringOf(attributes, "description");
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -60,7 +60,7 @@ public class Terminal extends Element
 			{
 				variables = new ElementList<TerminalMemberVariable>();
 			}
-			
+
 			variables.add((TerminalMemberVariable) element);
 		}
 		else if (element instanceof TerminalStreamMemberVariable)
@@ -69,7 +69,7 @@ public class Terminal extends Element
 			{
 				streams = new ElementList<TerminalStreamMemberVariable>();
 			}
-			
+
 			streams.add((TerminalStreamMemberVariable) element);
 		}
 		else
@@ -79,8 +79,7 @@ public class Terminal extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Terminal");
 		System.out.println(indent + "(");
@@ -89,7 +88,7 @@ public class Terminal extends Element
 		printStringAttribute(indent + "\t", matchingRule, ",\n");
 		printStringAttribute(indent + "\t", terminalKind, ",\n");
 		printStringAttribute(indent + "\t", description, ",\n");
-		
+
 		if (variables != null)
 		{
 			printSequence(indent + "\t", variables, ",\n");

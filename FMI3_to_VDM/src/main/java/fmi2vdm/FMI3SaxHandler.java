@@ -93,7 +93,7 @@ public class FMI3SaxHandler extends DefaultHandler
 	private Locator locator = null;
 	private FMIModelDescription fmiModelDescription = null;
 	private Stack<Element> stack = new Stack<Element>();
-	
+
 	public FMI3SaxHandler(String xmlfile, String name)
 	{
 		this.xmlfile = xmlfile;
@@ -119,99 +119,99 @@ public class FMI3SaxHandler extends DefaultHandler
 			case "fmiModelDescription":
 				stack.push(new FMIModelDescription(xmlfile, varname, new ModelAttributes(attributes, locator), locator));
 				break;
-	
+
 			case "ModelExchange":
 				stack.push(new ModelExchange(attributes, locator));
 				break;
-	
+
 			case "CoSimulation":
 				stack.push(new CoSimulation(attributes, locator));
 				break;
-	
+
 			case "SourceFiles":
 				stack.push(new SourceFiles(locator));
 				break;
-				
+
 			case "File":
 				stack.push(new SourceFile(attributes, locator));
 				break;
-				
+
 			case "UnitDefinitions":
 				stack.push(new UnitDefinitions(locator));
 				break;
-				
+
 			case "Unit":
 				stack.push(new Unit(attributes, locator));
 				break;
-			
+
 			case "BaseUnit":
 				stack.push(new BaseUnit(attributes, locator));
 				break;
-				
+
 			case "DisplayUnit":
 				stack.push(new DisplayUnit(attributes, locator));
 				break;
-				
+
 			case "TypeDefinitions":
 				stack.push(new TypeDefinitions(locator));
 				break;
-				
+
 			case "SimpleType":
 				stack.push(new SimpleType(attributes, locator));
 				break;
-				
+
 			case "RealType":
 				stack.push(new RealType(attributes, locator));
 				break;
-			
+
 			case "LogCategories":
 				stack.push(new LogCategories(locator));
 				break;
-				
+
 			case "Category":
 				stack.push(new Category(attributes, locator));
 				break;
-				
+
 			case "ModelVariables":
 				stack.push(new ModelVariables(locator));
 				break;
-			
+
 			case "BuildConfiguration":
 				stack.push(new BuildConfiguration(attributes, locator));
 				break;
-				
+
 			case "SourceFileSet":
 				stack.push(new SourceFileSet(attributes, locator));
 				break;
-				
+
 			case "SourceFile":
 				stack.push(new SourceFile(attributes, locator));
 				break;
-				
+
 			case "PreprocessorDefinition":
 				stack.push(new PreprocessorDefinition(attributes, locator));
 				break;
-				
+
 			case "Option":
 				stack.push(new Option(attributes, locator));
 				break;
-				
+
 			case "IncludeDirectory":
 				stack.push(new IncludeDirectory(attributes, locator));
 				break;
-			
+
 			case "Library":
 				stack.push(new Library(attributes, locator));
 				break;
-				
+
 			case "DefaultExperiment":
 				stack.push(new DefaultExperiment(attributes, locator));
 				break;
-				
+
 			case "Terminals":
 				stack.push(new Terminals(locator));
 				break;
-				
+
 			case "Terminal":
 				if (stack.peek() instanceof GraphicalRepresentation)
 				{
@@ -219,35 +219,35 @@ public class FMI3SaxHandler extends DefaultHandler
 				}
 				else
 				{
-					stack.push(new Terminal(attributes, locator));	// Terminals
+					stack.push(new Terminal(attributes, locator)); // Terminals
 				}
 				break;
-				
+
 			case "TerminalMemberVariable":
 				stack.push(new TerminalMemberVariable(attributes, locator));
 				break;
-				
+
 			case "TerminalStreamMemberVariable":
 				stack.push(new TerminalStreamMemberVariable(attributes, locator));
 				break;
-				
+
 			case "GraphicalRepresentation":
 				stack.push(new GraphicalRepresentation(locator));
 				break;
-				
+
 			case "CoordinateSystem":
 				stack.push(new CoordinateSystem(attributes, locator));
 				break;
-				
+
 			case "Icon":
 				stack.push(new Icon(attributes, locator));
 				break;
-				
+
 			case "VendorAnnotations":
 			case "Annotations":
 				stack.push(new VendorAnnotations(locator));
 				break;
-				
+
 			case "Tool":
 				stack.push(new Tool(attributes, locator));
 				break;
@@ -266,7 +266,7 @@ public class FMI3SaxHandler extends DefaultHandler
 					stack.push(new RealVariable(attributes, locator));
 				}
 				break;
-				
+
 			case "Integer":
 				if (stack.peek() instanceof SimpleType)
 				{
@@ -277,7 +277,7 @@ public class FMI3SaxHandler extends DefaultHandler
 					stack.push(new IntegerVariable(attributes, locator));
 				}
 				break;
-				
+
 			case "Boolean":
 				if (stack.peek() instanceof SimpleType)
 				{
@@ -288,7 +288,7 @@ public class FMI3SaxHandler extends DefaultHandler
 					stack.push(new BooleanVariable(attributes, locator));
 				}
 				break;
-				
+
 			case "String":
 				if (stack.peek() instanceof SimpleType)
 				{
@@ -299,7 +299,7 @@ public class FMI3SaxHandler extends DefaultHandler
 					stack.push(new StringVariable(attributes, locator));
 				}
 				break;
-				
+
 			case "Enumeration":
 				if (stack.peek() instanceof SimpleType)
 				{
@@ -310,31 +310,31 @@ public class FMI3SaxHandler extends DefaultHandler
 					stack.push(new EnumerationVariable(attributes, locator));
 				}
 				break;
-				
+
 			case "Item":
 				stack.push(new Item(attributes, locator));
 				break;
-				
+
 			case "ModelStructure":
 				stack.push(new ModelStructure(locator));
 				break;
-				
+
 			case "Outputs":
 				stack.push(new Unknowns("Outputs", locator));
 				break;
-				
+
 			case "Derivatives":
 				stack.push(new Unknowns("Derivatives", locator));
 				break;
-				
+
 			case "InitialUnknowns":
 				stack.push(new Unknowns("InitialUnknowns", locator));
 				break;
-				
+
 			case "Unknown":
 				stack.push(new Unknown(attributes, locator));
 				break;
-				
+
 			default:
 				if (!withinTool())
 				{
@@ -348,25 +348,25 @@ public class FMI3SaxHandler extends DefaultHandler
 				}
 		}
 	}
-	
+
 	private boolean withinTool()
 	{
-		for (Element e: stack)
+		for (Element e : stack)
 		{
 			if (e instanceof Tool)
 			{
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public void endElement(String uri, String localName, String qName)
 	{
 		Element element = stack.pop();
-		
+
 		if (!stack.isEmpty())
 		{
 			// Add completed element to parent element

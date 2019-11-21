@@ -37,9 +37,9 @@ public class LogCategories extends Element
 	{
 		super(locator);
 	}
-	
+
 	private ElementList<Category> logCategories = null;
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -49,7 +49,7 @@ public class LogCategories extends Element
 			{
 				logCategories = new ElementList<Category>();
 			}
-			
+
 			logCategories.add(element);
 		}
 		else
@@ -59,8 +59,7 @@ public class LogCategories extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		printSequence(indent, logCategories, "");
 	}

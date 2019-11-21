@@ -40,7 +40,7 @@ public class Unit extends Element
 		lineNumber = locator.getLineNumber();
 		name = stringOf(attributes, "name");
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -54,7 +54,7 @@ public class Unit extends Element
 			{
 				displayUnits = new ElementList<DisplayUnit>();
 			}
-			
+
 			displayUnits.add(element);
 		}
 		else
@@ -66,10 +66,9 @@ public class Unit extends Element
 	private String name;
 	private BaseUnit baseUnit = null;
 	private ElementList<DisplayUnit> displayUnits = null;
-	
+
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Unit");
 		System.out.println(indent + "(");

@@ -49,7 +49,7 @@ public class SourceFileSet extends Element
 		compiler = stringOf(attributes, "compiler");
 		compilerOptions = stringOf(attributes, "compilerOptions");
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -59,7 +59,7 @@ public class SourceFileSet extends Element
 			{
 				sourceFiles = new ElementList<SourceFile>();
 			}
-			
+
 			sourceFiles.add((SourceFile) element);
 		}
 		else if (element instanceof PreprocessorDefinition)
@@ -68,7 +68,7 @@ public class SourceFileSet extends Element
 			{
 				preprocessorDefinitions = new ElementList<PreprocessorDefinition>();
 			}
-			
+
 			preprocessorDefinitions.add((PreprocessorDefinition) element);
 		}
 		else if (element instanceof IncludeDirectory)
@@ -77,7 +77,7 @@ public class SourceFileSet extends Element
 			{
 				includeDirectories = new ElementList<IncludeDirectory>();
 			}
-			
+
 			includeDirectories.add((IncludeDirectory) element);
 		}
 		else
@@ -87,8 +87,7 @@ public class SourceFileSet extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_SourceFileSet");
 		System.out.println(indent + "(");
@@ -96,7 +95,7 @@ public class SourceFileSet extends Element
 		printStringAttribute(indent + "\t", language, ",\n");
 		printStringAttribute(indent + "\t", compiler, ",\n");
 		printStringAttribute(indent + "\t", compilerOptions, ",\n");
-		
+
 		if (sourceFiles != null)
 		{
 			printSequence(indent + "\t", sourceFiles, ",\n");
@@ -105,7 +104,7 @@ public class SourceFileSet extends Element
 		{
 			System.out.println(indent + "\tnil,");
 		}
-		
+
 		if (preprocessorDefinitions != null)
 		{
 			printSequence(indent + "\t", preprocessorDefinitions, ",\n");
@@ -114,7 +113,7 @@ public class SourceFileSet extends Element
 		{
 			System.out.println(indent + "\tnil,");
 		}
-		
+
 		if (includeDirectories != null)
 		{
 			printSequence(indent + "\t", includeDirectories, "\n");
@@ -123,7 +122,7 @@ public class SourceFileSet extends Element
 		{
 			System.out.println(indent + "\tnil");
 		}
-		
+
 		System.out.print(indent + ")");
 	}
 }

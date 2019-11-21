@@ -41,10 +41,9 @@ public class SourceFile extends Element
 	}
 
 	private String name;
-	
+
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_SourceFile");
 		System.out.println(indent + "(");

@@ -43,7 +43,7 @@ public class CoordinateSystem extends Element
 	public CoordinateSystem(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		x1 = doubleOf(attributes, "x1");
 		y1 = doubleOf(attributes, "y1");
 		x2 = doubleOf(attributes, "x2");
@@ -52,8 +52,7 @@ public class CoordinateSystem extends Element
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_CoordinateSystem");
 		System.out.println(indent + "(");

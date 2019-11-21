@@ -37,26 +37,25 @@ public class IntegerType extends Type
 	public IntegerType(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		quantity = stringOf(attributes, "quantity");
 		min = intOf(attributes, "min");
 		max = intOf(attributes, "max");
 	}
-	
+
 	private String quantity;
 	private Integer min;
 	private Integer max;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_IntegerType(");
-		
+
 		printStringAttribute("", quantity, ", ");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, "");
-		
+
 		System.out.print(")");
 	}
 }

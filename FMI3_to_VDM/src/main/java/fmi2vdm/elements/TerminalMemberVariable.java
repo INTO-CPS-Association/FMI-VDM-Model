@@ -41,15 +41,14 @@ public class TerminalMemberVariable extends Element
 	public TerminalMemberVariable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
+
 		variableKind = stringOf(attributes, "variableKind");
 		memberName = stringOf(attributes, "memberName");
 		variableName = stringOf(attributes, "variableName");
 	}
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_TerminalMemberVariable");
 		System.out.println(indent + "(");

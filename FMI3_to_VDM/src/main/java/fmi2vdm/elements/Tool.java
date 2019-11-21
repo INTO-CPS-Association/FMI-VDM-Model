@@ -39,7 +39,7 @@ public class Tool extends Element
 		super(locator);
 		name = stringOf(attributes, "name");
 	}
-	
+
 	@Override
 	public void add(Element element)
 	{
@@ -59,19 +59,18 @@ public class Tool extends Element
 			super.add(element);
 		}
 	}
-	
+
 	private String name;
 	private String annotation;
 
 	@Override
-	public
-	void toVDM(String indent)
+	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Tool");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", name, ",\n");
-		
+
 		if (annotation == null)
 		{
 			System.out.println(indent + "\tnil");
@@ -80,7 +79,7 @@ public class Tool extends Element
 		{
 			System.out.println(indent + "\tmk_token(\"" + annotation + "\")");
 		}
-		
+
 		System.out.print(indent + ")");
 	}
 }
