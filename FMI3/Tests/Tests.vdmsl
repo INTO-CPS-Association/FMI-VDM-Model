@@ -192,9 +192,29 @@ values
 
 		-- TypeDefinitions
 		{
-			mk_SimpleType(0, "Real-1-10",       nil, mk_RealType(nil, nil, nil, nil, 1, 10, nil, nil)),
-			mk_SimpleType(0, "Real-Positive",	nil, mk_RealType(nil, nil, nil, nil, 0, nil, nil, nil)),
-			mk_SimpleType(0, "Real-Undefined",	nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil))
+			mk_RealType
+			(
+				mk_fmi3TypeDefinitionBase("Real-1-10", nil),
+				<Float64>,
+				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
+				mk_fmi3FloatXXAttributes(1, 10, nil)
+			),
+
+			mk_RealType
+			(
+				mk_fmi3TypeDefinitionBase("Real-Positive", nil),
+				<Float64>,
+				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
+				mk_fmi3FloatXXAttributes(0, nil, nil)
+			),
+
+			mk_RealType
+			(
+				mk_fmi3TypeDefinitionBase("Real-Undefined", nil),
+				<Float64>,
+				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
+				mk_fmi3FloatXXAttributes(nil, nil, nil)
+			)
 		},
 
 		-- Log categories

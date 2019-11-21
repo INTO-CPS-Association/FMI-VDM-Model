@@ -50,68 +50,70 @@ types
 	-- XSD p45, description p46
 	Initial		= <exact> | <approx> | <calculated>;
 
+
+	-- Common variable attributes
 	fmi3RealVariableAttributes ::
-		derivative			: nat
-		reinit				: bool;
-
-
-
-
-
-	Real ::		-- XSD p52
-		declaredType		: [NormalizedString1]
-		quantity			: [NormalizedString1]
-		unit				: [NormalizedString1]
-		displayUnit			: [NormalizedString1]
-		relativeQuantity	: [bool]
-		min					: [real]
-		max					: [real]	
-		nominal				: [real]
-		unbounded			: [bool]
-		start				: [real]
-		derivative			: [nat1]
+		derivative			: [nat]
 		reinit				: [bool];
 
-	Integer ::	-- XSD p52
-		declaredType		: [NormalizedString1]
-		quantity			: [NormalizedString1]
-		min					: [int]
-		max					: [int]
-		start				: [int];
+	Dimension ::
+		start				: nat		-- ???
+		valueReference		: nat;
 
-	Boolean ::				-- XSD p53
-		declaredType		: [NormalizedString1]
-		start				: [bool];
-
-	String ::				-- XSD p53
-		declaredType		: [NormalizedString1]
-		start				: [AnyString];
-
-	Enumeration ::			-- XSD p53
-		declaredType		: NormalizedString1	 -- Note, not optional
-		quantity			: [NormalizedString1]
-		min					: [int]
-		max					: [int]
-		start				: [int];
-
-	Variable = Real | Integer | Boolean | String | Enumeration;
-
-	VarName = NormalizedString1;		-- Has a syntax defined in section 2.2.9, p64
-
-	ScalarVariable ::	-- XSD 2.2.10, p44, p54
-		location							: Location
-		-- attributes
-		name								: VarName
+	fmi3VariableBase ::
+		dimension							: [seq1 of Dimension]
+		annotations							: [seq1 of fmi3Annotation]
+		name								: NormalizedString1
 		valueReference						: nat
 		description							: [AnyString]
 		causality							: [Causality]
 		variability							: [Variability]
 		initial								: [Initial]
 		canHandleMultipleSetPerTimeInstant	: [bool]
+		declaredType						: [NormalizedString1]
+		clockReference						: [nat]
+		intermediateAccess					: [bool];
 
-		-- elements
-		variable		: Variable
-		annotations		: [seq1 of Tool];
+	Real ::
+		base				: fmi3VariableBase
+		varAttrs			: fmi3RealVariableAttributes
+		floatAttrs			: fmi3FloatXXAttributes
+		start				: [real];
+
+	Integer ::
+		base				: fmi3VariableBase
+		intAttrs			: fmi3IntXXAttributes
+		start				: [int];
+
+	Boolean ::
+		base				: fmi3VariableBase
+		start				: [bool];
+
+	String ::
+		base				: fmi3VariableBase
+		start				: [AnyString];
+
+	Binary ::
+		base				: fmi3VariableBase
+		mimeType			: [NormalizedString1]
+		maxSize				: [nat]
+		start				: [AnyString];	-- HexBinary
+
+	Enumeration ::
+		base				: fmi3VariableBase
+		quantity			: [NormalizedString1]
+		min					: [int]
+		max					: [int]
+		start				: [seq of int];
+
+	Clock ::
+		base				: fmi3VariableBase
+		start				: [bool];
+
+	Variable = Real | Integer | Boolean | String | Binary | Enumeration | Clock;
+
+	VarName = NormalizedString1;	-- Has a syntax defined in section 2.2.12
+
 
 functions
 	/**
@@ -139,17 +141,17 @@ functions
 	/**
 	 * Verify a sequence of raw ScalarVariables.
 	 */
-	isValidScalarVariables: seq1 of ScalarVariable +> bool
+	isValidScalarVariables: seq1 of Variable +> bool
 	isValidScalarVariables(svs) ==
 		{
 			/* @OnFail("2.2.10 ScalarVariables define more than one independent variable: %s",
 				{ sv.name | sv in seq svs & sv.causality = <independent> }) */
-			( card { sv | sv in seq svs & sv.causality = <independent> } <= 1 ),
+			( card { sv | sv in seq svs & sv.base.causality = <independent> } <= 1 ),
 
 			/* @OnFail("2.2.10 ScalarVariable names are not unique: %s",
 				{ svs(a).name | a, b in set inds svs &
 					a <> b and svs(a).name = svs(b).name } ) */
-			( card { sv.name | sv in seq svs } = len svs )
+			( card { sv.base.name | sv in seq svs } = len svs )
 		}
 		union
 		{
@@ -162,11 +164,11 @@ functions
 	/**
 	 * Raw ScalarVariable invariant. Rules defined in the table on p49.
 	 */
-	isValidScalarVariable: ScalarVariable +> bool
+	isValidScalarVariable: Variable +> bool
 	isValidScalarVariable(sv) ==
-		let eCausality   = effectiveCausality(sv.causality),
-			eVariability = effectiveVariability(sv.variability),
-			eInitial     = effectiveInitial(sv.initial, eCausality, eVariability)
+		let eCausality   = effectiveCausality(sv.base.causality),
+			eVariability = effectiveVariability(sv.base.variability),
+			eInitial     = effectiveInitial(sv.base.initial, eCausality, eVariability)
 		in
 		{
 			-- Table on p46 defining causality, and p48/49 defining combinations
@@ -185,14 +187,14 @@ functions
 					<input> ->
 						eVariability in set {<discrete>, <continuous>}
 						and eInitial = nil
-						and sv.variable.start <> nil,		-- (D)
+						and sv.start <> nil,		-- (D)
 
 					<independent> ->
 						eVariability = <continuous>
 						and eInitial = nil		-- (D)
-						and sv.variable.start = nil
+						and sv.start = nil
 						-- @OnFail("2.2.10 Independent variable must be Real at line %s", sv.location)
-						and (is_Real(sv.variable)),
+						and (is_Real(sv)),
 
 					<output> ->
 						cases eVariability:
@@ -239,7 +241,7 @@ functions
 					<continuous> ->
 						eCausality in set {<input>, <output>, <local>, <independent>}
 						-- @OnFail("2.2.10 Continuous variable must be Real at line %s", sv.location)
-						and (is_Real(sv.variable))
+						and (is_Real(sv))
 				end
 			),
 
@@ -247,7 +249,7 @@ functions
 			/* @OnFail("2.2.10 Variable %s initial/causality %s/%s invalid at %s",
 				sv.name, sv.initial, eCausality, sv.location) */
 			(
-				sv.initial <> nil =>
+				sv.base.initial <> nil =>
 					(eCausality not in set {<input>, <independent>})
 			),
 
@@ -257,14 +259,14 @@ functions
 			(
 				cases eInitial:
 					<exact> ->
-						sv.variable.start <> nil,
+						sv.start <> nil,
 
 					<approx> ->
-						sv.variable.start <> nil
+						sv.start <> nil
 						and eVariability <> <constant>,
 
 					<calculated> ->
-						sv.variable.start = nil
+						sv.start = nil
 						and eVariability <> <constant>,
 
 					nil ->		-- Note that eInitial can be nil (undefined in table on p48)
@@ -273,7 +275,7 @@ functions
 			),
 
 			-- @OnFail("2.2.10 VendorAnnotations invalid")
-			( isValidVendorAnnotations(sv.annotations) )
+			( isValidVendorAnnotations(sv.base.annotations) )
 		} = {true};
 
 
@@ -281,24 +283,26 @@ functions
 	 * Vaidity checks that depend on inherited values from any declaredType - ie. passed
 	 * effective ScalarVariables.
 	 */
-	isValidEffectiveVariables: seq1 of ScalarVariable +> bool
+	isValidEffectiveVariables: seq1 of Variable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail("2.2.10 Variable %s min/max/start/nominal invalid at line %s", sv.name, sv.location)
+		-- @OnFail("2.2.10 Variable %s min/max/start/nominal invalid at line %s", sv.base.name, sv.location)
 		(
-			cases sv.variable:
-				mk_Real(-, -, -, -, -, min, max, nominal, -, start, -, -) ->
+			cases sv:
+				mk_Real(-,
+					mk_fmi3RealVariableAttributes(-, -),
+					mk_fmi3FloatXXAttributes(min, max, nominal), start) ->
 					isInRange[real](min, max, start)
 					-- @OnFail("2.2.10 Real nominal must be >0.0 at line %s", sv.location)
 					and (nominal <> nil => nominal > 0.0),
 
-				mk_Integer(-, -, min, max, start) ->
+				mk_Integer(-, mk_fmi3IntXXAttributes(min, max), start) ->
 					isInRange[real](min, max, start),
 
 				mk_Enumeration(-, -, min, max, start) ->
 					isInRange[real](min, max, start),
 
-				others -> true		-- String, Boolean
+				others -> true		-- String, Boolean, Binary, Clock
 			end
 		)
 
@@ -423,7 +427,7 @@ functions
 	 * Generate all of the effective ScalarVariables. Note that an effective "time"
 	 * variable is created if there are no independent variables defined.
 	 */
-	effectiveScalarVariables: FMIModelDescription +> seq1 of ScalarVariable
+	effectiveScalarVariables: FMIModelDescription +> seq1 of Variable
 	effectiveScalarVariables(model) ==
 		let evs =
 		[
@@ -431,24 +435,30 @@ functions
 			| sv in seq model.modelVariables
 		]
 		in
-			if not exists esv in seq evs & esv.causality = <independent>
+			if not exists esv in seq evs & esv.base.causality = <independent>
 			then evs ^
 				[
 					-- If no variable is defined as "independent", it is implicitly
-					-- present with name = "time" and unit = "s" (2.2.10, p47)
+					-- present with name = "time" and unit = "s"
 
-					mk_ScalarVariable
+					mk_Real
 					(
-						0,
-						"time",
-						let allvrs = { sv.valueReference | sv in seq evs } in
-							let vr in set {1, ..., len evs + 1} be st vr not in set allvrs in vr,
-						"Implicit independent time variable",
-						<independent>,
-						<continuous>,
-						nil,
-						nil,
-						mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil),	-- Unit "s"?
+						mk_fmi3VariableBase(
+							nil,
+							nil,
+							"time",
+							let allvrs = { sv.base.valueReference | sv in seq evs } in
+								let vr in set {1, ..., len evs + 1} be st vr not in set allvrs in vr,
+							"Implicit independent time variable",
+							<independent>,
+							<continuous>,
+							nil,
+							nil,
+							nil,
+							nil,
+							nil),
+						mk_fmi3RealVariableAttributes(nil, nil),
+						mk_fmi3FloatXXAttributes(0, nil, nil),
 						nil
 					)
 				]
@@ -458,10 +468,10 @@ functions
 	 * Generate the effective value of a ScalarVariable, accounting for fields inherited from
 	 * any declaredType and defaulted values of causality, variability and initial.
 	 */
-	effectiveScalarVariable: ScalarVariable * [set1 of SimpleType] +> ScalarVariable
+	effectiveScalarVariable: Variable * [set1 of VariableType] +> Variable
 	effectiveScalarVariable(sv, typedefs) ==
-		let causality   = effectiveCausality(sv.causality),
-			variability = effectiveVariability(sv.variability)
+		let causality   = effectiveCausality(sv.base.causality),
+			variability = effectiveVariability(sv.base.variability)
 		in 
 			mk_ScalarVariable
 			(
@@ -481,29 +491,39 @@ functions
 	 * Generate the effective value of a Variable, accounting for fields inherited from
 	 * its declaredType.
 	 */
-	effectiveVariable: Variable * [set1 of SimpleType] +> Variable
+	effectiveVariable: Variable * [set1 of VariableType] +> Variable
 	effectiveVariable(v, typedefs) ==
-		if v.declaredType = nil or typedefs = nil
+		if v.base.declaredType = nil or typedefs = nil
 		then v
-		else let dtypes = { td | td in set typedefs & td.name = v.declaredType } in
+		else let dtypes = { td | td in set typedefs & td.base.name = v.base.declaredType } in
 			cases dtypes:
 				{ dt } ->
-					cases dt.type:
-						mk_RealType(dquantity, dunit, ddisplayUnit, drelq, dmin, dmax, dnominal, dunbounded) ->
+					cases dt:
+						mk_RealType(-, -,
+							mk_fmi3RealAttributes(dquantity, dunit, ddisplayUnit, drelq, dunbounded),
+							mk_fmi3FloatXXAttributes(dmin, dmax, dnominal)) ->
 							if is_Real(v) then
 								mu(v,
-									quantity			|-> if v.quantity <> nil then v.quantity else dquantity,
-									unit				|-> if v.unit <> nil then v.unit else dunit,
-									displayUnit			|-> if v.displayUnit <> nil then v.displayUnit else ddisplayUnit,
-									relativeQuantity	|-> if v.relativeQuantity <> nil then v.relativeQuantity else drelq,
-									min					|-> if v.min <> nil then v.min else dmin,
-									max					|-> if v.max <> nil then v.max else dmax,
-									nominal				|-> if v.nominal <> nil then v.nominal else dnominal,
-									unbounded			|-> if v.unbounded <> nil then v.unbounded else dunbounded)
+									base |-> mu(v.base,
+										quantity			|-> if v.quantity <> nil then v.quantity else dquantity,
+										unit				|-> if v.unit <> nil then v.unit else dunit,
+										displayUnit			|-> if v.displayUnit <> nil then v.displayUnit else ddisplayUnit,
+										relativeQuantity	|-> if v.relativeQuantity <> nil then v.relativeQuantity else drelq,
+										unbounded			|-> if v.unbounded <> nil then v.unbounded else dunbounded
+									),
+
+									floatAttrs |-> mu(v.floatAttrs,
+										min					|-> if v.min <> nil then v.min else dmin,
+										max					|-> if v.max <> nil then v.max else dmax,
+										nominal				|-> if v.nominal <> nil then v.nominal else dnominal
+									)
+								)
 							else
 								v,	-- Error reported elsewhere
 
-						mk_IntegerType(dquantity, dmin, dmax) ->
+						mk_IntegerType(-, -,
+							mk_fmi3IntegerAttributes(dquantity),
+							mk_fmi3IntXXAttributes(dmin, dmax)) ->
 							if is_Integer(v) then
 								mu(v,
 									quantity			|-> if v.quantity <> nil then v.quantity else dquantity,
@@ -512,14 +532,14 @@ functions
 							else
 								v,	-- Error reported elsewhere
 
-						mk_EnumerationType(dquantity, -) ->
+						mk_EnumerationType(-, dquantity, -) ->
 							if is_Enumeration(v) then
 								mu(v,
 									quantity			|-> if v.quantity <> nil then v.quantity else dquantity)
 							else
 								v,	-- Error reported elsewhere
 
-						others -> v		-- Boolean and String unchanged
+						others -> v		-- Boolean, String, Binary and Clock unchanged
 					end,
 
 				others -> v		-- Duplicate typedefs caught elsewhere
@@ -528,13 +548,13 @@ functions
 	/**
 	 * Test whether a ScalarVariable is settable with fmi2SetXXX. See sections 3.2.3 and 4.2.4.
 	 */
-	isSettable: ScalarVariable +> bool
+	isSettable: Variable +> bool
 	isSettable(sv) ==
-		sv.variability <> <constant> and sv.initial in set { <exact>, <approx> }
+		sv.base.variability <> <constant> and sv.base.initial in set { <exact>, <approx> }
 		or
-		sv.causality = <input>
+		sv.base.causality = <input>
 		or
-		sv.causality = <parameter> and sv.variability = <tunable>;
+		sv.base.causality = <parameter> and sv.base.variability = <tunable>;
 
 	/**
 	 * Test whether two Variables are the same basic type.
@@ -552,57 +572,57 @@ functions
 		else if is_Integer(v) then "Integer"
 		else if is_Boolean(v) then "Boolean"
 		else if is_String(v) then "String"
-		else if is_Enumeration(v) then "Enumeration_" ^ v.declaredType
+		else if is_Enumeration(v) then "Enumeration_" ^ v.base.declaredType
 		else "?";
 
 	/**
 	 * Return the ScalarVariables from a list which are continuous-time states, defined to be
 	 * Real variables which are continuous and have a derivative.
 	 */
-	continuousTimeStates: seq of ScalarVariable -> set of ScalarVariable
+	continuousTimeStates: seq of Variable -> set of Variable
 	continuousTimeStates(svs) ==
 		{ svs(i) | i in set inds svs & isContinuousTimeState(i, svs) };
 
 	/**
 	 * Test ith index variable as a continuous time state.
 	 */
-	isContinuousTimeState: nat1 * seq of ScalarVariable +> bool
+	isContinuousTimeState: nat1 * seq of Variable +> bool
 	isContinuousTimeState(i, svs) ==
-		is_Real(svs(i).variable)
-		and svs(i).variability = <continuous> 
+		is_Real(svs(i))
+		and svs(i).base.variability = <continuous> 
 		and exists j in seq svs &
-			is_Real(j.variable) and j.variable.derivative = i;
+			is_Real(j) and j.varAttrs.derivative = i;
 
 	/**
 	 * Return the ScalarVariables from a list which are state derivatives, defined to be
 	 * variables which are the derivative of some other variable.
 	 */
-	stateDerivatives: seq of ScalarVariable -> set of ScalarVariable
+	stateDerivatives: seq of Variable -> set of Variable
 	stateDerivatives(svs) ==
 		{ sv | sv in seq svs & isStateDerivative(sv) };
 
 	/**
 	 * Test ScalarVariable as a state derivative.
 	 */
-	isStateDerivative: ScalarVariable +> bool
+	isStateDerivative: Variable +> bool
 	isStateDerivative(sv) ==
-		is_Real(sv.variable) and sv.variable.derivative <> nil;
+		is_Real(sv) and sv.varAttrs.derivative <> nil;
 
 	/**
 	 * Get derivative order of a variable.
 	 */
-	getDerivativeBase: nat1 * seq of ScalarVariable +> nat * nat1
+	getDerivativeBase: nat1 * seq of Variable +> nat * nat1
 	getDerivativeBase(vr, svs) ==
-		if not is_Real(svs(vr).variable) or svs(vr).variable.derivative = nil
+		if not is_Real(svs(vr)) or svs(vr).varAttrs.derivative = nil
 		then mk_(0, vr)
-		else let mk_(o, r) = getDerivativeBase(svs(vr).variable.derivative, svs) in
+		else let mk_(o, r) = getDerivativeBase(svs(vr).varAttrs.derivative, svs) in
 			mk_(o+1, r)
 	measure is not yet specified;
 
 	/**
 	 * Get the alias refmap, from valueReference/type pairs to sets of SVs
 	 */
-	getAliasRefMap: seq1 of ScalarVariable -> map nat * seq of char to set of ScalarVariable
+	getAliasRefMap: seq1 of Variable -> map nat * seq of char to set of Variable
 	getAliasRefMap(svs) ==
 		let tags = { svi |-> aliasTag(svs(svi)) | svi in set inds svs } in
 		{
@@ -614,6 +634,6 @@ functions
 	 * Generate an alias "tag" for a ScalarVariable, made of the valueReference and
 	 * the type of the variable. All aliases of a variable have the same tag.
 	 */
-	aliasTag: ScalarVariable +> nat * seq1 of char
+	aliasTag: Variable +> nat * seq1 of char
 	aliasTag(sv) ==
-		mk_(sv.valueReference, typeName(sv.variable));
+		mk_(sv.base.valueReference, typeName(sv));

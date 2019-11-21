@@ -36,6 +36,8 @@ types
 		name		: NormalizedString1
 		annotation	: [token];
 
+	fmi3Annotation = seq of Tool;
+
 functions
 	isValidVendorAnnotations: [seq1 of Tool] +> bool
 	isValidVendorAnnotations(tools) ==
