@@ -38,16 +38,16 @@ public class ModelVariables extends Element
 		super(locator);
 	}
 
-	private ElementList<ScalarVariable> modelVariables = null;
+	private ElementList<Variable> modelVariables = null;
 
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof ScalarVariable)
+		if (element instanceof Variable)
 		{
 			if (modelVariables == null)
 			{
-				modelVariables = new ElementList<ScalarVariable>();
+				modelVariables = new ElementList<Variable>();
 			}
 
 			modelVariables.add(element);

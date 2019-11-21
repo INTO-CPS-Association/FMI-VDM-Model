@@ -34,28 +34,36 @@ import org.xml.sax.Locator;
 
 public class IntegerType extends Type
 {
-	public IntegerType(Attributes attributes, Locator locator)
+	private String kind;
+	
+	private String quantity;
+	private Integer min;
+	private Integer max;
+
+	public IntegerType(String kind, Attributes attributes, Locator locator)
 	{
-		super(locator);
+		super(attributes, locator);
+		this.kind = kind;
 
 		quantity = stringOf(attributes, "quantity");
 		min = intOf(attributes, "min");
 		max = intOf(attributes, "max");
 	}
 
-	private String quantity;
-	private Integer min;
-	private Integer max;
-
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_IntegerType(");
-
+		System.out.println(indent + "mk_IntegerType");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");		// base
+		printQuoteAttribute(",\n" + indent + "\t", kind, ",\n");
+		
+		System.out.print(indent + "\tmk_fmi3IntXXAttributes(");
 		printStringAttribute("", quantity, ", ");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, "");
+		System.out.println(")");
 
-		System.out.print(")");
+		System.out.print(indent + ")");
 	}
 }

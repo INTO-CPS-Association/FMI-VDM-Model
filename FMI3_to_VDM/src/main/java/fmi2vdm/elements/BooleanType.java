@@ -36,12 +36,14 @@ public class BooleanType extends Type
 {
 	public BooleanType(Attributes attributes, Locator locator)
 	{
-		super(locator);
+		super(attributes, locator);
 	}
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_BooleanType()");
+		System.out.print(indent + "mk_BooleanType(");
+		super.toVDM("");
+		System.out.print(")");
 	}
 }

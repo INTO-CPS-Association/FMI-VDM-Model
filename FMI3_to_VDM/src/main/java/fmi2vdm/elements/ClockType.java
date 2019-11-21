@@ -32,18 +32,42 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class StringType extends Type
+public class ClockType extends Type
 {
-	public StringType(Attributes attributes, Locator locator)
+	private String clockType;
+	private Integer priority;
+	private Boolean periodic;
+	private Boolean strict;
+	private Integer intervalCounter;
+	private Integer shiftCounter;
+	private Integer resolution;
+
+	public ClockType(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
+		
+		clockType = stringOf(attributes, "clockType");
+		priority = intOf(attributes, "priority");
+		periodic = boolOf(attributes, "periodic");
+		strict = boolOf(attributes, "strict");
+		intervalCounter = intOf(attributes, "intervalCounter");
+		shiftCounter = intOf(attributes, "shiftCounter");
+		resolution = intOf(attributes, "resolution");
 	}
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_StringType(");
-		super.toVDM("");
-		System.out.print(")");
+		System.out.println(indent + "mk_ClockType");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");		// base
+		printQuoteAttribute(",\n" + indent + "\t", clockType, ",\n");
+		printRawAttribute(indent + "\t", priority, ",\n");
+		printRawAttribute(indent + "\t", periodic, ",\n");
+		printRawAttribute(indent + "\t", strict, ",\n");
+		printRawAttribute(indent + "\t", intervalCounter, ",\n");
+		printRawAttribute(indent + "\t", shiftCounter, ",\n");
+		printRawAttribute(indent + "\t", resolution, "\n");
+		System.out.print(indent + ")");
 	}
 }

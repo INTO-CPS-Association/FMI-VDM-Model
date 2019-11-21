@@ -29,12 +29,27 @@
 
 package fmi2vdm.elements;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 abstract public class Type extends Element
 {
-	protected Type(Locator locator)
+	protected String name;
+	protected String description;
+
+	protected Type(Attributes attributes, Locator locator)
 	{
 		super(locator);
+
+		name = stringOf(attributes, "name");
+		description = stringOf(attributes, "description");
+	}
+
+	@Override
+	public void toVDM(String indent)
+	{
+		System.out.print(indent + "mk_fmi3TypeDefinitionBase(");
+		printStringAttribute("", name, ", ");
+		printStringAttribute("", description, ")");
 	}
 }

@@ -34,43 +34,56 @@ import org.xml.sax.Locator;
 
 public class RealType extends Type
 {
-	public RealType(Attributes attributes, Locator locator)
-	{
-		super(locator);
-
-		quantity = stringOf(attributes, "quantity");
-		unit = stringOf(attributes, "unit");
-		displayUnit = stringOf(attributes, "displayUnit");
-		relativeQuantity = boolOf(attributes, "relativeQuantity");
-		min = doubleOf(attributes, "min");
-		max = doubleOf(attributes, "max");
-		nominal = doubleOf(attributes, "nominal");
-		unbounded = boolOf(attributes, "unbounded");
-	}
+	private String kind;
 
 	private String quantity;
 	private String unit;
 	private String displayUnit;
 	private Boolean relativeQuantity;
+	private Boolean unbounded;
+
 	private Double min;
 	private Double max;
 	private Double nominal;
-	private Boolean unbounded;
+
+	public RealType(String kind, Attributes attributes, Locator locator)
+	{
+		super(attributes, locator);
+		this.kind = kind;
+
+		quantity = stringOf(attributes, "quantity");
+		unit = stringOf(attributes, "unit");
+		displayUnit = stringOf(attributes, "displayUnit");
+		relativeQuantity = boolOf(attributes, "relativeQuantity");
+		unbounded = boolOf(attributes, "unbounded");
+
+		min = doubleOf(attributes, "min");
+		max = doubleOf(attributes, "max");
+		nominal = doubleOf(attributes, "nominal");
+	}
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_RealType(");
-
+		System.out.println(indent + "mk_RealType");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");		// base
+		printQuoteAttribute(",\n" + indent + "\t", kind, ",\n");
+		
+		System.out.print(indent + "\tmk_fmi3RealAttributes(");
 		printStringAttribute("", quantity, ", ");
 		printStringAttribute("", unit, ", ");
 		printStringAttribute("", displayUnit, ", ");
 		printRawAttribute("", relativeQuantity, ", ");
+		printRawAttribute("", unbounded, "");
+		System.out.print("),\n");
+
+		System.out.print(indent + "\tmk_fmi3FloatXXAttributes(");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, ", ");
-		printRawAttribute("", nominal, ", ");
-		printRawAttribute("", unbounded, "");
+		printRawAttribute("", nominal, "");
+		System.out.println(")");
 
-		System.out.print(")");
+		System.out.print(indent + ")");
 	}
 }

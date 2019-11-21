@@ -37,10 +37,14 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import fmi2vdm.elements.Any;
 import fmi2vdm.elements.BaseUnit;
+import fmi2vdm.elements.BinaryType;
+import fmi2vdm.elements.BinaryVariable;
 import fmi2vdm.elements.BooleanType;
 import fmi2vdm.elements.BooleanVariable;
 import fmi2vdm.elements.BuildConfiguration;
 import fmi2vdm.elements.Category;
+import fmi2vdm.elements.ClockType;
+import fmi2vdm.elements.ClockVariable;
 import fmi2vdm.elements.CoSimulation;
 import fmi2vdm.elements.CoordinateSystem;
 import fmi2vdm.elements.DefaultExperiment;
@@ -68,7 +72,6 @@ import fmi2vdm.elements.SourceFile;
 import fmi2vdm.elements.RealVariable;
 import fmi2vdm.elements.RealType;
 import fmi2vdm.elements.ScalarVariable;
-import fmi2vdm.elements.SimpleType;
 import fmi2vdm.elements.SourceFileSet;
 import fmi2vdm.elements.SourceFiles;
 import fmi2vdm.elements.StringType;
@@ -156,12 +159,40 @@ public class FMI3SaxHandler extends DefaultHandler
 				stack.push(new TypeDefinitions(locator));
 				break;
 
-			case "SimpleType":
-				stack.push(new SimpleType(attributes, locator));
+			case "Float64":
+			case "Float32":
+				stack.push(new RealType(qName, attributes, locator));
 				break;
 
-			case "RealType":
-				stack.push(new RealType(attributes, locator));
+			case "Int64":
+			case "Int32":
+			case "Int16":
+			case "Int8":
+			case "UInt64":
+			case "UInt32":
+			case "UInt16":
+			case "UInt8":
+				stack.push(new IntegerType(qName, attributes, locator));
+				break;
+
+			case "Boolean":
+				stack.push(new BooleanType(attributes, locator));
+				break;
+
+			case "String":
+				stack.push(new StringType(attributes, locator));
+				break;
+
+			case "Binary":
+				stack.push(new BinaryType(attributes, locator));
+				break;
+
+			case "Enumeration":
+				stack.push(new EnumerationType(attributes, locator));
+				break;
+
+			case "Clock":
+				stack.push(new ClockType(attributes, locator));
 				break;
 
 			case "LogCategories":
@@ -256,59 +287,40 @@ public class FMI3SaxHandler extends DefaultHandler
 				stack.push(new ScalarVariable(attributes, locator));
 				break;
 
-			case "Real":
-				if (stack.peek() instanceof SimpleType)
-				{
-					stack.push(new RealType(attributes, locator));
-				}
-				else
-				{
-					stack.push(new RealVariable(attributes, locator));
-				}
+			case "fmi3Float64":
+			case "fmi3Float32":
+				stack.push(new RealVariable(attributes, locator));
 				break;
 
-			case "Integer":
-				if (stack.peek() instanceof SimpleType)
-				{
-					stack.push(new IntegerType(attributes, locator));
-				}
-				else
-				{
-					stack.push(new IntegerVariable(attributes, locator));
-				}
+			case "fmi3Int64":
+			case "fmi3Int32":
+			case "fmi3Int16":
+			case "fmi3Int8":
+			case "fmi3UInt64":
+			case "fmi3UInt32":
+			case "fmi3UInt16":
+			case "fmi3UInt8":
+				stack.push(new IntegerVariable(attributes, locator));
 				break;
 
-			case "Boolean":
-				if (stack.peek() instanceof SimpleType)
-				{
-					stack.push(new BooleanType(attributes, locator));
-				}
-				else
-				{
-					stack.push(new BooleanVariable(attributes, locator));
-				}
+			case "fmi3Boolean":
+				stack.push(new BooleanVariable(attributes, locator));
 				break;
 
-			case "String":
-				if (stack.peek() instanceof SimpleType)
-				{
-					stack.push(new StringType(attributes, locator));
-				}
-				else
-				{
-					stack.push(new StringVariable(attributes, locator));
-				}
+			case "fmi3String":
+				stack.push(new StringVariable(attributes, locator));
 				break;
 
-			case "Enumeration":
-				if (stack.peek() instanceof SimpleType)
-				{
-					stack.push(new EnumerationType(attributes, locator));
-				}
-				else
-				{
-					stack.push(new EnumerationVariable(attributes, locator));
-				}
+			case "fmi3Binary":
+				stack.push(new BinaryVariable(attributes, locator));
+				break;
+
+			case "fmi3Enumeration":
+				stack.push(new EnumerationVariable(attributes, locator));
+				break;
+
+			case "fmi3Clock":
+				stack.push(new ClockVariable(attributes, locator));
 				break;
 
 			case "Item":

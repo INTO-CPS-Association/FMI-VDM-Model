@@ -26,10 +26,23 @@
 		<Library name="hdf5" version="&gt;=1.8,!=1.8.17,&lt;1.10"
 			external="true" description="HDF5" />
 	</BuildConfiguration>
+	<TypeDefinitions>
+		<Float64 />
+		<Int64 />
+		<Boolean />
+		<String />
+		<Binary />
+		<Enumeration />
+		<Clock />
+	</TypeDefinitions>
 	<ModelVariables>
-		<ScalarVariable name="varname" valueReference="0">
-			<Real />
-		</ScalarVariable>
+		<fmi3Float64 />
+		<fmi3Int64 />
+		<fmi3Boolean />
+		<fmi3String />
+		<fmi3Binary />
+		<fmi3Enumeration />
+		<fmi3Clock />
 	</ModelVariables>
 	<Terminals>
 		<Terminal name="nnn" matchingRule="rule" terminalKind="kind">

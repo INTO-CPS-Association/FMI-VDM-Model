@@ -34,9 +34,12 @@ import org.xml.sax.Locator;
 
 public class EnumerationType extends Type
 {
+	private String quantity;
+	private ElementList<Item> items;
+
 	public EnumerationType(Attributes attributes, Locator locator)
 	{
-		super(locator);
+		super(attributes, locator);
 		quantity = stringOf(attributes, "quantity");
 	}
 
@@ -58,16 +61,14 @@ public class EnumerationType extends Type
 		}
 	}
 
-	private String quantity;
-	private ElementList<Item> items;
-
 	@Override
 	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_EnumerationType");
 		System.out.println(indent + "(");
-		printStringAttribute(indent + "\t", quantity, ",\n");
+		super.toVDM(indent + "\t");
+		printStringAttribute(",\n" + indent + "\t", quantity, ",\n");
 		printSequence(indent + "\t", items, "\n");
-		System.out.println(indent + ")");
+		System.out.print(indent + ")");
 	}
 }

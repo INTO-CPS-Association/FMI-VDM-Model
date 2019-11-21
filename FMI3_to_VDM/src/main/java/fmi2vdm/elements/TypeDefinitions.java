@@ -38,16 +38,16 @@ public class TypeDefinitions extends Element
 		super(locator);
 	}
 
-	private ElementList<SimpleType> typeDefinitions = null;
+	private ElementList<Type> typeDefinitions = null;
 
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof SimpleType)
+		if (element instanceof Type)
 		{
 			if (typeDefinitions == null)
 			{
-				typeDefinitions = new ElementList<SimpleType>();
+				typeDefinitions = new ElementList<Type>();
 			}
 
 			typeDefinitions.add(element);

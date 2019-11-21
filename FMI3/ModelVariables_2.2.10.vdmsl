@@ -50,6 +50,14 @@ types
 	-- XSD p45, description p46
 	Initial		= <exact> | <approx> | <calculated>;
 
+	fmi3RealVariableAttributes ::
+		derivative			: nat
+		reinit				: bool;
+
+
+
+
+
 	Real ::		-- XSD p52
 		declaredType		: [NormalizedString1]
 		quantity			: [NormalizedString1]

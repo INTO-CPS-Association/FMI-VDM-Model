@@ -32,42 +32,17 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class SimpleType extends Element
+public class ClockVariable extends Variable
 {
-	public SimpleType(Attributes attributes, Locator locator)
+	public ClockVariable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		description = stringOf(attributes, "description");
 	}
-
-	@Override
-	public void add(Element element)
-	{
-		if (element instanceof Type)
-		{
-			type = (Type) element;
-		}
-		else
-		{
-			super.add(element);
-		}
-	}
-
-	private String name;
-	private String description;
-	private Type type;
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_SimpleType");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, ",\n");
-		printStringAttribute(indent + "\t", description, ",\n");
-		printOptional(indent + "\t", type, "");
-		System.out.print("\n" + indent + ")");
+		System.out.print(indent + "mk_Clock(");
+		System.out.print(")");
 	}
 }

@@ -32,18 +32,27 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class StringType extends Type
+public class BinaryType extends Type
 {
-	public StringType(Attributes attributes, Locator locator)
+	private String mimeType;
+	private Integer maxSize;
+
+	public BinaryType(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
+		
+		mimeType = stringOf(attributes, "mimeType");
+		maxSize = intOf(attributes, "maxSize");
 	}
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_StringType(");
-		super.toVDM("");
-		System.out.print(")");
+		System.out.println(indent + "mk_BinaryType");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");		// base
+		printStringAttribute(",\n" + indent + "\t", mimeType, ",\n");
+		printRawAttribute(indent + "\t", maxSize, "\n");
+		System.out.print(indent + ")");
 	}
 }

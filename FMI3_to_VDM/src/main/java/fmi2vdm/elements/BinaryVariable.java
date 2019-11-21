@@ -32,18 +32,17 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class StringType extends Type
+public class BinaryVariable extends Variable
 {
-	public StringType(Attributes attributes, Locator locator)
+	public BinaryVariable(Attributes attributes, Locator locator)
 	{
-		super(attributes, locator);
+		super(locator);
 	}
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_StringType(");
-		super.toVDM("");
+		System.out.print(indent + "mk_Binary(");
 		System.out.print(")");
 	}
 }

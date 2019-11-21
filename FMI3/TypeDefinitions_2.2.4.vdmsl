@@ -31,45 +31,84 @@
  * 2.2.4 Definition of Types (TypeDefinitions)
  */
 types
-	RealType ::			 -- XSD p39
+	fmi3TypeDefinitionBase ::
+		name				: NormalizedString1
+		description			: [AnyString];
+
+	fmi3RealAttributes ::
 		quantity			: [NormalizedString1]
 		unit				: [NormalizedString1]
 		displayUnit			: [NormalizedString1]
 		relativeQuantity	: [bool]
-		min					: [real]
-		max					: [real]
-		nominal				: [real]
 		unbounded			: [bool];
 
-	IntegerType ::  -- XSD p39
-		quantity			: [NormalizedString1]
+	fmi3FloatXXAttributes ::
+		min					: [real]
+		max					: [real]
+		nominal				: [real];
+
+	fmi3IntegerAttributes ::
+		quantity			: [NormalizedString1];
+
+	fmi3IntXXAttributes ::
 		min					: [int]
 		max					: [int];
 
+	fmi3ClockAttributes ::
+		clockType			: <synchronousTime> | <communicationPoint>
+		priority			: nat
+		periodic			: [bool]
+		strict				: [bool]
+		intervalCounter		: [nat]
+		shiftCounter		: [nat]
+		resolution			: [nat];
+
+-- The common attributes above are used to compose various types: 
+
+	RealType ::
+		base				: fmi3TypeDefinitionBase
+		kind				: <Float64> | <Float32>
+		realAtts			: fmi3RealAttributes
+		floatAtts			: fmi3FloatXXAttributes;
+
+	IntegerType ::
+		base				: fmi3TypeDefinitionBase
+		kind				: <Int64> | <Int32> | <Int16> | <Int8> | <UInt64> | <UInt32> | <UInt16> | <UInt8> 
+		integerAtts			: fmi3IntegerAttributes
+		intAtts				: fmi3IntXXAttributes;
+
 	BooleanType ::
-		;
+		base				: fmi3TypeDefinitionBase;
 
 	StringType ::
-		;
+		base				: fmi3TypeDefinitionBase;
 
-	-- Items of an enumeration are a sequence of "name" and "value" pairs.
-	-- An EnumerationType must have at least one Item.
+	BinaryType ::
+		base				: fmi3TypeDefinitionBase
+		mimeType			: [NormalizedString1]
+		maxSize				: nat;
+
+	ClockType ::
+		base				: fmi3TypeDefinitionBase
+		clockAttrs			: fmi3ClockAttributes;
 
 	Item ::
 		name				: NormalizedString1
 		value				: int
 		description			: [AnyString];
 
-	EnumerationType ::	  -- XSD p39
+	EnumerationType ::
+		base				: fmi3TypeDefinitionBase
 		quantity			: [NormalizedString1]
 		items				: seq1 of Item;
 
+-- And the types are named to give a SimpleType definition:
 
-	SimpleType ::	-- XSD p38
+	SimpleType ::
 		location			: Location
 		name				: NormalizedString1
 		description			: [AnyString]
-		type				: RealType | IntegerType | BooleanType | StringType | EnumerationType;
+		type				: RealType | IntegerType | BooleanType | StringType | BinaryType | EnumerationType;
 
 functions
 	isValidType: SimpleType +> bool
@@ -79,7 +118,7 @@ functions
 			{
 				-- @OnFail("2.2.4 SimpleType %s, Real max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
-				
+
 				-- @OnFail("2.2.4 SimpleType %s, Real unit must be defined for displayUnit %s", stype.name, dunit)
 				( dunit <> nil => unit <> nil )
 			} = {true},
