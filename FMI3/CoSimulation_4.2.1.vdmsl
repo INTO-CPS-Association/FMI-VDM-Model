@@ -61,5 +61,5 @@ functions
 	 * Check CoSimulation values.
 	 */
 	isValidCoSimulation: [CoSimulation] +> bool
-	isValidCoSimulation(cs) ==
-		is not yet specified;
+	isValidCoSimulation(-) ==
+		true;	-- TODO!

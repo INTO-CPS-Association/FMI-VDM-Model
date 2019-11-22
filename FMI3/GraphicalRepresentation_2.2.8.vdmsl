@@ -69,5 +69,5 @@ types
 
 functions
 	isValidGraphicalRepresentation: [GraphicalRepresentation] +> bool
-	isValidGraphicalRepresentation(gr) ==
-		is not yet specified;
+	isValidGraphicalRepresentation(-) ==
+		true;	-- TODO!

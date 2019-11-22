@@ -40,5 +40,5 @@ functions
 	 * Check ModelExchange values.
 	 */
 	isValidModelExchange: [ModelExchange] +> bool
-	isValidModelExchange(me) ==
-		is not yet specified;
+	isValidModelExchange(-) ==
+		true;	-- TODO!

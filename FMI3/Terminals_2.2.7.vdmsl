@@ -55,5 +55,5 @@ types
 
 functions
 	isValidTerminals: [seq1 of Tool] +> bool
-	isValidTerminals(tools) ==
-		is not yet specified;
+	isValidTerminals(-) ==
+		true;	-- TODO!

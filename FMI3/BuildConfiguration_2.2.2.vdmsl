@@ -78,5 +78,5 @@ types
 
 functions
 	isValidBuildConfiguration: [seq1 of Tool] +> bool
-	isValidBuildConfiguration(tools) ==
-		is not yet specified;
+	isValidBuildConfiguration(-) ==
+		true;	-- TODO!
