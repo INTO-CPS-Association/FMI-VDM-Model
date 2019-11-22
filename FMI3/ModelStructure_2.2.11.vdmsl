@@ -35,7 +35,7 @@ types
 
 	Unknown ::
 		location			: Location
-		index				: nat1
+		valueReference		: nat
 		dependencies		: [seq of nat1]
 		dependenciesKind	: [seq of DependencyKind];
 
@@ -52,7 +52,7 @@ functions
 	 */
 	isValidUnknown: Unknown +> bool
 	isValidUnknown(u) ==
-	-- @OnFail("2.2.11 Unknown %s has invalid dependencies/kinds at line %s", u.index, u.location)
+	-- @OnFail("2.2.11 Unknown %s has invalid dependencies/kinds at line %s", u.valueReference, u.location)
 	(
 		if u.dependencies <> nil
 		then u.dependenciesKind <> nil =>

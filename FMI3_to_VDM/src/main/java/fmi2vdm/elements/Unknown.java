@@ -40,7 +40,7 @@ public class Unknown extends Element
 	{
 		super(locator);
 
-		index = intOf(attributes, "index");
+		valueReference = intOf(attributes, "valueReference");
 		String[] deps = arrayOf(stringOf(attributes, "dependencies"));
 
 		if (deps == null)
@@ -68,7 +68,7 @@ public class Unknown extends Element
 		dependenciesKind = arrayOf(stringOf(attributes, "dependenciesKind"));
 	}
 
-	private Integer index;
+	private Integer valueReference;
 	private int[] dependencies;
 	private String[] dependenciesKind;
 
@@ -78,7 +78,7 @@ public class Unknown extends Element
 		System.out.println(indent + "mk_Unknown");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printRawAttribute(indent + "\t", index, ",\n");
+		printRawAttribute(indent + "\t", valueReference, ",\n");
 
 		if (dependencies == null)
 		{

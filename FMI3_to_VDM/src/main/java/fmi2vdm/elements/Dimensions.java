@@ -29,30 +29,28 @@
 
 package fmi2vdm.elements;
 
-import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class Tool extends Element
+public class Dimensions extends Element
 {
-	public Tool(Attributes attributes, Locator locator)
+	public Dimensions(Locator locator)
 	{
 		super(locator);
-		name = stringOf(attributes, "name");
 	}
+
+	private ElementList<Dimension> dimensions = null;
 
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof Any)
+		if (element instanceof Dimension)
 		{
-			if (annotation == null)
+			if (dimensions == null)
 			{
-				annotation = element.toString();
+				dimensions = new ElementList<Dimension>();
 			}
-			else
-			{
-				annotation = annotation + ";" + element.toString();
-			}
+
+			dimensions.add(element);
 		}
 		else
 		{
@@ -60,25 +58,9 @@ public class Tool extends Element
 		}
 	}
 
-	private String name;
-	private String annotation;
-
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Tool(");
-		System.out.print(lineNumber + ", ");
-		printStringAttribute("", name, ", ");
-
-		if (annotation == null)
-		{
-			System.out.print("nil");
-		}
-		else
-		{
-			System.out.print("mk_token(\"" + annotation + "\")");
-		}
-
-		System.out.print(")");
+		printSeqSetLine(indent, dimensions, ", ", "[", "]");
 	}
 }

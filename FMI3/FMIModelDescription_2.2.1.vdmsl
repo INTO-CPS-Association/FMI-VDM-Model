@@ -249,7 +249,7 @@ functions
 							md.modelStructure.location) */
 						( md.modelStructure.outputs <> nil )
 
-						and let structIndexes = { u.index | u in seq md.modelStructure.outputs } in
+						and let structIndexes = { u.valueReference | u in seq md.modelStructure.outputs } in
 						{
 							/* @OnFail("2.2.8 Outputs section does not match output variables at line %s",
 								md.modelStructure.location) */
@@ -277,7 +277,7 @@ functions
 								md.modelStructure.location) */
 							( md.modelStructure.derivatives <> nil )
 
-							and let structIndexes = { u.index | u in seq md.modelStructure.derivatives } in
+							and let structIndexes = { u.valueReference | u in seq md.modelStructure.derivatives } in
 							{
 								/* @OnFail("2.2.8 Derivatives section does not match Real/derivative variables at line %s",
 									md.modelStructure.location) */
@@ -319,12 +319,12 @@ functions
 							( ius <> nil ),
 
 							-- @OnFail("2.2.8 InitialUnknowns must include: %s", initIndexes)
-							( ius <> nil => { u.index | u in seq ius } subset initIndexes ),
+							( ius <> nil => { u.valueReference | u in seq ius } subset initIndexes ),
 
-							-- @OnFail("2.2.8 InitialUnknowns are not sorted: %s", [ u.index | u in seq ius ])
+							-- @OnFail("2.2.8 InitialUnknowns are not sorted: %s", [ u.valueReference | u in seq ius ])
 							( ius <> nil => 
 									forall i in set inds ius &
-										i = len ius or ius(i).index < ius(i+1).index )
+										i = len ius or ius(i).valueReference < ius(i+1).valueReference )
 						} = {true}
 			)
 		} = {true};

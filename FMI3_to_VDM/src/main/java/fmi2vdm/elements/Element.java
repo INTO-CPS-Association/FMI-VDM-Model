@@ -235,7 +235,7 @@ abstract public class Element
 		printSeqSet(indent, items, tail, "{", "}");
 	}
 
-	private void printSeqSet(String indent, List<? extends Element> items, String tail, String open, String close)
+	protected void printSeqSet(String indent, List<? extends Element> items, String tail, String open, String close)
 	{
 		if (items == null || items.isEmpty())
 		{
@@ -254,6 +254,28 @@ abstract public class Element
 			}
 
 			System.out.print("\n" + indent + close + tail);
+		}
+	}
+
+	protected void printSeqSetLine(String indent, List<? extends Element> items, String tail, String open, String close)
+	{
+		if (items == null || items.isEmpty())
+		{
+			System.out.print(indent + "nil" + tail);
+		}
+		else
+		{
+			System.out.print(indent + open);
+			String sep = "";
+
+			for (Element item : items)
+			{
+				System.out.print(sep);
+				item.toVDM("");
+				sep = ", ";
+			}
+
+			System.out.print(close + tail);
 		}
 	}
 }

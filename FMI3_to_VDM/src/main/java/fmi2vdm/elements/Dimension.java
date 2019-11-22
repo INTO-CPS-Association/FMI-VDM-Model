@@ -48,11 +48,8 @@ public class Dimension extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_Dimension");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printRawAttribute(indent + "\t", start, ",\n");
-		printRawAttribute(indent + "\t", valueReference, "\n");
-		System.out.print(indent + ")");
+		System.out.print(indent + "mk_Dimension(");
+		printRawAttribute("", start, ", ");
+		printRawAttribute("", valueReference, ")");
 	}
 }
