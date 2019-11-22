@@ -213,13 +213,13 @@ functions
 					{
 						/* @OnFail("2.2.7 Variable %s, Real unit must be defined for displayUnit %s at line %s",
 							sv.base.name, sv.displayUnit, sv.location) */
-						( sv.displayUnit <> nil => sv.unit <> nil ),
+						( sv.realAtts.displayUnit <> nil => sv.realAtts.unit <> nil ),
 
-						sv.unit <> nil =>
+						sv.realAtts.unit <> nil =>
 							/* @OnFail("2.2.7 Variable %s, Real unit %s not defined in UnitDefinitions at line %s",
 								sv.base.name, sv.unit, sv.location) */
 							( md.unitDefinitions <> nil
-							  and exists u in seq md.unitDefinitions & u.name = sv.unit )
+							  and exists u in seq md.unitDefinitions & u.name = sv.realAtts.unit )
 					}
 					= {true}
 
@@ -230,7 +230,7 @@ functions
 			(
 				{
 					let sv = eModelVariables(svi) in
-						is_Real(sv) and sv.varAttrs.reinit <> nil =>
+						is_Real(sv) and sv.varAtts.reinit <> nil =>
 						/* @OnFail("2.2.7 Variable %s, Real reinit for model exchange continuous time only at line %s",
 								sv.base.name, sv.location) */
 						( isContinuousTimeState(svi, eModelVariables) and md.modelExchange <> nil )
@@ -350,16 +350,16 @@ functions
 								mk_RealType(-, -, -, mk_fmi3FloatXXAttributes(min, max, -)) ->
 									/* @OnFail("2.2.7 Variable %s min/max exceeds RealType %s at line %s",
 										sv.base.name, sv.base.declaredType, sv.location) */
-									( (min <> nil and sv.floatAttrs.min <> nil => min <= sv.floatAttrs.min)
+									( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
 										and
-									  (max <> nil and sv.floatAttrs.max <> nil => max >= sv.floatAttrs.max) ),
+									  (max <> nil and sv.floatAtts.max <> nil => max >= sv.floatAtts.max) ),
 
 								mk_IntegerType(-, -, -, mk_fmi3IntXXAttributes(min, max)) ->
 									/* @OnFail("2.2.7 Variable %s min/max exceeds IntegerType %s at line %s",
 										sv.base.name, sv.base.declaredType, sv.location) */
-									( (min <> nil and sv.floatAttrs.min <> nil => min <= sv.floatAttrs.min)
+									( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
 										and
-									  (max <> nil and sv.floatAttrs.max <> nil => max >= sv.floatAttrs.max) ),
+									  (max <> nil and sv.floatAtts.max <> nil => max >= sv.floatAtts.max) ),
 
 								others -> true
 							end,
