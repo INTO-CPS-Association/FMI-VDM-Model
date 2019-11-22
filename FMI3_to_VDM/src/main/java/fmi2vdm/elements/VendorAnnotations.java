@@ -33,7 +33,7 @@ import org.xml.sax.Locator;
 
 public class VendorAnnotations extends Element
 {
-	ElementList<Tool> annotations = null;
+	ElementList<Tool> tools = null;
 
 	public VendorAnnotations(Locator locator)
 	{
@@ -45,18 +45,18 @@ public class VendorAnnotations extends Element
 	{
 		if (element instanceof Tool)
 		{
-			if (annotations == null)
+			if (tools == null)
 			{
-				annotations = new ElementList<Tool>();
+				tools = new ElementList<Tool>();
 			}
 
-			annotations.add(element);
+			tools.add(element);
 		}
 	}
 
 	@Override
 	public void toVDM(String indent)
 	{
-		printSeqSetLine(indent, annotations, ", ", "[", "]");
+		printSeqSetLine(indent, tools, "[", "]");
 	}
 }

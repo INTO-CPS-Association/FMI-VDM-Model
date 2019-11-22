@@ -31,19 +31,29 @@
  * 4.2.1 Definition of a CoSimulation section of an FMU.
  */
 types
-	CoSimulation ::
+	fmi3FMUType ::
 		location								: Location
+		annotations								: [seq1 of fmi3Annotation]
 		modelIdentifier							: NormalizedString1
 		needsExecutionTool						: [bool]
+		canBeInstantiatedOnlyOncePerProcess		: [bool]
+		canNotUseMemoryManagementFunctions		: [bool]
+		canGetAndSetFMUState					: [bool]
+		canSerializeFMUState					: [bool]
+		providesDirectionalDerivative			: [bool]
+		providesPerElementDependencies			: [bool];
+
+
+	CoSimulation ::
+		base									: fmi3FMUType
 		canHandleVariableCommunicationStepSize	: [bool]
 		canInterpolateInputs					: [bool]
 		maxOutputDerivativeOrder				: [nat]
-		canRunAsynchronuously					: [bool]
-		canBeInstantiatedOnlyOncePerProcess		: [bool]
-		canNotUseMemoryManagementFunctions		: [bool]
-		canGetAndSetFMUstate					: [bool]
-		canSerializeFMUstate					: [bool]
-		providesDirectionalDerivative			: [bool];
+		providesIntermediateVariableAccess		: [bool]
+		canReturnEarlyAfterIntermediateUpdate	: [bool]
+		providesHybridCoSimulation				: [bool]
+		providesScheduledExecutionSimulation	: [bool]
+		canNotUseBasicCoSimulation				: [bool];
 
 functions
 

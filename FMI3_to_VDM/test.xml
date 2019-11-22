@@ -1,7 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmiModelDescription fmiVersion="2.0" modelName="Test FMU"
+<fmiModelDescription fmiVersion="3.0" modelName="Test FMU"
 	guid="{111-222-333-444}">
-	<CoSimulation modelIdentifier="Test FMU" />
+	<CoSimulation modelIdentifier="Test FMU">
+		<Annotations>
+			<Tool name="one">
+				<stuff></stuff>
+			</Tool>
+		</Annotations>
+		<Annotations>
+			<Tool name="zzz">
+				<zzzstuff></zzzstuff>
+			</Tool>
+		</Annotations>
+	</CoSimulation>
+	<ModelExchange modelIdentifier="Test FMU">
+		<Annotations>
+			<Tool name="two">
+				<more></more>
+			</Tool>
+		</Annotations>
+	</ModelExchange>
 	<BuildConfiguration modelIdentifier="PlantModel"
 		platform="unix" description="Build configuration for desktop platforms">
 		<SourceFileSet language="C99" compiler="X"

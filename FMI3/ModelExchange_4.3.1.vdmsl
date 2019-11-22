@@ -32,15 +32,8 @@
  */
 types
 	ModelExchange ::
-		location							: Location
-		modelIdentifier						: NormalizedString1
-		needsExecutionTool					: [bool]
-		completedIntegratorStepNotNeeded	: [bool]
-		canBeInstantiatedOnlyOncePerProcess	: [bool]
-		canNotUseMemoryManagementFunctions	: [bool]
-		canGetAndSetFMUstate				: [bool]
-		canSerializeFMUstate				: [bool]
-		providesDirectionalDerivative		: [bool];
+		base								: fmi3FMUType
+		completedIntegratorStepNotNeeded	: [bool];
 
 functions
 	/**

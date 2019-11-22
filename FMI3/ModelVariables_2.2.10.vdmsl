@@ -60,10 +60,12 @@ types
 		start				: [nat]
 		valueReference		: [nat];
 
+	Dimensions = seq1 of Dimension;
+
 	fmi3VariableBase ::
 		location							: Location
-		dimension							: [seq1 of Dimension]
-		annotations							: [fmi3Annotation]
+		dimension							: [seq1 of Dimensions]
+		annotations							: [seq1 of fmi3Annotation]
 		name								: NormalizedString1
 		valueReference						: nat
 		description							: [AnyString]

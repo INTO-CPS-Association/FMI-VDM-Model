@@ -61,6 +61,6 @@ public class Dimensions extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		printSeqSetLine(indent, dimensions, ", ", "[", "]");
+		printSeqSetLine(indent, dimensions, "[", "]");
 	}
 }

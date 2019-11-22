@@ -34,8 +34,8 @@ import org.xml.sax.Locator;
 
 abstract class Variable extends Element
 {
-	private Dimensions dimensions;
-	private VendorAnnotations annotations;
+	private ElementList<Dimensions> dimensions;
+	private ElementList<VendorAnnotations> annotations;
 	private String name;
 	private Integer valueReference;
 	private String description;
@@ -68,11 +68,21 @@ abstract class Variable extends Element
 	{
 		if (element instanceof Dimensions)
 		{
-			dimensions = (Dimensions) element;
+			if (dimensions == null)
+			{
+				dimensions = new ElementList<Dimensions>();
+			}
+			
+			dimensions.add(element);
 		}
 		else if (element instanceof VendorAnnotations)
 		{
-			annotations = (VendorAnnotations) element;
+			if (annotations == null)
+			{
+				annotations = new ElementList<VendorAnnotations>();
+			}
+			
+			annotations.add(element);
 		}
 		else
 		{
@@ -85,25 +95,10 @@ abstract class Variable extends Element
 	{
 		System.out.print(indent + "mk_fmi3VariableBase(");
 		System.out.print(lineNumber + ", ");
-		
-		if (dimensions != null)
-		{
-			dimensions.toVDM("");
-		}
-		else
-		{
-			System.out.print("nil, ");
-		}
-		
-		if (annotations != null)
-		{
-			annotations.toVDM("");
-		}
-		else
-		{
-			System.out.print("nil, ");
-		}
-		
+		printSeqSetLine("", dimensions, "[", "]");
+		System.out.print(", ");
+		printSeqSetLine("", annotations, "[", "]");
+		System.out.print(", ");
 		printStringAttribute("", name, ", ");
 		printRawAttribute("", valueReference, ", ");
 		printStringAttribute("", description, ", ");

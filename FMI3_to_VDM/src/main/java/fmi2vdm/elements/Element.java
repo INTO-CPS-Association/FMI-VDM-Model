@@ -257,11 +257,11 @@ abstract public class Element
 		}
 	}
 
-	protected void printSeqSetLine(String indent, List<? extends Element> items, String tail, String open, String close)
+	protected void printSeqSetLine(String indent, List<? extends Element> items, String open, String close)
 	{
 		if (items == null || items.isEmpty())
 		{
-			System.out.print(indent + "nil" + tail);
+			System.out.print(indent + "nil");
 		}
 		else
 		{
@@ -275,7 +275,7 @@ abstract public class Element
 				sep = ", ";
 			}
 
-			System.out.print(close + tail);
+			System.out.print(close);
 		}
 	}
 }

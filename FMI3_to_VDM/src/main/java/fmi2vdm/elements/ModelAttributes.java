@@ -51,9 +51,9 @@ public class ModelAttributes extends Element
 		variableNamingConvention = stringOf(attributes, "variableNamingConvention");
 		numberOfEventIndicators = intOf(attributes, "numberOfEventIndicators");
 
-		if (fmiVersion == null || !fmiVersion.equals("2.0"))
+		if (fmiVersion == null || !fmiVersion.startsWith("3.0"))
 		{
-			System.err.println("FMU is not FMI v2 format");
+			System.err.println("FMU is not FMI v3 format");
 			System.exit(1);
 		}
 	}

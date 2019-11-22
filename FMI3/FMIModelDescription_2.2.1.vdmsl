@@ -109,10 +109,10 @@ functions
 			-- @OnFail("2.2.1 ModelAttributes invalid at line %s", md.attributes.location)
 			( isValidModelAttributes(md.attributes) ),
 
-			-- @OnFail("2.2.1 ModelExchange invalid at line %s", md.modelExchange.location)
+			-- @OnFail("2.2.1 ModelExchange invalid at line %s", md.modelExchange.base.location)
 			( isValidModelExchange(md.modelExchange) ),
 
-			-- @OnFail("2.2.1 CoSimulation invalid at line %s", md.coSimulation.location)
+			-- @OnFail("2.2.1 CoSimulation invalid at line %s", md.coSimulation.base.location)
 			( isValidCoSimulation(md.coSimulation) ),
 
 			-- @OnFail("2.2.1 BuildConfiguration invalid"))
@@ -240,24 +240,27 @@ functions
 			),
 
 			(
-				let outputIndexes = { svi | svi in set inds eModelVariables &
-					eModelVariables(svi).base.causality = <output> }
+				let outputRefs = { sv.base.valueReference | sv in seq eModelVariables &
+					sv.base.causality = <output> }
 				in
-					if outputIndexes <> {}
+					if outputRefs <> {}
 					then
 						/* @OnFail("2.2.8 Output variables but no outputs declared at line %s",
 							md.modelStructure.location) */
 						( md.modelStructure.outputs <> nil )
 
-						and let structIndexes = { u.valueReference | u in seq md.modelStructure.outputs } in
+						and let structRefs = { u.valueReference | u in seq md.modelStructure.outputs } in
 						{
 							/* @OnFail("2.2.8 Outputs section does not match output variables at line %s",
 								md.modelStructure.location) */
-							( structIndexes = outputIndexes ),
+							( structRefs = outputRefs ),
 
-							/* @OnFail("2.2.8 Output indexes out of range at line %s",
+							/* @OnFail("2.2.8 Output references %s unknown at line %s",
+								{ vr | vr in set structRefs &
+									not exists sv in seq eModelVariables & sv.base.valueReference = vr },
 								md.modelStructure.location) */
-							( forall i in set structIndexes & i <= len eModelVariables )
+							( forall vr in set structRefs &
+								 exists sv in seq eModelVariables & sv.base.valueReference = vr )
 						} = {true}
 					else
 						/* @OnFail("2.2.8 Outputs should be omitted at line %s",
@@ -266,26 +269,28 @@ functions
 			),
 
 			(
-				md.modelExchange <> nil
-				or (md.coSimulation <> nil and nilBool(md.coSimulation.providesDirectionalDerivative)) =>
-					let derivativeIndexes = { svi | svi in set inds eModelVariables &
-						isStateDerivative(eModelVariables(svi)) }
+				md.modelExchange <> nil =>
+					let derivativeRefs = { sv.base.valueReference | sv in seq eModelVariables &
+						isStateDerivative(sv) }
 					in
-						if derivativeIndexes <> {}
+						if derivativeRefs <> {}
 						then
 							/* @OnFail("2.2.8 Real/derivative variables but no Derivatives declared at line %s",
 								md.modelStructure.location) */
 							( md.modelStructure.derivatives <> nil )
 
-							and let structIndexes = { u.valueReference | u in seq md.modelStructure.derivatives } in
+							and let structRefs = { u.valueReference | u in seq md.modelStructure.derivatives } in
 							{
 								/* @OnFail("2.2.8 Derivatives section does not match Real/derivative variables at line %s",
 									md.modelStructure.location) */
-								( structIndexes = derivativeIndexes ),
+								( structRefs = derivativeRefs ),
 
-								/* @OnFail("2.2.8 Derivatives indexes out of range at line %s",
+								/* @OnFail("2.2.8 Derivatives references %s unknown at line %s",
+									{ vr | vr in set structRefs &
+										not exists sv in seq eModelVariables & sv.base.valueReference = vr },
 									md.modelStructure.location) */
-								( forall i in set structIndexes & i <= len eModelVariables )
+								( forall vr in set structRefs &
+									exists sv in seq eModelVariables & sv.base.valueReference = vr )
 							} = {true}
 						else
 							/* @OnFail("2.2.8 Derivatives declared, but no Real/derivative variables at line %s",
@@ -299,32 +304,31 @@ functions
 			(
 				let ctVars = continuousTimeStates(eModelVariables),
 					sdVars = stateDerivatives(eModelVariables),
-					initIndexes = { svi | svi in set inds eModelVariables &
-						let sv = eModelVariables(svi) in
-							(sv.base.causality = <output>
-								and sv.base.initial in set { <approx>, <calculated> })
+					initRefs = { sv.base.valueReference | sv in seq eModelVariables &
+						(sv.base.causality = <output>
+							and sv.base.initial in set { <approx>, <calculated> })
 
-							or (sv.base.causality = <calculatedParameter>)
+						or (sv.base.causality = <calculatedParameter>)
 
-							or (sv in set ctVars
-								and sv.base.initial in set { <approx>, <calculated> })
+						or (sv in set ctVars
+							and sv.base.initial in set { <approx>, <calculated> })
 
-							or (sv in set sdVars
-								and sv.base.initial in set { <approx>, <calculated> }) }
+						or (sv in set sdVars
+							and sv.base.initial in set { <approx>, <calculated> }) }
 				in
-					initIndexes <> {} =>
+					initRefs <> {} =>
 						let ius = md.modelStructure.initialUnknowns in
 						{
-							-- @OnFail("2.2.8 InitialUnknowns must include: %s", initIndexes)
+							-- @OnFail("2.2.8 InitialUnknowns must include refs: %s", initRefs)
 							( ius <> nil ),
 
-							-- @OnFail("2.2.8 InitialUnknowns must include: %s", initIndexes)
-							( ius <> nil => { u.valueReference | u in seq ius } subset initIndexes ),
+							-- @OnFail("2.2.8 InitialUnknowns must include refs: %s", initRefs)
+							( ius <> nil => { u.valueReference | u in seq ius } subset initRefs ),
 
 							-- @OnFail("2.2.8 InitialUnknowns are not sorted: %s", [ u.valueReference | u in seq ius ])
 							( ius <> nil => 
-									forall i in set inds ius &
-										i = len ius or ius(i).valueReference < ius(i+1).valueReference )
+								forall i in set inds ius &
+									i = len ius or ius(i).valueReference < ius(i+1).valueReference )
 						} = {true}
 			)
 		} = {true};

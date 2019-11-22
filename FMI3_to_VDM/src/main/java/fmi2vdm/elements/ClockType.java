@@ -65,13 +65,13 @@ public class ClockType extends Type
 		
 		System.out.println(indent + "\tmk_fmi3ClockAttributes");
 		System.out.println(indent + "\t(");
-		printQuoteAttribute(indent + "\t", clockType, ",\n");
-		printRawAttribute(indent + "\t", priority, ",\n");
-		printRawAttribute(indent + "\t", periodic, ",\n");
-		printRawAttribute(indent + "\t", strict, ",\n");
-		printRawAttribute(indent + "\t", intervalCounter, ",\n");
-		printRawAttribute(indent + "\t", shiftCounter, ",\n");
-		printRawAttribute(indent + "\t", resolution, "\n");
+		printQuoteAttribute(indent + "\t\t", clockType, ",\n");
+		printRawAttribute(indent + "\t\t", priority, ",\n");
+		printRawAttribute(indent + "\t\t", periodic, ",\n");
+		printRawAttribute(indent + "\t\t", strict, ",\n");
+		printRawAttribute(indent + "\t\t", intervalCounter, ",\n");
+		printRawAttribute(indent + "\t\t", shiftCounter, ",\n");
+		printRawAttribute(indent + "\t\t", resolution, "\n");
 		System.out.println(indent + "\t)");
 		System.out.print(indent + ")");
 	}
