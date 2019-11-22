@@ -54,6 +54,6 @@ types
 		outStreamVariableName	: NormalizedString1;
 
 functions
-	isValidTerminals: [seq1 of Tool] +> bool
+	isValidTerminals: [seq1 of Terminal] +> bool
 	isValidTerminals(-) ==
 		true;	-- TODO!

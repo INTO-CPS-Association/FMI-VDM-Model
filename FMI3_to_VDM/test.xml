@@ -53,7 +53,11 @@
 		<Boolean name="c" />
 		<String name="d" />
 		<Binary name="e" />
-		<Enumeration name="f" />
+		<Enumeration name="f">
+			<Item name="a" value="1" />
+			<Item name="b" value="2" />
+			<Item name="c" value="3" />
+		</Enumeration>
 		<Clock name="g" clockType="synchronousTime" priority="1" />
 	</TypeDefinitions>
 	<ModelVariables>
@@ -71,7 +75,7 @@
 		<fmi3Boolean name="c" valueReference="3" />
 		<fmi3String name="d" valueReference="4" />
 		<fmi3Binary name="e" valueReference="5" />
-		<fmi3Enumeration name="f" valueReference="5" />
+		<fmi3Enumeration name="f" valueReference="5"  declaredType="f"/>
 		<fmi3Clock name="g" valueReference="6" />
 	</ModelVariables>
 	<Terminals>

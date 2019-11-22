@@ -77,6 +77,6 @@ types
 		description				: [AnyString];
 
 functions
-	isValidBuildConfiguration: [seq1 of Tool] +> bool
+	isValidBuildConfiguration: [BuildConfiguration] +> bool
 	isValidBuildConfiguration(-) ==
 		true;	-- TODO!

@@ -109,15 +109,15 @@ types
 		quantity			: [NormalizedString1]
 		min					: [int]
 		max					: [int]
-		start				: [seq of int];
+		start				: [seq of int]
+	inv e ==
+		e.base.declaredType <> nil;
 
 	Clock ::
 		base				: fmi3VariableBase
 		start				: [bool];
 
 	Variable = Real | Integer | Boolean | String | Binary | Enumeration | Clock;
-
-	VarName = NormalizedString1;	-- Has a syntax defined in section 2.2.12
 
 
 functions
