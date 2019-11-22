@@ -36,23 +36,20 @@ public class BooleanVariable extends Variable
 {
 	public BooleanVariable(Attributes attributes, Locator locator)
 	{
-		super(locator);
+		super(attributes, locator);
 
-		declaredType = stringOf(attributes, "declaredType");
 		start = boolOf(attributes, "start");
 	}
 
-	private String declaredType;
 	private Boolean start;
 
 	@Override
 	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Boolean(");
-
-		printStringAttribute("", declaredType, ", ");
+		super.toVDM("");	// base
+		System.out.print(", ");
 		printRawAttribute("", start, "");
-
 		System.out.print(")");
 	}
 }

@@ -58,8 +58,11 @@ public class IntegerType extends Type
 		super.toVDM(indent + "\t");		// base
 		printQuoteAttribute(",\n" + indent + "\t", kind, ",\n");
 		
+		System.out.print(indent + "\tmk_fmi3IntegerAttributes(");
+		printStringAttribute("", quantity, "");
+		System.out.println("),");
+		
 		System.out.print(indent + "\tmk_fmi3IntXXAttributes(");
-		printStringAttribute("", quantity, ", ");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, "");
 		System.out.println(")");

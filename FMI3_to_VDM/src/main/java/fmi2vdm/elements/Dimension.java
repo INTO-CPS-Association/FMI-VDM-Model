@@ -32,25 +32,27 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-abstract public class Type extends Element
+public class Dimension extends Element
 {
-	protected String name;
-	protected String description;
-
-	protected Type(Attributes attributes, Locator locator)
+	public Dimension(Attributes attributes, Locator locator)
 	{
 		super(locator);
 
-		name = stringOf(attributes, "name");
-		description = stringOf(attributes, "description");
+		start = intOf(attributes, "start");
+		valueReference = intOf(attributes, "valueReference");
 	}
+
+	private Integer start;
+	private Integer valueReference;
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_fmi3TypeDefinitionBase(");
-		System.out.print(lineNumber + ", ");
-		printStringAttribute("", name, ", ");
-		printStringAttribute("", description, ")");
+		System.out.println(indent + "mk_Dimension");
+		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printRawAttribute(indent + "\t", start, ",\n");
+		printRawAttribute(indent + "\t", valueReference, "\n");
+		System.out.print(indent + ")");
 	}
 }

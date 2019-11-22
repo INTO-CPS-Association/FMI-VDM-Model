@@ -36,16 +36,14 @@ public class IntegerVariable extends Variable
 {
 	public IntegerVariable(Attributes attributes, Locator locator)
 	{
-		super(locator);
+		super(attributes, locator);
 
-		declaredType = stringOf(attributes, "declaredType");
 		quantity = stringOf(attributes, "quantity");
 		min = intOf(attributes, "min");
 		max = intOf(attributes, "max");
 		start = intOf(attributes, "start");
 	}
 
-	private String declaredType;
 	private String quantity;
 	private Integer min;
 	private Integer max;
@@ -54,14 +52,19 @@ public class IntegerVariable extends Variable
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Integer(");
+		System.out.println(indent + "mk_Integer");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");	// base
+		System.out.println(",");
 
-		printStringAttribute("", declaredType, ", ");
-		printStringAttribute("", quantity, ", ");
+		System.out.print(indent + "\tmk_fmi3IntegerAttributes(");
+		printStringAttribute("", quantity, "),\n");
+
+		System.out.print(indent + "\tmk_fmi3IntXXAttributes(");
 		printRawAttribute("", min, ", ");
-		printRawAttribute("", max, ", ");
-		printRawAttribute("", start, "");
-
-		System.out.print(")");
+		printRawAttribute("", max, "),\n");
+		
+		printRawAttribute(indent + "\t", start, "\n");
+		System.out.print(indent + ")");
 	}
 }

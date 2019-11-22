@@ -36,13 +36,19 @@ public class ClockVariable extends Variable
 {
 	public ClockVariable(Attributes attributes, Locator locator)
 	{
-		super(locator);
+		super(attributes, locator);
+		start = boolOf(attributes, "start");
 	}
+
+	private Boolean start;
 
 	@Override
 	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Clock(");
+		super.toVDM("");	// base
+		System.out.print(", ");
+		printRawAttribute("", start, "");
 		System.out.print(")");
 	}
 }

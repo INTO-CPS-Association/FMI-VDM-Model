@@ -32,6 +32,7 @@
  */
 types
 	fmi3TypeDefinitionBase ::
+		location			: Location
 		name				: NormalizedString1
 		description			: [AnyString];
 
@@ -86,7 +87,7 @@ types
 	BinaryType ::
 		base				: fmi3TypeDefinitionBase
 		mimeType			: [NormalizedString1]
-		maxSize				: nat;
+		maxSize				: [nat];
 
 	ClockType ::
 		base				: fmi3TypeDefinitionBase
@@ -100,7 +101,7 @@ types
 	EnumerationType ::
 		base				: fmi3TypeDefinitionBase
 		quantity			: [NormalizedString1]
-		items				: seq1 of Item;
+		items				: [seq1 of Item];
 
 	VariableType = RealType | IntegerType | BooleanType | StringType | BinaryType | EnumerationType | ClockType;
 
@@ -142,12 +143,12 @@ functions
 		defs <> nil =>
 			{
 				/* @OnFail("2.2.4 TypeDefinitions names are not unique: %s",
-					{ a.name | a, b in set defs & a <> b and a.name = b.name }) */
+					{ a.base.name | a, b in set defs & a <> b and a.base.name = b.base.name }) */
 				( card { stype.base.name | stype in set defs } = card defs )
 			}
 			union
 			{
-				-- @OnFail("2.2.4 TypeDefinition %s invalid at line %s", stype.name, stype.location)
+				-- @OnFail("2.2.4 TypeDefinition %s invalid at line %s", stype.base.name, stype.base.location)
 				( isValidType(stype) )
 
 				| stype in set defs

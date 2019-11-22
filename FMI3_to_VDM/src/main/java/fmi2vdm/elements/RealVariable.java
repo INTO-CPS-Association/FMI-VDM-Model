@@ -36,53 +36,67 @@ public class RealVariable extends Variable
 {
 	public RealVariable(Attributes attributes, Locator locator)
 	{
-		super(locator);
+		super(attributes, locator);
+		
+		derivative = uintOf(attributes, "derivative");
+		reinit = boolOf(attributes, "reinit");
 
-		declaredType = stringOf(attributes, "declaredType");
 		quantity = stringOf(attributes, "quantity");
 		unit = stringOf(attributes, "unit");
 		displayUnit = stringOf(attributes, "displayUnit");
 		relativeQuantity = boolOf(attributes, "relativeQuantity");
+		unbounded = boolOf(attributes, "unbounded");
+
 		min = doubleOf(attributes, "min");
 		max = doubleOf(attributes, "max");
 		nominal = doubleOf(attributes, "nominal");
-		unbounded = boolOf(attributes, "unbounded");
+
 		start = doubleOf(attributes, "start");
-		derivative = uintOf(attributes, "derivative");
-		reinit = boolOf(attributes, "reinit");
 	}
 
-	private String declaredType;
+	private Long derivative;
+	private Boolean reinit;
+
 	private String quantity;
 	private String unit;
 	private String displayUnit;
 	private Boolean relativeQuantity;
+	private Boolean unbounded;
+
 	private Double min;
 	private Double max;
 	private Double nominal;
-	private Boolean unbounded;
+
 	private Double start;
-	private Long derivative;
-	private Boolean reinit;
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Real(");
+		System.out.println(indent + "mk_Real");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");	// base
+		System.out.println(",");
 
-		printStringAttribute("", declaredType, ", ");
+		System.out.print(indent + "\tmk_fmi3RealVariableAttributes(");
+		printRawAttribute("", derivative, ", ");
+		printRawAttribute("", reinit, "");
+		System.out.println("),");
+		
+		System.out.print(indent + "\tmk_fmi3RealAttributes(");
 		printStringAttribute("", quantity, ", ");
 		printStringAttribute("", unit, ", ");
 		printStringAttribute("", displayUnit, ", ");
 		printRawAttribute("", relativeQuantity, ", ");
+		printRawAttribute("", unbounded, "");
+		System.out.println("),");
+
+		System.out.print(indent + "\tmk_fmi3FloatXXAttributes(");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, ", ");
-		printRawAttribute("", nominal, ", ");
-		printRawAttribute("", unbounded, ", ");
-		printRawAttribute("", start, ", ");
-		printRawAttribute("", derivative, ", ");
-		printRawAttribute("", reinit, "");
-
-		System.out.print(")");
+		printRawAttribute("", nominal, "");
+		System.out.println("),");
+		
+		printRawAttribute(indent + "\t", start, "\n");
+		System.out.print(indent + ")");
 	}
 }

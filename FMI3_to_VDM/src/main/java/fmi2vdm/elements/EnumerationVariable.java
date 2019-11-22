@@ -36,16 +36,14 @@ public class EnumerationVariable extends Variable
 {
 	public EnumerationVariable(Attributes attributes, Locator locator)
 	{
-		super(locator);
+		super(attributes, locator);
 
-		declaredType = stringOf(attributes, "declaredType");
 		quantity = stringOf(attributes, "quantity");
 		min = doubleOf(attributes, "min");
 		max = doubleOf(attributes, "max");
 		start = doubleOf(attributes, "start");
 	}
 
-	private String declaredType;
 	private String quantity;
 	private Double min;
 	private Double max;
@@ -55,8 +53,9 @@ public class EnumerationVariable extends Variable
 	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Enumeration(");
+		super.toVDM("");	// base
+		System.out.print(", ");
 
-		printStringAttribute("", declaredType, ", ");
 		printStringAttribute("", quantity, ", ");
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, ", ");

@@ -36,23 +36,20 @@ public class StringVariable extends Variable
 {
 	public StringVariable(Attributes attributes, Locator locator)
 	{
-		super(locator);
+		super(attributes, locator);
 
-		declaredType = stringOf(attributes, "declaredType");
 		start = stringOf(attributes, "start");
 	}
 
-	private String declaredType;
 	private String start;
 
 	@Override
 	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_String(");
-
-		printStringAttribute("", declaredType, ", ");
-		printStringAttribute("", start, "");
-
+		super.toVDM("");	// base
+		System.out.print(", ");
+		printRawAttribute("", start, "");
 		System.out.print(")");
 	}
 }

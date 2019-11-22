@@ -27,22 +27,22 @@
 			external="true" description="HDF5" />
 	</BuildConfiguration>
 	<TypeDefinitions>
-		<Float64 />
-		<Int64 />
-		<Boolean />
-		<String />
-		<Binary />
-		<Enumeration />
-		<Clock />
+		<Float64 name="a" />
+		<Int64 name="b" />
+		<Boolean name="c" />
+		<String name="d" />
+		<Binary name="e" />
+		<Enumeration name="f" />
+		<Clock name="g" clockType="synchronousTime" priority="1" />
 	</TypeDefinitions>
 	<ModelVariables>
-		<fmi3Float64 />
-		<fmi3Int64 />
-		<fmi3Boolean />
-		<fmi3String />
-		<fmi3Binary />
-		<fmi3Enumeration />
-		<fmi3Clock />
+		<fmi3Float64 name="a" valueReference="1" />
+		<fmi3Int64 name="b" valueReference="2" />
+		<fmi3Boolean name="c" valueReference="3" />
+		<fmi3String name="d" valueReference="4" />
+		<fmi3Binary name="e" valueReference="5" />
+		<fmi3Enumeration name="f" valueReference="5" />
+		<fmi3Clock name="g" valueReference="6" />
 	</ModelVariables>
 	<Terminals>
 		<Terminal name="nnn" matchingRule="rule" terminalKind="kind">

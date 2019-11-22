@@ -48,6 +48,7 @@ import fmi2vdm.elements.ClockVariable;
 import fmi2vdm.elements.CoSimulation;
 import fmi2vdm.elements.CoordinateSystem;
 import fmi2vdm.elements.DefaultExperiment;
+import fmi2vdm.elements.Dimension;
 import fmi2vdm.elements.DisplayUnit;
 import fmi2vdm.elements.EnumerationType;
 import fmi2vdm.elements.EnumerationVariable;
@@ -162,6 +163,10 @@ public class FMI3SaxHandler extends DefaultHandler
 			case "Float64":
 			case "Float32":
 				stack.push(new RealType(qName, attributes, locator));
+				break;
+				
+			case "Dimension":
+				stack.push(new Dimension(attributes, locator));
 				break;
 
 			case "Int64":

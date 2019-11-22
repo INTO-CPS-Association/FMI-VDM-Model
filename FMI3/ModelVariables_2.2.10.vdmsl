@@ -61,8 +61,9 @@ types
 		valueReference		: nat;
 
 	fmi3VariableBase ::
+		location							: Location
 		dimension							: [seq1 of Dimension]
-		annotations							: [seq1 of fmi3Annotation]
+		annotations							: [fmi3Annotation]
 		name								: NormalizedString1
 		valueReference						: nat
 		description							: [AnyString]
@@ -147,17 +148,17 @@ functions
 	isValidScalarVariables(svs) ==
 		{
 			/* @OnFail("2.2.10 Variables define more than one independent variable: %s",
-				{ sv.name | sv in seq svs & sv.causality = <independent> }) */
+				{ sv.base.name | sv in seq svs & sv.base.causality = <independent> }) */
 			( card { sv | sv in seq svs & sv.base.causality = <independent> } <= 1 ),
 
 			/* @OnFail("2.2.10 Variable names are not unique: %s",
-				{ svs(a).name | a, b in set inds svs &
-					a <> b and svs(a).name = svs(b).name } ) */
+				{ svs(a).base.name | a, b in set inds svs &
+					a <> b and svs(a).base.name = svs(b).base.name } ) */
 			( card { sv.base.name | sv in seq svs } = len svs )
 		}
 		union
 		{
-			-- @OnFail("2.2.10 Variable %s invalid at line %s", sv.name, sv.location)
+			-- @OnFail("2.2.10 Variable %s invalid at line %s", sv.base.name, sv.base.location)
 			( isValidScalarVariable(sv) )
 
 			| sv in seq svs
@@ -175,7 +176,7 @@ functions
 		{
 			-- Table on p46 defining causality, and p48/49 defining combinations
 			/* @OnFail("2.2.10 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
-				sv.name, eCausality, eVariability, eInitial, sv.variable.start, sv.location) */
+				sv.base.name, eCausality, eVariability, eInitial, sv.start, sv.base.location) */
 			(
 				cases eCausality:
 					<parameter> ->
@@ -195,7 +196,7 @@ functions
 						eVariability = <continuous>
 						and eInitial = nil		-- (D)
 						and sv.start = nil
-						-- @OnFail("2.2.10 Independent variable must be Real at line %s", sv.location)
+						-- @OnFail("2.2.10 Independent variable must be Real at line %s", sv.base.location)
 						and (is_Real(sv)),
 
 					<output> ->
@@ -228,7 +229,7 @@ functions
 
 			-- Table on p46 defining variability, and p49 defining combinations
 			/* @OnFail("2.2.10 Variable %s variability/causality %s/%s invalid at line %s",
-				sv.name, eVariability, eCausality, sv.location) */
+				sv.base.name, eVariability, eCausality, sv.base.location) */
 			(
 				cases eVariability:
 					<constant> ->
@@ -242,14 +243,14 @@ functions
 
 					<continuous> ->
 						eCausality in set {<input>, <output>, <local>, <independent>}
-						-- @OnFail("2.2.10 Continuous variable must be Real at line %s", sv.location)
+						-- @OnFail("2.2.10 Continuous variable must be Real at line %s", sv.base.location)
 						and (is_Real(sv))
 				end
 			),
 
 			-- Table on p47 defining initial
 			/* @OnFail("2.2.10 Variable %s initial/causality %s/%s invalid at %s",
-				sv.name, sv.initial, eCausality, sv.location) */
+				sv.base.name, sv.base.initial, eCausality, sv.base.location) */
 			(
 				sv.base.initial <> nil =>
 					(eCausality not in set {<input>, <independent>})
@@ -257,7 +258,7 @@ functions
 
 			-- Table on p47 defining initial
 			/* @OnFail("2.2.10 Variable %s initial/variability/start %s/%s/%s invalid at line %s",
-				sv.name, eInitial, eVariability, sv.variable.start, sv.location) */
+				sv.base.name, eInitial, eVariability, sv.start, sv.base.location) */
 			(
 				cases eInitial:
 					<exact> ->
@@ -288,7 +289,7 @@ functions
 	isValidEffectiveVariables: seq1 of Variable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail("2.2.10 Variable %s min/max/start/nominal invalid at line %s", sv.base.name, sv.location)
+		-- @OnFail("2.2.10 Variable %s min/max/start/nominal invalid at line %s", sv.base.name, sv.base.location)
 		(
 			cases sv:
 				mk_Real(-,
@@ -296,7 +297,7 @@ functions
 					mk_fmi3RealAttributes(-, -, -, -, -),
 					mk_fmi3FloatXXAttributes(min, max, nominal), start) ->
 					isInRange[real](min, max, start)
-					-- @OnFail("2.2.10 Real nominal must be >0.0 at line %s", sv.location)
+					-- @OnFail("2.2.10 Real nominal must be >0.0 at line %s", sv.base.location)
 					and (nominal <> nil => nominal > 0.0),
 
 				mk_Integer(-, -, mk_fmi3IntXXAttributes(min, max), start) ->
@@ -321,12 +322,12 @@ functions
 				let aliases = refmap(ref) in
 				{
 					/* @OnFail("2.2.10 Multiple aliases of reference %s/%s are settable: %s", ref.#1, ref.#2,
-							{ a.name | a in set aliases & isSettable(a) }) */
+							{ a.base.name | a in set aliases & isSettable(a) }) */
 					( card { a | a in set aliases & isSettable(a) } <= 1 ),
 
 					/* @OnFail("2.2.10 Aliases of reference %s/%s are settable and independent: %s", ref.#1, ref.#2,
-							{ {a.name, b.name} | a, b in set aliases &
-								a <> b and isSettable(a) and b.causality = <independent> } ) */
+							{ {a.base.name, b.base.name} | a, b in set aliases &
+								a <> b and isSettable(a) and b.base.causality = <independent> } ) */
 					( not exists a, b in set aliases & a <> b and isSettable(a) and b.base.causality = <independent> ),
 
 					-- @OnFail("2.2.10 Too many aliases of reference %s/%s have start set", ref.#1, ref.#2)
@@ -352,7 +353,7 @@ functions
 					 	then
 					 		let a in set aliases be st a.base.causality in set {<input>, <parameter>} in
 				 				/* @OnFail("2.2.10 Warning: aliases of reference %s/%s must all be %s, because of %s",
-				 						ref.#1, ref.#2, a.variability, a.name) */
+				 						ref.#1, ref.#2, a.base.variability, a.base.name) */
 				 				( vars = { a.base.variability } ) or true
 					 	else
 					 		let highest in set vars be st not exists v in set vars & v > highest in
@@ -447,6 +448,7 @@ functions
 					mk_Real
 					(
 						mk_fmi3VariableBase(
+							0,		-- Line
 							nil,
 							nil,
 							"time",

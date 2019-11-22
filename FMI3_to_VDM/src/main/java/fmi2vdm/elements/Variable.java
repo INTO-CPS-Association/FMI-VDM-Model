@@ -29,12 +29,74 @@
 
 package fmi2vdm.elements;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 abstract class Variable extends Element
 {
-	protected Variable(Locator locator)
+	private ElementList<Dimension> dimensions;
+	private ElementList<Tool> annotations;
+	private String name;
+	private Integer valueReference;
+	private String description;
+	private String causality;
+	private String variability;
+	private String initial;
+	private Boolean canHandleMultipleSetPerTimeInstant;
+	private String declaredType;
+	private Integer clockReference;
+	private Boolean intermediateAccess;
+
+	protected Variable(Attributes attributes, Locator locator)
 	{
 		super(locator);
+		
+		name = stringOf(attributes, "name");
+		valueReference = intOf(attributes, "valueReference");
+		description = stringOf(attributes, "description");
+		causality = stringOf(attributes, "causality");
+		variability = stringOf(attributes, "variability");
+		initial = stringOf(attributes, "initial");
+		canHandleMultipleSetPerTimeInstant = boolOf(attributes, "canHandleMultipleSetPerTimeInstant");
+		declaredType = stringOf(attributes, "declaredType");
+		clockReference = intOf(attributes, "clockReference");
+		intermediateAccess = boolOf(attributes, "intermediateAccess");
+	}
+	
+	@Override
+	public void add(Element element)
+	{
+		if (element instanceof Dimension)
+		{
+			dimensions.add(element);
+		}
+		else if (element instanceof Tool)
+		{
+			annotations.add(element);
+		}
+		else
+		{
+			super.add(element);
+		}
+	}
+
+	@Override
+	public void toVDM(String indent)
+	{
+		System.out.print(indent + "mk_fmi3VariableBase(");
+		System.out.print(lineNumber + ", ");
+		printSequence("", dimensions, ", ");
+		printSequence("", annotations, ", ");
+		printStringAttribute("", name, ", ");
+		printRawAttribute("", valueReference, ", ");
+		printStringAttribute("", description, ", ");
+		printStringAttribute("", causality, ", ");
+		printStringAttribute("", variability, ", ");
+		printStringAttribute("", initial, ", ");
+		printRawAttribute("", canHandleMultipleSetPerTimeInstant, ", ");
+		printStringAttribute("", declaredType, ", ");
+		printRawAttribute("", clockReference, ", ");
+		printRawAttribute("", intermediateAccess, "");
+		System.out.print(")");
 	}
 }

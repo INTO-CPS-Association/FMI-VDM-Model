@@ -34,15 +34,28 @@ import org.xml.sax.Locator;
 
 public class BinaryVariable extends Variable
 {
+	private String mimeType;
+	private Integer maxSize;
+	private String start;
+
 	public BinaryVariable(Attributes attributes, Locator locator)
 	{
-		super(locator);
+		super(attributes, locator);
+		
+		mimeType = stringOf(attributes, "mimeType");
+		maxSize = intOf(attributes, "maxSize");
+		start = stringOf(attributes, "start");
 	}
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Binary(");
-		System.out.print(")");
+		System.out.println(indent + "mk_Binary");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");		// base
+		printStringAttribute(",\n" + indent + "\t", mimeType, ",\n");
+		printRawAttribute(indent + "\t", maxSize, ",\n");
+		printRawAttribute(indent + "\t", start, "\n");
+		System.out.print(indent + ")");
 	}
 }

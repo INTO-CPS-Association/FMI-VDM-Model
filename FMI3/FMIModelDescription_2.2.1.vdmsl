@@ -159,10 +159,10 @@ functions
 					dunion
 					{
 						{
-							-- @OnFail("2.2.9 Structured name %s invalid at line %s", sv.base.name, sv.location)
+							-- @OnFail("2.2.9 Structured name %s invalid at line %s", sv.base.name, sv.base.location)
 							( isValidStructuredName(sv.base.name) ),
 
-							-- @OnFail("2.2.9 Name %s is not Real at line %s", sv.base.name, sv.location)
+							-- @OnFail("2.2.9 Name %s is not Real at line %s", sv.base.name, sv.base.location)
 							( sv.base.name(1, ..., 4) = "der(" => is_Real(sv) )
 						}
 
@@ -175,7 +175,7 @@ functions
 				md.typeDefinitions <> nil =>
 					{
 						/* @OnFail("2.2.3 TypeDefinition and Variable names overlap: %s at line %s",
-								simpleType.name, simpleType.location) */
+								simpleType.base.name, simpleType.base.location) */
 						( not exists sv in seq eModelVariables & sv.base.name = simpleType.base.name )
 
 						| simpleType in set md.typeDefinitions
@@ -188,7 +188,7 @@ functions
 						is_RealType(std) =>
 							std.realAtts.unit <> nil =>
 								/* @OnFail("2.2.3 SimpleType %s, Real unit %s not defined in UnitDefinitions at line %s",
-									std.name, std.type.unit, std.location) */
+									std.base.name, std.realAtts.unit, std.base.location) */
 								( md.unitDefinitions <> nil
 								  and exists u in seq md.unitDefinitions & u.name = std.realAtts.unit )
 
@@ -200,7 +200,7 @@ functions
 				{
 					sv.base.canHandleMultipleSetPerTimeInstant <> nil =>
 						/* @OnFail("2.2.7 Variable %s, canHandleMultipleSetPerTimeInstant invalid at line %s",
-							sv.base.name, sv.location) */
+							sv.base.name, sv.base.location) */
 						( md.modelExchange <> nil and sv.base.causality = <input> )
 
 					| sv in seq eModelVariables
@@ -212,12 +212,12 @@ functions
 					is_Real(sv) =>
 					{
 						/* @OnFail("2.2.7 Variable %s, Real unit must be defined for displayUnit %s at line %s",
-							sv.base.name, sv.displayUnit, sv.location) */
+							sv.base.name, sv.realAtts.displayUnit, sv.base.location) */
 						( sv.realAtts.displayUnit <> nil => sv.realAtts.unit <> nil ),
 
 						sv.realAtts.unit <> nil =>
 							/* @OnFail("2.2.7 Variable %s, Real unit %s not defined in UnitDefinitions at line %s",
-								sv.base.name, sv.unit, sv.location) */
+								sv.base.name, sv.realAtts.unit, sv.base.location) */
 							( md.unitDefinitions <> nil
 							  and exists u in seq md.unitDefinitions & u.name = sv.realAtts.unit )
 					}
@@ -232,7 +232,7 @@ functions
 					let sv = eModelVariables(svi) in
 						is_Real(sv) and sv.varAtts.reinit <> nil =>
 						/* @OnFail("2.2.7 Variable %s, Real reinit for model exchange continuous time only at line %s",
-								sv.base.name, sv.location) */
+								sv.base.name, sv.base.location) */
 						( isContinuousTimeState(svi, eModelVariables) and md.modelExchange <> nil )
 
 					| svi in set inds eModelVariables
@@ -349,14 +349,14 @@ functions
 							cases simpleType:
 								mk_RealType(-, -, -, mk_fmi3FloatXXAttributes(min, max, -)) ->
 									/* @OnFail("2.2.7 Variable %s min/max exceeds RealType %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.location) */
+										sv.base.name, sv.base.declaredType, sv.base.location) */
 									( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
 										and
 									  (max <> nil and sv.floatAtts.max <> nil => max >= sv.floatAtts.max) ),
 
 								mk_IntegerType(-, -, -, mk_fmi3IntXXAttributes(min, max)) ->
 									/* @OnFail("2.2.7 Variable %s min/max exceeds IntegerType %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.location) */
+										sv.base.name, sv.base.declaredType, sv.base.location) */
 									( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
 										and
 									  (max <> nil and sv.floatAtts.max <> nil => max >= sv.floatAtts.max) ),
@@ -369,37 +369,37 @@ functions
 							cases simpleType:
 								mk_RealType(-, -, -, -) ->
 									/* @OnFail("2.2.7 Variable %s, RealType not referenced by Real variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.location) */
+										sv.base.name, sv.base.declaredType, sv.base.location) */
 									( is_Real(sv) ),
 
 								mk_IntegerType(-, -, -, -) ->
 									/* @OnFail("2.2.7 Variable %s, IntegerType not referenced by Integer variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.location) */
+										sv.base.name, sv.base.declaredType, sv.base.location) */
 									( is_Integer(sv) ),
 
 								mk_BooleanType(-) ->
 									/* @OnFail("2.2.7 Variable %s, BooleanType not referenced by Boolean variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.location) */
+										sv.base.name, sv.base.declaredType, sv.base.location) */
 									( is_Boolean(sv) ),
 
 								mk_StringType(-) ->
 									/* @OnFail("2.2.7 Variable %s, StringType not referenced by String variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.location) */
+										sv.base.name, sv.base.declaredType, sv.base.location) */
 									( is_String(sv) ),
 
 								mk_BinaryType(-,-, -) ->
 									/* @OnFail("2.2.7 Variable %s, BinaryType not referenced by Binary variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.location) */
+										sv.base.name, sv.base.declaredType, sv.base.location) */
 									( is_Binary(sv) ),
 
 								mk_EnumerationType(-, -, -) ->
 									/* @OnFail("2.2.7 Variable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.location) */
+										sv.base.name, sv.base.declaredType, sv.base.location) */
 									( is_Enumeration(sv) ),
 
 								mk_ClockType(-, -) ->
 									/* @OnFail("2.2.7 Variable %s, StringType not referenced by String variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.location) */
+										sv.base.name, sv.base.declaredType, sv.base.location) */
 									( is_Clock(sv) )
 							end
 					} = {true}
