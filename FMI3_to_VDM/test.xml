@@ -61,7 +61,7 @@
 		<Clock name="g" clockType="synchronousTime" priority="1" />
 	</TypeDefinitions>
 	<ModelVariables>
-		<fmi3Float64 name="a" valueReference="1">
+		<Float64 name="a" valueReference="1">
 			<Dimensions>
 				<Dimension start="3" />
 				<Dimension start="2" />
@@ -70,13 +70,13 @@
 				<Tool name="one"><stuff></stuff></Tool>
 				<Tool name="two"><more></more></Tool>
 			</Annotations>
-		</fmi3Float64>
-		<fmi3Int64 name="b" valueReference="2" />
-		<fmi3Boolean name="c" valueReference="3" />
-		<fmi3String name="d" valueReference="4" />
-		<fmi3Binary name="e" valueReference="5" />
-		<fmi3Enumeration name="f" valueReference="5"  declaredType="f"/>
-		<fmi3Clock name="g" valueReference="6" />
+		</Float64>
+		<Int64 name="b" valueReference="2" />
+		<Boolean name="c" valueReference="3" />
+		<String name="d" valueReference="4" />
+		<Binary name="e" valueReference="5" />
+		<Enumeration name="f" valueReference="5"  declaredType="f"/>
+		<Clock name="g" valueReference="6" />
 	</ModelVariables>
 	<Terminals>
 		<Terminal name="nnn" matchingRule="rule" terminalKind="kind">

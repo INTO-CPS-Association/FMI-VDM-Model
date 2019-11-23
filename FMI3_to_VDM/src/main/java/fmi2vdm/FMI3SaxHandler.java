@@ -74,7 +74,6 @@ import fmi2vdm.elements.PreprocessorDefinition;
 import fmi2vdm.elements.SourceFile;
 import fmi2vdm.elements.RealVariable;
 import fmi2vdm.elements.RealType;
-import fmi2vdm.elements.ScalarVariable;
 import fmi2vdm.elements.SourceFileSet;
 import fmi2vdm.elements.SourceFiles;
 import fmi2vdm.elements.StringType;
@@ -163,7 +162,14 @@ public class FMI3SaxHandler extends DefaultHandler
 
 			case "Float64":
 			case "Float32":
-				stack.push(new RealType(qName, attributes, locator));
+				if (stack.peek() instanceof TypeDefinitions)
+				{
+					stack.push(new RealType(qName, attributes, locator));
+				}
+				else
+				{
+					stack.push(new RealVariable(attributes, locator));
+				}
 				break;
 				
 			case "Dimensions":
@@ -181,27 +187,73 @@ public class FMI3SaxHandler extends DefaultHandler
 			case "UInt32":
 			case "UInt16":
 			case "UInt8":
-				stack.push(new IntegerType(qName, attributes, locator));
+				if (stack.peek() instanceof TypeDefinitions)
+				{
+					stack.push(new IntegerType(qName, attributes, locator));
+				}
+				else
+				{
+					stack.push(new IntegerVariable(attributes, locator));
+				}
 				break;
 
 			case "Boolean":
-				stack.push(new BooleanType(attributes, locator));
+				if (stack.peek() instanceof TypeDefinitions)
+				{
+					stack.push(new BooleanType(attributes, locator));
+				}
+				else
+				{
+					stack.push(new BooleanVariable(attributes, locator));
+				}
 				break;
 
 			case "String":
-				stack.push(new StringType(attributes, locator));
+				if (stack.peek() instanceof TypeDefinitions)
+				{
+					stack.push(new StringType(attributes, locator));
+				}
+				else
+				{
+					stack.push(new StringVariable(attributes, locator));
+				}
 				break;
 
 			case "Binary":
-				stack.push(new BinaryType(attributes, locator));
+				if (stack.peek() instanceof TypeDefinitions)
+				{
+					stack.push(new BinaryType(attributes, locator));
+				}
+				else
+				{
+					stack.push(new BinaryVariable(attributes, locator));
+				}
 				break;
 
 			case "Enumeration":
-				stack.push(new EnumerationType(attributes, locator));
+				if (stack.peek() instanceof TypeDefinitions)
+				{
+					stack.push(new EnumerationType(attributes, locator));
+				}
+				else
+				{
+					stack.push(new EnumerationVariable(attributes, locator));
+				}
+				break;
+
+			case "Item":
+				stack.push(new Item(attributes, locator));
 				break;
 
 			case "Clock":
-				stack.push(new ClockType(attributes, locator));
+				if (stack.peek() instanceof TypeDefinitions)
+				{
+					stack.push(new ClockType(attributes, locator));
+				}
+				else
+				{
+					stack.push(new ClockVariable(attributes, locator));
+				}
 				break;
 
 			case "LogCategories":
@@ -290,50 +342,6 @@ public class FMI3SaxHandler extends DefaultHandler
 
 			case "Tool":
 				stack.push(new Tool(attributes, locator));
-				break;
-
-			case "ScalarVariable":
-				stack.push(new ScalarVariable(attributes, locator));
-				break;
-
-			case "fmi3Float64":
-			case "fmi3Float32":
-				stack.push(new RealVariable(attributes, locator));
-				break;
-
-			case "fmi3Int64":
-			case "fmi3Int32":
-			case "fmi3Int16":
-			case "fmi3Int8":
-			case "fmi3UInt64":
-			case "fmi3UInt32":
-			case "fmi3UInt16":
-			case "fmi3UInt8":
-				stack.push(new IntegerVariable(attributes, locator));
-				break;
-
-			case "fmi3Boolean":
-				stack.push(new BooleanVariable(attributes, locator));
-				break;
-
-			case "fmi3String":
-				stack.push(new StringVariable(attributes, locator));
-				break;
-
-			case "fmi3Binary":
-				stack.push(new BinaryVariable(attributes, locator));
-				break;
-
-			case "fmi3Enumeration":
-				stack.push(new EnumerationVariable(attributes, locator));
-				break;
-
-			case "fmi3Clock":
-				stack.push(new ClockVariable(attributes, locator));
-				break;
-
-			case "Item":
-				stack.push(new Item(attributes, locator));
 				break;
 
 			case "ModelStructure":
