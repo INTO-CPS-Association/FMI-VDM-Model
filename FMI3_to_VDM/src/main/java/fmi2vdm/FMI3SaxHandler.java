@@ -68,6 +68,7 @@ import fmi2vdm.elements.ModelExchange;
 import fmi2vdm.elements.ModelStructure;
 import fmi2vdm.elements.ModelVariables;
 import fmi2vdm.elements.Element;
+import fmi2vdm.elements.NumberOfEventIndicators;
 import fmi2vdm.elements.Option;
 import fmi2vdm.elements.PreprocessorDefinition;
 import fmi2vdm.elements.SourceFile;
@@ -87,7 +88,6 @@ import fmi2vdm.elements.TypeDefinitions;
 import fmi2vdm.elements.Unit;
 import fmi2vdm.elements.UnitDefinitions;
 import fmi2vdm.elements.Unknown;
-import fmi2vdm.elements.Unknowns;
 import fmi2vdm.elements.VendorAnnotations;
 
 public class FMI3SaxHandler extends DefaultHandler
@@ -340,22 +340,16 @@ public class FMI3SaxHandler extends DefaultHandler
 				stack.push(new ModelStructure(locator));
 				break;
 
-			case "Outputs":
-				stack.push(new Unknowns("Outputs", locator));
+			case "Output":
+			case "Derivative":
+			case "InitialUnknown":
+				stack.push(new Unknown(qName, attributes, locator));
 				break;
 
-			case "Derivatives":
-				stack.push(new Unknowns("Derivatives", locator));
+			case "NumberOfEventIndicators":
+				stack.push(new NumberOfEventIndicators(attributes, locator));
 				break;
-
-			case "InitialUnknowns":
-				stack.push(new Unknowns("InitialUnknowns", locator));
-				break;
-
-			case "Unknown":
-				stack.push(new Unknown(attributes, locator));
-				break;
-
+				
 			default:
 				if (!withinTool())
 				{

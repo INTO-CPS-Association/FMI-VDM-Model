@@ -38,36 +38,20 @@ public class ModelStructure extends Element
 		super(locator);
 	}
 
-	private Unknowns outputs;
-	private Unknowns derivatives;
-	private Unknowns initialUnknowns;
+	private ElementList<Unknown> unknowns;
 	private ElementList<NumberOfEventIndicators> numberOfEventindicators;
 
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof Unknowns)
+		if (element instanceof Unknown)
 		{
-			Unknowns u = (Unknowns) element;
-
-			switch (u.kind)
+			if (unknowns == null)
 			{
-				case "Outputs":
-					outputs = (Unknowns) element;
-					break;
-
-				case "Derivatives":
-					derivatives = (Unknowns) element;
-					break;
-
-				case "InitialUnknowns":
-					initialUnknowns = (Unknowns) element;
-					break;
-
-				default:
-					System.err.println("Unknown ModelStructure type: " + u.kind);
-					System.exit(1);
+				unknowns = new ElementList<Unknown>();
 			}
+			
+			unknowns.add(element);
 		}
 		else if (element instanceof NumberOfEventIndicators)
 		{
@@ -90,34 +74,10 @@ public class ModelStructure extends Element
 		System.out.println(indent + "mk_ModelStructure");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-
-		if (outputs != null)
+		
+		if (unknowns != null)
 		{
-			System.out.println(indent + "\t-- Outputs");
-			outputs.toVDM(indent);
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,");
-		}
-
-		if (derivatives != null)
-		{
-			System.out.println(indent + "\t-- Derivatives");
-			derivatives.toVDM(indent);
-			System.out.println(",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,");
-		}
-
-		if (initialUnknowns != null)
-		{
-			System.out.println(indent + "\t-- InitialUnknowns");
-			initialUnknowns.toVDM(indent);
-			System.out.println(",\n");
+			printSequence(indent + "\t", unknowns, ",\n");
 		}
 		else
 		{
@@ -126,10 +86,12 @@ public class ModelStructure extends Element
 
 		if (numberOfEventindicators != null)
 		{
-			System.out.println(indent + "\t-- NumberOfEventindicators");
+			printSequence(indent + "\t", numberOfEventindicators, "\n");
 		}
-
-		printSequence(indent + "\t", numberOfEventindicators, "\n");
+		else
+		{
+			System.out.println(indent + "\tnil");
+		}
 
 		System.out.println(indent + ")");
 	}

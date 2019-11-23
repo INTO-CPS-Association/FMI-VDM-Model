@@ -100,14 +100,14 @@
 		</Terminal>
 	</GraphicalRepresentation>
 	<ModelStructure>
-		<Outputs>
-			<Unknown valueReference="0" />
-		</Outputs>
-		<Derivatives>
-			<Unknown valueReference="1" />
-		</Derivatives>
-		<InitialUnknowns>
-			<Unknown valueReference="1" />
-		</InitialUnknowns>
+		<Output valueReference="1" dependencies="1" dependenciesKind="dependent" />
+		<Output valueReference="2" dependencies="1" dependenciesKind="dependent" />
+		<Output valueReference="3" dependencies="1" dependenciesKind="dependent" />
+		<Derivative valueReference="1" dependencies="1" dependenciesKind="dependent" />
+		<Derivative valueReference="2" dependencies="1" dependenciesKind="dependent" />
+		<InitialUnknown valueReference="1" dependencies="1" dependenciesKind="dependent" />
+		<InitialUnknown valueReference="2" dependencies="1" dependenciesKind="dependent" />
+		<NumberOfEventIndicators dependencies="1 2 3" />
+		<NumberOfEventIndicators dependencies="4 5 6" />
 	</ModelStructure>
 </fmiModelDescription>

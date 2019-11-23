@@ -69,11 +69,12 @@ public class NumberOfEventIndicators extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_NumberOfEventIndicators(");
+		System.out.print(indent + "mk_NumberOfEventIndicators(");
+		System.out.print(lineNumber + ", ");
 
 		if (dependencies == null)
 		{
-			System.out.println("[]");
+			System.out.print("[]");
 		}
 		else
 		{
@@ -86,7 +87,7 @@ public class NumberOfEventIndicators extends Element
 				sep = ", ";
 			}
 
-			System.out.println("]");
+			System.out.print("]");
 		}
 
 		System.out.print(")");

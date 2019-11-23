@@ -240,16 +240,16 @@ functions
 			),
 
 			(
-				let outputRefs = { sv.base.valueReference | sv in seq eModelVariables &
-					sv.base.causality = <output> }
+				let outputRefs = { sv.base.valueReference | sv in seq eModelVariables & sv.base.causality = <output> },
+					structRefs = { u.valueReference | u in seq md.modelStructure.unknowns & u.kind = <Output> }
 				in
 					if outputRefs <> {}
 					then
 						/* @OnFail("2.2.8 Output variables but no outputs declared at line %s",
 							md.modelStructure.location) */
-						( md.modelStructure.outputs <> nil )
+						( structRefs <> {} )
 
-						and let structRefs = { u.valueReference | u in seq md.modelStructure.outputs } in
+						and
 						{
 							/* @OnFail("2.2.8 Outputs section does not match output variables at line %s",
 								md.modelStructure.location) */
@@ -263,23 +263,22 @@ functions
 								 exists sv in seq eModelVariables & sv.base.valueReference = vr )
 						} = {true}
 					else
-						/* @OnFail("2.2.8 Outputs should be omitted at line %s",
-							md.modelStructure.location) */
-						( md.modelStructure.outputs = nil )
+						/* @OnFail("2.2.8 Outputs should be omitted at line %s", md.modelStructure.location) */
+						( structRefs = {} )
 			),
 
 			(
 				md.modelExchange <> nil =>
-					let derivativeRefs = { sv.base.valueReference | sv in seq eModelVariables &
-						isStateDerivative(sv) }
+					let derivativeRefs = { sv.base.valueReference | sv in seq eModelVariables & isStateDerivative(sv) },
+						structRefs = { u.valueReference | u in seq md.modelStructure.unknowns & u.kind = <Derivative> }
 					in
 						if derivativeRefs <> {}
 						then
 							/* @OnFail("2.2.8 Real/derivative variables but no Derivatives declared at line %s",
 								md.modelStructure.location) */
-							( md.modelStructure.derivatives <> nil )
+							( structRefs <> {} )
 
-							and let structRefs = { u.valueReference | u in seq md.modelStructure.derivatives } in
+							and
 							{
 								/* @OnFail("2.2.8 Derivatives section does not match Real/derivative variables at line %s",
 									md.modelStructure.location) */
@@ -295,7 +294,7 @@ functions
 						else
 							/* @OnFail("2.2.8 Derivatives declared, but no Real/derivative variables at line %s",
 								md.modelStructure.location) */
-							( md.modelStructure.derivatives = nil )
+							( structRefs = {} )
 			),
 
 			-- InitalUnknowns must include all output (approx/calculated), calculatedParameters and 
@@ -317,17 +316,16 @@ functions
 							and sv.base.initial in set { <approx>, <calculated> }) }
 				in
 					initRefs <> {} =>
-						let ius = md.modelStructure.initialUnknowns in
+						let ius = [ iu | iu in seq md.modelStructure.unknowns & iu.kind = <InitialUnknown> ] in
 						{
 							-- @OnFail("2.2.8 InitialUnknowns must include refs: %s", initRefs)
-							( ius <> nil ),
+							( ius <> [] ),
 
 							-- @OnFail("2.2.8 InitialUnknowns must include refs: %s", initRefs)
-							( ius <> nil => { u.valueReference | u in seq ius } subset initRefs ),
+							( { u.valueReference | u in seq ius } subset initRefs ),
 
 							-- @OnFail("2.2.8 InitialUnknowns are not sorted: %s", [ u.valueReference | u in seq ius ])
-							( ius <> nil => 
-								forall i in set inds ius &
+							( forall i in set inds ius &
 									i = len ius or ius(i).valueReference < ius(i+1).valueReference )
 						} = {true}
 			)

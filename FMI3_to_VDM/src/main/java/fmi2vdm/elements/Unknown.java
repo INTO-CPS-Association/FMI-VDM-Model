@@ -36,10 +36,16 @@ import fmi2vdm.FMI3SaxParser;
 
 public class Unknown extends Element
 {
-	public Unknown(Attributes attributes, Locator locator)
+	public final String kind;
+	private Integer valueReference;
+	private int[] dependencies;
+	private String[] dependenciesKind;
+
+	public Unknown(String kind, Attributes attributes, Locator locator)
 	{
 		super(locator);
 
+		this.kind = kind;
 		valueReference = intOf(attributes, "valueReference");
 		String[] deps = arrayOf(stringOf(attributes, "dependencies"));
 
@@ -68,16 +74,13 @@ public class Unknown extends Element
 		dependenciesKind = arrayOf(stringOf(attributes, "dependenciesKind"));
 	}
 
-	private Integer valueReference;
-	private int[] dependencies;
-	private String[] dependenciesKind;
-
 	@Override
 	public void toVDM(String indent)
 	{
 		System.out.println(indent + "mk_Unknown");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printQuoteAttribute(indent + "\t", kind, ",\n");
 		printRawAttribute(indent + "\t", valueReference, ",\n");
 
 		if (dependencies == null)
