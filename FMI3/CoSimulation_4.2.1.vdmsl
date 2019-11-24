@@ -62,4 +62,5 @@ functions
 	 */
 	isValidCoSimulation: [CoSimulation] +> bool
 	isValidCoSimulation(cs) ==
-		isValidVendorAnnotations(cs.base.annotations);
+		cs <> nil =>
+			isValidVendorAnnotations(cs.base.annotations);

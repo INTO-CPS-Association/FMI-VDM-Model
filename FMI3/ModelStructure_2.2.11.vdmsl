@@ -38,7 +38,7 @@ types
 		location				: Location
 		kind					: UnknownKind
 		valueReference			: nat
-		dependencies			: [seq of nat1]
+		dependencies			: [seq of fmi3ValueReference]
 		dependenciesKind		: [seq of DependencyKind];
 
 	ModelStructure ::
@@ -48,7 +48,7 @@ types
 
 	NumberOfEventIndicators ::
 		location				: Location
-		dependencies			: seq1 of nat;
+		dependencies			: seq1 of fmi3ValueReference;
 
 functions
 	/**

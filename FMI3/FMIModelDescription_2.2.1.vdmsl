@@ -322,11 +322,7 @@ functions
 							( ius <> [] ),
 
 							-- @OnFail("2.2.8 InitialUnknowns must include refs: %s", initRefs)
-							( { u.valueReference | u in seq ius } subset initRefs ),
-
-							-- @OnFail("2.2.8 InitialUnknowns are not sorted: %s", [ u.valueReference | u in seq ius ])
-							( forall i in set inds ius &
-									i = len ius or ius(i).valueReference < ius(i+1).valueReference )
+							( { u.valueReference | u in seq ius } subset initRefs )
 						} = {true}
 			)
 		} = {true};

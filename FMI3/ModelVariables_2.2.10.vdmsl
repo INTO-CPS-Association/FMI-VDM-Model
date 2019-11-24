@@ -31,11 +31,20 @@
  * 2.2.10 Definition of Model Variables (ModelVariables)
  */
 types
-	-- XSD p45, description p46
-	Causality	= <parameter> | <calculatedParameter> | <input> | <output> | <local> | <independent>;
+	Causality =
+		<parameter> |
+		<calculatedParameter> |
+		<input> |
+		<output> |
+		<local> |
+		<independent>;
 
-	-- XSD p45, description p46, ordering p53 (2.0.1)
-	Variability	= <constant> | <fixed> | <tunable> | <discrete> | <continuous>
+	Variability	=
+		<constant> |
+		<fixed> |
+		<tunable> |
+		<discrete> |
+		<continuous>
 	ord a < b ==
 		let value =
 		{
@@ -47,18 +56,21 @@ types
 		}
 		in value(a) < value(b);
 
-	-- XSD p45, description p46
-	Initial		= <exact> | <approx> | <calculated>;
+	Initial =
+		<exact> |
+		<approx> |
+		<calculated>;
 
+	fmi3ValueReference = nat;
 
 	-- Common variable attributes
 	fmi3RealVariableAttributes ::
-		derivative			: [nat]
+		derivative			: [fmi3ValueReference]
 		reinit				: [bool];
 
 	Dimension ::
 		start				: [nat]
-		valueReference		: [nat];
+		valueReference		: [fmi3ValueReference];
 
 	Dimensions = seq1 of Dimension;
 
@@ -67,14 +79,14 @@ types
 		dimension							: [seq1 of Dimensions]
 		annotations							: [seq1 of fmi3Annotation]
 		name								: NormalizedString1
-		valueReference						: nat
+		valueReference						: fmi3ValueReference
 		description							: [AnyString]
 		causality							: [Causality]
 		variability							: [Variability]
 		initial								: [Initial]
 		canHandleMultipleSetPerTimeInstant	: [bool]
 		declaredType						: [NormalizedString1]
-		clockReference						: [nat]
+		clockReference						: [fmi3ValueReference]
 		intermediateAccess					: [bool];
 
 	Real ::

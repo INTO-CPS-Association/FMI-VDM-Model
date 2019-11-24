@@ -70,11 +70,12 @@ types
 functions
 	isValidGraphicalRepresentation: [GraphicalRepresentation] +> bool
 	isValidGraphicalRepresentation(gr) ==
-	{
-		isValidCoordinateSystem(gr.coordinateSystem),
-		isValidIcon(gr.icon),
-		isValidTerminal(gr.terminal)
-	} = {true};
+		gr <> nil =>
+			{
+				isValidCoordinateSystem(gr.coordinateSystem),
+				isValidIcon(gr.icon),
+				isValidTerminal(gr.terminal)
+			} = {true};
 
 	isValidCoordinateSystem: [CoordinateSystem] +> bool
 	isValidCoordinateSystem(cs) ==
@@ -100,7 +101,8 @@ functions
 				forall c in seq gt.defaultConnectionColor & c <= 255 ),
 
 			-- @OnFail("2.2.8 defaultConnectionStrokeSize must be >0 at line %s", gt.location)
-			( gt.defaultConnectionStrokeSize > 0 ),
+			( gt.defaultConnectionStrokeSize <> nil =>
+				gt.defaultConnectionStrokeSize > 0 ),
 
 			-- @OnFail("2.2.8 Terminal vendor annotations invalid at line %s", gt.location)
 			( isValidVendorAnnotations(gt.vendorAnnotations) )

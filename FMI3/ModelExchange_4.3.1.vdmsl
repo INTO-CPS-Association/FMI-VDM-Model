@@ -41,4 +41,5 @@ functions
 	 */
 	isValidModelExchange: [ModelExchange] +> bool
 	isValidModelExchange(me) ==
-		isValidVendorAnnotations(me.base.annotations);
+		me <> nil =>
+			isValidVendorAnnotations(me.base.annotations);

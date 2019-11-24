@@ -79,7 +79,7 @@ types
 functions
 	isValidBuildConfiguration: [BuildConfiguration] +> bool
 	isValidBuildConfiguration(bc) ==
-		bc.sourceFileSets <> nil =>
+		bc <> nil and bc.sourceFileSets <> nil =>
 		{
 			-- @OnFail("Invalid SourceFileSet at line %s", s.location)
 			( isValidSourceFileSet(s) ) | s in seq bc.sourceFileSets
