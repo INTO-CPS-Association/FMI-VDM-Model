@@ -53,4 +53,10 @@ abstract public class Type extends Element
 		printStringAttribute("", name, ", ");
 		printStringAttribute("", description, ")");
 	}
+	
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "name", name, true);
+	}
 }

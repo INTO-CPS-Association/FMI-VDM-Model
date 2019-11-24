@@ -34,13 +34,13 @@ import org.xml.sax.Locator;
 
 public class SourceFile extends Element
 {
+	private String name;
+
 	public SourceFile(Attributes attributes, Locator locator)
 	{
 		super(locator);
 		name = stringOf(attributes, "name");
 	}
-
-	private String name;
 
 	@Override
 	public void toVDM(String indent)
@@ -50,5 +50,11 @@ public class SourceFile extends Element
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", name, "\n");
 		System.out.print(indent + ")");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "name", name, true);
 	}
 }

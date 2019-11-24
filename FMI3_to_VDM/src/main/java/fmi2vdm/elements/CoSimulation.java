@@ -34,6 +34,15 @@ import org.xml.sax.Locator;
 
 public class CoSimulation extends FMUType
 {
+	private Boolean canHandleVariableCommunicationStepSize;
+	private Boolean canInterpolateInputs;
+	private Long maxOutputDerivativeOrder;
+	private Boolean providesIntermediateVariableAccess;
+	private Boolean canReturnEarlyAfterIntermediateUpdate;
+	private Boolean providesHybridCoSimulation;
+	private Boolean providesScheduledExecutionSimulation;
+	private Boolean canNotUseBasicCoSimulation;
+
 	public CoSimulation(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
@@ -47,15 +56,6 @@ public class CoSimulation extends FMUType
 		providesScheduledExecutionSimulation = boolOf(attributes, "providesScheduledExecutionSimulation");
 		canNotUseBasicCoSimulation = boolOf(attributes, "canNotUseBasicCoSimulation");
 	}
-
-	private Boolean canHandleVariableCommunicationStepSize;
-	private Boolean canInterpolateInputs;
-	private Long maxOutputDerivativeOrder;
-	private Boolean providesIntermediateVariableAccess;
-	private Boolean canReturnEarlyAfterIntermediateUpdate;
-	private Boolean providesHybridCoSimulation;
-	private Boolean providesScheduledExecutionSimulation;
-	private Boolean canNotUseBasicCoSimulation;
 
 	@Override
 	public void toVDM(String indent)

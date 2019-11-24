@@ -34,6 +34,17 @@ import org.xml.sax.Locator;
 
 public class BaseUnit extends Element
 {
+	private Integer kg;
+	private Integer m;
+	private Integer s;
+	private Integer A;
+	private Integer K;
+	private Integer mol;
+	private Integer cs;
+	private Integer rad;
+	private Double factor;
+	private Double offset;
+
 	public BaseUnit(Attributes attributes, Locator locator)
 	{
 		super(locator);
@@ -50,17 +61,6 @@ public class BaseUnit extends Element
 		offset = doubleOf(attributes, "offset");
 	}
 
-	private Integer kg;
-	private Integer m;
-	private Integer s;
-	private Integer A;
-	private Integer K;
-	private Integer mol;
-	private Integer cs;
-	private Integer rad;
-	private Double factor;
-	private Double offset;
-
 	@Override
 	public void toVDM(String indent)
 	{
@@ -76,5 +76,11 @@ public class BaseUnit extends Element
 		printRawAttribute("", factor, ", ");
 		printRawAttribute("", offset, "");
 		System.out.print(")");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		// None
 	}
 }

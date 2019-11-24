@@ -169,6 +169,8 @@ abstract public class Element
 	}
 
 	public abstract void toVDM(String indent);
+	
+	public abstract void validate(String root);
 
 	public void add(Element element)
 	{
@@ -276,6 +278,38 @@ abstract public class Element
 			}
 
 			System.out.print(close);
+		}
+	}
+	
+	protected void validate(String root, String name, Object value, boolean mandatory)
+	{
+		if (value == null && mandatory)
+		{
+			FMI3SaxParser.error("%s.%s must be provided", root, name);
+		}
+		else if (value instanceof String && mandatory)
+		{
+			String s = (String)value;
+			
+			if (s.isEmpty())
+			{
+				FMI3SaxParser.error("%s.%s must be provided", root, name);
+			}
+		}
+		else if (value instanceof ElementList)
+		{
+			ElementList<?> list = (ElementList<?>)value;
+			int n = 0;
+			
+			for (Element e: list)
+			{
+				e.validate(name + ".#" + (++n));
+			}
+		}
+		else if (value instanceof Element)
+		{
+			Element e = (Element)value;
+			e.validate(root + "." + name);
 		}
 	}
 }

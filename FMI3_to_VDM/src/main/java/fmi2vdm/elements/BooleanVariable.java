@@ -34,14 +34,14 @@ import org.xml.sax.Locator;
 
 public class BooleanVariable extends Variable
 {
+	private Boolean start;
+
 	public BooleanVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
 
 		start = boolOf(attributes, "start");
 	}
-
-	private Boolean start;
 
 	@Override
 	public void toVDM(String indent)

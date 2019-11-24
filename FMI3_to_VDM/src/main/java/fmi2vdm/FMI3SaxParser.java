@@ -37,6 +37,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
+import fmi2vdm.elements.FMIModelDescription;
+
 public class FMI3SaxParser
 {
 	private static int errors = 0;
@@ -45,7 +47,7 @@ public class FMI3SaxParser
 	{
 		if (args.length != 2)
 		{
-			System.err.println("Usage: FMI2SaxParser <xml file> <VDM var name>");
+			System.err.printf("Usage: %s <xml file> <VDM var name>\n", FMI3SaxParser.class.getSimpleName());
 			System.exit(1);
 		}
 
@@ -53,8 +55,14 @@ public class FMI3SaxParser
 		SAXParser saxParser = factory.newSAXParser();
 		FMI3SaxHandler handler = new FMI3SaxHandler(args[0], args[1]);
 		saxParser.parse(args[0], handler);
-
-		handler.getFMIModelDescription().toVDM("\t");
+		
+		FMIModelDescription model = handler.getFMIModelDescription();
+		model.validate("FMIModelDescription");
+		
+		if (errors == 0)
+		{
+			model.toVDM("\t");
+		}
 
 		if (errors > 0)
 		{

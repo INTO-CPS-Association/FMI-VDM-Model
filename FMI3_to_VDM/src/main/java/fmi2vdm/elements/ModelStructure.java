@@ -33,13 +33,13 @@ import org.xml.sax.Locator;
 
 public class ModelStructure extends Element
 {
+	private ElementList<Unknown> unknowns;
+	private ElementList<NumberOfEventIndicators> numberOfEventindicators;
+
 	public ModelStructure(Locator locator)
 	{
 		super(locator);
 	}
-
-	private ElementList<Unknown> unknowns;
-	private ElementList<NumberOfEventIndicators> numberOfEventindicators;
 
 	@Override
 	public void add(Element element)
@@ -94,5 +94,12 @@ public class ModelStructure extends Element
 		}
 
 		System.out.println(indent + ")");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "unknowns", unknowns, false);
+		validate(root, "numberOfEventindicators", numberOfEventindicators, false);
 	}
 }

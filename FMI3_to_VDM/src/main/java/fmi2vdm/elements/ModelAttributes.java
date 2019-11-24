@@ -34,13 +34,26 @@ import org.xml.sax.Locator;
 
 public class ModelAttributes extends Element
 {
+	private String fmiVersion;
+	private String modelName;
+	private String instantiationToken;
+	private String description;
+	private String author;
+	private String version;
+	private String copyright;
+	private String license;
+	private String generationTool;
+	private String generationDateAndTime;
+	private String variableNamingConvention;
+	private Integer numberOfEventIndicators;
+
 	public ModelAttributes(Attributes attributes, Locator locator)
 	{
 		super(locator);
 
 		fmiVersion = stringOf(attributes, "fmiVersion");
 		modelName = stringOf(attributes, "modelName");
-		guid = stringOf(attributes, "guid");
+		instantiationToken = stringOf(attributes, "instantiationToken");
 		description = stringOf(attributes, "description");
 		author = stringOf(attributes, "author");
 		version = stringOf(attributes, "version");
@@ -58,19 +71,6 @@ public class ModelAttributes extends Element
 		}
 	}
 
-	private String fmiVersion;
-	private String modelName;
-	private String guid;
-	private String description;
-	private String author;
-	private String version;
-	private String copyright;
-	private String license;
-	private String generationTool;
-	private String generationDateAndTime;
-	private String variableNamingConvention;
-	private Integer numberOfEventIndicators;
-
 	@Override
 	public void toVDM(String indent)
 	{
@@ -80,7 +80,7 @@ public class ModelAttributes extends Element
 
 		printStringAttribute(indent + "\t", fmiVersion, ",\n");
 		printStringAttribute(indent + "\t", modelName, ",\n");
-		printStringAttribute(indent + "\t", guid, ",\n");
+		printStringAttribute(indent + "\t", instantiationToken, ",\n");
 		printStringAttribute(indent + "\t", description, ",\n");
 		printStringAttribute(indent + "\t", author, ",\n");
 		printStringAttribute(indent + "\t", version, ",\n");
@@ -92,5 +92,13 @@ public class ModelAttributes extends Element
 		printRawAttribute(indent + "\t", numberOfEventIndicators, "\n");
 
 		System.out.print(indent + ")");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "fmiVersion", fmiVersion, true);
+		validate(root, "modelName", modelName, true);
+		validate(root, "instantiationToken", instantiationToken, true);
 	}
 }

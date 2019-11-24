@@ -33,12 +33,12 @@ import org.xml.sax.Locator;
 
 public class TypeDefinitions extends Element
 {
+	private ElementList<Type> typeDefinitions = null;
+
 	public TypeDefinitions(Locator locator)
 	{
 		super(locator);
 	}
-
-	private ElementList<Type> typeDefinitions = null;
 
 	@Override
 	public void add(Element element)
@@ -62,5 +62,11 @@ public class TypeDefinitions extends Element
 	public void toVDM(String indent)
 	{
 		printSet(indent, typeDefinitions, "");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "typeDefinitions", typeDefinitions, false);
 	}
 }

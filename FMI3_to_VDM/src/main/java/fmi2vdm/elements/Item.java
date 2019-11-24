@@ -34,6 +34,10 @@ import org.xml.sax.Locator;
 
 public class Item extends Element
 {
+	private String name;
+	private Integer value;
+	private String description;
+
 	public Item(Attributes attributes, Locator locator)
 	{
 		super(locator);
@@ -42,10 +46,6 @@ public class Item extends Element
 		value = intOf(attributes, "value");
 		description = stringOf(attributes, "description");
 	}
-
-	private String name;
-	private Integer value;
-	private String description;
 
 	@Override
 	public void toVDM(String indent)
@@ -58,5 +58,12 @@ public class Item extends Element
 
 		System.out.print(")");
 
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "name", name, true);
+		validate(root, "value", value, true);
 	}
 }

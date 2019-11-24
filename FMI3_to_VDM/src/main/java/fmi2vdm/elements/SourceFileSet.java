@@ -125,4 +125,12 @@ public class SourceFileSet extends Element
 
 		System.out.print(indent + ")");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "sourceFiles", sourceFiles, true);
+		validate(root, "preprocessorDefinitions", preprocessorDefinitions, false);
+		validate(root, "includeDirectories", includeDirectories, false);
+	}
 }

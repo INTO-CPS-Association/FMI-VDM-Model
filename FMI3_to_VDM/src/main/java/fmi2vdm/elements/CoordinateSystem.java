@@ -64,4 +64,14 @@ public class CoordinateSystem extends Element
 		printRawAttribute(indent + "\t", suggestedScalingFactorTo_mm, "\n");
 		System.out.print(indent + ")");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, ".x1", x1, true);
+		validate(root, ".y1", y1, true);
+		validate(root, ".x2", x2, true);
+		validate(root, ".y2", y2, true);
+		validate(root, ".suggestedScalingFactorTo_mm", suggestedScalingFactorTo_mm, true);
+	}
 }

@@ -34,6 +34,10 @@ import org.xml.sax.Locator;
 
 public class Unit extends Element
 {
+	private String name;
+	private BaseUnit baseUnit = null;
+	private ElementList<DisplayUnit> displayUnits = null;
+
 	public Unit(Attributes attributes, Locator locator)
 	{
 		super(locator);
@@ -63,10 +67,6 @@ public class Unit extends Element
 		}
 	}
 
-	private String name;
-	private BaseUnit baseUnit = null;
-	private ElementList<DisplayUnit> displayUnits = null;
-
 	@Override
 	public void toVDM(String indent)
 	{
@@ -77,5 +77,13 @@ public class Unit extends Element
 		printOptional(indent + "\t", baseUnit, ",\n");
 		printSequence(indent + "\t", displayUnits, "\n");
 		System.out.print(indent + ")");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "name", name, true);
+		validate(root, "baseUnit", baseUnit, false);
+		validate(root, "displayUnits", displayUnits, false);
 	}
 }

@@ -102,13 +102,20 @@ abstract class Variable extends Element
 		printStringAttribute("", name, ", ");
 		printRawAttribute("", valueReference, ", ");
 		printStringAttribute("", description, ", ");
-		printStringAttribute("", causality, ", ");
-		printStringAttribute("", variability, ", ");
-		printStringAttribute("", initial, ", ");
+		printQuoteAttribute("", causality, ", ");
+		printQuoteAttribute("", variability, ", ");
+		printQuoteAttribute("", initial, ", ");
 		printRawAttribute("", canHandleMultipleSetPerTimeInstant, ", ");
 		printStringAttribute("", declaredType, ", ");
 		printRawAttribute("", clockReference, ", ");
 		printRawAttribute("", intermediateAccess, "");
 		System.out.print(")");
+	}
+	
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "name", name, true);
+		validate(root, "valueReference", valueReference, true);
 	}
 }

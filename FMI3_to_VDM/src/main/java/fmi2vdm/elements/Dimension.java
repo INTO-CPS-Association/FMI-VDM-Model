@@ -34,6 +34,9 @@ import org.xml.sax.Locator;
 
 public class Dimension extends Element
 {
+	private Integer start;
+	private Integer valueReference;
+
 	public Dimension(Attributes attributes, Locator locator)
 	{
 		super(locator);
@@ -42,14 +45,17 @@ public class Dimension extends Element
 		valueReference = intOf(attributes, "valueReference");
 	}
 
-	private Integer start;
-	private Integer valueReference;
-
 	@Override
 	public void toVDM(String indent)
 	{
 		System.out.print(indent + "mk_Dimension(");
 		printRawAttribute("", start, ", ");
 		printRawAttribute("", valueReference, ")");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		// None
 	}
 }

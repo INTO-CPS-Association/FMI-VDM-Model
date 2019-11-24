@@ -61,4 +61,10 @@ public class Library extends Element
 		printStringAttribute(indent + "\t", description, "\n");
 		System.out.println(indent + ")");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "name", name, true);
+	}
 }

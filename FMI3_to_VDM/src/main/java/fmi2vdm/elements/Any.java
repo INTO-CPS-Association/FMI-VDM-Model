@@ -72,4 +72,10 @@ public class Any extends Element
 	{
 		// Ignore - see Tool.java
 	}
+	
+	@Override
+	public void validate(String root)
+	{
+		// None
+	}
 }

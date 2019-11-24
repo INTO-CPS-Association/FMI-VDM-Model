@@ -106,4 +106,12 @@ public class BuildConfiguration extends Element
 
 		System.out.print(indent + ")");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "modelIdentifier", modelIdentifier, true);
+		validate(root, "sourceFileSets", sourceFileSets, false);
+		validate(root, "libraries", libraries, false);
+	}
 }

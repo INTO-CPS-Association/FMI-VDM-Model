@@ -33,6 +33,8 @@ import org.xml.sax.Locator;
 
 public class Terminals extends Element
 {
+	private ElementList<Terminal> terminals = null;
+
 	public Terminals(Locator locator)
 	{
 		super(locator);
@@ -56,11 +58,15 @@ public class Terminals extends Element
 		}
 	}
 
-	private ElementList<Terminal> terminals = null;
-
 	@Override
 	public void toVDM(String indent)
 	{
 		printSequence(indent, terminals, "");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "terminals", terminals, false);
 	}
 }

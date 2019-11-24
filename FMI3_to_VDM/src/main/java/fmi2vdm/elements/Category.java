@@ -34,6 +34,9 @@ import org.xml.sax.Locator;
 
 public class Category extends Element
 {
+	private String name;
+	private String description;
+
 	public Category(Attributes attributes, Locator locator)
 	{
 		super(locator);
@@ -41,9 +44,6 @@ public class Category extends Element
 		name = stringOf(attributes, "name");
 		description = stringOf(attributes, "description");
 	}
-
-	private String name;
-	private String description;
 
 	@Override
 	public void toVDM(String indent)
@@ -54,5 +54,11 @@ public class Category extends Element
 		printStringAttribute(indent + "\t", name, ",\n");
 		printStringAttribute(indent + "\t", description, "\n");
 		System.out.print(indent + ")");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "name", name, true);
 	}
 }

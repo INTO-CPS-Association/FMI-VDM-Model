@@ -34,6 +34,11 @@ import org.xml.sax.Locator;
 
 public class EnumerationVariable extends Variable
 {
+	private String quantity;
+	private Double min;
+	private Double max;
+	private Double start;
+
 	public EnumerationVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
@@ -43,11 +48,6 @@ public class EnumerationVariable extends Variable
 		max = doubleOf(attributes, "max");
 		start = doubleOf(attributes, "start");
 	}
-
-	private String quantity;
-	private Double min;
-	private Double max;
-	private Double start;
 
 	@Override
 	public void toVDM(String indent)

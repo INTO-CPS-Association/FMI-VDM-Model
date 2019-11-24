@@ -102,4 +102,12 @@ public class GraphicalRepresentation extends Element
 
 		System.out.print(indent + ")");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "coordinateSystem", coordinateSystem, false);
+		validate(root, "icon", icon, false);
+		validate(root, "terminal", terminal, false);
+	}
 }

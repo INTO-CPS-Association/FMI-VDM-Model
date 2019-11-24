@@ -34,6 +34,11 @@ import org.xml.sax.Locator;
 
 public class IntegerVariable extends Variable
 {
+	private String quantity;
+	private Integer min;
+	private Integer max;
+	private Integer start;
+
 	public IntegerVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
@@ -43,11 +48,6 @@ public class IntegerVariable extends Variable
 		max = intOf(attributes, "max");
 		start = intOf(attributes, "start");
 	}
-
-	private String quantity;
-	private Integer min;
-	private Integer max;
-	private Integer start;
 
 	@Override
 	public void toVDM(String indent)

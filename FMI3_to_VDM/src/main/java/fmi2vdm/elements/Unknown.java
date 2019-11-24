@@ -121,4 +121,10 @@ public class Unknown extends Element
 
 		System.out.print(indent + ")");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "valueReference", valueReference, true);
+	}
 }

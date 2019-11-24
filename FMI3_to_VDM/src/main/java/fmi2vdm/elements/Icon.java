@@ -67,4 +67,14 @@ public class Icon extends Element
 		printStringAttribute(indent + "\t", iconSource_SVG, "\n");
 		System.out.print(indent + ")");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, ".x1", x1, true);
+		validate(root, ".y1", y1, true);
+		validate(root, ".x2", x2, true);
+		validate(root, ".y2", y2, true);
+		validate(root, ".iconSource_PNG", iconSource_PNG, true);
+	}
 }

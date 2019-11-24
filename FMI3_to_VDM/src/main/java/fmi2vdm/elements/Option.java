@@ -55,4 +55,10 @@ public class Option extends Element
 		printStringAttribute(indent + "\t", description, "\n");
 		System.out.print(indent + ")");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		// None
+	}
 }

@@ -34,6 +34,9 @@ import org.xml.sax.Locator;
 
 public class Tool extends Element
 {
+	private String name;
+	private String annotation;
+
 	public Tool(Attributes attributes, Locator locator)
 	{
 		super(locator);
@@ -60,9 +63,6 @@ public class Tool extends Element
 		}
 	}
 
-	private String name;
-	private String annotation;
-
 	@Override
 	public void toVDM(String indent)
 	{
@@ -80,5 +80,11 @@ public class Tool extends Element
 		}
 
 		System.out.print(")");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "name", name, true);
 	}
 }

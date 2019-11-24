@@ -34,6 +34,11 @@ import org.xml.sax.Locator;
 
 public class DefaultExperiment extends Element
 {
+	private Double startTime;
+	private Double stopTime;
+	private Double tolerance;
+	private Double stepSize;
+
 	public DefaultExperiment(Attributes attributes, Locator locator)
 	{
 		super(locator);
@@ -43,11 +48,6 @@ public class DefaultExperiment extends Element
 		tolerance = doubleOf(attributes, "tolerance");
 		stepSize = doubleOf(attributes, "stepSize");
 	}
-
-	private Double startTime;
-	private Double stopTime;
-	private Double tolerance;
-	private Double stepSize;
 
 	@Override
 	public void toVDM(String indent)
@@ -60,5 +60,11 @@ public class DefaultExperiment extends Element
 		printRawAttribute(indent + "\t", tolerance, ",\n");
 		printRawAttribute(indent + "\t", stepSize, "\n");
 		System.out.print(indent + ")");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		// None
 	}
 }

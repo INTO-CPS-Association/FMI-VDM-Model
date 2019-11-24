@@ -92,4 +92,10 @@ public class NumberOfEventIndicators extends Element
 
 		System.out.print(")");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		// None
+	}
 }

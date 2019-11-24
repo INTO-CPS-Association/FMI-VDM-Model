@@ -95,4 +95,11 @@ public class FMUType extends Element
 		printRawAttribute(indent + "\t", providesPerElementDependencies, "\n");
 		System.out.print(indent + ")");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "modelIdentifier", modelIdentifier, true);
+		validate(root, "annotations", annotations, false);
+	}
 }

@@ -34,13 +34,13 @@ import org.xml.sax.Locator;
 
 public class ClockVariable extends Variable
 {
+	private Boolean start;
+
 	public ClockVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
 		start = boolOf(attributes, "start");
 	}
-
-	private Boolean start;
 
 	@Override
 	public void toVDM(String indent)

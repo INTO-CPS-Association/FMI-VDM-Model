@@ -188,4 +188,22 @@ public class FMIModelDescription extends Element
 			System.out.print(indent + "\tnil");
 		}
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "modelAttributes", modelAttributes, true);
+		validate(root, "coSimulation", coSimulation, false);
+		validate(root, "modelExchange", modelExchange, false);
+		validate(root, "buildConfiguration", buildConfiguration, false);
+		validate(root, "unitDefinitions", unitDefinitions, false);
+		validate(root, "typeDefinitions", typeDefinitions, false);
+		validate(root, "logCategories", logCategories, false);
+		validate(root, "defaultExperiment", defaultExperiment, false);
+		validate(root, "terminals", terminals, false);
+		validate(root, "graphicalRepresentation", graphicalRepresentation, false);
+		validate(root, "vendorAnnotations", vendorAnnotations, false);
+		validate(root, "modelVariables", modelVariables, true);
+		validate(root, "modelStructure", modelStructure, true);
+	}
 }

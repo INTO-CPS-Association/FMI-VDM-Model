@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0" modelName="Test FMU"
-	guid="{111-222-333-444}">
+	instantiationToken="{111-222-333-444}">
 	<CoSimulation modelIdentifier="Test FMU">
 		<Annotations>
 			<Tool name="one">

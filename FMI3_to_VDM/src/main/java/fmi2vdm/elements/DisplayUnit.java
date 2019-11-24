@@ -34,6 +34,10 @@ import org.xml.sax.Locator;
 
 public class DisplayUnit extends Element
 {
+	private String name;
+	private Double factor;
+	private Double offset;
+
 	public DisplayUnit(Attributes attributes, Locator locator)
 	{
 		super(locator);
@@ -42,10 +46,6 @@ public class DisplayUnit extends Element
 		factor = doubleOf(attributes, "factor");
 		offset = doubleOf(attributes, "offset");
 	}
-
-	private String name;
-	private Double factor;
-	private Double offset;
 
 	@Override
 	public void toVDM(String indent)
@@ -56,5 +56,11 @@ public class DisplayUnit extends Element
 		printRawAttribute(indent + "\t", factor, ",\n");
 		printRawAttribute(indent + "\t", offset, "\n");
 		System.out.print(indent + ")");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, ".name", name, true);
 	}
 }

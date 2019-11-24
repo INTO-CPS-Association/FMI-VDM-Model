@@ -63,4 +63,10 @@ public class ModelVariables extends Element
 	{
 		printSequence(indent, modelVariables, "");
 	}
+
+	@Override
+	public void validate(String root)
+	{
+		validate(root, "modelVariables", modelVariables, true);
+	}
 }

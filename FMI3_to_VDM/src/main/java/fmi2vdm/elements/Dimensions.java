@@ -33,12 +33,12 @@ import org.xml.sax.Locator;
 
 public class Dimensions extends Element
 {
+	private ElementList<Dimension> dimensions = null;
+
 	public Dimensions(Locator locator)
 	{
 		super(locator);
 	}
-
-	private ElementList<Dimension> dimensions = null;
 
 	@Override
 	public void add(Element element)
@@ -62,5 +62,11 @@ public class Dimensions extends Element
 	public void toVDM(String indent)
 	{
 		printSeqSetLine(indent, dimensions, "[", "]");
+	}
+
+	@Override
+	public void validate(String root)
+	{
+		// None
 	}
 }
