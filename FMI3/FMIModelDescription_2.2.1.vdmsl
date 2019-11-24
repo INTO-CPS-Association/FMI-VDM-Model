@@ -35,7 +35,7 @@ types
 		location					: Location
 		fmiVersion					: NormalizedString1
 		modelName					: AnyString
-		guid						: NormalizedString1
+		instantiationToken			: NormalizedString1
 		description					: [AnyString]
 		author						: [AnyString]
 		version						: [NormalizedString1]

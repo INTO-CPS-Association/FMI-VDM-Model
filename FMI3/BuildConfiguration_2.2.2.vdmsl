@@ -34,16 +34,16 @@ types
 	BuildConfiguration ::
 		location				: Location
 		modelIdentifier			: NormalizedString1
-		platform				: NormalizedString1
-		description				: NormalizedString1
+		platform				: [NormalizedString1]
+		description				: [NormalizedString1]
 		sourceFileSets			: [seq1 of SourceFileSet]
 		libraries				: [seq1 of Library];
 
 	SourceFileSet ::
 		location				: Location
-		language				: NormalizedString1
-		compiler				: NormalizedString1
-		compilerOptions			: AnyString
+		language				: [NormalizedString1]
+		compiler				: [NormalizedString1]
+		compilerOptions			: [AnyString]
 		sourceFiles				: seq1 of SourceFile
 		preprocessorDefinitions	: [seq1 of PreprocessorDefinition]
 		includeDirectories		: [seq1 of IncludeDirectory];
@@ -62,8 +62,8 @@ types
 
 	Option ::
 		location				: Location
-		value					: NormalizedString1
-		description				: AnyString;
+		value					: [NormalizedString1]
+		description				: [AnyString];
 
 	IncludeDirectory ::
 		location				: Location
