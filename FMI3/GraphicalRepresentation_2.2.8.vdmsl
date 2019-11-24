@@ -65,9 +65,44 @@ types
 		y2							: real
 		iconSource_PNG				: AnyString
 		iconSource_SVG				: [AnyString]
-		vendorAnnotations			: [seq1 of Tool];
+		vendorAnnotations			: [fmi3Annotation];
 
 functions
 	isValidGraphicalRepresentation: [GraphicalRepresentation] +> bool
-	isValidGraphicalRepresentation(-) ==
-		true;	-- TODO!
+	isValidGraphicalRepresentation(gr) ==
+	{
+		isValidCoordinateSystem(gr.coordinateSystem),
+		isValidIcon(gr.icon),
+		isValidTerminal(gr.terminal)
+	} = {true};
+
+	isValidCoordinateSystem: [CoordinateSystem] +> bool
+	isValidCoordinateSystem(cs) ==
+		cs <> nil =>
+		{
+			-- @OnFail("2.2.8 Coordinate area is not bottom left to top right at line %s", cs.location)
+			( cs.x1 < cs.x2 and cs.y1 < cs.y2 ),
+
+			-- @OnFail("2.2.8 suggestedScalingFactorTo_mm must be >0 at line %s", cs.location)
+			( cs.suggestedScalingFactorTo_mm > 0 )
+		} = {true};
+
+	isValidIcon: [Icon] +> bool
+	isValidIcon(-) ==
+		true;	-- TODO?
+
+	isValidTerminal: [GraphicalTerminal] +> bool
+	isValidTerminal(gt) ==
+		gt <> nil =>
+		{
+			-- @OnFail("2.2.8 Colour attributes must be octets (<=255) at line %s", gt.location)
+			( gt.defaultConnectionColor <> nil =>
+				forall c in seq gt.defaultConnectionColor & c <= 255 ),
+
+			-- @OnFail("2.2.8 defaultConnectionStrokeSize must be >0 at line %s", gt.location)
+			( gt.defaultConnectionStrokeSize > 0 ),
+
+			-- @OnFail("2.2.8 Terminal vendor annotations invalid at line %s", gt.location)
+			( isValidVendorAnnotations(gt.vendorAnnotations) )
+		}
+		= {true};

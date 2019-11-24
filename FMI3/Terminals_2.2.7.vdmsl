@@ -55,5 +55,10 @@ types
 
 functions
 	isValidTerminals: [seq1 of Terminal] +> bool
-	isValidTerminals(-) ==
-		true;	-- TODO!
+	isValidTerminals(terminals) ==
+		terminals <> nil =>
+		{
+			-- @OnFail("Terminal member variables not unique at line %s", t.location)
+			( card { v | v in seq t.variables } = len t.variables ) | t in seq terminals
+		}
+		= {true};

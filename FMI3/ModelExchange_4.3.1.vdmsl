@@ -40,5 +40,5 @@ functions
 	 * Check ModelExchange values.
 	 */
 	isValidModelExchange: [ModelExchange] +> bool
-	isValidModelExchange(-) ==
-		true;	-- TODO!
+	isValidModelExchange(me) ==
+		isValidVendorAnnotations(me.base.annotations);

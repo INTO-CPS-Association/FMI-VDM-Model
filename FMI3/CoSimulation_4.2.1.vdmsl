@@ -61,5 +61,5 @@ functions
 	 * Check CoSimulation values.
 	 */
 	isValidCoSimulation: [CoSimulation] +> bool
-	isValidCoSimulation(-) ==
-		true;	-- TODO!
+	isValidCoSimulation(cs) ==
+		isValidVendorAnnotations(cs.base.annotations);

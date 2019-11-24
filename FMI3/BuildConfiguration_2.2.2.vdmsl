@@ -78,5 +78,20 @@ types
 
 functions
 	isValidBuildConfiguration: [BuildConfiguration] +> bool
-	isValidBuildConfiguration(-) ==
-		true;	-- TODO!
+	isValidBuildConfiguration(bc) ==
+		bc.sourceFileSets <> nil =>
+		{
+			-- @OnFail("Invalid SourceFileSet at line %s", s.location)
+			( isValidSourceFileSet(s) ) | s in seq bc.sourceFileSets
+		}
+		= {true};
+
+	isValidSourceFileSet: SourceFileSet +> bool
+	isValidSourceFileSet(s) ==
+		/* @OnFail("2.2.2 SourceFileSet has duplicate names: %s at line %s",
+			let sfs = s.sourceFiles in
+				{ sfs(a).name | a, b in set inds sfs &
+					a <> b and sfs(a).name = sfs(b).name },
+			s.location)
+		 */
+		( card { sf.name | sf in seq s.sourceFiles } = len s.sourceFiles );
