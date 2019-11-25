@@ -32,6 +32,7 @@
  */
 types
 	Causality =
+		<structuralParameter> |
 		<parameter> |
 		<calculatedParameter> |
 		<input> |
@@ -44,7 +45,8 @@ types
 		<fixed> |
 		<tunable> |
 		<discrete> |
-		<continuous>
+		<continuous> |
+		<clock>
 	ord a < b ==
 		let value =
 		{
@@ -52,7 +54,8 @@ types
 			<fixed>      |-> 2,
 			<tunable>    |-> 3,
 			<discrete>   |-> 4,
-			<continuous> |-> 5
+			<continuous> |-> 5,
+			<clock>      |-> 6
 		}
 		in value(a) < value(b);
 
@@ -180,20 +183,23 @@ functions
 		} = {true};
 
 	/**
-	 * Raw Variable invariant. Rules defined in the table on p49.
+	 * Raw Variable invariant. Rules defined in 2.2.10.
 	 */
 	isValidScalarVariable: Variable +> bool
 	isValidScalarVariable(sv) ==
 		let eCausality   = effectiveCausality(sv.base.causality),
-			eVariability = effectiveVariability(sv.base.variability),
+			eVariability = effectiveVariability(sv),
 			eInitial     = effectiveInitial(sv.base.initial, eCausality, eVariability)
 		in
 		{
-			-- Table on p46 defining causality, and p48/49 defining combinations
 			/* @OnFail("2.2.10 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
 				sv.base.name, eCausality, eVariability, eInitial, sv.start, sv.base.location) */
 			(
 				cases eCausality:
+					<structuralParameter> ->
+						eVariability in set {<fixed>, <tunable>}
+						and eInitial = <exact>,	-- (A)
+
 					<parameter> ->
 						eVariability in set {<fixed>, <tunable>}
 						and eInitial = <exact>,		-- (A)
@@ -242,7 +248,6 @@ functions
 				end
 			),
 
-			-- Table on p46 defining variability, and p49 defining combinations
 			/* @OnFail("2.2.10 Variable %s variability/causality %s/%s invalid at line %s",
 				sv.base.name, eVariability, eCausality, sv.base.location) */
 			(
@@ -259,11 +264,13 @@ functions
 					<continuous> ->
 						eCausality in set {<input>, <output>, <local>, <independent>}
 						-- @OnFail("2.2.10 Continuous variable must be Real at line %s", sv.base.location)
-						and (is_Real(sv))
+						and (is_Real(sv)),
+
+					<clock> ->
+						eCausality in set {<input>, <output>}
 				end
 			),
 
-			-- Table on p47 defining initial
 			/* @OnFail("2.2.10 Variable %s initial/causality %s/%s invalid at %s",
 				sv.base.name, sv.base.initial, eCausality, sv.base.location) */
 			(
@@ -271,7 +278,6 @@ functions
 					(eCausality not in set {<input>, <independent>})
 			),
 
-			-- Table on p47 defining initial
 			/* @OnFail("2.2.10 Variable %s initial/variability/start %s/%s/%s invalid at line %s",
 				sv.base.name, eInitial, eVariability, sv.start, sv.base.location) */
 			(
@@ -287,7 +293,7 @@ functions
 						sv.start = nil
 						and eVariability <> <constant>,
 
-					nil ->		-- Note that eInitial can be nil (undefined in table on p48)
+					nil ->		-- Note that eInitial can be nil
 						true	-- Tests on eInitial above are sufficient
 				end
 			),
@@ -436,11 +442,11 @@ functions
 		then <local>
 		else c;
 
-	effectiveVariability: [Variability] -> Variability
+	effectiveVariability: Variable -> Variability
 	effectiveVariability(v) ==
-		if v = nil
-		then <continuous>
-		else v;
+		if v.base.variability = nil
+		then if is_Real(v) then <continuous> else <discrete>
+		else v.base.variability;
 
 	/**
 	 * Generate all of the effective Variables. Note that an effective "time"
@@ -493,7 +499,7 @@ functions
 	effectiveVariable: Variable * [set1 of VariableType] +> Variable
 	effectiveVariable(v, typedefs) ==
 		let causality	= effectiveCausality(v.base.causality),
-			variability	= effectiveVariability(v.base.variability),
+			variability	= effectiveVariability(v),
 			initial		= effectiveInitial(v.base.initial, causality, variability),
 			newbase		= mu(v.base,
 				causality	|-> causality,
