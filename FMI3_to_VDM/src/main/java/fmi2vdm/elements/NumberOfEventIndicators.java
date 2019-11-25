@@ -32,38 +32,15 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-import fmi2vdm.FMI3SaxParser;
-
 public class NumberOfEventIndicators extends Element
 {
-	private int[] dependencies;
+	private Integer[] dependencies;
 
 	public NumberOfEventIndicators(Attributes attributes, Locator locator)
 	{
 		super(locator);
 
-		String[] deps = arrayOf(stringOf(attributes, "dependencies"));
-
-		if (deps == null)
-		{
-			dependencies = null;
-		}
-		else
-		{
-			dependencies = new int[deps.length];
-			for (int i = 0; i < deps.length; i++)
-			{
-				try
-				{
-					dependencies[i] = Integer.parseInt(deps[i]);
-				}
-				catch (NumberFormatException e)
-				{
-					FMI3SaxParser.error(e.toString() + " at " + lineNumber);
-					dependencies[i] = new Integer(0);
-				}
-			}
-		}
+		dependencies = intsOf(attributes, "dependencies");
 	}
 
 	@Override
@@ -71,25 +48,7 @@ public class NumberOfEventIndicators extends Element
 	{
 		System.out.print(indent + "mk_NumberOfEventIndicators(");
 		System.out.print(lineNumber + ", ");
-
-		if (dependencies == null)
-		{
-			System.out.print("[]");
-		}
-		else
-		{
-			System.out.print("[");
-			String sep = "";
-
-			for (Integer d : dependencies)
-			{
-				System.out.print(sep + d);
-				sep = ", ";
-			}
-
-			System.out.print("]");
-		}
-
+		printSequence(indent, dependencies, "");
 		System.out.print(")");
 	}
 

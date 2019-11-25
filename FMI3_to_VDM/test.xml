@@ -106,7 +106,7 @@
 		<Output valueReference="3" dependencies="1" dependenciesKind="dependent" />
 		<Derivative valueReference="1" dependencies="1" dependenciesKind="dependent" />
 		<Derivative valueReference="2" dependencies="1" dependenciesKind="dependent" />
-		<InitialUnknown valueReference="1" dependencies="1" dependenciesKind="dependent" />
+		<InitialUnknown valueReference="1" dependencies="1 22 333" dependenciesKind="dependent local other" />
 		<InitialUnknown valueReference="2" dependencies="1" dependenciesKind="dependent" />
 		<NumberOfEventIndicators dependencies="1 2 3" />
 		<NumberOfEventIndicators dependencies="4 5 6" />

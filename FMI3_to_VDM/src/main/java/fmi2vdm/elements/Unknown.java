@@ -32,13 +32,11 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-import fmi2vdm.FMI3SaxParser;
-
 public class Unknown extends Element
 {
 	public final String kind;
 	private Integer valueReference;
-	private int[] dependencies;
+	private Integer[] dependencies;
 	private String[] dependenciesKind;
 
 	public Unknown(String kind, Attributes attributes, Locator locator)
@@ -47,31 +45,8 @@ public class Unknown extends Element
 
 		this.kind = kind;
 		valueReference = intOf(attributes, "valueReference");
-		String[] deps = arrayOf(stringOf(attributes, "dependencies"));
-
-		if (deps == null)
-		{
-			dependencies = null;
-		}
-		else
-		{
-			dependencies = new int[deps.length];
-
-			for (int i = 0; i < deps.length; i++)
-			{
-				try
-				{
-					dependencies[i] = Integer.parseInt(deps[i]);
-				}
-				catch (NumberFormatException e)
-				{
-					FMI3SaxParser.error(e.toString() + " at " + lineNumber);
-					dependencies[i] = new Integer(0);
-				}
-			}
-		}
-
-		dependenciesKind = arrayOf(stringOf(attributes, "dependenciesKind"));
+		dependencies = intsOf(attributes, "dependencies");
+		dependenciesKind = stringsOf(attributes, "dependenciesKind");
 	}
 
 	@Override
@@ -82,43 +57,8 @@ public class Unknown extends Element
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printQuoteAttribute(indent + "\t", kind, ",\n");
 		printRawAttribute(indent + "\t", valueReference, ",\n");
-
-		if (dependencies == null)
-		{
-			System.out.println(indent + "\tnil,");
-		}
-		else
-		{
-			System.out.print(indent + "\t[");
-			String sep = "";
-
-			for (Integer d : dependencies)
-			{
-				System.out.print(sep + d);
-				sep = ", ";
-			}
-
-			System.out.println("],");
-		}
-
-		if (dependenciesKind == null)
-		{
-			System.out.println(indent + "\tnil");
-		}
-		else
-		{
-			System.out.print(indent + "\t[");
-			String sep = "";
-
-			for (String dk : dependenciesKind)
-			{
-				System.out.print(sep + "<" + dk + ">");
-				sep = ", ";
-			}
-
-			System.out.println("]");
-		}
-
+		printSequence(indent + "\t", dependencies, ",\n");
+		printQuoteSequence(indent + "\t", dependenciesKind, ",\n");
 		System.out.print(indent + ")");
 	}
 

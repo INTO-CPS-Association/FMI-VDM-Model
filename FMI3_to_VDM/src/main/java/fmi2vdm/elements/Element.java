@@ -59,6 +59,30 @@ abstract public class Element
 		}
 	}
 
+	protected String[] stringsOf(Attributes attributes, String name)
+	{
+		String value = attributes.getValue(name);
+
+		if (value == null)
+		{
+			return null;
+		}
+		else
+		{
+			value = value.replace("\\", "\\\\").replace("\"", "\\\"");
+			String[] array = value.split("\\s+");
+
+			if (array.length == 1 && array[0].isEmpty())
+			{
+				return null;
+			}
+			else
+			{
+				return array;
+			}
+		}
+	}
+
 	protected Integer intOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
@@ -78,6 +102,36 @@ abstract public class Element
 				FMI3SaxParser.error(e.toString() + " at " + lineNumber);
 				return new Integer(0);
 			}
+		}
+	}
+
+	protected Integer[] intsOf(Attributes attributes, String name)
+	{
+		String[] values = stringsOf(attributes, name);
+
+		if (values == null)
+		{
+			return null;
+		}
+		else
+		{
+			Integer[] array = new Integer[values.length];
+			int i=0;
+			
+			for (String sv: values)
+			{
+				try
+				{
+					array[i++] = Integer.parseInt(sv);
+				}
+				catch (NumberFormatException e)
+				{
+					FMI3SaxParser.error(e.toString() + " at " + lineNumber);
+					return null;
+				}
+			}
+			
+			return array;
 		}
 	}
 
@@ -257,6 +311,48 @@ abstract public class Element
 	protected void printSequence(String indent, List<? extends Element> items, String tail)
 	{
 		printSeqSet(indent, items, tail, "[", "]");
+	}
+
+	protected void printSequence(String indent, Object[] items, String tail)
+	{
+		if (items == null)
+		{
+			System.out.print(indent + "[]");
+		}
+		else
+		{
+			System.out.print(indent + "[");
+			String sep = "";
+
+			for (Object d : items)
+			{
+				System.out.print(sep + d);
+				sep = ", ";
+			}
+
+			System.out.print("]" + tail);
+		}
+	}
+
+	protected void printQuoteSequence(String indent, String[] items, String tail)
+	{
+		if (items == null)
+		{
+			System.out.print(indent + "[]");
+		}
+		else
+		{
+			System.out.print(indent + "[");
+			String sep = "";
+
+			for (Object d : items)
+			{
+				System.out.print(sep + "<" + d + ">");
+				sep = ", ";
+			}
+
+			System.out.print("]" + tail);
+		}
 	}
 
 	protected void printSet(String indent, List<? extends Element> items, String tail)
