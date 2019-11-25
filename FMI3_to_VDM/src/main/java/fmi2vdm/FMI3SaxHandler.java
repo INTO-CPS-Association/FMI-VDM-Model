@@ -49,7 +49,6 @@ import fmi2vdm.elements.CoSimulation;
 import fmi2vdm.elements.CoordinateSystem;
 import fmi2vdm.elements.DefaultExperiment;
 import fmi2vdm.elements.Dimension;
-import fmi2vdm.elements.Dimensions;
 import fmi2vdm.elements.DisplayUnit;
 import fmi2vdm.elements.EnumerationType;
 import fmi2vdm.elements.EnumerationVariable;
@@ -76,6 +75,7 @@ import fmi2vdm.elements.RealVariable;
 import fmi2vdm.elements.RealType;
 import fmi2vdm.elements.SourceFileSet;
 import fmi2vdm.elements.SourceFiles;
+import fmi2vdm.elements.Start;
 import fmi2vdm.elements.StringType;
 import fmi2vdm.elements.StringVariable;
 import fmi2vdm.elements.Terminal;
@@ -172,9 +172,6 @@ public class FMI3SaxHandler extends DefaultHandler
 				}
 				break;
 				
-			case "Dimensions":
-				stack.push(new Dimensions(locator));
-				break;
 			case "Dimension":
 				stack.push(new Dimension(attributes, locator));
 				break;
@@ -243,6 +240,10 @@ public class FMI3SaxHandler extends DefaultHandler
 
 			case "Item":
 				stack.push(new Item(attributes, locator));
+				break;
+				
+			case "Start":
+				stack.push(new Start(attributes, locator));
 				break;
 
 			case "Clock":

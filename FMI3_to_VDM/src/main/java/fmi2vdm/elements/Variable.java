@@ -34,7 +34,7 @@ import org.xml.sax.Locator;
 
 abstract class Variable extends Element
 {
-	private ElementList<Dimensions> dimensions;
+	private ElementList<Dimension> dimensions;
 	private ElementList<VendorAnnotations> annotations;
 	private String name;
 	private Integer valueReference;
@@ -66,11 +66,11 @@ abstract class Variable extends Element
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof Dimensions)
+		if (element instanceof Dimension)
 		{
 			if (dimensions == null)
 			{
-				dimensions = new ElementList<Dimensions>();
+				dimensions = new ElementList<Dimension>();
 			}
 			
 			dimensions.add(element);
@@ -93,23 +93,23 @@ abstract class Variable extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_fmi3VariableBase(");
-		System.out.print(lineNumber + ", ");
-		printSeqSetLine("", dimensions, "[", "]");
-		System.out.print(", ");
-		printSeqSetLine("", annotations, "[", "]");
-		System.out.print(", ");
-		printStringAttribute("", name, ", ");
-		printRawAttribute("", valueReference, ", ");
-		printStringAttribute("", description, ", ");
-		printQuoteAttribute("", causality, ", ");
-		printQuoteAttribute("", variability, ", ");
-		printQuoteAttribute("", initial, ", ");
-		printRawAttribute("", canHandleMultipleSetPerTimeInstant, ", ");
-		printStringAttribute("", declaredType, ", ");
-		printRawAttribute("", clockReference, ", ");
-		printRawAttribute("", intermediateAccess, "");
-		System.out.print(")");
+		System.out.println(indent + "mk_fmi3VariableBase");
+		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",");
+		printStringAttribute(indent + "\t", name, ",\n");
+		printRawAttribute(indent + "\t", valueReference, ",\n");
+		printStringAttribute(indent + "\t", description, ",\n");
+		printQuoteAttribute(indent + "\t", causality, ",\n");
+		printQuoteAttribute(indent + "\t", variability, ",\n");
+		printQuoteAttribute(indent + "\t", initial, ",\n");
+		printRawAttribute(indent + "\t", canHandleMultipleSetPerTimeInstant, ",\n");
+		printStringAttribute(indent + "\t", declaredType, ",\n");
+		printRawAttribute(indent + "\t", clockReference, ",\n");
+		printRawAttribute(indent + "\t", intermediateAccess, ",\n");
+		
+		printSequence(indent + "\t", dimensions, ",\n");
+		printSequence(indent + "\t", annotations, "\n");
+		System.out.print(indent + ")");
 	}
 	
 	@Override
@@ -117,5 +117,7 @@ abstract class Variable extends Element
 	{
 		validate(root, "name", name, true);
 		validate(root, "valueReference", valueReference, true);
+		validate(root, "dimensions", dimensions, false);
+		validate(root, "annotations", annotations, false);
 	}
 }

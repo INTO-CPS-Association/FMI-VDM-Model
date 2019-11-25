@@ -34,22 +34,39 @@ import org.xml.sax.Locator;
 
 public class StringVariable extends Variable
 {
+	private ElementList<Start> starts;
+
 	public StringVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-
-		start = stringOf(attributes, "start");
 	}
 
-	private String start;
-
+	@Override
+	public void add(Element element)
+	{
+		if (element instanceof Start)
+		{
+			if (starts == null)
+			{
+				starts = new ElementList<Start>();
+			}
+			
+			starts.add(element);
+		}
+		else
+		{
+			super.add(element);
+		}
+	}
+	
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_String(");
-		super.toVDM("");	// base
-		System.out.print(", ");
-		printRawAttribute("", start, "");
-		System.out.print(")");
+		System.out.println(indent + "mk_String");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");	// base
+		System.out.println(",");
+		printSequence(indent + "\t", starts, "\n");
+		System.out.print(indent + ")");
 	}
 }

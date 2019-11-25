@@ -62,10 +62,8 @@
 	</TypeDefinitions>
 	<ModelVariables>
 		<Float64 name="a" valueReference="1">
-			<Dimensions>
-				<Dimension start="3" />
-				<Dimension start="2" />
-			</Dimensions>
+			<Dimension start="3" />
+			<Dimension start="2" />
 			<Annotations>
 				<Tool name="one"><stuff></stuff></Tool>
 				<Tool name="two"><more></more></Tool>
@@ -73,7 +71,10 @@
 		</Float64>
 		<Int64 name="b" valueReference="2" />
 		<Boolean name="c" valueReference="3" />
-		<String name="d" valueReference="4" />
+		<String name="d" valueReference="4">
+			<Start value="123" />
+			<Start value="456" />
+		</String>
 		<Binary name="e" valueReference="5" />
 		<Enumeration name="f" valueReference="5"  declaredType="f"/>
 		<Clock name="g" valueReference="6" />

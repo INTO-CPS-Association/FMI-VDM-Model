@@ -72,12 +72,11 @@ types
 		start				: [nat]
 		valueReference		: [fmi3ValueReference];
 
-	Dimensions = seq1 of Dimension;
+	Start ::
+		value				: AnyString;
 
 	fmi3VariableBase ::
 		location							: Location
-		dimension							: [seq1 of Dimensions]
-		annotations							: [seq1 of fmi3Annotation]
 		name								: NormalizedString1
 		valueReference						: fmi3ValueReference
 		description							: [AnyString]
@@ -87,7 +86,9 @@ types
 		canHandleMultipleSetPerTimeInstant	: [bool]
 		declaredType						: [NormalizedString1]
 		clockReference						: [fmi3ValueReference]
-		intermediateAccess					: [bool];
+		intermediateAccess					: [bool]
+		dimension							: [seq1 of Dimension]
+		annotations							: [seq1 of fmi3Annotation];
 
 	Real ::
 		base				: fmi3VariableBase
@@ -108,7 +109,7 @@ types
 
 	String ::
 		base				: fmi3VariableBase
-		start				: [AnyString];
+		start				: [seq1 of Start];
 
 	Binary ::
 		base				: fmi3VariableBase
@@ -463,8 +464,6 @@ functions
 					(
 						mk_fmi3VariableBase(
 							0,		-- Line
-							nil,
-							nil,
 							"time",
 							let allvrs = { sv.base.valueReference | sv in seq evs } in
 								let vr in set {1, ..., len evs + 1} be st vr not in set allvrs in vr,
@@ -475,7 +474,10 @@ functions
 							nil,
 							nil,
 							nil,
-							nil),
+							nil,
+							nil,
+							nil
+							),
 						mk_fmi3RealVariableAttributes(nil, nil),
 						mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
 						mk_fmi3FloatXXAttributes(0, nil, nil),

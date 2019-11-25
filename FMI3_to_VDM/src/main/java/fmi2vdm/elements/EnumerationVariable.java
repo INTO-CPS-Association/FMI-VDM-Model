@@ -52,15 +52,16 @@ public class EnumerationVariable extends Variable
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Enumeration(");
-		super.toVDM("");	// base
-		System.out.print(", ");
+		System.out.println(indent + "mk_Enumeration");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");	// base
+		System.out.println(",");
 
-		printStringAttribute("", quantity, ", ");
-		printRawAttribute("", min, ", ");
-		printRawAttribute("", max, ", ");
-		printRawAttribute("", start, "");
+		printStringAttribute(indent + "\t", quantity, ",\n");
+		printRawAttribute(indent + "\t", min, ",\n");
+		printRawAttribute(indent + "\t", max, ",\n");
+		printRawAttribute(indent + "\t", start, "\n");
 
-		System.out.print(")");
+		System.out.print(indent + ")");
 	}
 }

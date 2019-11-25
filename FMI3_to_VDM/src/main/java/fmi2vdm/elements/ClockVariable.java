@@ -45,10 +45,11 @@ public class ClockVariable extends Variable
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Clock(");
-		super.toVDM("");	// base
-		System.out.print(", ");
-		printRawAttribute("", start, "");
-		System.out.print(")");
+		System.out.println(indent + "mk_Clock");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");	// base
+		System.out.println(",");
+		printRawAttribute(indent + "\t", start, "\n");
+		System.out.print(indent + ")");
 	}
 }

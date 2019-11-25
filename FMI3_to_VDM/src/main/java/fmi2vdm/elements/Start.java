@@ -29,39 +29,24 @@
 
 package fmi2vdm.elements;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class Dimensions extends Element
+public class Start extends Element
 {
-	private ElementList<Dimension> dimensions = null;
+	private String value;
 
-	public Dimensions(Locator locator)
+	public Start(Attributes attributes, Locator locator)
 	{
 		super(locator);
-	}
-
-	@Override
-	public void add(Element element)
-	{
-		if (element instanceof Dimension)
-		{
-			if (dimensions == null)
-			{
-				dimensions = new ElementList<Dimension>();
-			}
-
-			dimensions.add(element);
-		}
-		else
-		{
-			super.add(element);
-		}
+		value = stringOf(attributes, "value");
 	}
 
 	@Override
 	public void toVDM(String indent)
 	{
-		printSeqSetLine(indent, dimensions, "[", "]");
+		System.out.print(indent + "mk_Start(");
+		printStringAttribute("", value, ")");
 	}
 
 	@Override

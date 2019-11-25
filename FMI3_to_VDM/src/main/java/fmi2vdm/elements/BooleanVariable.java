@@ -46,10 +46,11 @@ public class BooleanVariable extends Variable
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Boolean(");
-		super.toVDM("");	// base
-		System.out.print(", ");
-		printRawAttribute("", start, "");
-		System.out.print(")");
+		System.out.println(indent + "mk_Boolean");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");	// base
+		System.out.println(",");
+		printRawAttribute(indent + "\t", start, "\n");
+		System.out.print(indent + ")");
 	}
 }
