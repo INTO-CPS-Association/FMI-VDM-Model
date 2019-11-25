@@ -89,24 +89,9 @@ public class Terminal extends Element
 		printStringAttribute(indent + "\t", terminalKind, ",\n");
 		printStringAttribute(indent + "\t", description, ",\n");
 
-		if (variables != null)
-		{
-			printSequence(indent + "\t", variables, ",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,");
-		}
-
-		if (streams != null)
-		{
-			printSequence(indent + "\t", streams, "\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil");
-		}
-
+		printOptional(indent + "\t", variables, ",\n");
+		printOptional(indent + "\t", streams, "\n");
+		
 		System.out.print(indent + ")");
 	}
 

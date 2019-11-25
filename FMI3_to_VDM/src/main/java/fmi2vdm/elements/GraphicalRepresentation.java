@@ -70,36 +70,9 @@ public class GraphicalRepresentation extends Element
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 
-		if (coordinateSystem != null)
-		{
-			coordinateSystem.toVDM(indent + "\t");
-			System.out.println(",");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,");
-		}
-
-		if (icon != null)
-		{
-			icon.toVDM(indent + "\t");
-			System.out.println(",");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,");
-		}
-
-		if (terminal != null)
-		{
-			terminal.toVDM(indent + "\t");
-			System.out.println("");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil");
-		}
-
+		printOptional(indent + "\t", coordinateSystem, ",\n");
+		printOptional(indent + "\t", icon, ",\n");
+		printOptional(indent + "\t", terminal, "\n");
 		System.out.print(indent + ")");
 	}
 

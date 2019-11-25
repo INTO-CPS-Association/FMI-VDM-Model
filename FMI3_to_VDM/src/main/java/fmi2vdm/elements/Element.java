@@ -123,7 +123,22 @@ abstract public class Element
 		{
 			try
 			{
-				return Double.parseDouble(value);
+				if (value.equals("INF"))
+				{
+					return Double.POSITIVE_INFINITY;
+				}
+				else if (value.equals("-INF"))
+				{
+					return Double.NEGATIVE_INFINITY;
+				}
+				else if (value.equals("NAN"))
+				{
+					return Double.NaN;
+				}
+				else
+				{
+					return Double.parseDouble(value);
+				}
 			}
 			catch (NumberFormatException e)
 			{
@@ -188,6 +203,18 @@ abstract public class Element
 		{
 			element.toVDM(indent);
 			System.out.print(tail);
+		}
+	}
+
+	protected void printOptional(String indent, ElementList<? extends Element> elements, String tail)
+	{
+		if (elements == null)
+		{
+			System.out.print(indent + "nil" + tail);
+		}
+		else
+		{
+			printSequence(indent, elements, tail);
 		}
 	}
 
@@ -285,7 +312,7 @@ abstract public class Element
 	{
 		if (value == null && mandatory)
 		{
-			FMI3SaxParser.error("%s.%s must be provided", root, name);
+			FMI3SaxParser.error("%s.%s must be provided at line %d", root, name, lineNumber);
 		}
 		else if (value instanceof String && mandatory)
 		{
@@ -293,7 +320,7 @@ abstract public class Element
 			
 			if (s.isEmpty())
 			{
-				FMI3SaxParser.error("%s.%s must be provided", root, name);
+				FMI3SaxParser.error("%s.%s must be provided at line %d", root, name, lineNumber);
 			}
 		}
 		else if (value instanceof ElementList)

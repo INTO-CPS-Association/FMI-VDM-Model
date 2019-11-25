@@ -78,16 +78,7 @@ public class PreprocessorDefinition extends Element
 		printRawAttribute(indent + "\t", optional, ",\n");
 		printStringAttribute(indent + "\t", value, ",\n");
 		printStringAttribute(indent + "\t", description, ",\n");
-
-		if (options != null)
-		{
-			printSequence(indent + "\t", options, "\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil");
-		}
-
+		printOptional(indent + "\t", options, "\n");
 		System.out.print(indent + ")");
 	}
 

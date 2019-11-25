@@ -86,24 +86,8 @@ public class BuildConfiguration extends Element
 		printStringAttribute(indent + "\t", platform, ",\n");
 		printStringAttribute(indent + "\t", description, ",\n");
 
-		if (sourceFileSets != null)
-		{
-			printSequence(indent + "\t", sourceFileSets, ",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,");
-		}
-
-		if (libraries != null)
-		{
-			printSequence(indent + "\t", libraries, "\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil");
-		}
-
+		printOptional(indent + "\t", sourceFileSets, ",\n");
+		printOptional(indent + "\t", libraries, "\n");
 		System.out.print(indent + ")");
 	}
 

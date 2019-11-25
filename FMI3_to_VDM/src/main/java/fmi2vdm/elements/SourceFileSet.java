@@ -96,33 +96,10 @@ public class SourceFileSet extends Element
 		printStringAttribute(indent + "\t", compiler, ",\n");
 		printStringAttribute(indent + "\t", compilerOptions, ",\n");
 
-		if (sourceFiles != null)
-		{
-			printSequence(indent + "\t", sourceFiles, ",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,");
-		}
-
-		if (preprocessorDefinitions != null)
-		{
-			printSequence(indent + "\t", preprocessorDefinitions, ",\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil,");
-		}
-
-		if (includeDirectories != null)
-		{
-			printSequence(indent + "\t", includeDirectories, "\n");
-		}
-		else
-		{
-			System.out.println(indent + "\tnil");
-		}
-
+		printOptional(indent + "\t", sourceFiles, ",\n");
+		printOptional(indent + "\t", preprocessorDefinitions, ",\n");
+		printOptional(indent + "\t", includeDirectories, "\n");
+		
 		System.out.print(indent + ")");
 	}
 
