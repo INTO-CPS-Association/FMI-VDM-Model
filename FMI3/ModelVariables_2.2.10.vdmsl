@@ -202,16 +202,16 @@ functions
 
 					<parameter> ->
 						eVariability in set {<fixed>, <tunable>}
-						and eInitial = <exact>,		-- (A)
+						and eInitial = <exact>,	-- (A)
 
 					<calculatedParameter> ->
 						eVariability in set {<fixed>, <tunable>}
 						and eInitial in set {<approx>, <calculated>},	-- (B)
 
 					<input> ->
-						eVariability in set {<discrete>, <continuous>}
-						and eInitial = nil
-						and sv.start <> nil,		-- (D)
+						eVariability = <clock>
+						and eInitial = <exact>
+						and sv.start <> nil,	-- (F)
 
 					<independent> ->
 						eVariability = <continuous>
@@ -222,12 +222,8 @@ functions
 
 					<output> ->
 						cases eVariability:
-							<constant> ->
-								eInitial in set {<exact>},	-- (A)
-
-							<discrete>,
-							<continuous> ->
-								eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
+							<clock> ->
+								eInitial = <calculated>, -- (G)
 
 							others -> false
 						end,
@@ -243,7 +239,9 @@ functions
 
 							<discrete>,
 							<continuous> ->
-								eInitial in set { <exact>, <approx>, <calculated> } -- (C)
+								eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
+
+							others -> false
 						end
 				end
 			),
@@ -256,7 +254,7 @@ functions
 						eCausality in set {<output>, <local>},
 
 					<fixed>, <tunable> ->
-						eCausality in set {<parameter>, <calculatedParameter>, <local>},
+						eCausality in set {<structuralParameter>, <parameter>, <calculatedParameter>, <local>},
 
 					<discrete> ->
 						eCausality in set {<input>, <output>, <local>},
@@ -275,7 +273,7 @@ functions
 				sv.base.name, sv.base.initial, eCausality, sv.base.location) */
 			(
 				sv.base.initial <> nil =>
-					(eCausality not in set {<input>, <independent>})
+					eCausality <> <independent>
 			),
 
 			/* @OnFail("2.2.10 Variable %s initial/variability/start %s/%s/%s invalid at line %s",

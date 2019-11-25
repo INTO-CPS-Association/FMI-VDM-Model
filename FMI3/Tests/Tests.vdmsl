@@ -85,6 +85,18 @@ functions
 					-- @Printf("Testing %s/%s ...\n", causality, variability)
 					-- @OnFail("Test %s/%s failed", causality, variability)
 					(cases causality:
+						<structuralParameter> ->
+							cases variability:
+								<fixed>, <tunable> ->
+									isValidScalarVariable(mkVariable(causality, variability, <exact>, startv)) and
+									not isValidScalarVariable(mkVariable(causality, variability, <approx>, startv)) and
+									not isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)),
+
+								<constant>, <discrete>, <continuous>, <clock> ->
+									forall initial : Initial &
+										not isValidScalarVariable(mkVariable(causality, variability, initial, nilv))
+							end,
+
 						<parameter> ->
 							cases variability:
 								<fixed>, <tunable> ->
@@ -92,7 +104,7 @@ functions
 									not isValidScalarVariable(mkVariable(causality, variability, <approx>, startv)) and
 									not isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)),
 
-								<constant>, <discrete>, <continuous> ->
+								<constant>, <discrete>, <continuous>, <clock> ->
 									forall initial : Initial &
 										not isValidScalarVariable(mkVariable(causality, variability, initial, nilv))
 							end,
@@ -104,37 +116,27 @@ functions
 									isValidScalarVariable(mkVariable(causality, variability, <approx>, startv)) and
 									not isValidScalarVariable(mkVariable(causality, variability, <exact>, nilv)),
 
-								<constant>, <discrete>, <continuous> ->
+								<constant>, <discrete>, <continuous>, <clock> ->
 									forall initial : Initial &
 										not isValidScalarVariable(mkVariable(causality, variability, initial, nilv))
 							end,
 
 						<input> ->
 							cases variability:
-								<discrete>, <continuous> ->
-									isValidScalarVariable(mkVariable(causality, variability, nil, startv)) and
-									not isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)) and
-									not isValidScalarVariable(mkVariable(causality, variability, <approx>, startv)) and
-									not isValidScalarVariable(mkVariable(causality, variability, <exact>, nilv)),
+								<clock> ->
+									isValidScalarVariable(mkVariable(causality, variability, <exact>, startv)),
 
-								<constant>, <fixed>, <tunable> ->
+								<constant>, <fixed>, <tunable>, <discrete>, <continuous> ->
 									forall initial : Initial &
 										not isValidScalarVariable(mkVariable(causality, variability, initial, nilv))
 							end,
 
 						<output> ->
 							cases variability:
-								<constant> ->
-									isValidScalarVariable(mkVariable(causality, variability, <exact>, startv)) and
-									not isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)) and
-									not isValidScalarVariable(mkVariable(causality, variability, <approx>, startv)),
+								<clock> ->
+									isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)),
 
-								<discrete>, <continuous> ->
-									isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)) and
-									isValidScalarVariable(mkVariable(causality, variability, <exact>, startv))
-									and isValidScalarVariable(mkVariable(causality, variability, <approx>, startv)),
-
-								<fixed>, <tunable> ->
+								<fixed>, <tunable>, <constant>, <discrete>, <continuous> ->
 									forall initial : Initial &
 										not isValidScalarVariable(mkVariable(causality, variability, initial, nilv))
 							end,
@@ -154,7 +156,11 @@ functions
 								<discrete>, <continuous> ->
 									isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)) and
 									isValidScalarVariable(mkVariable(causality, variability, <approx>, startv)) and
-									isValidScalarVariable(mkVariable(causality, variability, <exact>, startv))
+									isValidScalarVariable(mkVariable(causality, variability, <exact>, startv)),
+
+								<clock> ->
+									forall initial : Initial &
+										not isValidScalarVariable(mkVariable(causality, variability, initial, nilv))
 							end,
 
 						<independent> ->
