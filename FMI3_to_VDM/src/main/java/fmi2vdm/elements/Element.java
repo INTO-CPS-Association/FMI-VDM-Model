@@ -202,6 +202,51 @@ abstract public class Element
 		}
 	}
 
+	protected Double[] doublesOf(Attributes attributes, String name)
+	{
+		String[] values = stringsOf(attributes, name);
+
+		if (values == null)
+		{
+			return null;
+		}
+		else
+		{
+			Double[] array = new Double[values.length];
+			int i=0;
+			
+			for (String sv: values)
+			{
+				try
+				{
+					if (sv.equals("INF"))
+					{
+						array[i++] = Double.POSITIVE_INFINITY;
+					}
+					else if (sv.equals("-INF"))
+					{
+						array[i++] = Double.NEGATIVE_INFINITY;
+					}
+					else if (sv.equals("NAN"))
+					{
+						array[i++] = Double.NaN;
+					}
+					else
+					{
+						array[i++] = Double.parseDouble(sv);
+					}
+				}
+				catch (NumberFormatException e)
+				{
+					FMI3SaxParser.error(e.toString() + " at " + lineNumber);
+					return null;
+				}
+			}
+			
+			return array;
+		}
+	}
+
 	protected Boolean boolOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
@@ -213,6 +258,36 @@ abstract public class Element
 		else
 		{
 			return Boolean.parseBoolean(value);
+		}
+	}
+
+	protected Boolean[] boolsOf(Attributes attributes, String name)
+	{
+		String[] values = stringsOf(attributes, name);
+
+		if (values == null)
+		{
+			return null;
+		}
+		else
+		{
+			Boolean[] array = new Boolean[values.length];
+			int i=0;
+			
+			for (String sv: values)
+			{
+				try
+				{
+					array[i++] = Boolean.parseBoolean(sv);
+				}
+				catch (NumberFormatException e)
+				{
+					FMI3SaxParser.error(e.toString() + " at " + lineNumber);
+					return null;
+				}
+			}
+			
+			return array;
 		}
 	}
 
@@ -274,7 +349,7 @@ abstract public class Element
 
 	protected void printRawAttribute(String indent, Object attr, String tail)
 	{
-		if (attr != null && !attr.toString().isEmpty())
+		if (attr != null)
 		{
 			System.out.print(indent + attr + tail);
 		}
@@ -286,7 +361,7 @@ abstract public class Element
 
 	protected void printStringAttribute(String indent, String attr, String tail)
 	{
-		if (attr != null && !attr.isEmpty())
+		if (attr != null)
 		{
 			System.out.print(indent + "\"" + attr + "\"" + tail);
 		}
@@ -298,7 +373,7 @@ abstract public class Element
 
 	protected void printQuoteAttribute(String indent, String attr, String tail)
 	{
-		if (attr != null && !attr.isEmpty())
+		if (attr != null)
 		{
 			System.out.print(indent + "<" + attr + ">" + tail);
 		}
@@ -317,7 +392,7 @@ abstract public class Element
 	{
 		if (items == null)
 		{
-			System.out.print(indent + "[]");
+			System.out.print(indent + "nil" + tail);
 		}
 		else
 		{
@@ -338,7 +413,7 @@ abstract public class Element
 	{
 		if (items == null)
 		{
-			System.out.print(indent + "[]");
+			System.out.print(indent + "nil");
 		}
 		else
 		{
@@ -362,7 +437,7 @@ abstract public class Element
 
 	protected void printSeqSet(String indent, List<? extends Element> items, String tail, String open, String close)
 	{
-		if (items == null || items.isEmpty())
+		if (items == null)
 		{
 			System.out.print(indent + "nil" + tail);
 		}
@@ -384,7 +459,7 @@ abstract public class Element
 
 	protected void printSeqSetLine(String indent, List<? extends Element> items, String open, String close)
 	{
-		if (items == null || items.isEmpty())
+		if (items == null)
 		{
 			System.out.print(indent + "nil");
 		}

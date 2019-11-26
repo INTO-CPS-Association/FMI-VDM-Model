@@ -37,7 +37,7 @@ public class EnumerationVariable extends Variable
 	private String quantity;
 	private Double min;
 	private Double max;
-	private Double start;
+	private Double[] start;
 
 	public EnumerationVariable(Attributes attributes, Locator locator)
 	{
@@ -46,7 +46,7 @@ public class EnumerationVariable extends Variable
 		quantity = stringOf(attributes, "quantity");
 		min = doubleOf(attributes, "min");
 		max = doubleOf(attributes, "max");
-		start = doubleOf(attributes, "start");
+		start = doublesOf(attributes, "start");
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class EnumerationVariable extends Variable
 		printStringAttribute(indent + "\t", quantity, ",\n");
 		printRawAttribute(indent + "\t", min, ",\n");
 		printRawAttribute(indent + "\t", max, ",\n");
-		printRawAttribute(indent + "\t", start, "\n");
+		printSequence(indent + "\t", start, "\n");
 
 		System.out.print(indent + ")");
 	}

@@ -48,7 +48,7 @@ public class NumberOfEventIndicators extends Element
 	{
 		System.out.print(indent + "mk_NumberOfEventIndicators(");
 		System.out.print(lineNumber + ", ");
-		printSequence(indent, dependencies, "");
+		printSequence("", dependencies, "");
 		System.out.print(")");
 	}
 

@@ -58,7 +58,7 @@ public class Unknown extends Element
 		printQuoteAttribute(indent + "\t", kind, ",\n");
 		printRawAttribute(indent + "\t", valueReference, ",\n");
 		printSequence(indent + "\t", dependencies, ",\n");
-		printQuoteSequence(indent + "\t", dependenciesKind, ",\n");
+		printQuoteSequence(indent + "\t", dependenciesKind, "\n");
 		System.out.print(indent + ")");
 	}
 

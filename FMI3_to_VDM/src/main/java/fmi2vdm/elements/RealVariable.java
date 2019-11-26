@@ -47,7 +47,7 @@ public class RealVariable extends Variable
 	private Double max;
 	private Double nominal;
 
-	private Double start;
+	private Double[] start;
 
 	public RealVariable(Attributes attributes, Locator locator)
 	{
@@ -66,7 +66,7 @@ public class RealVariable extends Variable
 		max = doubleOf(attributes, "max");
 		nominal = doubleOf(attributes, "nominal");
 
-		start = doubleOf(attributes, "start");
+		start = doublesOf(attributes, "start");
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class RealVariable extends Variable
 		printRawAttribute("", nominal, "");
 		System.out.println("),");
 		
-		printRawAttribute(indent + "\t", start, "\n");
+		printSequence(indent + "\t", start, "\n");
 		System.out.print(indent + ")");
 	}
 }

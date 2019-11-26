@@ -37,7 +37,7 @@ public class IntegerVariable extends Variable
 	private String quantity;
 	private Integer min;
 	private Integer max;
-	private Integer start;
+	private Integer[] start;
 
 	public IntegerVariable(Attributes attributes, Locator locator)
 	{
@@ -46,7 +46,7 @@ public class IntegerVariable extends Variable
 		quantity = stringOf(attributes, "quantity");
 		min = intOf(attributes, "min");
 		max = intOf(attributes, "max");
-		start = intOf(attributes, "start");
+		start = intsOf(attributes, "start");
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class IntegerVariable extends Variable
 		printRawAttribute("", min, ", ");
 		printRawAttribute("", max, "),\n");
 		
-		printRawAttribute(indent + "\t", start, "\n");
+		printSequence(indent + "\t", start, "\n");
 		System.out.print(indent + ")");
 	}
 }

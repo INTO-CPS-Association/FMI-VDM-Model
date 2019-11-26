@@ -47,13 +47,13 @@ traces
 				mk_fmi3RealVariableAttributes(nil, nil),
 				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
 				mk_fmi3FloatXXAttributes(nil, nil, nil),
-				1.23),
+				[1.23]),
 
 			mk_Integer(
 				mk_fmi3VariableBase(0, "name", 1234, nil, c, v, i, nil, nil, nil, nil, nil, [a]),
 				mk_fmi3IntegerAttributes(nil),
 				mk_fmi3IntXXAttributes(nil, nil),
-				123)
+				[123])
 		}
 		in
 			isValidScalarVariable(t);
@@ -62,7 +62,7 @@ functions
 	/**
 	 * Helper to make Reals for test below.
 	 */
-	mkVariable: Causality * Variability * [Initial] * [real] +> Real
+	mkVariable: Causality * Variability * [Initial] * [seq1 of real] +> Real
 	mkVariable(causality, variability, initial, start) ==
 		mk_Real(
 			mk_fmi3VariableBase(0, "name", 1234, nil, causality, variability, initial, nil, nil, nil, nil, nil, nil),
@@ -78,7 +78,7 @@ functions
 	testCausalityVariabilityInitial: () +> bool
 	testCausalityVariabilityInitial() ==
 		let nilv   = nil,
-		    startv = 1.0
+		    startv = [1.0]
 		in
 			forall causality : Causality &
 				forall variability : Variability &

@@ -36,7 +36,7 @@ public class BinaryVariable extends Variable
 {
 	private String mimeType;
 	private Integer maxSize;
-	private String start;
+	private String[] start;
 
 	public BinaryVariable(Attributes attributes, Locator locator)
 	{
@@ -44,7 +44,7 @@ public class BinaryVariable extends Variable
 		
 		mimeType = stringOf(attributes, "mimeType");
 		maxSize = intOf(attributes, "maxSize");
-		start = stringOf(attributes, "start");
+		start = stringsOf(attributes, "start");
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class BinaryVariable extends Variable
 		super.toVDM(indent + "\t");		// base
 		printStringAttribute(",\n" + indent + "\t", mimeType, ",\n");
 		printRawAttribute(indent + "\t", maxSize, ",\n");
-		printRawAttribute(indent + "\t", start, "\n");
+		printSequence(indent + "\t", start, "\n");
 		System.out.print(indent + ")");
 	}
 }

@@ -34,13 +34,13 @@ import org.xml.sax.Locator;
 
 public class BooleanVariable extends Variable
 {
-	private Boolean start;
+	private Boolean[] start;
 
 	public BooleanVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
 
-		start = boolOf(attributes, "start");
+		start = boolsOf(attributes, "start");
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class BooleanVariable extends Variable
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");	// base
 		System.out.println(",");
-		printRawAttribute(indent + "\t", start, "\n");
+		printSequence(indent + "\t", start, "\n");
 		System.out.print(indent + ")");
 	}
 }
