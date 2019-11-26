@@ -37,14 +37,14 @@ abstract class Variable extends Element
 	private ElementList<Dimension> dimensions;
 	private ElementList<VendorAnnotations> annotations;
 	private String name;
-	private Integer valueReference;
+	private Long valueReference;
 	private String description;
 	private String causality;
 	private String variability;
 	private String initial;
 	private Boolean canHandleMultipleSetPerTimeInstant;
 	private String declaredType;
-	private Integer clockReference;
+	private Long clockReference;
 	private Boolean intermediateAccess;
 
 	protected Variable(Attributes attributes, Locator locator)

@@ -35,7 +35,7 @@ import org.xml.sax.Locator;
 public class BinaryType extends Type
 {
 	private String mimeType;
-	private Integer maxSize;
+	private Long maxSize;
 
 	public BinaryType(Attributes attributes, Locator locator)
 	{

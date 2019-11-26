@@ -37,8 +37,8 @@ public class IntegerType extends Type
 	private String kind;
 	
 	private String quantity;
-	private Integer min;
-	private Integer max;
+	private Long min;
+	private Long max;
 
 	public IntegerType(String kind, Attributes attributes, Locator locator)
 	{

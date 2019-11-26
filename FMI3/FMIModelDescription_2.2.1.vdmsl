@@ -241,7 +241,7 @@ functions
 
 			(
 				let outputRefs = { sv.base.valueReference | sv in seq eModelVariables & sv.base.causality = <output> },
-					structRefs = { u.valueReference | u in seq md.modelStructure.unknowns & u.kind = <Output> }
+					structRefs = { u.valueReference | u in seq nilSeq[Unknown](md.modelStructure.unknowns) & u.kind = <Output> }
 				in
 					if outputRefs <> {}
 					then
@@ -270,7 +270,7 @@ functions
 			(
 				md.modelExchange <> nil =>
 					let derivativeRefs = { sv.base.valueReference | sv in seq eModelVariables & isStateDerivative(sv) },
-						structRefs = { u.valueReference | u in seq md.modelStructure.unknowns & u.kind = <Derivative> }
+						structRefs = { u.valueReference | u in seq nilSeq[Unknown](md.modelStructure.unknowns) & u.kind = <Derivative> }
 					in
 						if derivativeRefs <> {}
 						then
@@ -316,7 +316,7 @@ functions
 							and sv.base.initial in set { <approx>, <calculated> }) }
 				in
 					initRefs <> {} =>
-						let ius = [ iu | iu in seq md.modelStructure.unknowns & iu.kind = <InitialUnknown> ] in
+						let ius = [ iu | iu in seq nilSeq[Unknown](md.modelStructure.unknowns) & iu.kind = <InitialUnknown> ] in
 						{
 							-- @OnFail("2.2.8 InitialUnknowns must include refs: %s", initRefs)
 							( ius <> [] ),

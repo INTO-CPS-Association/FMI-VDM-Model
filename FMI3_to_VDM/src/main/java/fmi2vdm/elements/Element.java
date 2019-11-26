@@ -83,7 +83,7 @@ abstract public class Element
 		}
 	}
 
-	protected Integer intOf(Attributes attributes, String name)
+	protected Long intOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
 
@@ -95,17 +95,17 @@ abstract public class Element
 		{
 			try
 			{
-				return Integer.parseInt(value);
+				return Long.parseLong(value);
 			}
 			catch (NumberFormatException e)
 			{
 				FMI3SaxParser.error(e.toString() + " at " + lineNumber);
-				return new Integer(0);
+				return new Long(0);
 			}
 		}
 	}
 
-	protected Integer[] intsOf(Attributes attributes, String name)
+	protected Long[] intsOf(Attributes attributes, String name)
 	{
 		String[] values = stringsOf(attributes, name);
 
@@ -115,14 +115,14 @@ abstract public class Element
 		}
 		else
 		{
-			Integer[] array = new Integer[values.length];
+			Long[] array = new Long[values.length];
 			int i=0;
 			
 			for (String sv: values)
 			{
 				try
 				{
-					array[i++] = Integer.parseInt(sv);
+					array[i++] = Long.parseLong(sv);
 				}
 				catch (NumberFormatException e)
 				{
@@ -481,6 +481,11 @@ abstract public class Element
 	
 	protected void validate(String root, String name, Object value, boolean mandatory)
 	{
+		validate(root, name, value, mandatory, false);
+	}
+	
+	protected void validate(String root, String name, Object value, boolean mandatory, boolean nonEmpty)
+	{
 		if (value == null && mandatory)
 		{
 			FMI3SaxParser.error("%s.%s must be provided at line %d", root, name, lineNumber);
@@ -489,9 +494,9 @@ abstract public class Element
 		{
 			String s = (String)value;
 			
-			if (s.isEmpty())
+			if (s.isEmpty() && nonEmpty)
 			{
-				FMI3SaxParser.error("%s.%s must be provided at line %d", root, name, lineNumber);
+				FMI3SaxParser.error("%s.%s cannot be blank at line %d", root, name, lineNumber);
 			}
 		}
 		else if (value instanceof ElementList)
@@ -501,7 +506,7 @@ abstract public class Element
 			
 			for (Element e: list)
 			{
-				e.validate(name + ".#" + (++n));
+				e.validate(root + "." + name + ".#" + (++n));
 			}
 		}
 		else if (value instanceof Element)

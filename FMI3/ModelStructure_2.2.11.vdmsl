@@ -83,7 +83,8 @@ functions
 	isValidModelStructure(ms) ==
 	{
 		-- @OnFail("2.2.11 ModelStructure has invalid Unknowns")
-		( forall u in seq ms.unknowns & isValidUnknown(u) ),
+		( ms.unknowns <> nil =>
+			forall u in seq ms.unknowns & isValidUnknown(u) ),
 
 		-- @OnFail("2.2.11 InitialUnknowns are not of kind dependent or constant")
 		(

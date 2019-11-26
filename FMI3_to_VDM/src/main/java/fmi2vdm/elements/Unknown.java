@@ -35,8 +35,8 @@ import org.xml.sax.Locator;
 public class Unknown extends Element
 {
 	public final String kind;
-	private Integer valueReference;
-	private Integer[] dependencies;
+	private Long valueReference;
+	private Long[] dependencies;
 	private String[] dependenciesKind;
 
 	public Unknown(String kind, Attributes attributes, Locator locator)

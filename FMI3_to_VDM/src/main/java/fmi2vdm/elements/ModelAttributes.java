@@ -45,7 +45,7 @@ public class ModelAttributes extends Element
 	private String generationTool;
 	private String generationDateAndTime;
 	private String variableNamingConvention;
-	private Integer numberOfEventIndicators;
+	private Long numberOfEventIndicators;
 
 	public ModelAttributes(Attributes attributes, Locator locator)
 	{
@@ -99,6 +99,6 @@ public class ModelAttributes extends Element
 	{
 		validate(root, "fmiVersion", fmiVersion, true);
 		validate(root, "modelName", modelName, true);
-		validate(root, "instantiationToken", instantiationToken, true);
+		validate(root, "instantiationToken", instantiationToken, true, true);
 	}
 }

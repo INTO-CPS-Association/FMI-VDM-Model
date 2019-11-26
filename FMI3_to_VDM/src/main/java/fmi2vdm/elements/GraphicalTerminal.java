@@ -35,7 +35,7 @@ import org.xml.sax.Locator;
 public class GraphicalTerminal extends Element
 {
 	private String name;
-	private Integer[] defaultConnectionColor;
+	private Long[] defaultConnectionColor;
 	private Double defaultConnectionStrokeSize;
 	private Double x1;
 	private Double y1;

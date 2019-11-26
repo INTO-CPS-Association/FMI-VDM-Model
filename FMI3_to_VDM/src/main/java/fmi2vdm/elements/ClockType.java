@@ -35,12 +35,12 @@ import org.xml.sax.Locator;
 public class ClockType extends Type
 {
 	private String clockType;
-	private Integer priority;
+	private Long priority;
 	private Boolean periodic;
 	private Boolean strict;
-	private Integer intervalCounter;
-	private Integer shiftCounter;
-	private Integer resolution;
+	private Long intervalCounter;
+	private Long shiftCounter;
+	private Long resolution;
 
 	public ClockType(Attributes attributes, Locator locator)
 	{

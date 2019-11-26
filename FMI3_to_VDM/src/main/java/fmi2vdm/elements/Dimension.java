@@ -34,8 +34,8 @@ import org.xml.sax.Locator;
 
 public class Dimension extends Element
 {
-	private Integer start;
-	private Integer valueReference;
+	private Long start;
+	private Long valueReference;
 
 	public Dimension(Attributes attributes, Locator locator)
 	{

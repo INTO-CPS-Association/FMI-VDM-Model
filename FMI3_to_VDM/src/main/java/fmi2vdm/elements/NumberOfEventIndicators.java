@@ -34,7 +34,7 @@ import org.xml.sax.Locator;
 
 public class NumberOfEventIndicators extends Element
 {
-	private Integer[] dependencies;
+	private Long[] dependencies;
 
 	public NumberOfEventIndicators(Attributes attributes, Locator locator)
 	{

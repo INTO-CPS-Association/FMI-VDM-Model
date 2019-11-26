@@ -35,7 +35,7 @@ import org.xml.sax.Locator;
 public class Item extends Element
 {
 	private String name;
-	private Integer value;
+	private Long value;
 	private String description;
 
 	public Item(Attributes attributes, Locator locator)

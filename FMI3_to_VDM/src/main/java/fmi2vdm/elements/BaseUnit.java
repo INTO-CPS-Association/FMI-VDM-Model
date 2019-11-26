@@ -34,14 +34,14 @@ import org.xml.sax.Locator;
 
 public class BaseUnit extends Element
 {
-	private Integer kg;
-	private Integer m;
-	private Integer s;
-	private Integer A;
-	private Integer K;
-	private Integer mol;
-	private Integer cs;
-	private Integer rad;
+	private Long kg;
+	private Long m;
+	private Long s;
+	private Long A;
+	private Long K;
+	private Long mol;
+	private Long cs;
+	private Long rad;
 	private Double factor;
 	private Double offset;
 

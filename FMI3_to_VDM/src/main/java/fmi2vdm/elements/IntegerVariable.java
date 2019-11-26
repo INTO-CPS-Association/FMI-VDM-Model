@@ -35,9 +35,9 @@ import org.xml.sax.Locator;
 public class IntegerVariable extends Variable
 {
 	private String quantity;
-	private Integer min;
-	private Integer max;
-	private Integer[] start;
+	private Long min;
+	private Long max;
+	private Long[] start;
 
 	public IntegerVariable(Attributes attributes, Locator locator)
 	{
