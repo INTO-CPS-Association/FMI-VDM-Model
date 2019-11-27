@@ -430,6 +430,27 @@ abstract public class Element
 		}
 	}
 
+	protected void printStringSequence(String indent, String[] items, String tail)
+	{
+		if (items == null)
+		{
+			System.out.print(indent + "nil");
+		}
+		else
+		{
+			System.out.print(indent + "[");
+			String sep = "";
+
+			for (Object d : items)
+			{
+				System.out.print(sep + "\"" + d + "\"");
+				sep = ", ";
+			}
+
+			System.out.print("]" + tail);
+		}
+	}
+
 	protected void printSet(String indent, List<? extends Element> items, String tail)
 	{
 		printSeqSet(indent, items, tail, "{", "}");

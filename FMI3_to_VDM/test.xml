@@ -70,6 +70,7 @@
 				</Tool>
 			</Annotations>
 		</Float64>
+		<Int8 name="byte" valueReference="999" start="999" />
 		<Int64 name="Int64" valueReference="9" start="-9223372036854775807 9223372036854775807 333">
 			<Dimension start="2" />
 		</Int64>

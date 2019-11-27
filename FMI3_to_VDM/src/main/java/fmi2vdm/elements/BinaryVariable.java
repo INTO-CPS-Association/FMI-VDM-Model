@@ -55,7 +55,7 @@ public class BinaryVariable extends Variable
 		super.toVDM(indent + "\t");		// base
 		printStringAttribute(",\n" + indent + "\t", mimeType, ",\n");
 		printRawAttribute(indent + "\t", maxSize, ",\n");
-		printSequence(indent + "\t", start, "\n");
+		printStringSequence(indent + "\t", start, "\n");
 		System.out.print(indent + ")");
 	}
 }

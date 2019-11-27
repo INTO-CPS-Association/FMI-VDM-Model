@@ -31,6 +31,7 @@
  * 2.2.10 Definition of Model Variables (ModelVariables)
  */
 values
+	-- TODO These catch INF and NAN Double values from the XML
 	Infinity	= 0x7ff0000000000000;
 	NaN			= 0x7ff8000000000000;
 
@@ -70,6 +71,21 @@ types
 
 	fmi3ValueReference = nat;
 
+	FloatKind =
+		<Float64> |
+		<Float32>;
+
+	IntegerKind =
+		<Int64> |
+		<Int32> |
+		<Int16> |
+		<Int8> |
+		<UInt64> |
+		<UInt32> |
+		<UInt16> |
+		<UInt8>;
+
+	Kind = FloatKind | IntegerKind;
 
 	-- Common variable attributes
 	fmi3RealVariableAttributes ::
@@ -100,7 +116,7 @@ types
 
 	Real ::
 		base				: fmi3VariableBase
-		kind				: <Float64> | <Float32>
+		kind				: FloatKind
 		varAtts				: fmi3RealVariableAttributes
 		realAtts			: fmi3RealAttributes
 		floatAtts			: fmi3FloatXXAttributes
@@ -108,7 +124,7 @@ types
 
 	Integer ::
 		base				: fmi3VariableBase
-		kind				: <Int64> | <Int32> | <Int16> | <Int8> | <UInt64> | <UInt32> | <UInt16> | <UInt8> 
+		kind				: IntegerKind
 		integerAtts			: fmi3IntegerAttributes
 		intAtts				: fmi3IntXXAttributes
 		start				: [seq1 of int];
@@ -147,24 +163,55 @@ functions
 	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
 	 */
-	isInRange[@T]: [@T] * [@T] * [seq1 of @T] +> bool
-	isInRange(min, max, start) ==
-	{
-		max <> nil and min <> nil =>
-			--@OnFail("2.2.10 min %s is not <= max %s", min, max)
-			( max >= min ),
+	isInRange[@T]: [@T] * [@T] * [seq1 of @T] * Kind +> bool
+	isInRange(min, max, start, kind) ==
+		let mk_(kmin, kmax) = minMaxKind(kind) in
+		{
+			max <> nil =>
+				--@OnFail("2.2.10 max %s is not a valid %s", max, kind)
+				( max <= kmax and max >= kmin ),
 
-		start <> nil =>
-			--@OnFail("2.2.10 start %s is not within min %s/max %s", start, min, max)
-			( (min <> nil => forall s in seq start & min <= s) and
-			  (max <> nil => forall s in seq start & max >= s) ),
+			min <> nil =>
+				--@OnFail("2.2.10 min %s is not a valid %s", min, kind)
+				( min <= kmax and min >= kmin ),
 
-		start = nil =>
-			--@OnFail("2.2.10 Warning: implicit start of 0 is not within min %s/max %s", min, max)
-			( (min <> nil => min <= 0) and
-			  (max <> nil => max >= 0) ) or true	-- NOTE warning
-	} = {true}
+			start <> nil =>
+				--@OnFail("2.2.10 start %s is not a valid %s", start, kind)
+				( forall s in seq start & s <= kmax and s >= kmin ),
+
+			max <> nil and min <> nil =>
+				--@OnFail("2.2.10 min %s is not <= max %s", min, max)
+				( max >= min ),
+
+			start <> nil =>
+				--@OnFail("2.2.10 start %s is not within min %s/max %s", start, min, max)
+				( (min <> nil => forall s in seq start & min <= s) and
+				  (max <> nil => forall s in seq start & max >= s) ),
+
+			start = nil =>
+				--@OnFail("2.2.10 Warning: implicit start of 0 is not within min %s/max %s", min, max)
+				( (min <> nil => min <= 0) and
+				  (max <> nil => max >= 0) ) or true	-- NOTE warning
+		} = {true}
 	pre is_(min, [real]) and is_(max, [real]) and is_(start, [seq1 of real]);	-- ie. numerics
+
+	/**
+	 * Return the MININT-MAXINT values for a particular Kind
+	 */
+	minMaxKind: Kind +> real * real
+	minMaxKind(kind) ==
+		cases kind:
+			<Float32>	-> mk_(-3.402823e+38, 3.402823e+38),
+			<Float64>	-> mk_(-1.79769e+308, 1.79769e+308),
+			<Int8>		-> mk_(-128, 127),
+			<UInt8>		-> mk_(0, 255),
+			<Int16>		-> mk_(-32768, 32767),
+			<UInt16>	-> mk_(0, 65535),
+			<Int32>		-> mk_(-2147483648, 2147483647),
+			<UInt32>	-> mk_(0, 4294967295),
+			<Int64>		-> mk_(-9.22337203685e+18, 9.22337203685e+18),	-- NB using reals
+			<UInt64>	-> mk_(0, 1.84467440737e+19)					-- NB using reals
+		end;
 
 	/**
 	 * Verify a sequence of raw Variables.
@@ -352,19 +399,19 @@ functions
 		-- @OnFail("2.2.10 Variable %s min/max/start/nominal invalid at line %s", sv.base.name, sv.base.location)
 		(
 			cases sv:
-				mk_Real(-, -,
+				mk_Real(-, kind,
 					mk_fmi3RealVariableAttributes(-, -),
 					mk_fmi3RealAttributes(-, -, -, -, -),
 					mk_fmi3FloatXXAttributes(min, max, nominal), start) ->
-					isInRange[real](min, max, start)
+					isInRange[real](min, max, start, kind)
 					-- @OnFail("2.2.10 Real nominal must be >0.0 at line %s", sv.base.location)
 					and (nominal <> nil => nominal > 0.0),
 
-				mk_Integer(-, -, -, mk_fmi3IntXXAttributes(min, max), start) ->
-					isInRange[int](min, max, start),
+				mk_Integer(-, kind, -, mk_fmi3IntXXAttributes(min, max), start) ->
+					isInRange[int](min, max, start, kind),
 
 				mk_Enumeration(-, -, min, max, start) ->
-					isInRange[nat](min, max, start),
+					isInRange[nat](min, max, start, <UInt32>),	-- TODO kind of enum?
 
 				others -> true		-- String, Boolean, Binary, Clock
 			end
