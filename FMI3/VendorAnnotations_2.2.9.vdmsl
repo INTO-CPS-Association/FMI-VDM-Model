@@ -39,15 +39,10 @@ types
 	fmi3Annotation = seq of Tool;
 
 functions
-	isValidVendorAnnotations: [seq1 of fmi3Annotation] +> bool
-	isValidVendorAnnotations(annotations) ==
-		annotations <> nil =>
-		{
+	isValidVendorAnnotation: [fmi3Annotation] +> bool
+	isValidVendorAnnotation(tools) ==
+		tools <> nil =>
 			/* @OnFail("2.2.9 VendorAnnotations tool names are not unique: %s",
 				{ tools(a).name | a, b in set inds tools &
 					a <> b and tools(a).name = tools(b).name }) */
-			( card { t.name | t in seq tools } = len tools )
-
-			| tools in seq annotations
-		} = {true};
-
+			( card { t.name | t in seq tools } = len tools );

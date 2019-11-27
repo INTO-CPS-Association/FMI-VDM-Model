@@ -38,8 +38,9 @@ public class IntegerVariable extends Variable
 	private Long min;
 	private Long max;
 	private Long[] start;
+	private String kind;
 
-	public IntegerVariable(Attributes attributes, Locator locator)
+	public IntegerVariable(String kind, Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
 
@@ -47,6 +48,7 @@ public class IntegerVariable extends Variable
 		min = intOf(attributes, "min");
 		max = intOf(attributes, "max");
 		start = intsOf(attributes, "start");
+		this.kind = kind;
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class IntegerVariable extends Variable
 		System.out.println(indent + "mk_Integer");
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");	// base
-		System.out.println(",");
+		printQuoteAttribute(",\n" + indent + "\t", kind, ",\n");
 
 		System.out.print(indent + "\tmk_fmi3IntegerAttributes(");
 		printStringAttribute("", quantity, "),\n");

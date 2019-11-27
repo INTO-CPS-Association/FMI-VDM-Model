@@ -48,8 +48,9 @@ public class RealVariable extends Variable
 	private Double nominal;
 
 	private Double[] start;
+	private String kind;
 
-	public RealVariable(Attributes attributes, Locator locator)
+	public RealVariable(String kind, Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
 		
@@ -67,6 +68,7 @@ public class RealVariable extends Variable
 		nominal = doubleOf(attributes, "nominal");
 
 		start = doublesOf(attributes, "start");
+		this.kind = kind;
 	}
 
 	@Override
@@ -75,7 +77,7 @@ public class RealVariable extends Variable
 		System.out.println(indent + "mk_Real");
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");	// base
-		System.out.println(",");
+		printQuoteAttribute(",\n" + indent + "\t", kind, ",\n");
 
 		System.out.print(indent + "\tmk_fmi3RealVariableAttributes(");
 		printRawAttribute("", derivative, ", ");

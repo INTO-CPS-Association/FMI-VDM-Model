@@ -105,6 +105,6 @@ functions
 				gt.defaultConnectionStrokeSize > 0 ),
 
 			-- @OnFail("2.2.8 Terminal vendor annotations invalid at line %s", gt.location)
-			( isValidVendorAnnotations(gt.vendorAnnotations) )
+			( isValidVendorAnnotation(gt.vendorAnnotations) )
 		}
 		= {true};

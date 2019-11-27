@@ -34,7 +34,7 @@ import org.xml.sax.Locator;
 
 public class FMUType extends Element
 {
-	private ElementList<VendorAnnotations> annotations;
+	private VendorAnnotations annotations;
 	private String modelIdentifier;
 	private Boolean needsExecutionTool;
 	private Boolean canBeInstantiatedOnlyOncePerProcess;
@@ -63,12 +63,7 @@ public class FMUType extends Element
 	{
 		if (element instanceof VendorAnnotations)
 		{
-			if (annotations == null)
-			{
-				annotations = new ElementList<VendorAnnotations>();
-			}
-			
-			annotations.add(element);
+			annotations = (VendorAnnotations) element;
 		}
 		else
 		{
@@ -83,7 +78,7 @@ public class FMUType extends Element
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		
-		printSequence(indent + "\t", annotations, ",\n");
+		printOptional(indent + "\t", annotations, ",\n");
 		
 		printStringAttribute(indent + "\t", modelIdentifier, ",\n");
 		printRawAttribute(indent + "\t", needsExecutionTool, ",\n");

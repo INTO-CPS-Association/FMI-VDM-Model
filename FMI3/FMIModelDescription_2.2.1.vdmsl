@@ -137,7 +137,7 @@ functions
 			( isValidGraphicalRepresentation(md.graphicalRepresentation) ),
 
 			-- @OnFail("2.2.1 VendorAnnotations invalid")
-			( isValidVendorAnnotations(md.vendorAnnotations) ),
+			( isValidVendorAnnotation(md.vendorAnnotations) ),
 
 			-- @OnFail("2.2.1 Variables invalid")
 			( isValidScalarVariables(md.modelVariables) ),		-- NOTE: NOT effective variables!

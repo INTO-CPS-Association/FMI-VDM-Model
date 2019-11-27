@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmiModelDescription fmiVersion="3.0" modelName=""
-	instantiationToken="{111-222-333-444}">
+<fmiModelDescription fmiVersion="3.0-alpha"
+	modelName="" instantiationToken="{111-222-333-444}">
 	<CoSimulation modelIdentifier="Test FMU">
 		<Annotations>
 			<Tool name="one">
 				<stuff></stuff>
 			</Tool>
-		</Annotations>
-		<Annotations>
 			<Tool name="zzz">
 				<zzzstuff></zzzstuff>
 			</Tool>
@@ -64,18 +62,27 @@
 		<Float64 name="a" valueReference="1" start="INF NaN -INF">
 			<Dimension start="3" />
 			<Annotations>
-				<Tool name="one"><stuff></stuff></Tool>
-				<Tool name="two"><more></more></Tool>
+				<Tool name="one">
+					<stuff></stuff>
+				</Tool>
+				<Tool name="two">
+					<more></more>
+				</Tool>
 			</Annotations>
 		</Float64>
-		<Int64 name="b" valueReference="2" />
+		<Int64 name="Int64" valueReference="9" start="-9223372036854775808 9223372036854775807">
+			<Dimension start="2" />
+		</Int64>
+		<UInt64 name="UInt64" valueReference="10" start="0 18446744073709551615">
+			<Dimension start="2" />
+		</UInt64>
 		<Boolean name="c" valueReference="3" />
 		<String name="d" valueReference="4">
 			<Start value="123" />
 			<Start value="456" />
 		</String>
 		<Binary name="e" valueReference="5" />
-		<Enumeration name="f" valueReference="5"  declaredType="f"/>
+		<Enumeration name="f" valueReference="5" declaredType="f" />
 		<Clock name="g" valueReference="6" />
 	</ModelVariables>
 	<Terminals>
@@ -103,10 +110,14 @@
 		<Output valueReference="1" dependencies="1" dependenciesKind="dependent" />
 		<Output valueReference="2" dependencies="1" dependenciesKind="dependent" />
 		<Output valueReference="3" dependencies="1" dependenciesKind="dependent" />
-		<Derivative valueReference="1" dependencies="1" dependenciesKind="dependent" />
-		<Derivative valueReference="2" dependencies="1" dependenciesKind="dependent" />
-		<InitialUnknown valueReference="1" dependencies="1 22 333" dependenciesKind="dependent fixed tunable" />
-		<InitialUnknown valueReference="2" dependencies="1" dependenciesKind="dependent" />
+		<Derivative valueReference="1" dependencies="1"
+			dependenciesKind="dependent" />
+		<Derivative valueReference="2" dependencies="1"
+			dependenciesKind="dependent" />
+		<InitialUnknown valueReference="1" dependencies="1 22 333"
+			dependenciesKind="dependent fixed tunable" />
+		<InitialUnknown valueReference="2" dependencies="1"
+			dependenciesKind="dependent" />
 		<NumberOfEventIndicators dependencies="1 2 3" />
 		<NumberOfEventIndicators dependencies="4 5 6" />
 	</ModelStructure>

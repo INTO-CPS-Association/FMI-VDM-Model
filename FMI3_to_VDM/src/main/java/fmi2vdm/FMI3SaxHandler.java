@@ -168,7 +168,7 @@ public class FMI3SaxHandler extends DefaultHandler
 				}
 				else
 				{
-					stack.push(new RealVariable(attributes, locator));
+					stack.push(new RealVariable(qName, attributes, locator));
 				}
 				break;
 				
@@ -190,7 +190,7 @@ public class FMI3SaxHandler extends DefaultHandler
 				}
 				else
 				{
-					stack.push(new IntegerVariable(attributes, locator));
+					stack.push(new IntegerVariable(qName, attributes, locator));
 				}
 				break;
 

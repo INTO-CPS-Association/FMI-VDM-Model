@@ -33,7 +33,7 @@
 types
 	fmi3FMUType ::
 		location								: Location
-		annotations								: [seq1 of fmi3Annotation]
+		annotations								: [fmi3Annotation]
 		modelIdentifier							: NormalizedString1
 		needsExecutionTool						: [bool]
 		canBeInstantiatedOnlyOncePerProcess		: [bool]
@@ -63,4 +63,4 @@ functions
 	isValidCoSimulation: [CoSimulation] +> bool
 	isValidCoSimulation(cs) ==
 		cs <> nil =>
-			isValidVendorAnnotations(cs.base.annotations);
+			isValidVendorAnnotation(cs.base.annotations);

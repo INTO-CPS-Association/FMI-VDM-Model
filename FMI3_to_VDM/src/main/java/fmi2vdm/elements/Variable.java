@@ -35,7 +35,7 @@ import org.xml.sax.Locator;
 abstract class Variable extends Element
 {
 	private ElementList<Dimension> dimensions;
-	private ElementList<VendorAnnotations> annotations;
+	private VendorAnnotations annotations;
 	private String name;
 	private Long valueReference;
 	private String description;
@@ -77,12 +77,7 @@ abstract class Variable extends Element
 		}
 		else if (element instanceof VendorAnnotations)
 		{
-			if (annotations == null)
-			{
-				annotations = new ElementList<VendorAnnotations>();
-			}
-			
-			annotations.add(element);
+			annotations = (VendorAnnotations) element;
 		}
 		else
 		{
@@ -108,7 +103,7 @@ abstract class Variable extends Element
 		printRawAttribute(indent + "\t", intermediateAccess, ",\n");
 		
 		printSequence(indent + "\t", dimensions, ",\n");
-		printSequence(indent + "\t", annotations, "\n");
+		printOptional(indent + "\t", annotations, "\n");
 		System.out.print(indent + ")");
 	}
 	

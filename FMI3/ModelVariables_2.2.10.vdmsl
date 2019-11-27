@@ -95,11 +95,12 @@ types
 		declaredType						: [NormalizedString1]
 		clockReference						: [fmi3ValueReference]
 		intermediateAccess					: [bool]
-		dimension							: [seq1 of Dimension]
-		annotations							: [seq1 of fmi3Annotation];
+		dimensions							: [seq1 of Dimension]
+		annotations							: [fmi3Annotation];
 
 	Real ::
 		base				: fmi3VariableBase
+		kind				: <Float64> | <Float32>
 		varAtts				: fmi3RealVariableAttributes
 		realAtts			: fmi3RealAttributes
 		floatAtts			: fmi3FloatXXAttributes
@@ -107,6 +108,7 @@ types
 
 	Integer ::
 		base				: fmi3VariableBase
+		kind				: <Int64> | <Int32> | <Int16> | <Int8> | <UInt64> | <UInt32> | <UInt16> | <UInt8> 
 		integerAtts			: fmi3IntegerAttributes
 		intAtts				: fmi3IntXXAttributes
 		start				: [seq1 of int];
@@ -302,9 +304,41 @@ functions
 			),
 
 			-- @OnFail("2.2.10 VendorAnnotations invalid")
-			( isValidVendorAnnotations(sv.base.annotations) )
+			( isValidVendorAnnotation(sv.base.annotations) )
 		} = {true};
 
+	/**
+	 * Check Dimensions structures.
+	 */
+	isValidVariableDimensions: [seq1 of Variable] +> bool
+	isValidVariableDimensions(vars) ==
+		vars <> nil => dunion
+		{
+			{
+				-- @OnFail("2.2.10 Dimensions cannot define start and valueReference at line %s", v.base.location)
+				( v.base.dimensions <> nil =>
+					forall dim in seq v.base.dimensions &
+						dim.start = nil <=> dim.valueReference <> nil ),
+
+				-- @OnFail("2.2.10 Dimension cannot reference itself at line %s", v.base.location)
+				( v.base.dimensions <> nil =>
+					forall dim in seq v.base.dimensions &
+						dim.valueReference <> nil =>
+							dim.valueReference <> v.base.valueReference ),
+
+				-- @OnFail("2.2.10 Dimensions valueReference is not valid at line %s", v.base.location)
+				( v.base.dimensions <> nil =>
+					forall dim in seq v.base.dimensions &
+						dim.valueReference <> nil =>
+							exists r in seq vars &
+								is_Integer(r) and
+								r.base.valueReference = dim.valueReference and
+								r.base.variability in set { <constant>, <structuralParameter> } )
+			}
+
+			| v in seq vars
+		}
+		= {true};
 
 	/**
 	 * Vaidity checks that depend on inherited values from any declaredType - ie. passed
@@ -316,7 +350,7 @@ functions
 		-- @OnFail("2.2.10 Variable %s min/max/start/nominal invalid at line %s", sv.base.name, sv.base.location)
 		(
 			cases sv:
-				mk_Real(-,
+				mk_Real(-, -,
 					mk_fmi3RealVariableAttributes(-, -),
 					mk_fmi3RealAttributes(-, -, -, -, -),
 					mk_fmi3FloatXXAttributes(min, max, nominal), start) ->
@@ -324,7 +358,7 @@ functions
 					-- @OnFail("2.2.10 Real nominal must be >0.0 at line %s", sv.base.location)
 					and (nominal <> nil => nominal > 0.0),
 
-				mk_Integer(-, -, mk_fmi3IntXXAttributes(min, max), start) ->
+				mk_Integer(-, -, -, mk_fmi3IntXXAttributes(min, max), start) ->
 					isInRange[int](min, max, start),
 
 				mk_Enumeration(-, -, min, max, start) ->
@@ -339,8 +373,9 @@ functions
 	union
 	{
 		-- @OnFail("2.2.10 Dimensions of %s do not match start value at line %s", sv.base.name, sv.base.location)
-		( sv.start <> nil and sv.base.dimension <> nil =>
-			len sv.base.dimension = len sv.start )
+		( sv.start <> nil and sv.base.dimensions <> nil =>
+			let size = dimensionsProduct(sv.base.dimensions) in
+				size > 0 => size = len sv.start )
 
 		| sv in seq svs
 	}
@@ -398,6 +433,23 @@ functions
 			= {true}
 		)
 	} = {true};
+
+	/**
+	 * Calculate the overall number of start values expected from dimensions. If a variable is referenced,
+	 * we cannot know its value and so return 0.
+	 */
+	dimensionsProduct: seq of Dimension +> nat
+	dimensionsProduct(dims) ==
+		if dims = []
+		then 1
+		else dimensionSize(hd dims) * dimensionsProduct(tl dims)
+	measure len dims;
+
+	dimensionSize: Dimension +> nat
+	dimensionSize(dim) ==
+		if dim.start <> nil
+		then dim.start
+		else 0;		-- variable, so we cannot know
 
 	/**
 	 * The default value for initial, defined by the (effective) values of causality and
@@ -495,6 +547,7 @@ functions
 							nil,
 							nil
 							),
+						<Float64>,
 						mk_fmi3RealVariableAttributes(nil, nil),
 						mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
 						mk_fmi3FloatXXAttributes(0, nil, nil),
