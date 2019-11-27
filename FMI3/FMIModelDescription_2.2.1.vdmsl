@@ -95,7 +95,7 @@ functions
 	 */
 	isValidModelAttributes: ModelAttributes +> bool
 	isValidModelAttributes(attrs) ==
-		-- @OnFail("2.2.1 ModelAttribute fmiVersion should be 3.0")
+		-- @OnFail("2.2.1 ModelAttribute fmiVersion should start with 3.0")
 		( attrs.fmiVersion(1, ..., 3) = "3.0" );
 
 	/**
@@ -187,7 +187,7 @@ functions
 					{
 						is_RealType(std) =>
 							std.realAtts.unit <> nil =>
-								/* @OnFail("2.2.3 SimpleType %s, Real unit %s not defined in UnitDefinitions at line %s",
+								/* @OnFail("2.2.3 Type %s, Real unit %s not defined in UnitDefinitions at line %s",
 									std.base.name, std.realAtts.unit, std.base.location) */
 								( md.unitDefinitions <> nil
 								  and exists u in seq md.unitDefinitions & u.name = std.realAtts.unit )
@@ -240,8 +240,11 @@ functions
 			),
 
 			(
-				let outputRefs = { sv.base.valueReference | sv in seq eModelVariables & sv.base.causality = <output> },
-					structRefs = { u.valueReference | u in seq nilSeq[Unknown](md.modelStructure.unknowns) & u.kind = <Output> }
+				let outputRefs = { sv.base.valueReference |
+						sv in seq eModelVariables & sv.base.causality = <output> },
+					structRefs = { u.valueReference |
+						u in seq nilSeq[Unknown](md.modelStructure.unknowns) &
+						u.kind = <Output> }
 				in
 					if outputRefs <> {}
 					then
@@ -269,8 +272,11 @@ functions
 
 			(
 				md.modelExchange <> nil =>
-					let derivativeRefs = { sv.base.valueReference | sv in seq eModelVariables & isStateDerivative(sv) },
-						structRefs = { u.valueReference | u in seq nilSeq[Unknown](md.modelStructure.unknowns) & u.kind = <Derivative> }
+					let derivativeRefs = { sv.base.valueReference |
+							sv in seq eModelVariables & isStateDerivative(sv) },
+						structRefs = { u.valueReference |
+							u in seq nilSeq[Unknown](md.modelStructure.unknowns) &
+							u.kind = <Derivative> }
 					in
 						if derivativeRefs <> {}
 						then
@@ -316,7 +322,9 @@ functions
 							and sv.base.initial in set { <approx>, <calculated> }) }
 				in
 					initRefs <> {} =>
-						let ius = [ iu | iu in seq nilSeq[Unknown](md.modelStructure.unknowns) & iu.kind = <InitialUnknown> ] in
+						let ius = [ iu |
+							iu in seq nilSeq[Unknown](md.modelStructure.unknowns) &
+							iu.kind = <InitialUnknown> ] in
 						{
 							-- @OnFail("2.2.8 InitialUnknowns must include refs: %s", initRefs)
 							( ius <> [] ),
@@ -336,7 +344,9 @@ functions
 		{
 			let dname = sv.base.declaredType in
 				dname <> nil =>
-					let matchingTypes = { td | td in set nilSet[VariableType](typedefs) & td.base.name = dname } in
+					let matchingTypes = { td |
+						td in set nilSet[VariableType](typedefs) &
+						td.base.name = dname } in
 					{
 						/* @OnFail("2.2.3 Typedefs have multiple matching names: %s",
 							{ st.name | st in set matchingTypes } ) */

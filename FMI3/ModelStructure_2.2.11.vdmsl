@@ -31,8 +31,17 @@
  * 2.2.11 Definition of the Model Structure (ModelStructure)
  */
 types
-	DependencyKind	= <dependent> | <constant> | <fixed> | <tunable> | <discrete>;
-	UnknownKind		= <Output> | <Derivative> | <InitialUnknown>;
+	DependencyKind	=
+		<dependent> |
+		<constant> |
+		<fixed> |
+		<tunable> |
+		<discrete>;
+
+	UnknownKind =
+		<Output> |
+		<Derivative> |
+		<InitialUnknown>;
 
 	Unknown ::
 		location				: Location

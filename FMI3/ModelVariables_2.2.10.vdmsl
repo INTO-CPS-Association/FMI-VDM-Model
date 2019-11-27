@@ -71,22 +71,6 @@ types
 
 	fmi3ValueReference = nat;
 
-	FloatKind =
-		<Float64> |
-		<Float32>;
-
-	IntegerKind =
-		<Int64> |
-		<Int32> |
-		<Int16> |
-		<Int8> |
-		<UInt64> |
-		<UInt32> |
-		<UInt16> |
-		<UInt8>;
-
-	Kind = FloatKind | IntegerKind;
-
 	-- Common variable attributes
 	fmi3RealVariableAttributes ::
 		derivative			: [fmi3ValueReference]
@@ -413,7 +397,13 @@ functions
 				mk_Enumeration(-, -, min, max, start) ->
 					isInRange[nat](min, max, start, <UInt32>),	-- TODO kind of enum?
 
-				others -> true		-- String, Boolean, Binary, Clock
+				mk_Binary(-, -, -, start) ->
+					-- @OnFail("2.2.10 Binary %s start is not hex-binary at line %s", sv.base.name, sv.base.location)
+					( start <> nil and forall s in seq start &
+						forall c in seq s &
+							c in set elems "ABCDEFabcdef0123456789" ),
+
+				others -> true		-- String, Boolean, Clock
 			end
 		)
 
@@ -422,9 +412,12 @@ functions
 	union
 	{
 		-- @OnFail("2.2.10 Dimensions of %s do not match start value at line %s", sv.base.name, sv.base.location)
-		( sv.start <> nil and sv.base.dimensions <> nil =>
-			let size = dimensionsProduct(sv.base.dimensions) in
-				size > 0 => size = len sv.start )
+		( sv.start <> nil =>
+			if sv.base.dimensions <> nil
+			then
+				let size = dimensionsProduct(sv.base.dimensions) in
+					size > 0 => size = len sv.start
+			else len sv.start = 1 )
 
 		| sv in seq svs
 	}
@@ -769,7 +762,7 @@ functions
 	/**
 	 * Get the alias refmap, from valueReference/type pairs to sets of SVs
 	 */
-	getAliasRefMap: seq1 of Variable -> map nat * seq of char to set of Variable
+	getAliasRefMap: seq1 of Variable -> map fmi3ValueReference * seq of char to set of Variable
 	getAliasRefMap(svs) ==
 		let tags = { svi |-> aliasTag(svs(svi)) | svi in set inds svs } in
 		{
@@ -781,6 +774,6 @@ functions
 	 * Generate an alias "tag" for a Variable, made of the valueReference and
 	 * the type of the variable. All aliases of a variable have the same tag.
 	 */
-	aliasTag: Variable +> nat * seq1 of char
+	aliasTag: Variable +> fmi3ValueReference * seq1 of char
 	aliasTag(sv) ==
 		mk_(sv.base.valueReference, typeName(sv));

@@ -55,13 +55,17 @@ abstract public class Element
 		}
 		else
 		{
-			return value.replace("\\", "\\\\").replace("\"", "\\\"");
+			return value.
+				replace("\\", "\\\\").
+				replace("\"", "\\\"").
+				replace("&lt;", "<").
+				replace("&gt;", ">");
 		}
 	}
 
 	protected String[] stringsOf(Attributes attributes, String name)
 	{
-		String value = attributes.getValue(name);
+		String value = stringOf(attributes, name);
 
 		if (value == null)
 		{
@@ -69,7 +73,6 @@ abstract public class Element
 		}
 		else
 		{
-			value = value.replace("\\", "\\\\").replace("\"", "\\\"");
 			String[] array = value.split("\\s+");
 
 			if (array.length == 1 && array[0].isEmpty())
@@ -246,6 +249,21 @@ abstract public class Element
 			return array;
 		}
 	}
+	
+	private boolean boolOf(String s)
+	{
+		switch(s)
+		{
+			case "0":
+				return false;
+
+			case "1":
+				return true;
+
+			default:
+				return Boolean.parseBoolean(s);
+		}
+	}
 
 	protected Boolean boolOf(Attributes attributes, String name)
 	{
@@ -257,7 +275,7 @@ abstract public class Element
 		}
 		else
 		{
-			return Boolean.parseBoolean(value);
+			return boolOf(value);
 		}
 	}
 
@@ -276,15 +294,7 @@ abstract public class Element
 			
 			for (String sv: values)
 			{
-				try
-				{
-					array[i++] = Boolean.parseBoolean(sv);
-				}
-				catch (NumberFormatException e)
-				{
-					FMI3SaxParser.error(e.toString() + " at " + lineNumber);
-					return null;
-				}
+				array[i++] = boolOf(sv);
 			}
 			
 			return array;
