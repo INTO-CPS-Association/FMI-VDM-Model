@@ -29,6 +29,7 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import org.xml.sax.Attributes;
@@ -86,7 +87,7 @@ abstract public class Element
 		}
 	}
 
-	protected Long intOf(Attributes attributes, String name)
+	protected BigInteger intOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
 
@@ -98,17 +99,17 @@ abstract public class Element
 		{
 			try
 			{
-				return Long.parseLong(value);
+				return new BigInteger(value);
 			}
 			catch (NumberFormatException e)
 			{
 				FMI3SaxParser.error(e.toString() + " at " + lineNumber);
-				return new Long(0);
+				return BigInteger.ZERO;
 			}
 		}
 	}
 
-	protected Long[] intsOf(Attributes attributes, String name)
+	protected BigInteger[] intsOf(Attributes attributes, String name)
 	{
 		String[] values = stringsOf(attributes, name);
 
@@ -118,14 +119,14 @@ abstract public class Element
 		}
 		else
 		{
-			Long[] array = new Long[values.length];
+			BigInteger[] array = new BigInteger[values.length];
 			int i=0;
 			
 			for (String sv: values)
 			{
 				try
 				{
-					array[i++] = Long.parseLong(sv);
+					array[i++] = new BigInteger(sv);
 				}
 				catch (NumberFormatException e)
 				{
@@ -138,7 +139,7 @@ abstract public class Element
 		}
 	}
 
-	protected Long uintOf(Attributes attributes, String name)
+	protected BigInteger uintOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
 
@@ -150,12 +151,12 @@ abstract public class Element
 		{
 			try
 			{
-				Long uint = Long.parseLong(value);
+				BigInteger uint = new BigInteger(value);
 
-				if (Long.signum(uint) < 0)
+				if (uint.signum() < 0)
 				{
 					FMI3SaxParser.error("Negative unsigned int " + value + " at " + lineNumber);
-					return new Long(0);
+					return BigInteger.ZERO;
 				}
 
 				return uint;
@@ -163,7 +164,7 @@ abstract public class Element
 			catch (NumberFormatException e)
 			{
 				FMI3SaxParser.error(e.toString() + " at " + lineNumber);
-				return new Long(0);
+				return BigInteger.ZERO;
 			}
 		}
 	}

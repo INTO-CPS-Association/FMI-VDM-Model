@@ -29,14 +29,16 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class Unknown extends Element
 {
 	public final String kind;
-	private Long valueReference;
-	private Long[] dependencies;
+	private BigInteger valueReference;
+	private BigInteger[] dependencies;
 	private String[] dependenciesKind;
 
 	public Unknown(String kind, Attributes attributes, Locator locator)

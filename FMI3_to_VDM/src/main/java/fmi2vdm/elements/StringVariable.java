@@ -29,12 +29,14 @@
 
 package fmi2vdm.elements;
 
+import java.util.Vector;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class StringVariable extends Variable
 {
-	private ElementList<Start> starts;
+	private Vector<String> starts;
 
 	public StringVariable(Attributes attributes, Locator locator)
 	{
@@ -48,10 +50,10 @@ public class StringVariable extends Variable
 		{
 			if (starts == null)
 			{
-				starts = new ElementList<Start>();
+				starts = new Vector<String>();
 			}
 			
-			starts.add(element);
+			starts.add(element.toString());
 		}
 		else
 		{
@@ -66,7 +68,8 @@ public class StringVariable extends Variable
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");	// base
 		System.out.println(",");
-		printSequence(indent + "\t", starts, "\n");
+		String[] s = new String[starts.size()];
+		printStringSequence(indent + "\t", starts.toArray(s), "\n");
 		System.out.print(indent + ")");
 	}
 }

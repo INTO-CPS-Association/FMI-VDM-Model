@@ -29,6 +29,8 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
@@ -36,7 +38,7 @@ public class CoSimulation extends FMUType
 {
 	private Boolean canHandleVariableCommunicationStepSize;
 	private Boolean canInterpolateInputs;
-	private Long maxOutputDerivativeOrder;
+	private BigInteger maxOutputDerivativeOrder;
 	private Boolean providesIntermediateVariableAccess;
 	private Boolean canReturnEarlyAfterIntermediateUpdate;
 	private Boolean providesHybridCoSimulation;

@@ -34,12 +34,12 @@ import org.xml.sax.Locator;
 
 public class ClockVariable extends Variable
 {
-	private Boolean[] start;
+	private Boolean start;
 
 	public ClockVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-		start = boolsOf(attributes, "start");
+		start = boolOf(attributes, "start");
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class ClockVariable extends Variable
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");	// base
 		System.out.println(",");
-		printSequence(indent + "\t", start, "\n");
+		printRawAttribute(indent + "\t", start, "\n");
 		System.out.print(indent + ")");
 	}
 }

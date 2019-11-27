@@ -29,13 +29,15 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class GraphicalTerminal extends Element
 {
 	private String name;
-	private Long[] defaultConnectionColor;
+	private BigInteger[] defaultConnectionColor;
 	private Double defaultConnectionStrokeSize;
 	private Double x1;
 	private Double y1;

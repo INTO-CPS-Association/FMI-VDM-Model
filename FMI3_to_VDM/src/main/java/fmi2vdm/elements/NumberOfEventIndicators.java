@@ -29,12 +29,14 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class NumberOfEventIndicators extends Element
 {
-	private Long[] dependencies;
+	private BigInteger[] dependencies;
 
 	public NumberOfEventIndicators(Attributes attributes, Locator locator)
 	{

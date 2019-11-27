@@ -29,18 +29,20 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class ClockType extends Type
 {
 	private String clockType;
-	private Long priority;
+	private BigInteger priority;
 	private Boolean periodic;
 	private Boolean strict;
-	private Long intervalCounter;
-	private Long shiftCounter;
-	private Long resolution;
+	private BigInteger intervalCounter;
+	private BigInteger shiftCounter;
+	private BigInteger resolution;
 
 	public ClockType(Attributes attributes, Locator locator)
 	{

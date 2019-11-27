@@ -29,6 +29,8 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
@@ -37,8 +39,8 @@ public class IntegerType extends Type
 	private String kind;
 	
 	private String quantity;
-	private Long min;
-	private Long max;
+	private BigInteger min;
+	private BigInteger max;
 
 	public IntegerType(String kind, Attributes attributes, Locator locator)
 	{

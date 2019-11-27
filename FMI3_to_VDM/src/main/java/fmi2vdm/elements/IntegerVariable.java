@@ -29,15 +29,17 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class IntegerVariable extends Variable
 {
 	private String quantity;
-	private Long min;
-	private Long max;
-	private Long[] start;
+	private BigInteger min;
+	private BigInteger max;
+	private BigInteger[] start;
 	private String kind;
 
 	public IntegerVariable(String kind, Attributes attributes, Locator locator)

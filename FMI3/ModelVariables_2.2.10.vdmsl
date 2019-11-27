@@ -80,9 +80,6 @@ types
 		start				: [nat]
 		valueReference		: [fmi3ValueReference];
 
-	Start ::
-		value				: AnyString;
-
 	fmi3VariableBase ::
 		location							: Location
 		name								: NormalizedString1
@@ -119,7 +116,7 @@ types
 
 	String ::
 		base				: fmi3VariableBase
-		start				: [seq1 of Start];
+		start				: [seq1 of AnyString];	-- From Start elements
 
 	Binary ::
 		base				: fmi3VariableBase
@@ -138,7 +135,7 @@ types
 
 	Clock ::
 		base				: fmi3VariableBase
-		start				: [seq1 of bool];
+		start				: [bool];
 
 	Variable = Real | Integer | Boolean | String | Binary | Enumeration | Clock;
 
@@ -193,8 +190,8 @@ functions
 			<UInt16>	-> mk_(0, 65535),
 			<Int32>		-> mk_(-2147483648, 2147483647),
 			<UInt32>	-> mk_(0, 4294967295),
-			<Int64>		-> mk_(-9.22337203685e+18, 9.22337203685e+18),	-- NB using reals
-			<UInt64>	-> mk_(0, 1.84467440737e+19)					-- NB using reals
+			<Int64>		-> mk_(-9.223372036854775808e+18, 9.223372036854775807e+18),
+			<UInt64>	-> mk_(0, 1.8446744073709551615e+19)
 		end;
 
 	/**

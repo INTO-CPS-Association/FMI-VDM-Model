@@ -29,13 +29,15 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class Item extends Element
 {
 	private String name;
-	private Long value;
+	private BigInteger value;
 	private String description;
 
 	public Item(Attributes attributes, Locator locator)

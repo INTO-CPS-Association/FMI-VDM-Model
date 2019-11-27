@@ -29,13 +29,15 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class BinaryType extends Type
 {
 	private String mimeType;
-	private Long maxSize;
+	private BigInteger maxSize;
 
 	public BinaryType(Attributes attributes, Locator locator)
 	{

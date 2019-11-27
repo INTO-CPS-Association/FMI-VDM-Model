@@ -29,19 +29,21 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class BaseUnit extends Element
 {
-	private Long kg;
-	private Long m;
-	private Long s;
-	private Long A;
-	private Long K;
-	private Long mol;
-	private Long cs;
-	private Long rad;
+	private BigInteger kg;
+	private BigInteger m;
+	private BigInteger s;
+	private BigInteger A;
+	private BigInteger K;
+	private BigInteger mol;
+	private BigInteger cs;
+	private BigInteger rad;
 	private Double factor;
 	private Double offset;
 

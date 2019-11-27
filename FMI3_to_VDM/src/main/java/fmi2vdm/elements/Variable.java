@@ -29,6 +29,8 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
@@ -37,14 +39,14 @@ abstract class Variable extends Element
 	private ElementList<Dimension> dimensions;
 	private VendorAnnotations annotations;
 	private String name;
-	private Long valueReference;
+	private BigInteger valueReference;
 	private String description;
 	private String causality;
 	private String variability;
 	private String initial;
 	private Boolean canHandleMultipleSetPerTimeInstant;
 	private String declaredType;
-	private Long clockReference;
+	private BigInteger clockReference;
 	private Boolean intermediateAccess;
 
 	protected Variable(Attributes attributes, Locator locator)

@@ -48,6 +48,12 @@ public class Start extends Element
 		System.out.print(indent + "mk_Start(");
 		printStringAttribute("", value, ")");
 	}
+	
+	@Override
+	public String toString()
+	{
+		return value;
+	}
 
 	@Override
 	public void validate(String root)

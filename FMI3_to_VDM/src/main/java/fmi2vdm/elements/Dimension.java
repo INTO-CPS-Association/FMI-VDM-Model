@@ -29,13 +29,15 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class Dimension extends Element
 {
-	private Long start;
-	private Long valueReference;
+	private BigInteger start;
+	private BigInteger valueReference;
 
 	public Dimension(Attributes attributes, Locator locator)
 	{
