@@ -60,7 +60,7 @@
 	</TypeDefinitions>
 	<ModelVariables>
 		<Float64 name="a" valueReference="1" start="INF NaN -INF">
-			<Dimension start="3" />
+			<Dimension valueReference="3" />
 			<Annotations>
 				<Tool name="one">
 					<stuff></stuff>
@@ -70,12 +70,9 @@
 				</Tool>
 			</Annotations>
 		</Float64>
-		<Int64 name="Int64" valueReference="9" start="-9223372036854775808 9223372036854775807">
+		<Int64 name="Int64" valueReference="9" start="-9223372036854775807 9223372036854775807 333">
 			<Dimension start="2" />
 		</Int64>
-		<UInt64 name="UInt64" valueReference="10" start="0 18446744073709551615">
-			<Dimension start="2" />
-		</UInt64>
 		<Boolean name="c" valueReference="3" />
 		<String name="d" valueReference="4">
 			<Start value="123" />

@@ -140,7 +140,7 @@ functions
 			( isValidVendorAnnotation(md.vendorAnnotations) ),
 
 			-- @OnFail("2.2.1 Variables invalid")
-			( isValidScalarVariables(md.modelVariables) ),		-- NOTE: NOT effective variables!
+			( isValidModelVariables(md.modelVariables) ),		-- NOTE: NOT effective variables!
 
 			-- @OnFail("2.2.1 Effective Variables invalid")
 			( isValidEffectiveVariables(eModelVariables) ),		-- NOTE: effective variables!

@@ -169,8 +169,8 @@ functions
 	/**
 	 * Verify a sequence of raw Variables.
 	 */
-	isValidScalarVariables: seq1 of Variable +> bool
-	isValidScalarVariables(svs) ==
+	isValidModelVariables: seq1 of Variable +> bool
+	isValidModelVariables(svs) ==
 		{
 			/* @OnFail("2.2.10 Variables define more than one independent variable: %s",
 				{ sv.base.name | sv in seq svs & sv.base.causality = <independent> }) */
@@ -179,7 +179,9 @@ functions
 			/* @OnFail("2.2.10 Variable names are not unique: %s",
 				{ svs(a).base.name | a, b in set inds svs &
 					a <> b and svs(a).base.name = svs(b).base.name } ) */
-			( card { sv.base.name | sv in seq svs } = len svs )
+			( card { sv.base.name | sv in seq svs } = len svs ),
+
+			isValidVariableDimensions(svs)
 		}
 		union
 		{
@@ -303,7 +305,7 @@ functions
 				end
 			),
 
-			-- @OnFail("2.2.10 VendorAnnotations invalid")
+			-- @OnFail("2.2.10 Variable %s VendorAnnotations invalid", sv.base.name)
 			( isValidVendorAnnotation(sv.base.annotations) )
 		} = {true};
 
@@ -315,18 +317,18 @@ functions
 		vars <> nil => dunion
 		{
 			{
-				-- @OnFail("2.2.10 Dimensions cannot define start and valueReference at line %s", v.base.location)
+				-- @OnFail("2.2.10 Dimensions of %s cannot define start and valueReference", v.base.name)
 				( v.base.dimensions <> nil =>
 					forall dim in seq v.base.dimensions &
 						dim.start = nil <=> dim.valueReference <> nil ),
 
-				-- @OnFail("2.2.10 Dimension cannot reference itself at line %s", v.base.location)
+				-- @OnFail("2.2.10 Dimension of %s cannot reference itself at line %s", v.base.name)
 				( v.base.dimensions <> nil =>
 					forall dim in seq v.base.dimensions &
 						dim.valueReference <> nil =>
 							dim.valueReference <> v.base.valueReference ),
 
-				-- @OnFail("2.2.10 Dimensions valueReference is not valid at line %s", v.base.location)
+				-- @OnFail("2.2.10 Dimensions of %s, valueReference is not constant or structuralParameter", v.base.name)
 				( v.base.dimensions <> nil =>
 					forall dim in seq v.base.dimensions &
 						dim.valueReference <> nil =>
