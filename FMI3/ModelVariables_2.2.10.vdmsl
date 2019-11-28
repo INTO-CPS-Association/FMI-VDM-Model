@@ -246,9 +246,13 @@ functions
 						and eInitial in set {<approx>, <calculated>},	-- (B)
 
 					<input> ->
-						eVariability = <clock>
-						and eInitial = <exact>
-						and sv.start <> nil,	-- (F)
+						(eVariability in set {<discrete>, <continuous>}
+						 and eInitial = nil
+						 and sv.start <> nil)	-- (D)
+						or
+						(eVariability = <clock>
+						 and eInitial = <exact>
+						 and sv.start <> nil),	-- (F)
 
 					<independent> ->
 						eVariability = <continuous>
@@ -259,8 +263,15 @@ functions
 
 					<output> ->
 						cases eVariability:
+							<constant> ->
+								eInitial in set {<exact>},	-- (A)
+
+							<discrete>,
+							<continuous> ->
+								eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
+
 							<clock> ->
-								eInitial = <calculated>, -- (G)
+								eInitial = <calculated>, 	-- (G)
 
 							others -> false
 						end,
@@ -499,6 +510,12 @@ functions
 		if i <> nil
 		then i
 		else cases eCausality:
+			<structuralParameter> ->
+				cases eVariability:
+					<fixed>, <tunable> -> <exact>,
+					others -> nil
+				end,
+
 			<parameter> ->
 				cases eVariability:
 					<fixed>, <tunable> -> <exact>,
@@ -683,7 +700,7 @@ functions
 		if value <> nil then value else default;
 
 	/**
-	 * Test whether a Variable is settable with fmi2SetXXX. See sections 3.2.3 and 4.2.4.
+	 * Test whether a Variable is settable with fmi2SetXXX.
 	 */
 	isSettable: Variable +> bool
 	isSettable(sv) ==

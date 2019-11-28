@@ -129,7 +129,13 @@ functions
 								<clock> ->
 									isValidScalarVariable(mkVariable(causality, variability, <exact>, startv)),
 
-								<constant>, <fixed>, <tunable>, <discrete>, <continuous> ->
+								<discrete>, <continuous> ->
+									isValidScalarVariable(mkVariable(causality, variability, nil, startv)) and
+									not isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)) and
+									not isValidScalarVariable(mkVariable(causality, variability, <approx>, startv)) and
+									not isValidScalarVariable(mkVariable(causality, variability, <exact>, nilv)),
+
+								<constant>, <fixed>, <tunable> ->
 									forall initial : Initial &
 										not isValidScalarVariable(mkVariable(causality, variability, initial, nilv))
 							end,
@@ -139,7 +145,17 @@ functions
 								<clock> ->
 									isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)),
 
-								<fixed>, <tunable>, <constant>, <discrete>, <continuous> ->
+								<constant> ->
+									isValidScalarVariable(mkVariable(causality, variability, <exact>, startv)) and
+									not isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)) and
+									not isValidScalarVariable(mkVariable(causality, variability, <approx>, startv)),
+
+								<discrete>, <continuous> ->
+									isValidScalarVariable(mkVariable(causality, variability, <calculated>, nilv)) and
+									isValidScalarVariable(mkVariable(causality, variability, <exact>, startv))
+									and isValidScalarVariable(mkVariable(causality, variability, <approx>, startv)),
+
+								<fixed>, <tunable> ->
 									forall initial : Initial &
 										not isValidScalarVariable(mkVariable(causality, variability, initial, nilv))
 							end,

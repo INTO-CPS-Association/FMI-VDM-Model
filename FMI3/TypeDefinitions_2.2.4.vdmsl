@@ -126,18 +126,48 @@ functions
 	isValidType: VariableType +> bool
 	isValidType(stype) ==
 		cases stype:
-			mk_RealType(-, -, mk_fmi3RealAttributes(-, unit, dunit, -, -), mk_fmi3FloatXXAttributes(min, max, -)) ->
+			mk_RealType(-, kind, mk_fmi3RealAttributes(-, unit, dunit, -, -), mk_fmi3FloatXXAttributes(min, max, -)) ->
 			{
 				-- @OnFail("2.2.4 Type %s, Float max %s not >= min %s", stype.base.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
 
 				-- @OnFail("2.2.4 Type %s, Real unit must be defined for displayUnit %s", stype.base.name, dunit)
 				( dunit <> nil => unit <> nil )
-			} = {true},
+			}
+			union
+			(
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+				{
+					max <> nil =>
+						--@OnFail("2.2.4 max %s is not a valid %s", max, kind)
+						( max <= kmax and max >= kmin ),
 
-			mk_IntegerType(-, -, -, mk_fmi3IntXXAttributes(min, max)) ->
+					min <> nil =>
+						--@OnFail("2.2.4 min %s is not a valid %s", min, kind)
+						( min <= kmax and min >= kmin )
+				}
+			)
+			= {true},
+
+			mk_IntegerType(-, kind, -, mk_fmi3IntXXAttributes(min, max)) ->
+			{
 				-- @OnFail("2.2.4 Type %s, Integer max %s not >= min %s", stype.base.name, max, min)
-				( max <> nil and min <> nil => max >= min ),
+				( max <> nil and min <> nil => max >= min )
+			}
+			union
+			(
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+				{
+					max <> nil =>
+						--@OnFail("2.2.4 max %s is not a valid %s", max, kind)
+						( max <= kmax and max >= kmin ),
+
+					min <> nil =>
+						--@OnFail("2.2.4 min %s is not a valid %s", min, kind)
+						( min <= kmax and min >= kmin )
+				}
+			)
+			= {true},
 
 			-- Items of an enumeration as a sequence of "name" and "value" pairs. The
 			-- values can be any integer number, but must be unique within the same
@@ -151,7 +181,7 @@ functions
 					and	card { i.value | i in seq items } = len items
 				),
 
-			others -> true		-- String and Boolean
+			others -> true		-- String, Boolean and Clock
 		end;
 
 	isValidTypeDefinitions: [set1 of VariableType] +> bool
