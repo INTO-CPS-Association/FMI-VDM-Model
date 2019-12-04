@@ -35,7 +35,7 @@ public class GraphicalRepresentation extends Element
 {
 	private CoordinateSystem coordinateSystem;
 	private Icon icon;
-	private GraphicalTerminal terminal;
+	private ElementList<GraphicalTerminal> terminals;
 
 	public GraphicalRepresentation(Locator locator)
 	{
@@ -55,7 +55,12 @@ public class GraphicalRepresentation extends Element
 		}
 		else if (element instanceof GraphicalTerminal)
 		{
-			terminal = (GraphicalTerminal) element;
+			if (terminals == null)
+			{
+				terminals = new ElementList<GraphicalTerminal>();
+			}
+			
+			terminals.add(element);
 		}
 		else
 		{
@@ -72,7 +77,7 @@ public class GraphicalRepresentation extends Element
 
 		printOptional(indent + "\t", coordinateSystem, ",\n");
 		printOptional(indent + "\t", icon, ",\n");
-		printOptional(indent + "\t", terminal, "\n");
+		printOptional(indent + "\t", terminals, "\n");
 		System.out.print(indent + ")");
 	}
 
@@ -81,6 +86,6 @@ public class GraphicalRepresentation extends Element
 	{
 		validate(root, "coordinateSystem", coordinateSystem, false);
 		validate(root, "icon", icon, false);
-		validate(root, "terminal", terminal, false);
+		validate(root, "terminals", terminals, false);
 	}
 }

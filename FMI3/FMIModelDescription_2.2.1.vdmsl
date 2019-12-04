@@ -336,6 +336,19 @@ functions
 					| unk in seq nilSeq[Unknown](md.modelStructure.unknowns)
 				}
 				= {true}
+			),
+
+			(
+				md.graphicalRepresentation <> nil =>
+				{
+					/* @OnFail("2.2.8 Graphical terminal %s not declared in Terminals at line %s",
+						gterm.name, gterm.location) */
+					( md.terminals <> nil and
+					  exists term in seq md.terminals & term.name = gterm.name )
+
+					| gterm in seq md.graphicalRepresentation.terminals
+				}
+				= {true}
 			)
 		} = {true};
 

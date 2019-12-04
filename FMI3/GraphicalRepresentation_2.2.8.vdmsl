@@ -35,7 +35,7 @@ types
 		location					: Location
 		coordinateSystem			: [CoordinateSystem]
 		icon						: [Icon]
-		terminal					: [GraphicalTerminal];
+		terminals					: [seq1 of GraphicalTerminal];
 
 	CoordinateSystem ::
 		location					: Location
@@ -74,7 +74,7 @@ functions
 		{
 			isValidCoordinateSystem(gr.coordinateSystem),
 			isValidIcon(gr.icon),
-			isValidGraphicalTerminal(gr.terminal)
+			isValidGraphicalTerminal(gr.terminals)
 		} = {true};
 
 	isValidCoordinateSystem: [CoordinateSystem] +> bool
@@ -94,22 +94,26 @@ functions
 			-- @OnFail("2.2.8 Icon area is not bottom left to top right at line %s", icon.location)
 			( icon.x1 < icon.x2 and icon.y1 < icon.y2 );
 
-	isValidGraphicalTerminal: [GraphicalTerminal] +> bool
-	isValidGraphicalTerminal(gt) ==
-		gt <> nil =>
+	isValidGraphicalTerminal: [seq1 of GraphicalTerminal] +> bool
+	isValidGraphicalTerminal(gterms) ==
+		dunion
 		{
-			-- @OnFail("2.2.8 Terminal area is not bottom left to top right at line %s", gt.location)
-			( gt.x1 < gt.x2 and gt.y1 < gt.y2 ),
+			{
+				-- @OnFail("2.2.8 Terminal area is not bottom left to top right at line %s", gt.location)
+				( gt.x1 < gt.x2 and gt.y1 < gt.y2 ),
 
-			-- @OnFail("2.2.8 Colour attributes must be octets (<=255) at line %s", gt.location)
-			( gt.defaultConnectionColor <> nil =>
-				forall c in seq gt.defaultConnectionColor & c <= 255 ),
+				-- @OnFail("2.2.8 Colour attributes must be octets (<=255) at line %s", gt.location)
+				( gt.defaultConnectionColor <> nil =>
+					forall c in seq gt.defaultConnectionColor & c <= 255 ),
 
-			-- @OnFail("2.2.8 defaultConnectionStrokeSize must be >0 at line %s", gt.location)
-			( gt.defaultConnectionStrokeSize <> nil =>
-				gt.defaultConnectionStrokeSize > 0 ),
+				-- @OnFail("2.2.8 defaultConnectionStrokeSize must be >0 at line %s", gt.location)
+				( gt.defaultConnectionStrokeSize <> nil =>
+					gt.defaultConnectionStrokeSize > 0 ),
 
-			-- @OnFail("2.2.8 Terminal vendor annotations invalid at line %s", gt.location)
-			( isValidVendorAnnotation(gt.vendorAnnotations) )
+				-- @OnFail("2.2.8 Terminal vendor annotations invalid at line %s", gt.location)
+				( isValidVendorAnnotation(gt.vendorAnnotations) )
+			}
+
+			| gt in seq gterms
 		}
 		= {true};
