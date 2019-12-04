@@ -81,17 +81,55 @@ functions
 	isValidBuildConfiguration(bc) ==
 		bc <> nil and bc.sourceFileSets <> nil =>
 		{
-			-- @OnFail("Invalid SourceFileSet at line %s", s.location)
-			( isValidSourceFileSet(s) ) | s in seq bc.sourceFileSets
+			-- @OnFail("2.2.2 Invalid SourceFileSet at line %s", sfs.location)
+			( isValidSourceFileSet(sfs) ) | sfs in seq bc.sourceFileSets
+		}
+		union
+		{
+			-- @OnFail("2.2.2 Invalid Library at line %s", lib.location)
+			( isValidLibrary(lib) ) | lib in seq bc.libraries
 		}
 		= {true};
 
 	isValidSourceFileSet: SourceFileSet +> bool
-	isValidSourceFileSet(s) ==
-		/* @OnFail("2.2.2 SourceFileSet has duplicate names: %s at line %s",
-			let sfs = s.sourceFiles in
-				{ sfs(a).name | a, b in set inds sfs &
-					a <> b and sfs(a).name = sfs(b).name },
-			s.location)
-		 */
-		( card { sf.name | sf in seq s.sourceFiles } = len s.sourceFiles );
+	isValidSourceFileSet(sfs) ==
+	{
+		-- @OnFail("2.2.2 Compiler options set without compiler at line %s", sfs.location)
+		( sfs.compilerOptions <> nil => sfs.compiler <> nil ),
+		-- @OnFail("2.2.2 Invalid SourceFiles at line %s", sfs.location)
+		( isValidSourceFiles(sfs.sourceFiles) ),
+		-- @OnFail("2.2.2 Invalid PreprocessorDefinitions at line %s", sfs.location)
+		( isValidPreprocessorDefinitions(sfs.preprocessorDefinitions) ),
+		-- @OnFail("2.2.2 Invalid IncludeDirectories at line %s", sfs.location)
+		( isValidIncludeDirectories(sfs.includeDirectories) )
+	} = {true};
+
+	isValidSourceFiles: seq1 of SourceFile +> bool
+	isValidSourceFiles(files) ==
+		let names = [ sf.name | sf in seq files ] in
+			/* @OnFail("2.2.2 SourceFileSet has duplicate names: %s",
+				{ files(a) | a, b in set inds names & a <> b and files(a). = files(b) })
+			 */
+			( card elems names = len names );
+
+	isValidPreprocessorDefinitions: [seq1 of PreprocessorDefinition] +> bool
+	isValidPreprocessorDefinitions(defs) ==
+		defs <> nil =>
+			let names = [ d.name | d in seq defs ] in
+				/* @OnFail("2.2.2 PreprocessorDefinitions has duplicate names: %s",
+					{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
+				 */
+				( card elems names = len names );
+
+	isValidIncludeDirectories: [seq1 of IncludeDirectory] +> bool
+	isValidIncludeDirectories(incs) ==
+		incs <> nil =>
+			let names = [ d.name | d in seq incs ] in
+				/* @OnFail("2.2.2 IncludeDirectories has duplicate names: %s",
+					{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
+				 */
+				( card elems names = len names );
+
+	isValidLibrary: Library +> bool
+	isValidLibrary(-) ==
+		true;

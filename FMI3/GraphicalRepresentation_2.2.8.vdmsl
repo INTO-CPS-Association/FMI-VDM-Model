@@ -74,7 +74,7 @@ functions
 		{
 			isValidCoordinateSystem(gr.coordinateSystem),
 			isValidIcon(gr.icon),
-			isValidTerminal(gr.terminal)
+			isValidGraphicalTerminal(gr.terminal)
 		} = {true};
 
 	isValidCoordinateSystem: [CoordinateSystem] +> bool
@@ -94,8 +94,8 @@ functions
 			-- @OnFail("2.2.8 Icon area is not bottom left to top right at line %s", icon.location)
 			( icon.x1 < icon.x2 and icon.y1 < icon.y2 );
 
-	isValidTerminal: [GraphicalTerminal] +> bool
-	isValidTerminal(gt) ==
+	isValidGraphicalTerminal: [GraphicalTerminal] +> bool
+	isValidGraphicalTerminal(gt) ==
 		gt <> nil =>
 		{
 			-- @OnFail("2.2.8 Terminal area is not bottom left to top right at line %s", gt.location)

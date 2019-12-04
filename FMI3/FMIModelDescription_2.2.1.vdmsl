@@ -145,11 +145,11 @@ functions
 			-- @OnFail("2.2.1 Effective Variables invalid")
 			( isValidEffectiveVariables(eModelVariables) ),		-- NOTE: effective variables!
 
-			-- @OnFail("2.2.1 Variables typecheck against TypeDefinitions failed")
-			( typeCheck(eModelVariables, md.typeDefinitions) ),
-
 			-- @OnFail("2.2.1 ModelStructure invalid at line %s", md.modelStructure.location)
 			( isValidModelStructure(md.modelStructure) ),
+
+			-- @OnFail("2.2.1 Variables typecheck against TypeDefinitions failed")
+			( typeCheck(eModelVariables, md.typeDefinitions) ),
 
 			-- @OnFail("2.2.1 Neither ModelExchange nor CoSimulation specified")
 			( md.modelExchange <> nil or md.coSimulation <> nil ),
@@ -173,24 +173,20 @@ functions
 
 			(
 				md.typeDefinitions <> nil =>
+					dunion
 					{
-						/* @OnFail("2.2.3 TypeDefinition and Variable names overlap: %s at line %s",
-								simpleType.base.name, simpleType.base.location) */
-						( not exists sv in seq eModelVariables & sv.base.name = simpleType.base.name )
+						{
+							/* @OnFail("2.2.3 TypeDefinition and Variable names overlap: %s at line %s",
+									std.base.name, std.base.location) */
+							( not exists sv in seq eModelVariables & sv.base.name = std.base.name ),
 
-						| simpleType in set md.typeDefinitions
-					} = {true}
-			),
-
-			(
-				md.typeDefinitions <> nil =>
-					{
-						is_RealType(std) =>
-							std.realAtts.unit <> nil =>
-								/* @OnFail("2.2.3 Type %s, Real unit %s not defined in UnitDefinitions at line %s",
-									std.base.name, std.realAtts.unit, std.base.location) */
-								( md.unitDefinitions <> nil
-								  and exists u in seq md.unitDefinitions & u.name = std.realAtts.unit )
+							is_RealType(std) =>
+								std.realAtts.unit <> nil =>
+									/* @OnFail("2.2.3 Type %s, Real unit %s not defined in UnitDefinitions at line %s",
+										std.base.name, std.realAtts.unit, std.base.location) */
+									( md.unitDefinitions <> nil
+									  and exists u in seq md.unitDefinitions & u.name = std.realAtts.unit )
+						}
 
 						| std in set md.typeDefinitions
 					} = {true}
@@ -253,18 +249,9 @@ functions
 						( structRefs <> {} )
 
 						and
-						{
-							/* @OnFail("2.2.8 Outputs section does not match output variables at line %s",
-								md.modelStructure.location) */
-							( structRefs = outputRefs ),
-
-							/* @OnFail("2.2.8 Output references %s unknown at line %s",
-								{ vr | vr in set structRefs &
-									not exists sv in seq eModelVariables & sv.base.valueReference = vr },
-								md.modelStructure.location) */
-							( forall vr in set structRefs &
-								 exists sv in seq eModelVariables & sv.base.valueReference = vr )
-						} = {true}
+						/* @OnFail("2.2.8 Outputs section does not match output variables at line %s",
+							md.modelStructure.location) */
+						( structRefs = outputRefs )
 					else
 						/* @OnFail("2.2.8 Outputs should be omitted at line %s", md.modelStructure.location) */
 						( structRefs = {} )
@@ -285,18 +272,9 @@ functions
 							( structRefs <> {} )
 
 							and
-							{
-								/* @OnFail("2.2.8 Derivatives section does not match Real/derivative variables at line %s",
-									md.modelStructure.location) */
-								( structRefs = derivativeRefs ),
-
-								/* @OnFail("2.2.8 Derivatives references %s unknown at line %s",
-									{ vr | vr in set structRefs &
-										not exists sv in seq eModelVariables & sv.base.valueReference = vr },
-									md.modelStructure.location) */
-								( forall vr in set structRefs &
-									exists sv in seq eModelVariables & sv.base.valueReference = vr )
-							} = {true}
+							/* @OnFail("2.2.8 Derivatives do not match Real/derivative variables at line %s",
+								md.modelStructure.location) */
+							( structRefs = derivativeRefs )
 						else
 							/* @OnFail("2.2.8 Derivatives declared, but no Real/derivative variables at line %s",
 								md.modelStructure.location) */
@@ -305,7 +283,6 @@ functions
 
 			-- InitalUnknowns must include all output (approx/calculated), calculatedParameters and 
 			-- all continuous-time states and derivatives that are approx/calculated.
-			-- And the list must be in ascending index order
 			(
 				let ctVars = continuousTimeStates(eModelVariables),
 					sdVars = stateDerivatives(eModelVariables),
@@ -332,6 +309,33 @@ functions
 							-- @OnFail("2.2.8 InitialUnknowns must include refs: %s", initRefs)
 							( { u.valueReference | u in seq ius } subset initRefs )
 						} = {true}
+			),
+
+			(
+				md.modelStructure.numberOfEventIndicators <> nil =>
+				{
+					/* @OnFail("2.2.8 NumberOfEventIndicators dependency %s invalid at line %s",
+							vr, md.modelStructure.numberOfEventIndicators.location)
+					 */
+					( exists sv in seq eModelVariables & sv.base.valueReference = vr )
+					| vr in seq md.modelStructure.numberOfEventIndicators.dependencies
+				}
+				= {true}
+			),
+
+			(
+				md.modelStructure.unknowns <> nil => dunion
+				{
+					{
+						-- @OnFail("2.2.8 Unknown dependency %s invalid at line %s", vr, unk.location)
+						( exists sv in seq eModelVariables & sv.base.valueReference = vr )
+
+						| vr in seq nilSeq[fmi3ValueReference](unk.dependencies)
+					}
+
+					| unk in seq nilSeq[Unknown](md.modelStructure.unknowns)
+				}
+				= {true}
 			)
 		} = {true};
 

@@ -40,6 +40,7 @@ public class Terminal extends Element
 	private String description;
 	private ElementList<TerminalMemberVariable> variables;
 	private ElementList<TerminalStreamMemberVariable> streams;
+	private ElementList<Terminal> subTerminals;
 
 	public Terminal(Attributes attributes, Locator locator)
 	{
@@ -72,6 +73,15 @@ public class Terminal extends Element
 
 			streams.add((TerminalStreamMemberVariable) element);
 		}
+		else if (element instanceof Terminal)
+		{
+			if (subTerminals == null)
+			{
+				subTerminals = new ElementList<Terminal>();
+			}
+
+			subTerminals.add((Terminal) element);
+		}
 		else
 		{
 			super.add(element);
@@ -90,7 +100,8 @@ public class Terminal extends Element
 		printStringAttribute(indent + "\t", description, ",\n");
 
 		printOptional(indent + "\t", variables, ",\n");
-		printOptional(indent + "\t", streams, "\n");
+		printOptional(indent + "\t", streams, ",\n");
+		printOptional(indent + "\t", subTerminals, "\n");
 		
 		System.out.print(indent + ")");
 	}
@@ -102,5 +113,6 @@ public class Terminal extends Element
 		validate(root, "matchingRule", matchingRule, true);
 		validate(root, "variables", variables, false);
 		validate(root, "streams", streams, false);
+		validate(root, "subTerminals", subTerminals, false);
 	}
 }

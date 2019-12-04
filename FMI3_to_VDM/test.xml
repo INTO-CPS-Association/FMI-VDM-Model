@@ -95,6 +95,8 @@
 			<TerminalStreamMemberVariable
 				inStreamMemberName="inmname" outStreamMemberName="omname"
 				inStreamVariableName="isvname" outStreamVariableName="osvname" />
+			<Terminal name="subterm1" matchingRule="rule2" terminalKind="kind2" />
+			<Terminal name="subterm2" matchingRule="rule3" terminalKind="kind3" />
 		</Terminal>
 	</Terminals>
 	<GraphicalRepresentation>
@@ -120,6 +122,5 @@
 		<InitialUnknown valueReference="2" dependencies="1"
 			dependenciesKind="dependent" />
 		<NumberOfEventIndicators dependencies="1 2 3" />
-		<NumberOfEventIndicators dependencies="4 5 6" />
 	</ModelStructure>
 </fmiModelDescription>

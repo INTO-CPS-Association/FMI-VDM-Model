@@ -53,13 +53,33 @@ types
 	ModelStructure ::
 		location				: Location
 		unknowns				: [seq1 of Unknown]
-		numberOfEventIndicators	: [seq1 of NumberOfEventIndicators];
+		numberOfEventIndicators	: [NumberOfEventIndicators];
 
 	NumberOfEventIndicators ::
 		location				: Location
 		dependencies			: seq1 of fmi3ValueReference;
 
 functions
+	/**
+	 * Validation of a ModelStructure.
+	 */
+	isValidModelStructure: ModelStructure +> bool
+	isValidModelStructure(ms) ==
+	{
+		-- @OnFail("2.2.11 ModelStructure has invalid Unknowns")
+		( ms.unknowns <> nil =>
+			forall u in seq ms.unknowns & isValidUnknown(u) ),
+
+		-- @OnFail("2.2.11 InitialUnknowns are not of kind dependent or constant")
+		(
+			ms.unknowns <> nil =>
+				forall iu in seq ms.unknowns &
+					iu.kind = <InitialUnknown> and iu.dependenciesKind <> nil =>
+						forall dk in seq iu.dependenciesKind &
+							 dk in set { <dependent>, <constant>, nil }
+		)
+	} = {true};
+
 	/**
 	 * Validate an Unknown structure in isolation.
 	 */
@@ -84,24 +104,3 @@ functions
 		else
 			u.dependenciesKind = nil
 	);
-
-	/**
-	 * Validation of a ModelStructure.
-	 */
-	isValidModelStructure: ModelStructure +> bool
-	isValidModelStructure(ms) ==
-	{
-		-- @OnFail("2.2.11 ModelStructure has invalid Unknowns")
-		( ms.unknowns <> nil =>
-			forall u in seq ms.unknowns & isValidUnknown(u) ),
-
-		-- @OnFail("2.2.11 InitialUnknowns are not of kind dependent or constant")
-		(
-			ms.unknowns <> nil =>
-				forall iu in seq ms.unknowns &
-					iu.kind = <InitialUnknown> and iu.dependenciesKind <> nil =>
-						forall dk in seq iu.dependenciesKind &
-							 dk in set { <dependent>, <constant>, nil }
-		)
-	} = {true};
-
