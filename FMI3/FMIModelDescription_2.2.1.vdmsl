@@ -359,74 +359,77 @@ functions
 	typeCheck: seq1 of Variable * [set1 of VariableType] +> bool
 	typeCheck(variables, typedefs) ==
 		{
-			let dname = sv.base.declaredType in
-				dname <> nil =>
-					let matchingTypes = { td |
-						td in set nilSet[VariableType](typedefs) &
-						td.base.name = dname } in
-					{
-						/* @OnFail("2.2.3 Typedefs have multiple matching names: %s",
-							{ st.name | st in set matchingTypes } ) */
-						( card matchingTypes = 1 ),
+			sv.base.declaredType <> nil =>
+				let matchingTypes = { td |
+					td in set nilSet[VariableType](typedefs) &
+					td.base.name = sv.base.declaredType } in
+				{
+					/* @OnFail("2.2.3 Typedefs have multiple matching names: %s",
+						{ m.base.name | m in set matchingTypes } ) */
+					( matchingTypes <> {} => card matchingTypes = 1 ),
 
-						-- The match is has compatible values in the Variable
-						card matchingTypes = 1 => let { simpleType } = matchingTypes in
-							cases simpleType:
-								mk_RealType(-, -, -, mk_fmi3FloatXXAttributes(min, max, -)) ->
-									/* @OnFail("2.2.7 Variable %s min/max exceeds RealType %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.base.location) */
-									( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
-										and
-									  (max <> nil and sv.floatAtts.max <> nil => max >= sv.floatAtts.max) ),
+					/* @OnFail("2.2.3 Declared type %s unknown at line %s",
+						sv.base.declaredType, sv.base.location ) */
+					( card matchingTypes <> 0 ),
 
-								mk_IntegerType(-, -, -, mk_fmi3IntXXAttributes(min, max)) ->
-									/* @OnFail("2.2.7 Variable %s min/max exceeds IntegerType %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.base.location) */
-									( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
-										and
-									  (max <> nil and sv.floatAtts.max <> nil => max >= sv.floatAtts.max) ),
+					-- The match is has compatible values in the Variable
+					card matchingTypes = 1 => let { simpleType } = matchingTypes in
+						cases simpleType:
+							mk_RealType(-, -, -, mk_fmi3FloatXXAttributes(min, max, -)) ->
+								/* @OnFail("2.2.7 Variable %s min/max exceeds RealType %s at line %s",
+									sv.base.name, sv.base.declaredType, sv.base.location) */
+								( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
+									and
+								  (max <> nil and sv.floatAtts.max <> nil => max >= sv.floatAtts.max) ),
 
-								others -> true
-							end,
+							mk_IntegerType(-, -, -, mk_fmi3IntXXAttributes(min, max)) ->
+								/* @OnFail("2.2.7 Variable %s min/max exceeds IntegerType %s at line %s",
+									sv.base.name, sv.base.declaredType, sv.base.location) */
+								( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
+									and
+								  (max <> nil and sv.floatAtts.max <> nil => max >= sv.floatAtts.max) ),
 
-						-- The match is the same type as the Variable type and for numerics,
-						card matchingTypes = 1 => let { simpleType } = matchingTypes in
-							cases simpleType:
-								mk_RealType(-, -, -, -) ->
-									/* @OnFail("2.2.7 Variable %s, RealType not referenced by Real variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.base.location) */
-									( is_Real(sv) ),
+							others -> true
+						end,
 
-								mk_IntegerType(-, -, -, -) ->
-									/* @OnFail("2.2.7 Variable %s, IntegerType not referenced by Integer variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.base.location) */
-									( is_Integer(sv) ),
+					-- The match is the same type as the Variable type and for numerics,
+					card matchingTypes = 1 => let { simpleType } = matchingTypes in
+						cases simpleType:
+							mk_RealType(-, -, -, -) ->
+								/* @OnFail("2.2.7 Variable %s, RealType not referenced by Real variable %s at line %s",
+									sv.base.name, sv.base.declaredType, sv.base.location) */
+								( is_Real(sv) ),
 
-								mk_BooleanType(-) ->
-									/* @OnFail("2.2.7 Variable %s, BooleanType not referenced by Boolean variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.base.location) */
-									( is_Boolean(sv) ),
+							mk_IntegerType(-, -, -, -) ->
+								/* @OnFail("2.2.7 Variable %s, IntegerType not referenced by Integer variable %s at line %s",
+									sv.base.name, sv.base.declaredType, sv.base.location) */
+								( is_Integer(sv) ),
 
-								mk_StringType(-) ->
-									/* @OnFail("2.2.7 Variable %s, StringType not referenced by String variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.base.location) */
-									( is_String(sv) ),
+							mk_BooleanType(-) ->
+								/* @OnFail("2.2.7 Variable %s, BooleanType not referenced by Boolean variable %s at line %s",
+									sv.base.name, sv.base.declaredType, sv.base.location) */
+								( is_Boolean(sv) ),
 
-								mk_BinaryType(-,-, -) ->
-									/* @OnFail("2.2.7 Variable %s, BinaryType not referenced by Binary variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.base.location) */
-									( is_Binary(sv) ),
+							mk_StringType(-) ->
+								/* @OnFail("2.2.7 Variable %s, StringType not referenced by String variable %s at line %s",
+									sv.base.name, sv.base.declaredType, sv.base.location) */
+								( is_String(sv) ),
 
-								mk_EnumerationType(-, -, -) ->
-									/* @OnFail("2.2.7 Variable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.base.location) */
-									( is_Enumeration(sv) ),
+							mk_BinaryType(-,-, -) ->
+								/* @OnFail("2.2.7 Variable %s, BinaryType not referenced by Binary variable %s at line %s",
+									sv.base.name, sv.base.declaredType, sv.base.location) */
+								( is_Binary(sv) ),
 
-								mk_ClockType(-, -) ->
-									/* @OnFail("2.2.7 Variable %s, StringType not referenced by String variable %s at line %s",
-										sv.base.name, sv.base.declaredType, sv.base.location) */
-									( is_Clock(sv) )
-							end
-					} = {true}
+							mk_EnumerationType(-, -, -) ->
+								/* @OnFail("2.2.7 Variable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
+									sv.base.name, sv.base.declaredType, sv.base.location) */
+								( is_Enumeration(sv) ),
+
+							mk_ClockType(-, -) ->
+								/* @OnFail("2.2.7 Variable %s, StringType not referenced by String variable %s at line %s",
+									sv.base.name, sv.base.declaredType, sv.base.location) */
+								( is_Clock(sv) )
+						end
+				} = {true}
 			| sv in seq variables
 		} = {true};

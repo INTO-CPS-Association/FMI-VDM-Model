@@ -119,7 +119,14 @@ types
 		quantity			: [NormalizedString1]
 		items				: [seq1 of Item];
 
-	VariableType = RealType | IntegerType | BooleanType | StringType | BinaryType | EnumerationType | ClockType;
+	VariableType =
+		RealType |
+		IntegerType |
+		BooleanType |
+		StringType |
+		BinaryType |
+		EnumerationType |
+		ClockType;
 
 
 functions
