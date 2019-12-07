@@ -170,7 +170,7 @@ abstract public class Element
 
 	protected void printRawAttribute(String indent, Object attr, String tail)
 	{
-		if (attr != null && !attr.toString().isEmpty())
+		if (attr != null)
 		{
 			System.out.print(indent + attr + tail);
 		} 
@@ -182,7 +182,7 @@ abstract public class Element
 
 	protected void printStringAttribute(String indent, String attr, String tail)
 	{
-		if (attr != null && ! attr.isEmpty())
+		if (attr != null)
 		{
 			System.out.print(indent + "\"" + attr + "\"" + tail);
 		} 
@@ -216,7 +216,7 @@ abstract public class Element
 	
 	private void printSeqSet(String indent, List<? extends Element> items, String tail, String open, String close)
 	{
-		if (items == null || items.isEmpty())
+		if (items == null)
 		{
 			System.out.print(indent + "nil" + tail);
 		}
