@@ -56,7 +56,7 @@ types
 
 	GraphicalTerminal ::
 		location					: Location
-		name						: NormalizedString1
+		name						: NormalizedString
 		defaultConnectionColor		: [seq of nat]
 		defaultConnectionStrokeSize	: [real]
 		x1							: real

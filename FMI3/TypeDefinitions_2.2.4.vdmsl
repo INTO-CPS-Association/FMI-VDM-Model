@@ -33,13 +33,13 @@
 types
 	fmi3TypeDefinitionBase ::
 		location			: Location
-		name				: NormalizedString1
+		name				: NormalizedString
 		description			: [AnyString];
 
 	fmi3RealAttributes ::
-		quantity			: [NormalizedString1]
-		unit				: [NormalizedString1]
-		displayUnit			: [NormalizedString1]
+		quantity			: [NormalizedString]
+		unit				: [NormalizedString]
+		displayUnit			: [NormalizedString]
 		relativeQuantity	: [bool]
 		unbounded			: [bool];
 
@@ -49,7 +49,7 @@ types
 		nominal				: [real];
 
 	fmi3IntegerAttributes ::
-		quantity			: [NormalizedString1];
+		quantity			: [NormalizedString];
 
 	fmi3IntXXAttributes ::
 		min					: [int]
@@ -102,7 +102,7 @@ types
 
 	BinaryType ::
 		base				: fmi3TypeDefinitionBase
-		mimeType			: [NormalizedString1]
+		mimeType			: [NormalizedString]
 		maxSize				: [nat];
 
 	ClockType ::
@@ -110,13 +110,13 @@ types
 		clockAttrs			: fmi3ClockAttributes;
 
 	Item ::
-		name				: NormalizedString1
+		name				: NormalizedString
 		value				: int
 		description			: [AnyString];
 
 	EnumerationType ::
 		base				: fmi3TypeDefinitionBase
-		quantity			: [NormalizedString1]
+		quantity			: [NormalizedString]
 		items				: [seq1 of Item];
 
 	VariableType =

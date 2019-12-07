@@ -82,14 +82,14 @@ types
 
 	fmi3VariableBase ::
 		location							: Location
-		name								: NormalizedString1
+		name								: NormalizedString
 		valueReference						: fmi3ValueReference
 		description							: [AnyString]
 		causality							: [Causality]
 		variability							: [Variability]
 		initial								: [Initial]
 		canHandleMultipleSetPerTimeInstant	: [bool]
-		declaredType						: [NormalizedString1]
+		declaredType						: [NormalizedString]
 		clockReference						: [fmi3ValueReference]
 		intermediateAccess					: [bool]
 		dimensions							: [seq1 of Dimension]
@@ -120,13 +120,13 @@ types
 
 	Binary ::
 		base				: fmi3VariableBase
-		mimeType			: [NormalizedString1]
+		mimeType			: [NormalizedString]
 		maxSize				: [nat]
 		start				: [seq1 of AnyString];	-- HexBinary
 
 	Enumeration ::
 		base				: fmi3VariableBase
-		quantity			: [NormalizedString1]
+		quantity			: [NormalizedString]
 		min					: [int]
 		max					: [int]
 		start				: [seq1 of int]
@@ -641,9 +641,9 @@ functions
 									base |-> newbase,
 
 									realAtts |-> mu(v.realAtts,
-										quantity			|-> override[NormalizedString1](v.realAtts.quantity, dquantity),
-										unit				|-> override[NormalizedString1](v.realAtts.unit, dunit),
-										displayUnit			|-> override[NormalizedString1](v.realAtts.displayUnit, ddunit),
+										quantity			|-> override[NormalizedString](v.realAtts.quantity, dquantity),
+										unit				|-> override[NormalizedString](v.realAtts.unit, dunit),
+										displayUnit			|-> override[NormalizedString](v.realAtts.displayUnit, ddunit),
 										relativeQuantity	|-> override[bool](v.realAtts.relativeQuantity, drelq),
 										unbounded			|-> override[bool](v.realAtts.unbounded, dunbounded)
 									),
@@ -665,7 +665,7 @@ functions
 									base |-> newbase,
 
 									integerAtts |-> mu(v.integerAtts,
-										quantity	|-> override[NormalizedString1](v.integerAtts.quantity, dquantity)
+										quantity	|-> override[NormalizedString](v.integerAtts.quantity, dquantity)
 									),
 
 									intAtts |-> mu(v.intAtts,
@@ -680,7 +680,7 @@ functions
 							if is_Enumeration(v) then
 								mu(v,
 									base		|-> newbase,
-									quantity	|-> override[NormalizedString1](v.quantity, dquantity)
+									quantity	|-> override[NormalizedString](v.quantity, dquantity)
 								)
 							else
 								v,	-- Error reported elsewhere

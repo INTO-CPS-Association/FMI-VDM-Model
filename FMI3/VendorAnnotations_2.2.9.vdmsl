@@ -33,7 +33,7 @@
 types
 	Tool ::
 		location	: Location
-		name		: NormalizedString1
+		name		: NormalizedString
 		annotation	: [token];
 
 	fmi3Annotation = seq of Tool;

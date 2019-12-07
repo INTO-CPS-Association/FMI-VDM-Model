@@ -33,16 +33,16 @@
 types
 	BuildConfiguration ::
 		location				: Location
-		modelIdentifier			: NormalizedString1
-		platform				: [NormalizedString1]
-		description				: [NormalizedString1]
+		modelIdentifier			: NormalizedString
+		platform				: [NormalizedString]
+		description				: [NormalizedString]
 		sourceFileSets			: [seq1 of SourceFileSet]
 		libraries				: [seq1 of Library];
 
 	SourceFileSet ::
 		location				: Location
-		language				: [NormalizedString1]
-		compiler				: [NormalizedString1]
+		language				: [NormalizedString]
+		compiler				: [NormalizedString]
 		compilerOptions			: [AnyString]
 		sourceFiles				: seq1 of SourceFile
 		preprocessorDefinitions	: [seq1 of PreprocessorDefinition]
@@ -50,29 +50,29 @@ types
 
 	SourceFile ::
 		location				: Location
-		name					: NormalizedString1;
+		name					: NormalizedString;
 
 	PreprocessorDefinition ::
 		location				: Location
-		name					: NormalizedString1
+		name					: NormalizedString
 		optional				: [bool]
-		value					: [NormalizedString1]
+		value					: [NormalizedString]
 		description				: [AnyString]
 		options					: [seq1 of Option];
 
 	Option ::
 		location				: Location
-		value					: [NormalizedString1]
+		value					: [NormalizedString]
 		description				: [AnyString];
 
 	IncludeDirectory ::
 		location				: Location
-		name					: NormalizedString1;
+		name					: NormalizedString;
 
 	Library ::
 		location				: Location
-		name					: NormalizedString1
-		version					: [NormalizedString1]
+		name					: NormalizedString
+		version					: [NormalizedString]
 		external				: [bool]
 		description				: [AnyString];
 
@@ -108,7 +108,7 @@ functions
 	isValidSourceFiles(files) ==
 		let names = [ sf.name | sf in seq files ] in
 			/* @OnFail("2.2.2 SourceFileSet has duplicate names: %s",
-				{ files(a) | a, b in set inds names & a <> b and files(a). = files(b) })
+				{ files(a) | a, b in set inds names & a <> b and files(a) = files(b) })
 			 */
 			( card elems names = len names );
 

@@ -33,7 +33,7 @@
 types
 	Unit ::
 		location		: Location
-		name			: NormalizedString1
+		name			: NormalizedString
 		baseUnit		: [BaseUnit]
 		displayUnits	: [seq of DisplayUnit];
 
@@ -50,7 +50,7 @@ types
 		offset			: [real];
 
 	DisplayUnit ::
-		name			: NormalizedString1
+		name			: NormalizedString
 		factor			: [real]
 		offset			: [real];
 

@@ -33,9 +33,9 @@
 types
 	Terminal ::
 		location				: Location
-		name					: NormalizedString1
-		matchingRule			: NormalizedString1
-		terminalKind			: [NormalizedString1]
+		name					: NormalizedString
+		matchingRule			: NormalizedString
+		terminalKind			: [NormalizedString]
 		description				: [AnyString]
 		variables				: [seq1 of TerminalMemberVariable]
 		streams					: [seq1 of TerminalStreamMemberVariable]
@@ -43,16 +43,16 @@ types
 
 	TerminalMemberVariable ::
 		location				: Location
-		variableKind			: NormalizedString1
-		memberName				: NormalizedString1
-		variableName			: NormalizedString1;
+		variableKind			: NormalizedString
+		memberName				: NormalizedString
+		variableName			: NormalizedString;
 
 	TerminalStreamMemberVariable ::
 		location				: Location
-		inStreamMemberName		: NormalizedString1
-		outStreamMemberName		: NormalizedString1
-		inStreamVariableName	: NormalizedString1
-		outStreamVariableName	: NormalizedString1;
+		inStreamMemberName		: NormalizedString
+		outStreamMemberName		: NormalizedString
+		inStreamVariableName	: NormalizedString
+		outStreamVariableName	: NormalizedString;
 
 functions
 	isValidTerminals: [seq1 of Terminal] +> bool

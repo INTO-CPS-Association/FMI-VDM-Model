@@ -33,7 +33,7 @@
 types
 	AnyString = seq of char;			-- Note, can be empty string
 
-	NormalizedString1 = seq1 of char	-- Not empty
+	NormalizedString = seq of char		-- Note, can be empty string
 	inv ns ==
 		forall c in seq ns &
 			c not in set { '\r', '\n', '\t'};

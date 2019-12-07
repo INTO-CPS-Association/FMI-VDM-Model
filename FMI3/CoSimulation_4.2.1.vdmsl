@@ -34,7 +34,7 @@ types
 	fmi3FMUType ::
 		location								: Location
 		annotations								: [fmi3Annotation]
-		modelIdentifier							: NormalizedString1
+		modelIdentifier							: NormalizedString
 		needsExecutionTool						: [bool]
 		canBeInstantiatedOnlyOncePerProcess		: [bool]
 		canNotUseMemoryManagementFunctions		: [bool]

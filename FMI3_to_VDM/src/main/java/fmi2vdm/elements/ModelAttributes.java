@@ -100,6 +100,6 @@ public class ModelAttributes extends Element
 	{
 		validate(root, "fmiVersion", fmiVersion, true);
 		validate(root, "modelName", modelName, true);
-		validate(root, "instantiationToken", instantiationToken, true, true);
+		validate(root, "instantiationToken", instantiationToken, true);
 	}
 }
