@@ -33,7 +33,7 @@
 types
 	Category ::
 		location		: Location
-		name			: NormalizedString1
+		name			: NormalizedString
 		description		: [AnyString];
 
 functions

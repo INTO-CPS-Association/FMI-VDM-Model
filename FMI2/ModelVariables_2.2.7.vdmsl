@@ -51,10 +51,10 @@ types
 	Initial		= <exact> | <approx> | <calculated>;
 
 	Real ::		-- XSD p52
-		declaredType		: [NormalizedString1]
-		quantity			: [NormalizedString1]
-		unit				: [NormalizedString1]
-		displayUnit			: [NormalizedString1]
+		declaredType		: [NormalizedString]
+		quantity			: [NormalizedString]
+		unit				: [NormalizedString]
+		displayUnit			: [NormalizedString]
 		relativeQuantity	: [bool]
 		min					: [real]
 		max					: [real]	
@@ -65,30 +65,30 @@ types
 		reinit				: [bool];
 
 	Integer ::	-- XSD p52
-		declaredType		: [NormalizedString1]
-		quantity			: [NormalizedString1]
+		declaredType		: [NormalizedString]
+		quantity			: [NormalizedString]
 		min					: [int]
 		max					: [int]
 		start				: [int];
 
 	Boolean ::				-- XSD p53
-		declaredType		: [NormalizedString1]
+		declaredType		: [NormalizedString]
 		start				: [bool];
 
 	String ::				-- XSD p53
-		declaredType		: [NormalizedString1]
+		declaredType		: [NormalizedString]
 		start				: [AnyString];
 
 	Enumeration ::			-- XSD p53
-		declaredType		: NormalizedString1	 -- Note, not optional
-		quantity			: [NormalizedString1]
+		declaredType		: NormalizedString	 -- Note, not optional
+		quantity			: [NormalizedString]
 		min					: [int]
 		max					: [int]
 		start				: [int];
 
 	Variable = Real | Integer | Boolean | String | Enumeration;
 
-	VarName = NormalizedString1;		-- Has a syntax defined in section 2.2.9, p64
+	VarName = NormalizedString;		-- Has a syntax defined in section 2.2.9, p64
 
 	ScalarVariable ::	-- XSD 2.2.7, p44, p54
 		location							: Location
@@ -109,20 +109,20 @@ functions
 	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
 	 */
-	isInRange[@T]: [@T] * [@T] * [@T] +> bool
-	isInRange(min, max, start) ==
+	isInRange[@T]: [@T] * [@T] * [@T] * Location +> bool
+	isInRange(min, max, start, location) ==
 	{
 		max <> nil and min <> nil =>
-			--@OnFail("2.2.7 min %s is not <= max %s", min, max)
+			--@OnFail("2.2.7 min %s is not <= max %s at line %s", min, max, location)
 			( max >= min ),
 
 		start <> nil =>
-			--@OnFail("2.2.7 start %s is not within min %s/max %s", start, min, max)
+			--@OnFail("2.2.7 start %s is not within min %s/max %s at line %s", start, min, max, location)
 			( (min <> nil => min <= start) and
 			  (max <> nil => max >= start) ),
 
 		start = nil =>
-			--@OnFail("2.2.7 Warning: implicit start of 0 is not within min %s/max %s", min, max)
+			--@OnFail("2.2.7 Warning: implicit start of 0 is not within min %s/max %s at line %s", min, max, location)
 			( (min <> nil => min <= 0) and
 			  (max <> nil => max >= 0) ) or true	-- NOTE warning
 	} = {true}
@@ -280,15 +280,15 @@ functions
 		(
 			cases sv.variable:
 				mk_Real(-, -, -, -, -, min, max, nominal, -, start, -, -) ->
-					isInRange[real](min, max, start)
+					isInRange[real](min, max, start, sv.location)
 					-- @OnFail("2.2.7 Real nominal must be >0.0 at line %s", sv.location)
 					and (nominal <> nil => nominal > 0.0),
 
 				mk_Integer(-, -, min, max, start) ->
-					isInRange[real](min, max, start),
+					isInRange[real](min, max, start, sv.location),
 
 				mk_Enumeration(-, -, min, max, start) ->
-					isInRange[real](min, max, start),
+					isInRange[real](min, max, start, sv.location),
 
 				others -> true		-- String, Boolean
 			end

@@ -33,7 +33,7 @@
 types
 	CoSimulation ::
 		location								: Location
-		modelIdentifier							: NormalizedString1
+		modelIdentifier							: NormalizedString
 		needsExecutionTool						: [bool]
 		canHandleVariableCommunicationStepSize	: [bool]
 		canInterpolateInputs					: [bool]
@@ -48,7 +48,7 @@ types
 
 	SourceFile ::
 		location	: Location
-		name		: NormalizedString1;
+		name		: NormalizedString;
 
 functions
 	/**

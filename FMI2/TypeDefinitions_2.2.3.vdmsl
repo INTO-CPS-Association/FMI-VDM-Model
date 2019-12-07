@@ -32,9 +32,9 @@
  */
 types
 	RealType ::			 -- XSD p39
-		quantity			: [NormalizedString1]
-		unit				: [NormalizedString1]
-		displayUnit			: [NormalizedString1]
+		quantity			: [NormalizedString]
+		unit				: [NormalizedString]
+		displayUnit			: [NormalizedString]
 		relativeQuantity	: [bool]
 		min					: [real]
 		max					: [real]
@@ -42,7 +42,7 @@ types
 		unbounded			: [bool];
 
 	IntegerType ::  -- XSD p39
-		quantity			: [NormalizedString1]
+		quantity			: [NormalizedString]
 		min					: [int]
 		max					: [int];
 
@@ -56,18 +56,18 @@ types
 	-- An EnumerationType must have at least one Item.
 
 	Item ::
-		name				: NormalizedString1
+		name				: NormalizedString
 		value				: int
 		description			: [AnyString];
 
 	EnumerationType ::	  -- XSD p39
-		quantity			: [NormalizedString1]
+		quantity			: [NormalizedString]
 		items				: seq1 of Item;
 
 
 	SimpleType ::	-- XSD p38
 		location			: Location
-		name				: NormalizedString1
+		name				: NormalizedString
 		description			: [AnyString]
 		type				: RealType | IntegerType | BooleanType | StringType | EnumerationType;
 
@@ -79,7 +79,7 @@ functions
 			{
 				-- @OnFail("2.2.3 SimpleType %s, Real max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
-				
+
 				-- @OnFail("2.2.3 SimpleType %s, Real unit must be defined for displayUnit %s", stype.name, dunit)
 				( dunit <> nil => unit <> nil )
 			} = {true},

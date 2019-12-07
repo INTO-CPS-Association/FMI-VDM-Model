@@ -33,7 +33,7 @@
 types
 	Tool ::
 		location	: Location
-		name		: NormalizedString1
+		name		: NormalizedString
 		annotation	: [token];
 
 functions

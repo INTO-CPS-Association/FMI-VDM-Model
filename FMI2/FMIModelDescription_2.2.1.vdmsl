@@ -33,15 +33,15 @@
 types
 	ModelAttributes ::
 		location					: Location
-		fmiVersion					: NormalizedString1
+		fmiVersion					: NormalizedString
 		modelName					: AnyString
-		guid						: NormalizedString1
+		guid						: NormalizedString
 		description					: [AnyString]
 		author						: [AnyString]
-		version						: [NormalizedString1]
+		version						: [NormalizedString]
 		copyright					: [AnyString]
 		license						: [AnyString]
-		generationTool				: [NormalizedString1]
+		generationTool				: [NormalizedString]
 		generationDateAndTime		: [AnyString]
 		variableNamingConvention	: [<flat> | <structured>]
 		numberOfEventIndicators		: [nat];

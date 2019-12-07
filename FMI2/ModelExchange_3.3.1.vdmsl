@@ -33,7 +33,7 @@
 types
 	ModelExchange ::
 		location							: Location
-		modelIdentifier						: NormalizedString1
+		modelIdentifier						: NormalizedString
 		needsExecutionTool					: [bool]
 		completedIntegratorStepNotNeeded	: [bool]
 		canBeInstantiatedOnlyOncePerProcess	: [bool]
