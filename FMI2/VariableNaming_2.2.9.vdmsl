@@ -34,7 +34,7 @@ values
 	DIGITS = "0123456789";
 	NONDIGITS = "abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	QCHARS = "!#$%&()*+,-./:;<>=?@[]^{}|~ ";
-	ESCAPES = "’\"\\abfnrtv?";	-- ie. you can have \', \", \\, \a etc.
+	ESCAPES = "'\"\\abfnrtv?";	-- ie. you can have \', \", \\, \a etc.
 
 functions
 	isValidStructuredName: NormalizedString +> bool
