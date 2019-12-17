@@ -284,9 +284,9 @@ values
 		(
 			48,  -- Line
 			0.0,
-			3.0,
+			100,
 			nil,
-			nil
+			0.02
 		),
 
 		-- VendorAnnotations
