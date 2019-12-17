@@ -54,7 +54,7 @@ operations
 		let solver = mk_SolverData([]) in
 		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall, calculateValues, calculateDoStep, calculateEvents) in
 		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
-		let startTime : real = 0, endTime : real = 1000 in
+		let startTime : real = 0, endTime : real = 100 in
 		(
 			dcl c : [fmi2Component] := fmi2Instantiate("bouncingBall_CS",
 				<fmi2CoSimulation>, "{8c4e810f-3df3-4a00-8276-176fa3c9f003}", "", callbacks, false, true);
@@ -84,7 +84,7 @@ operations
 
 			(
 				dcl time : real := startTime,
-					h    : real := 1,
+					h    : real := 0.02,
 					hh   : real := h;
 
 				while time < endTime do

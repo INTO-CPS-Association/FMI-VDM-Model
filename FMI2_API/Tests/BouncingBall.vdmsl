@@ -31,8 +31,6 @@
  * Model generated from win64/Test-FMUs BouncingBall implementation.
  */
 values
-	SUBSTEP_ITERATIONS = 10;
-
 	HEIGHT			= 1;
 	VELOCITY		= 2;
 	GRAVITY			= 3;
@@ -90,8 +88,8 @@ functions
 			    if height <= 0
 			    then
 			        { HEIGHT |-> 0,
-			          VELOCITY |-> abs(velocity - rebound) }
-			        ++ if velocity < minimum
+			          VELOCITY |-> abs(velocity * -rebound) }
+			        ++ if abs velocity < minimum
 			        then { VELOCITY |-> 0, GRAVITY |-> 0 }
 			        else { |-> }
 				else
@@ -306,7 +304,7 @@ values
 				<continuous>,
 				<exact>,
 				nil,
-				mk_Real("Position", nil, nil, nil, nil, nil, nil, nil, nil, 1.0, nil, nil),
+				mk_Real("Position", nil, nil, nil, nil, nil, nil, nil, nil, 10.0, nil, nil),
 				nil
 			),
 			mk_ScalarVariable
@@ -345,7 +343,7 @@ values
 				<tunable>,
 				<exact>,
 				nil,
-				mk_Real(nil, nil, nil, nil, nil, 0.5, 1.0, nil, nil, 0.7, nil, nil),
+				mk_Real(nil, nil, nil, nil, nil, 0.5, 1.0, nil, nil, 0.6, nil, nil),
 				nil
 			),
 			mk_ScalarVariable
@@ -358,7 +356,7 @@ values
 				<fixed>,
 				nil,
 				nil,
-				mk_Real("Velocity", nil, nil, nil, nil, nil, nil, nil, nil, 0.1, nil, nil),
+				mk_Real("Velocity", nil, nil, nil, nil, nil, nil, nil, nil, 1.0, nil, nil),
 				nil
 			)
 		],
