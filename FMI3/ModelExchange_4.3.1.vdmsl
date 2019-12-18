@@ -42,4 +42,13 @@ functions
 	isValidModelExchange: [ModelExchange] +> bool
 	isValidModelExchange(me) ==
 		me <> nil =>
-			isValidVendorAnnotation(me.base.annotations);
+		{
+			-- @OnFail("3.3.1 ModelExchange annotations invalid at line %s", me.base.location)
+			( isValidVendorAnnotation(me.base.annotations) ),
+
+			/* @OnFail("3.3.1 ModelExchange modelIdentifer %s not valid C variable name at line %s",
+						 me.base.modelIdentifier, me.base.location) */
+			( me.base.modelIdentifier <> ""
+			  and me.base.modelIdentifier(1) in set elems NONDIGITS )
+		}
+		= {true};
