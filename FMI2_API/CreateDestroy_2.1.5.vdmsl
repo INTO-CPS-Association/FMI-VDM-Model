@@ -44,7 +44,7 @@ types
 		model					: FMIModelDescription
 		calculateValues			: fmi2Component -> fmi2Status * [fmi2Component]
 		calculateDoStep			: fmi2Component * fmi2Real * fmi2Real -> fmi2Status * [fmi2Component]
-		calculateEvents			: fmi2Component -> fmi2Component
+		calculateEvents			: fmi2Component -> fmi2Status * [fmi2Component]
 
 	inv cenv ==
 		-- The FMI model is valid

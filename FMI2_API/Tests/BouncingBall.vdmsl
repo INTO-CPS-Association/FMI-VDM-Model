@@ -63,12 +63,12 @@ functions
 	        	if stepsize < communicationStepSize		-- Time event occurred
 	        		or height * height2 < 0				-- State event occurred
 	        	then
-	        		mk_(<fmi2OK>, calculateEvents(c2))
+	        		calculateEvents(c2)
 	        	else
 					mk_(<fmi2OK>, c2);
 
 
-	calculateEvents: fmi2Component -> fmi2Component
+	calculateEvents: fmi2Component -> fmi2Status * [fmi2Component]
 	calculateEvents(c) ==
 		let info = mk_fmi2EventInfo
 			(
@@ -96,10 +96,10 @@ functions
 					{ |-> }
 			in
 				-- @Printf("Events: %s\n", c.variables)
-				mu(c,
+				mk_(<fmi2OK>, mu(c,
 					eventInfo |-> mu(info, valuesOfContinuousStatesChanged |-> (height <= 0)),
 					variables |-> c.variables ++ updates,
-					isNewEventIteration |-> false)
+					isNewEventIteration |-> false));
 
 
 /**

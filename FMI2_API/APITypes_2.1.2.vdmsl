@@ -32,20 +32,28 @@
  * 2.1.3 Status Returned by Functions
  */
 types
-	fmi2ValueReference = nat1;
-	fmi2Real = real;
-	fmi2Integer = int;
-	fmi2Boolean = bool;
-	fmi2Char = char;
-	fmi2String = seq of fmi2Char;
-	-- fmi2Byte = ?;
+	fmi2ValueReference	= nat1;
+	fmi2Real			= real;
+	fmi2Integer			= int;
+	fmi2Boolean			= bool;
+	fmi2Char			= char;
+	fmi2String			= seq of fmi2Char;
+	-- fmi2Byte			= ?;
 
 	-- Possible values for a ScalarVariable
-	fmi2Value = fmi2Real | fmi2Integer | fmi2Boolean | fmi2String;
+	fmi2Value	= fmi2Real | fmi2Integer | fmi2Boolean | fmi2String;
 
-	fmi2Type = <fmi2ModelExchange> | <fmi2CoSimulation>;
+	fmi2Type =
+		<fmi2ModelExchange> |
+		<fmi2CoSimulation>;
 
-	fmi2Status = <fmi2OK> | <fmi2Warning> | <fmi2Discard> | <fmi2Error> | <fmi2Fatal> | <fmi2Pending>;
+	fmi2Status =
+		<fmi2OK> |
+		<fmi2Warning> |
+		<fmi2Discard> |
+		<fmi2Error> |
+		<fmi2Fatal> |
+		<fmi2Pending>;
 
 	fmi2State =
 		<START> |
@@ -80,7 +88,7 @@ types
 		-- Implementation functions, called from fmi2GetXXX and fmi2DoStep
 		calculateValues			: fmi2Component -> fmi2Status * [fmi2Component]
 		calculateDoStep			: fmi2Component * fmi2Real * fmi2Real -> fmi2Status * [fmi2Component]
-		calculateEvents			: fmi2Component -> fmi2Component
+		calculateEvents			: fmi2Component -> fmi2Status * [fmi2Component]
 
 		-- convenience read-only fields, copied from componentEnvironment
 		model					: FMIModelDescription

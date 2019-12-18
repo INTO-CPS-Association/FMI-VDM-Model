@@ -281,8 +281,8 @@ functions
 	pre
 		len vrs = nvr and len vrs = len value
 		and generalSetPrecondition(c, vrs)
-		and forall vr in seq vrs &
-			vr <= len c.eModelVariables and is_Integer(c.eModelVariables(vr).variable)
+		and (forall vr in seq vrs &
+			vr <= len c.eModelVariables and is_Integer(c.eModelVariables(vr).variable))
 		and (forall i in set inds vrs &
 			let min = c.eModelVariables(vrs(i)).variable.min,
 				max = c.eModelVariables(vrs(i)).variable.max
