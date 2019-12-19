@@ -83,7 +83,8 @@ esac
 
 # Subshell cd, so we can set the classpath
 (
-	cd $(dirname $0)
+	dir=$(dirname "$0")
+	cd "$dir"
 	
 	VAR=model$$
 	
