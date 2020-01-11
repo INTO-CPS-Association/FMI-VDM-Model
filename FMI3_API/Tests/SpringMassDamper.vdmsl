@@ -1,0 +1,382 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * Model generated from win64/Test-FMUs BouncingBall implementation.
+ */
+values
+	HEIGHT			= 1;
+	VELOCITY		= 2;
+	GRAVITY			= 3;
+	REBOUND			= 4;
+	MINIMUM			= 5;
+
+functions
+	calculateValues: fmi3CoSimulationConfiguration -> fmi3Status * [fmi3CoSimulationConfiguration]
+	calculateValues(c) ==
+		mk_(<fmi3OK>, mu(c, dirty |-> false));
+
+	calculateDoStep: fmi3CoSimulationConfiguration * fmi3Real * fmi3Real -> fmi3Status * [fmi3CoSimulationConfiguration]
+	calculateDoStep(c, currentCommunicationPoint, communicationStepSize) ==
+		let height   = c.variables(HEIGHT),
+			velocity = c.variables(VELOCITY),
+			gravity  = c.variables(GRAVITY),
+			endstep  = currentCommunicationPoint + communicationStepSize,
+			stepsize =
+				if c.eventInfo.nextEventTimeDefined and c.eventInfo.nextEventTime < endstep
+				then c.eventInfo.nextEventTime - currentCommunicationPoint
+				else communicationStepSize
+		in
+	        let height2 = height + stepsize * velocity,
+	        	velocity2 = velocity + stepsize * gravity,	-- forward Euler steps
+	        	c2 = mu(c,
+					currentTime |-> currentCommunicationPoint + stepsize,
+					variables   |-> c.variables ++ { HEIGHT |-> height2, VELOCITY |-> velocity2 })
+	        in
+	        	-- @Printf("DoStep: %s %s\n", c.currentTime, c.variables)
+	        	if stepsize < communicationStepSize		-- Time event occurred
+	        		or height * height2 < 0				-- State event occurred
+	        	then
+	        		calculateEvents(c2)
+	        	else
+					mk_(<fmi3OK>, c2);
+
+
+	calculateEvents: fmi3CoSimulationConfiguration -> fmi3Status * [fmi3CoSimulationConfiguration]
+	calculateEvents(c) ==
+		let info = mk_fmi3EventInfo
+			(
+				false,	-- newDiscreteStatesNeeded				: fmi3Boolean
+				false,	-- terminateSimulation					: fmi3Boolean
+				false,	-- nominalsOfContinuousStatesChanged	: fmi3Boolean
+				false,	-- valuesOfContinuousStatesChanged		: fmi3Boolean
+				false,	-- nextEventTimeDefined					: fmi3Boolean
+				nil		-- nextEventTime						: fmi3Real
+			),
+			height   = c.variables(HEIGHT),
+			velocity = c.variables(VELOCITY),
+			rebound  = c.variables(REBOUND),
+			minimum  = c.variables(MINIMUM)
+		in
+			let updates =
+			    if height <= 0
+			    then
+			        { HEIGHT |-> 0,
+			          VELOCITY |-> abs(velocity * -rebound) }
+			        ++ if abs velocity < minimum
+			        then { VELOCITY |-> 0, GRAVITY |-> 0 }
+			        else { |-> }
+				else
+					{ |-> }
+			in
+				-- @Printf("Events: %s\n", c.variables)
+				mk_(<fmi3OK>, mu(c,
+					eventInfo |-> mu(info, valuesOfContinuousStatesChanged |-> (height <= 0)),
+					variables |-> c.variables ++ updates,
+					isNewEventIteration |-> false));
+
+
+/**
+ * VDM Model generated from docs/examples/co_simulation.xml on Fri Jan 10 17:59:08 GMT 2020
+ */
+values
+	springMassDamper = mk_FMIModelDescription
+	(
+		mk_ModelAttributes
+		(
+			9,  -- Line
+			"3.0-dev",
+			"MyLibrary.SpringMassDamper",
+			"{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
+			"Rotational Spring Mass Damper System",
+			nil,
+			"1.0",
+			nil,
+			nil,
+			nil,
+			"2011-09-23T16:57:33Z",
+			<structured>,
+			nil
+		),
+
+		-- ModelExchange
+		nil,
+
+		-- CoSimulation
+		mk_CoSimulation
+		(
+			mk_fmi3FMUType
+			(
+				13,  -- Line
+				nil,
+				"MyLibrary_SpringMassDamper",
+				nil,
+				nil,
+				nil,
+				nil,
+				nil,
+				nil,
+				nil
+			),
+			true,
+			true,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil
+		),
+
+		-- BuildConfiguration
+		nil,
+
+		-- UnitDefinitions
+		[
+			mk_Unit
+			(
+				15,  -- Line
+				"rad",
+				mk_BaseUnit(nil, nil, nil, nil, nil, nil, nil, 1, nil, nil),
+				[
+					mk_DisplayUnit
+					(
+						"deg",
+						57.2957795130823,
+						nil
+					)
+				]
+			),
+			mk_Unit
+			(
+				19,  -- Line
+				"rad/s",
+				mk_BaseUnit(nil, nil, -1, nil, nil, nil, nil, 1, nil, nil),
+				nil
+			),
+			mk_Unit
+			(
+				22,  -- Line
+				"kg.m2",
+				mk_BaseUnit(1, 2, nil, nil, nil, nil, nil, nil, nil, nil),
+				nil
+			)
+		],
+
+		-- TypeDefinitions
+		{
+			mk_RealType
+			(
+				mk_fmi3TypeDefinitionBase(27, "Modelica.SIunits.Inertia", nil),
+				<Float64>,
+				mk_fmi3RealAttributes("MomentOfInertia", "kg.m2", nil, nil, nil),
+				mk_fmi3FloatXXAttributes(0.0, nil, nil)
+			),
+			mk_RealType
+			(
+				mk_fmi3TypeDefinitionBase(28, "Modelica.SIunits.Torque", nil),
+				<Float64>,
+				mk_fmi3RealAttributes("Torque", "N.m", nil, nil, nil),
+				mk_fmi3FloatXXAttributes(nil, nil, nil)
+			),
+			mk_RealType
+			(
+				mk_fmi3TypeDefinitionBase(29, "Modelica.SIunits.AngularVelocity", nil),
+				<Float64>,
+				mk_fmi3RealAttributes("AngularVelocity", "rad/s", nil, nil, nil),
+				mk_fmi3FloatXXAttributes(nil, nil, nil)
+			),
+			mk_RealType
+			(
+				mk_fmi3TypeDefinitionBase(30, "Modelica.SIunits.Angle", nil),
+				<Float64>,
+				mk_fmi3RealAttributes("Angle", "rad", nil, nil, nil),
+				mk_fmi3FloatXXAttributes(nil, nil, nil)
+			)
+		},
+
+		-- LogCategories
+		nil,
+
+		-- DefaultExperiment
+		mk_DefaultExperiment
+		(
+			32,  -- Line
+			0.0,
+			3.0,
+			1.0E-4,
+			nil
+		),
+
+		-- Terminals
+		nil,
+
+		-- GraphicalRepresentation
+		nil,
+
+		-- VendorAnnotations
+		nil,
+
+		-- ModelVariables
+		[
+			mk_Real
+			(
+				mk_fmi3VariableBase
+				(
+					36,
+					"inertia1.J",
+					1073741824,
+					"Moment of load inertia",
+					<parameter>,
+					<fixed>,
+					nil,
+					nil,
+					"Modelica.SIunits.Inertia",
+					nil,
+					nil,
+					nil,
+					nil
+				),
+				<Float64>,
+				mk_fmi3RealVariableAttributes(nil, nil),
+				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
+				mk_fmi3FloatXXAttributes(nil, nil, nil),
+				[1.0]
+			),
+			mk_Real
+			(
+				mk_fmi3VariableBase
+				(
+					39,
+					"torque.tau",
+					536870912,
+					"Accelerating torque acting at flange (= -flange.tau)",
+					<input>,
+					nil,
+					nil,
+					nil,
+					"Modelica.SIunits.Torque",
+					nil,
+					nil,
+					nil,
+					nil
+				),
+				<Float64>,
+				mk_fmi3RealVariableAttributes(nil, nil),
+				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
+				mk_fmi3FloatXXAttributes(nil, nil, nil),
+				[0.0]
+			),
+			mk_Real
+			(
+				mk_fmi3VariableBase
+				(
+					42,
+					"inertia1.phi",
+					805306368,
+					"Absolute rotation angle of component",
+					<output>,
+					nil,
+					nil,
+					nil,
+					"Modelica.SIunits.Angle",
+					nil,
+					nil,
+					nil,
+					nil
+				),
+				<Float64>,
+				mk_fmi3RealVariableAttributes(nil, nil),
+				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
+				mk_fmi3FloatXXAttributes(nil, nil, nil),
+				nil
+			),
+			mk_Real
+			(
+				mk_fmi3VariableBase
+				(
+					45,
+					"inertia1.w",
+					805306369,
+					"Absolute angular velocity of component (= der(phi))",
+					<output>,
+					nil,
+					nil,
+					nil,
+					"Modelica.SIunits.AngularVelocity",
+					nil,
+					nil,
+					nil,
+					nil
+				),
+				<Float64>,
+				mk_fmi3RealVariableAttributes(nil, nil),
+				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
+				mk_fmi3FloatXXAttributes(nil, nil, nil),
+				nil
+			)
+		],
+
+		-- ModelStructure
+		mk_ModelStructure
+		(
+			47,  -- Line
+			[
+				mk_Unknown
+				(
+					48,  -- Line
+					<Output>,
+					805306368,
+					nil,
+					nil				),
+				mk_Unknown
+				(
+					49,  -- Line
+					<Output>,
+					805306369,
+					nil,
+					nil				),
+				mk_Unknown
+				(
+					50,  -- Line
+					<InitialUnknown>,
+					805306368,
+					nil,
+					nil				),
+				mk_Unknown
+				(
+					51,  -- Line
+					<InitialUnknown>,
+					805306369,
+					nil,
+					nil				)
+			],
+			nil
+		)
+	);

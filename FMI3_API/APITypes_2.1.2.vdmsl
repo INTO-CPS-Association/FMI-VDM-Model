@@ -1,0 +1,125 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.2 Platform Dependent Definitions
+ * 2.1.3 Status Returned by Functions
+ */
+types
+	-- fmi3ValueReference	= nat1;		-- Defined in FMI3 model
+
+	fmi3Real			= real;
+	fmi3Integer			= int;
+	fmi3Boolean			= bool;
+	fmi3Char			= char;
+	fmi3String			= seq of fmi3Char;
+	-- fmi3Byte			= ?;
+
+	-- Possible values for a Variable
+	fmi3Value	= fmi3Real | fmi3Integer | fmi3Boolean | fmi3String;
+
+	fmi3InterfaceType =
+		<fmi3ModelExchange> |
+		<fmi3CoSimulation>;
+
+	fmi3Status =
+		<fmi3OK> |
+		<fmi3Warning> |
+		<fmi3Discard> |
+		<fmi3Error> |
+		<fmi3Fatal> |
+		<fmi3Pending>;
+
+	fmi3State =
+		<START> |
+		<INSTANTIATED> |
+		<INITIALIZATION> |
+		<EVENT_MODE> |
+		<CT_MODE> |
+		<STEP_COMPLETE> |
+		<STEP_IN_PROGRESS> |
+		<STEP_FAILED> |
+		<STEP_CANCELLED> |
+		<TERMINATED> |
+		<ERROR> |
+		<FATAL> |
+		<END>;
+
+	fmi3EventInfo ::
+		newDiscreteStatesNeeded				: fmi3Boolean
+		terminateSimulation					: fmi3Boolean
+		nominalsOfContinuousStatesChanged	: fmi3Boolean
+		valuesOfContinuousStatesChanged		: fmi3Boolean
+		nextEventTimeDefined				: fmi3Boolean
+		nextEventTime						: [fmi3Real]
+	inv
+		info == info.nextEventTimeDefined <=> info.nextEventTime <> nil;
+
+	fmi3CoSimulationConfiguration ::
+		fmuType					: fmi3InterfaceType
+		fmuState				: fmi3State
+		callbacks				: fmi3CallbackFunctions
+
+		-- Implementation functions, called from fmi3GetXXX and fmi3DoStep
+		calculateValues			: fmi3CoSimulationConfiguration -> fmi3Status * [fmi3CoSimulationConfiguration]
+		calculateDoStep			: fmi3CoSimulationConfiguration * fmi3Real * fmi3Real -> fmi3Status * [fmi3CoSimulationConfiguration]
+		calculateEvents			: fmi3CoSimulationConfiguration -> fmi3Status * [fmi3CoSimulationConfiguration]
+
+		-- convenience read-only fields, copied from componentEnvironment
+		model					: FMIModelDescription
+		eModelVariables			: seq1 of Variable
+		continuousTimeStates	: seq of fmi3ValueReference
+		initialUnknowns			: set of fmi3ValueReference
+		solverDerivatives		: seq of SolverDerivative
+
+		-- state, events and settings
+		logCategories			: [set1 of fmi3String]				-- nil means logging off
+		indexmap				: map fmi3ValueReference to nat1	-- map SV index to variables index
+		variables				: seq1 of fmi3Value					-- Raw SV data values
+		derivatives				: seq of fmi3Real					-- Solver derivative data
+		eventIndicators			: seq of fmi3Real					-- ME events
+		dirty					: bool								-- True if SVs updated but not recalculated
+		tolerance				: [fmi3Real]						-- From DefaultExperiment or fmi3SetupExperiment
+		isNewEventIteration		: bool								-- Used in ME
+		eventInfo				: fmi3EventInfo						-- Used in ME and CS?
+
+		-- time values
+		startTime				: [real]
+		stopTime				: [real]
+		currentTime				: [real]	-- TODO should be independent SV?
+
+	inv c ==
+		len c.variables = card rng c.indexmap
+		and (len c.continuousTimeStates = len [u | u in seq c.model.modelStructure.unknowns & u.kind = <Derivative>])
+		and (len c.derivatives = len c.solverDerivatives)
+		and (len c.eventIndicators = nilNat(c.model.attributes.numberOfEventIndicators))
+		and (c.isNewEventIteration => c.fmuType = <fmi3ModelExchange>)
+		and (c.currentTime <> nil <=> c.startTime <> nil)
+		and (c.currentTime <> nil => c.currentTime >= c.startTime)
+		and (c.stopTime <> nil and c.startTime <> nil => c.stopTime > c.startTime and c.currentTime <= c.stopTime);

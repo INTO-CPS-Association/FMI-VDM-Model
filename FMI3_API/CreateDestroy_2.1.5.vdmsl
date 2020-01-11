@@ -1,0 +1,314 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.5 Creation, Destruction and Logging of FMU Instances.
+ */
+types
+	SolverDerivative ::
+		vref					: fmi3ValueReference	-- SV reference of base variable
+		order					: nat1					-- Order of solver's derivative
+		type					: <input> | <output>;
+
+	SolverData ::
+		derivatives				: seq of SolverDerivative;
+
+	fmi3CoSimulationConfigurationEnvironment ::
+		solver					: SolverData
+		model					: FMIModelDescription
+		calculateValues			: fmi3CoSimulationConfiguration -> fmi3Status * [fmi3CoSimulationConfiguration]
+		calculateDoStep			: fmi3CoSimulationConfiguration * fmi3Real * fmi3Real -> fmi3Status * [fmi3CoSimulationConfiguration]
+		calculateEvents			: fmi3CoSimulationConfiguration -> fmi3Status * [fmi3CoSimulationConfiguration]
+
+	inv cenv ==
+		-- The FMI model is valid
+		isValidFMIModelDescription(cenv.model)
+
+		-- And the solver data does not contain any derivatives of SVs that are
+		-- already represented in the SV list
+		and (forall sd in seq cenv.solver.derivatives &
+			not exists sv in set inds cenv.model.modelVariables &
+				let mk_(o, b) = getDerivativeBase(sv, cenv.model.modelVariables) in
+					sd.order = o and sd.vref = b)
+
+		-- And the solver data references are all valid
+		and (forall sd in seq cenv.solver.derivatives &
+			exists sv in seq cenv.model.modelVariables & sv.base.valueReference = sd.vref)
+
+		-- And CoSim solver data output derivative orders do not exceed
+		-- maxOutputDerivativeOrder
+		and (cenv.model.coSimulation <> nil =>
+			let max = cenv.model.coSimulation.maxOutputDerivativeOrder in
+				max <> nil => forall sd in seq cenv.solver.derivatives &
+					sd.type = <output> => sd.order <= max);
+
+	fmi3CallbackFunctions ::
+		logger					: fmi3CoSimulationConfigurationEnvironment * fmi3String * fmi3Status * fmi3String * fmi3String +> <VOID>
+		allocateMemory			: nat1 * nat1 +> token
+		freeMemory				: token +> <VOID>
+		stepFinished			: fmi3CoSimulationConfigurationEnvironment * fmi3Status +> <VOID>
+		componentEnvironment	: fmi3CoSimulationConfigurationEnvironment;
+
+functions
+	/**
+	 * Implementation of fmi3Instantiate. See API method below.
+	 */
+	fmi3Instantiate_Impl: fmi3String * fmi3InterfaceType * fmi3String * fmi3String *
+					 fmi3CallbackFunctions * fmi3Boolean * fmi3Boolean +> fmi3CoSimulationConfiguration
+	fmi3Instantiate_Impl(instanceName, fmuType, fmuInstantiationToken, -/*fmuResourceLocation*/,
+					funcs, -/*visible*/, loggingOn) ==
+		let model = funcs.componentEnvironment.model,
+			eModelVariables = effectiveScalarVariables(model),
+			vorder = setToSeq[AliasTag](dom getAliasRefMap(eModelVariables)),
+			indexmap =
+			{
+				svi |->	iota i in set inds vorder &
+					vorder(i) = aliasTag(eModelVariables(svi))
+
+				| svi in set inds eModelVariables
+			}
+		in
+			mk_fmi3CoSimulationConfiguration
+			(
+				-- The FMU type
+				fmuType,
+
+				-- The initial state
+				<INSTANTIATED>,
+
+				-- The callbacks passed in
+				funcs,
+
+				-- The recalculation functions
+				funcs.componentEnvironment.calculateValues,
+				funcs.componentEnvironment.calculateDoStep,
+				funcs.componentEnvironment.calculateEvents,
+
+				-- The XML model
+				model,
+
+				-- The effective ScalarVariables, after all defaults and inherited values set
+				eModelVariables,
+
+				-- The continuous time state references
+				[ u.valueReference | u in seq model.modelStructure.unknowns & u.kind = <Derivative> ],
+
+				-- The initial unknown references, which may be an empty set
+				{ u.valueReference | u in seq model.modelStructure.unknowns & u.kind = <InitialUnknown> },
+
+				-- The solver derivative references
+				[ sd | sd in seq funcs.componentEnvironment.solver.derivatives ],
+
+				-- The initial setting of log categories (nil means debugging is disabled)
+				if loggingOn and model.logCategories <> nil
+				then { cat.name | cat in seq model.logCategories }
+				else nil,
+
+				-- The reference map of SV indexes to variable indexes (below)
+				indexmap,
+
+				-- The state vector, indexed via the indexmap, created from the effective SVs
+				-- Initially either the start value given, or the default start value for the type.
+				startValues(indexmap, eModelVariables),
+
+				-- The solver data vector, indexed by SolverData's index
+				[
+					0.0 | - in seq funcs.componentEnvironment.solver.derivatives
+				],
+
+				-- The eventIndicators
+				[
+					0.0 | - in set {1, ..., nilNat(model.attributes.numberOfEventIndicators)}
+				],
+
+				-- Initially dirty, because "start" values above need calculate call
+				true,
+
+				-- tolerance, set by fmi3SetupExperiment (defaults to model DefaultExperiment)
+				nil,
+
+				-- IsNewEventIteration, used in ME only
+				false,
+
+				-- EventInfo for ME and CS?
+				mk_fmi3EventInfo(
+					false,	-- newDiscreteStatesNeeded
+					false,	-- terminateSimulation
+					false,	-- nominalsOfContinuousStatesChanged
+					false,	-- valuesOfContinuousStatesChanged
+					false,	-- nextEventTimeDefined
+					nil		-- nextEventTime
+				),
+
+				-- start time, set by fmi3SetupExperiment
+				nil,
+
+				-- stop time, optionally set by fmi3SetupExperiment
+				nil,
+
+				-- current time, set by fmi3SetupExperiment
+				nil
+			)
+	pre
+		instanceName <> ""
+		and let model = funcs.componentEnvironment.model in
+			fmuInstantiationToken = model.attributes.instantiationToken
+			and (fmuType = <fmi3CoSimulation>  => model.coSimulation <> nil)
+			and (fmuType = <fmi3ModelExchange> => model.modelExchange <> nil)
+	post
+		RESULT.fmuState = <INSTANTIATED>
+		and RESULT.fmuType = fmuType;
+
+
+	/**
+	 * The fmi3Instantiate API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning nil if any checks fail.
+	 */
+	fmi3Instantiate: fmi3String * fmi3InterfaceType * fmi3String * fmi3String *
+					 fmi3CallbackFunctions * fmi3Boolean * fmi3Boolean +> [fmi3CoSimulationConfiguration]
+	fmi3Instantiate(instanceName, fmuType, fmuInstantiationToken, fmuResourceLocation,
+					funcs, visible, loggingOn) ==
+		let model = funcs.componentEnvironment.model in
+			if instanceName = ""
+			then -- @Printf("fmi3Instantiate instanceName cannot be empty\n")
+				nil
+			elseif fmuInstantiationToken <> model.attributes.instantiationToken
+			then -- @Printf("fmi3Instantiate fmuInstantiationToken does not match XML configuration\n")
+				nil
+			elseif fmuType = <fmi3CoSimulation> and model.coSimulation = nil
+			then -- @Printf("CoSimulation FMU must defined CoSimulation XML configuration\n")
+				nil
+			elseif fmuType = <fmi3ModelExchange> and model.modelExchange = nil
+			then -- @Printf("ModelExchange FMU must define ModelExchange XML configuration\n")
+				nil
+			else
+				fmi3Instantiate_Impl(instanceName, fmuType, fmuInstantiationToken, fmuResourceLocation, funcs, visible, loggingOn);
+
+	/**
+	 * Calculate the initial vector of SV values, given their "start" attributes.
+	 * Called by fmi3Instantiate and fmi3Reset.
+	 */
+	startValues: map fmi3ValueReference to nat1 * seq1 of Variable +> seq1 of fmi3Value
+	startValues(indexmap, eModelVariables) ==
+	[
+		let svi in set dom indexmap be st indexmap(svi) = v in	-- Choose any alias
+		let sv = eModelVariables(svi) in
+			if sv.start <> nil
+			then sv.start	-- All aliases have the same start
+			else
+				-- Set default value for variable type
+				if is_Real(sv) then 0.0
+				else if is_Integer(sv) then 0
+				else if is_Boolean(sv) then false
+				else if is_String(sv) then ""
+				else if is_Enumeration(sv) then 0
+				else undefined
+
+		| v in set rng indexmap
+	];
+
+	/**
+	 * Implementation of fmi3FreeInstance. See API method below.
+	 */
+	fmi3FreeInstance_Impl: fmi3CoSimulationConfiguration +> <VOID>
+	fmi3FreeInstance_Impl(c) ==
+		<VOID>	-- Logically calls c.model.funcs.freeMemory()
+	pre
+		c.fmuState in set STATES_fmi3FreeInstance;
+
+	/**
+	 * The fmi3FreeInstance API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning <VOID> if any checks fail.
+	 */
+	fmi3FreeInstance: [fmi3CoSimulationConfiguration] +> <VOID>
+	fmi3FreeInstance(c) ==
+		if c = nil
+		then -- The function ignores a "null" argument
+			<VOID>
+		elseif c.fmuState not in set STATES_fmi3FreeInstance
+		then -- @Printf("Cannot call fmi3FreeInstance in state %s\n", c.fmuState)
+			<VOID>
+		else
+			fmi3FreeInstance_Impl(c);
+
+
+	/**
+	 * Implementation of fmi3SetDebugLogging. See API method below.
+	 */
+	fmi3SetDebugLogging_Impl: fmi3CoSimulationConfiguration * fmi3Boolean * nat * seq of fmi3String +> fmi3Status * fmi3CoSimulationConfiguration
+	fmi3SetDebugLogging_Impl(c, loggingOn, nCategories, categories) ==
+		mk_(<fmi3OK>,
+			mu(c, logCategories |->
+				if loggingOn
+				then
+					if nCategories = 0
+					then [ cat.name | cat in seq c.model.logCategories ]
+					else elems categories
+				else nil))
+	pre
+		c.fmuState in set STATES_fmi3SetDebugLogging
+		and nCategories = len categories
+		and card elems categories = nCategories
+		and (nCategories > 0 =>
+			let logcats = c.model.logCategories in
+				logcats <> nil
+				and forall cname in seq categories &
+					exists lc in seq logcats &
+						lc.name = cname)
+	post
+		RESULT.#2.logCategories =
+			if loggingOn
+			then if nCategories = 0
+				then [ cat.name | cat in seq c.model.logCategories ]
+				else elems categories
+			else nil;
+
+	/**
+	 * The fmi3FreeInstance API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning <VOID> if any checks fail.
+	 */
+	fmi3SetDebugLogging: fmi3CoSimulationConfiguration * fmi3Boolean * nat * seq of fmi3String +> fmi3Status * [fmi3CoSimulationConfiguration]
+	fmi3SetDebugLogging(c, loggingOn, nCategories, categories) ==
+		if c.fmuState not in set STATES_fmi3SetDebugLogging
+		then -- @Printf("Cannot call fmi3SetDebugLogging in state %s\n", c.fmuState)
+			mk_(<fmi3Error>, nil)
+		elseif nCategories <> len categories or card elems categories <> nCategories
+		then -- @Printf("nCategories does not match categories length\n")
+			mk_(<fmi3Error>, nil)
+		else let logcats = c.model.logCategories in
+			if logcats = nil
+			then -- @Printf("No log categories defined in XML configuration\n")
+				mk_(<fmi3Error>, nil)
+			elseif exists cname in seq categories & not exists lc in seq logcats & lc.name = cname
+			then -- @Printf("Some log categories not found in XML configuration\n")
+				mk_(<fmi3Error>, nil)
+			else
+				fmi3SetDebugLogging_Impl(c, loggingOn, nCategories, categories)
+	post
+		RESULT.#1 <> <fmi3OK> => RESULT.#2 = nil;

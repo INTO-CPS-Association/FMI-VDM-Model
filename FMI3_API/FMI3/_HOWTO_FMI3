@@ -1,0 +1,9 @@
+How to populate this folder
+===========================
+
+1. Right click the folder and "Import", "File System" and locate the FMI3 project
+2. Select all of the top-level *.vdmsl files, but not the subfolders or .project/.ignore files etc.
+3. Under the Advanced button, select "Create links in workspace" and "Create links relative to PROJECT_LOC"
+
+This will then populate the folder with links to the FMI3 project files, which are hence automatically up to date if
+those files change in the other project.
