@@ -71,6 +71,9 @@ types
 
 	fmi3ValueReference = nat;
 
+	-- A tag used to uniquely identify aliased variables (since refs are only unique per type)
+	AliasTag = fmi3ValueReference * seq1 of char;
+
 	-- Common variable attributes
 	fmi3RealVariableAttributes ::
 		derivative			: [fmi3ValueReference]
@@ -765,7 +768,7 @@ functions
 	/**
 	 * Get derivative order of a variable.
 	 */
-	getDerivativeBase: nat1 * seq of Variable +> nat * nat1
+	getDerivativeBase: fmi3ValueReference * seq of Variable +> nat * fmi3ValueReference
 	getDerivativeBase(vr, svs) ==
 		if not is_Real(svs(vr)) or svs(vr).varAtts.derivative = nil
 		then mk_(0, vr)
@@ -776,7 +779,7 @@ functions
 	/**
 	 * Get the alias refmap, from valueReference/type pairs to sets of SVs
 	 */
-	getAliasRefMap: seq1 of Variable -> map fmi3ValueReference * seq of char to set of Variable
+	getAliasRefMap: seq1 of Variable -> map AliasTag to set of Variable
 	getAliasRefMap(svs) ==
 		let tags = { svi |-> aliasTag(svs(svi)) | svi in set inds svs } in
 		{
@@ -788,6 +791,6 @@ functions
 	 * Generate an alias "tag" for a Variable, made of the valueReference and
 	 * the type of the variable. All aliases of a variable have the same tag.
 	 */
-	aliasTag: Variable +> fmi3ValueReference * seq1 of char
+	aliasTag: Variable +> AliasTag
 	aliasTag(sv) ==
 		mk_(sv.base.valueReference, typeName(sv));
