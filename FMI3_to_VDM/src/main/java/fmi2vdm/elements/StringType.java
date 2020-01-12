@@ -44,6 +44,6 @@ public class StringType extends Type
 	{
 		System.out.print(indent + "mk_StringType(");
 		super.toVDM("");
-		System.out.print(")");
+		printQuoteAttribute(", ", "StringKind", ")");
 	}
 }

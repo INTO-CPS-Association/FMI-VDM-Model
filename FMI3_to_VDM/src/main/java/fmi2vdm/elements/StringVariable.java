@@ -67,7 +67,7 @@ public class StringVariable extends Variable
 		System.out.println(indent + "mk_String");
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");	// base
-		System.out.println(",");
+		printQuoteAttribute(",\n" + indent + "\t", "StringKind", ",\n");
 		String[] s = new String[starts.size()];
 		printStringSequence(indent + "\t", starts.toArray(s), "\n");
 		System.out.print(indent + ")");

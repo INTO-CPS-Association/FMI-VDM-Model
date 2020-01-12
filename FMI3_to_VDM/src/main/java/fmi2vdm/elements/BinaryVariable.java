@@ -55,7 +55,8 @@ public class BinaryVariable extends Variable
 		System.out.println(indent + "mk_Binary");
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");		// base
-		printStringAttribute(",\n" + indent + "\t", mimeType, ",\n");
+		printQuoteAttribute(",\n" + indent + "\t", "BinaryKind", ",\n");
+		printStringAttribute(indent + "\t", mimeType, ",\n");
 		printRawAttribute(indent + "\t", maxSize, ",\n");
 		printStringSequence(indent + "\t", start, "\n");
 		System.out.print(indent + ")");

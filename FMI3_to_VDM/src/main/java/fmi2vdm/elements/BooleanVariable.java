@@ -49,7 +49,7 @@ public class BooleanVariable extends Variable
 		System.out.println(indent + "mk_Boolean");
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");	// base
-		System.out.println(",");
+		printQuoteAttribute(",\n" + indent + "\t", "BooleanKind", ",\n");
 		printSequence(indent + "\t", start, "\n");
 		System.out.print(indent + ")");
 	}

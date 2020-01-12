@@ -55,7 +55,7 @@ public class EnumerationVariable extends Variable
 		System.out.println(indent + "mk_Enumeration");
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");	// base
-		System.out.println(",");
+		printQuoteAttribute(",\n" + indent + "\t", "Int32", ",\n");
 
 		printStringAttribute(indent + "\t", quantity, ",\n");
 		printRawAttribute(indent + "\t", min, ",\n");

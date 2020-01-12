@@ -63,7 +63,7 @@ public class ClockType extends Type
 		System.out.println(indent + "mk_ClockType");
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");		// base
-		System.out.println(",");
+		printQuoteAttribute(",\n" + indent + "\t", "ClockKind", ",\n");
 		
 		System.out.println(indent + "\tmk_fmi3ClockAttributes");
 		System.out.println(indent + "\t(");

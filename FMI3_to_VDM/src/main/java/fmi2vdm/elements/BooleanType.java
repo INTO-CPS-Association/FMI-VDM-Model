@@ -44,6 +44,6 @@ public class BooleanType extends Type
 	{
 		System.out.print(indent + "mk_BooleanType(");
 		super.toVDM("");
-		System.out.print(")");
+		printQuoteAttribute(", ", "BooleanKind", ")");
 	}
 }
