@@ -80,7 +80,32 @@ types
 		<UInt16> |
 		<UInt8>;
 
-	Kind = FloatKind | IntegerKind;
+	OtherKind =
+		<BooleanKind> |
+		<StringKind> |
+		<BinaryKind> |
+		<ClockKind>;
+
+	Kind = FloatKind | IntegerKind | OtherKind
+	ord a < b ==
+		let value =
+		{
+			<Float64>		|-> 1,
+			<Float32>		|-> 2,
+			<UInt64> 		|-> 3,
+			<Int64>			|-> 4,
+			<UInt32> 		|-> 5,
+			<Int32>			|-> 6,
+			<UInt16>	 	|-> 7,
+			<Int16>			|-> 8,
+			<UInt8>			|-> 9,
+			<Int8> 			|-> 10,
+			<BooleanKind>	|-> 11,
+			<StringKind>	|-> 12,
+			<BinaryKind>	|-> 13,
+			<ClockKind>		|-> 14
+		}
+		in value(a) < value(b);
 
 	RealType ::
 		base				: fmi3TypeDefinitionBase
@@ -95,18 +120,22 @@ types
 		intAtts				: fmi3IntXXAttributes;
 
 	BooleanType ::
-		base				: fmi3TypeDefinitionBase;
+		base				: fmi3TypeDefinitionBase
+		kind				: <BooleanKind>;
 
 	StringType ::
-		base				: fmi3TypeDefinitionBase;
+		base				: fmi3TypeDefinitionBase
+		kind				: <StringKind>;
 
 	BinaryType ::
 		base				: fmi3TypeDefinitionBase
+		kind				: <BinaryKind>
 		mimeType			: [NormalizedString]
 		maxSize				: [nat];
 
 	ClockType ::
 		base				: fmi3TypeDefinitionBase
+		kind				: <ClockKind>
 		clockAttrs			: fmi3ClockAttributes;
 
 	Item ::
@@ -116,6 +145,7 @@ types
 
 	EnumerationType ::
 		base				: fmi3TypeDefinitionBase
+		kind				: <IntegerKind>				-- Enum items are ints?
 		quantity			: [NormalizedString]
 		items				: [seq1 of Item];
 
@@ -181,7 +211,7 @@ functions
 			-- enumeration (in order that the mapping between "name" and "value" is
 			-- bijective). An Enumeration element must have at least one Item.
 
-			mk_EnumerationType(-, -, items) ->
+			mk_EnumerationType(-, -, -, items) ->
 				-- @OnFail("2.2.4 Type %s, Enumeration item name/values do not form a bijection", stype.base.name)
 				(
 					card { i.name | i in seq items } = len items

@@ -405,27 +405,27 @@ functions
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Integer(sv) ),
 
-							mk_BooleanType(-) ->
+							mk_BooleanType(-, -) ->
 								/* @OnFail("2.2.7 Variable %s, BooleanType not referenced by Boolean variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Boolean(sv) ),
 
-							mk_StringType(-) ->
+							mk_StringType(-, -) ->
 								/* @OnFail("2.2.7 Variable %s, StringType not referenced by String variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_String(sv) ),
 
-							mk_BinaryType(-,-, -) ->
+							mk_BinaryType(-,-, -, -) ->
 								/* @OnFail("2.2.7 Variable %s, BinaryType not referenced by Binary variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Binary(sv) ),
 
-							mk_EnumerationType(-, -, -) ->
+							mk_EnumerationType(-, -, -, -) ->
 								/* @OnFail("2.2.7 Variable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Enumeration(sv) ),
 
-							mk_ClockType(-, -) ->
+							mk_ClockType(-, -, -) ->
 								/* @OnFail("2.2.7 Variable %s, StringType not referenced by String variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Clock(sv) )

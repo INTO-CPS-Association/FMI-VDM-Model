@@ -72,7 +72,9 @@ types
 	fmi3ValueReference = nat;
 
 	-- A tag used to uniquely identify aliased variables (since refs are only unique per type)
-	AliasTag = fmi3ValueReference * seq1 of char;
+	AliasTag = fmi3ValueReference * Kind
+	ord a < b ==
+		a.#1 < b.#1 or a.#2 < b.#2 ;
 
 	-- Common variable attributes
 	fmi3RealVariableAttributes ::
@@ -115,20 +117,24 @@ types
 
 	Boolean ::
 		base				: fmi3VariableBase
+		kind				: <BooleanKind>
 		start				: [seq1 of bool];
 
 	String ::
 		base				: fmi3VariableBase
+		kind				: <StringKind>
 		start				: [seq1 of AnyString];	-- From Start elements
 
 	Binary ::
 		base				: fmi3VariableBase
+		kind				: <BinaryKind>
 		mimeType			: [NormalizedString]
 		maxSize				: [nat]
 		start				: [seq1 of AnyString];	-- HexBinary
 
 	Enumeration ::
 		base				: fmi3VariableBase
+		kind				: IntegerKind
 		quantity			: [NormalizedString]
 		min					: [int]
 		max					: [int]
@@ -405,10 +411,10 @@ functions
 				mk_Integer(-, kind, -, mk_fmi3IntXXAttributes(min, max), start) ->
 					isInRange[int](min, max, start, kind),
 
-				mk_Enumeration(-, -, min, max, start) ->
+				mk_Enumeration(-, -, -, min, max, start) ->
 					isInRange[nat](min, max, start, <UInt32>),	-- TODO kind of enum?
 
-				mk_Binary(-, -, -, start) ->
+				mk_Binary(-, -, -, -, start) ->
 					-- @OnFail("2.2.10 Binary %s start is not hex-binary at line %s", sv.base.name, sv.base.location)
 					( start <> nil and forall s in seq start &
 						forall c in seq s &
@@ -679,7 +685,7 @@ functions
 							else
 								v,	-- Error reported elsewhere
 
-						mk_EnumerationType(-, dquantity, -) ->
+						mk_EnumerationType(-, -, dquantity, -) ->
 							if is_Enumeration(v) then
 								mu(v,
 									base		|-> newbase,
@@ -714,23 +720,11 @@ functions
 		sv.base.causality = <parameter> and sv.base.variability = <tunable>;
 
 	/**
-	 * Test whether two Variables are the same basic type.
+	 * Test whether two Variables are the same basic type (Kind).
 	 */
 	sameTypes: Variable * Variable +> bool
 	sameTypes(a, b) ==
-		typeName(a) = typeName(b);
-
-	/**
-	 * Get the string name of a Variable type.
-	 */
-	typeName: Variable +> seq1 of char
-	typeName(v) ==
-		if is_Real(v) then "Real"
-		else if is_Integer(v) then "Integer"
-		else if is_Boolean(v) then "Boolean"
-		else if is_String(v) then "String"
-		else if is_Enumeration(v) then "Enumeration_" ^ v.base.declaredType
-		else "?";
+		a.kind = b.kind;
 
 	/**
 	 * Return the Variables from a list which are continuous-time states, defined to be
@@ -793,4 +787,4 @@ functions
 	 */
 	aliasTag: Variable +> AliasTag
 	aliasTag(sv) ==
-		mk_(sv.base.valueReference, typeName(sv));
+		mk_(sv.base.valueReference, sv.kind);
