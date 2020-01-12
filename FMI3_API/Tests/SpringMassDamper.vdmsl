@@ -38,11 +38,11 @@ values
 	MINIMUM			= 5;
 
 functions
-	calculateValues: fmi3CoSimulationConfiguration -> fmi3Status * [fmi3CoSimulationConfiguration]
+	calculateValues: fmi3Instance -> fmi3Status * [fmi3Instance]
 	calculateValues(c) ==
 		mk_(<fmi3OK>, mu(c, dirty |-> false));
 
-	calculateDoStep: fmi3CoSimulationConfiguration * fmi3Real * fmi3Real -> fmi3Status * [fmi3CoSimulationConfiguration]
+	calculateDoStep: fmi3Instance * fmi3Float * fmi3Float -> fmi3Status * [fmi3Instance]
 	calculateDoStep(c, currentCommunicationPoint, communicationStepSize) ==
 		let height   = c.variables(HEIGHT),
 			velocity = c.variables(VELOCITY),
@@ -68,16 +68,16 @@ functions
 					mk_(<fmi3OK>, c2);
 
 
-	calculateEvents: fmi3CoSimulationConfiguration -> fmi3Status * [fmi3CoSimulationConfiguration]
+	calculateEvents: fmi3Instance -> fmi3Status * [fmi3Instance]
 	calculateEvents(c) ==
 		let info = mk_fmi3EventInfo
 			(
+				nil,	-- nextEventTime						: fmi3Real
 				false,	-- newDiscreteStatesNeeded				: fmi3Boolean
 				false,	-- terminateSimulation					: fmi3Boolean
 				false,	-- nominalsOfContinuousStatesChanged	: fmi3Boolean
 				false,	-- valuesOfContinuousStatesChanged		: fmi3Boolean
-				false,	-- nextEventTimeDefined					: fmi3Boolean
-				nil		-- nextEventTime						: fmi3Real
+				false	-- nextEventTimeDefined					: fmi3Boolean
 			),
 			height   = c.variables(HEIGHT),
 			velocity = c.variables(VELOCITY),
