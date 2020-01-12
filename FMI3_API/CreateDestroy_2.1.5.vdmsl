@@ -85,13 +85,10 @@ functions
 					funcs, -/*visible*/, loggingOn) ==
 		let model = funcs.componentEnvironment.model,
 			eModelVariables = effectiveScalarVariables(model),
-			vorder = setToSeq[AliasTag](dom getAliasRefMap(eModelVariables)),
-			indexmap =
+			allTags = setToSeq[AliasTag](dom getAliasRefMap(eModelVariables)),
+			aliasmap : map AliasTag to nat1 =
 			{
-				svi |->	iota i in set inds vorder &
-					vorder(i) = aliasTag(eModelVariables(svi))
-
-				| svi in set inds eModelVariables
+				allTags(i) |-> i | i in set inds allTags
 			}
 		in
 			mk_fmi3CoSimulationConfiguration
@@ -130,12 +127,12 @@ functions
 				then { cat.name | cat in seq model.logCategories }
 				else nil,
 
-				-- The reference map of SV indexes to variable indexes (below)
-				indexmap,
+				-- The reference map of SV alias tags to variable indexes (below)
+				aliasmap,
 
-				-- The state vector, indexed via the indexmap, created from the effective SVs
+				-- The state vector, indexed via the aliasmap, created from the effective SVs
 				-- Initially either the start value given, or the default start value for the type.
-				startValues(indexmap, eModelVariables),
+				startValues(aliasmap, eModelVariables),
 
 				-- The solver data vector, indexed by SolverData's index
 				[
@@ -214,11 +211,10 @@ functions
 	 * Calculate the initial vector of SV values, given their "start" attributes.
 	 * Called by fmi3Instantiate and fmi3Reset.
 	 */
-	startValues: map fmi3ValueReference to nat1 * seq1 of Variable +> seq1 of fmi3Value
-	startValues(indexmap, eModelVariables) ==
+	startValues: map AliasTag to nat1 * seq1 of Variable +> seq1 of fmi3Value
+	startValues(aliasmap, eModelVariables) ==
 	[
-		let svi in set dom indexmap be st indexmap(svi) = v in	-- Choose any alias
-		let sv = eModelVariables(svi) in
+		let sv in seq eModelVariables be st aliasTag(sv) = tag in	-- Choose any alias
 			if sv.start <> nil
 			then sv.start	-- All aliases have the same start
 			else
@@ -230,7 +226,7 @@ functions
 				else if is_Enumeration(sv) then 0
 				else undefined
 
-		| v in set rng indexmap
+		| tag in set dom aliasmap
 	];
 
 	/**
