@@ -68,7 +68,7 @@ types
 		callbacks				: fmi3CallbackFunctions
 
 		-- convenience read-only fields, copied from componentEnvironment
-		xmlModel					: FMIModelDescription
+		xmlModel				: FMIModelDescription
 		eModelVariables			: seq1 of Variable
 		continuousTimeStates	: seq of fmi3ValueReference
 		initialUnknowns			: set of fmi3ValueReference

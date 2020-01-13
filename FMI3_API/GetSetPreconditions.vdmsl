@@ -1,0 +1,118 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 3.2.3 State Machine of Calling Sequence (Model Exchange)
+ * 4.2.4 State Machine of Calling Sequence (Co-simulation)
+ */
+functions
+	-- State transition validation functions, where XXX in the Standard is a
+	-- pair of predicates called varsXXX and isXXX.
+
+	varsSEA: fmi3Instance * seq of fmi3ValueReference +> bool
+	varsSEA(c, vrs) ==
+		forall vr in seq vrs & vr <= len c.eModelVariables and isSEA(c, vr);
+
+	isSEA: fmi3Instance * fmi3ValueReference +> bool
+	isSEA(c, vr) ==
+		c.eModelVariables(vr).base.variability <> <constant>
+		and c.eModelVariables(vr).base.initial in set { <exact>, <approx> };
+
+
+	varsSE: fmi3Instance * seq of fmi3ValueReference +> bool
+	varsSE(c, vrs) ==
+		forall vr in seq vrs & vr <= len c.eModelVariables and isSE(c, vr);
+
+	isSE: fmi3Instance * fmi3ValueReference +> bool
+	isSE(c, vr) ==
+		c.eModelVariables(vr).base.variability <> <constant>
+		and (c.eModelVariables(vr).base.causality = <input>
+			 or c.eModelVariables(vr).base.initial = <exact>);
+
+
+	varsINC: fmi3Instance * seq of fmi3ValueReference +> bool
+	varsINC(c, vrs) ==
+		forall vr in seq vrs & vr <= len c.eModelVariables and isINC(c, vr);
+
+	isINC: fmi3Instance * fmi3ValueReference +> bool
+	isINC(c, vr) ==
+		is_Real(c.eModelVariables(vr))
+		and c.eModelVariables(vr).base.causality = <input>
+		and c.eModelVariables(vr).base.variability = <continuous>;
+
+
+	varsINI: fmi3Instance * seq of fmi3ValueReference +> bool
+	varsINI(c, vrs) ==
+		forall vr in seq vrs & vr <= len c.eModelVariables and isINI(c, vr);
+
+	isINI: fmi3Instance * fmi3ValueReference +> bool
+	isINI(c, vr) ==
+		-- is_Real ??
+		(c.eModelVariables(vr).base.causality = <input>
+			and c.eModelVariables(vr).varAtts.derivative <> nil)
+		or (c.eModelVariables(vr).base.variability <> <constant>
+			and c.eModelVariables(vr).base.initial in set { <exact>, <approx> });
+
+
+	varsIN: fmi3Instance * seq of fmi3ValueReference +> bool
+	varsIN(c, vrs) ==
+		forall vr in seq vrs & vr <= len c.eModelVariables and isIN(c, vr);
+
+	isIN: fmi3Instance * fmi3ValueReference +> bool
+	isIN(c, vr) ==
+		if c.fmuType = <fmi3ModelExchange>
+		then
+			(c.eModelVariables(vr).base.variability = <discrete>
+				and c.eModelVariables(vr).base.causality = <input>)
+			or c.eModelVariables(vr).base.variability = <tunable>
+		else
+			vr in set c.initialUnknowns
+			or (c.eModelVariables(vr).base.causality = <input>
+			 	 or (c.eModelVariables(vr).base.causality = <parameter>
+					 and c.eModelVariables(vr).base.variability = <tunable>));
+
+
+	varsINIT: fmi3Instance * seq of fmi3ValueReference +> bool
+	varsINIT(c, vrs) ==
+		forall vr in seq vrs & vr <= len c.eModelVariables and isINIT(c, vr);
+
+	isINIT: fmi3Instance * fmi3ValueReference +> bool
+	isINIT(c, vr) ==
+		c.eModelVariables(vr).base.causality = <output>
+		or vr in set c.initialUnknowns;
+
+
+	varsINIE: fmi3Instance * seq of fmi3ValueReference +> bool
+	varsINIE(c, vrs) ==
+		forall vr in seq vrs & vr <= len c.eModelVariables and isINIE(c, vr);
+
+	isINIE: fmi3Instance * fmi3ValueReference +> bool
+	isINIE(c, vr) ==
+		c.eModelVariables(vr).base.variability <> <constant>
+		and c.eModelVariables(vr).base.initial = <exact>;
