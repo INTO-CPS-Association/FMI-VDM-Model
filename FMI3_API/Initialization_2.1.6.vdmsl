@@ -38,8 +38,8 @@ functions
 	fmi3SetupExperiment_Impl(instance, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
 		mk_(<fmi3OK>, mu(instance,
 			tolerance	|-> if toleranceDefined then tolerance
-							elseif instance.model.defaultExperiment <> nil
-							then instance.model.defaultExperiment.tolerance
+							elseif instance.xmlModel.defaultExperiment <> nil
+							then instance.xmlModel.defaultExperiment.tolerance
 							else nil,
 			startTime	|-> startTime,
 			stopTime	|-> if stopTimeDefined then stopTime else nil,
@@ -64,6 +64,60 @@ functions
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3SetupExperiment_Impl(instance, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime)
+	 post
+	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
+
+
+	/**
+	 * Implementation and API for fmi3EnterConfigurationMode.
+	 */
+	fmi3EnterConfigurationMode_Impl: fmi3Instance +> fmi3Status * fmi3Instance
+	fmi3EnterConfigurationMode_Impl(instance) ==
+		mk_(<fmi3OK>, mu(instance, fmuState |-> <INITIALIZATION>))
+	pre
+		instance.fmuState in set STATES_fmi3EnterConfigurationMode
+		and instance.startTime <> nil
+		and exists sv in seq instance.eModelVariables & sv.base.causality = <structuralParameter>
+	post
+		RESULT.#2.fmuState = <INITIALIZATION>;
+
+	fmi3EnterConfigurationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
+	fmi3EnterConfigurationMode(instance) ==
+		if instance.fmuState not in set STATES_fmi3EnterConfigurationMode
+		then -- @Printf("Cannot call fmi3EnterConfigurationMode in state %s\n", instance.fmuState)
+			mk_(<fmi3Error>, nil)
+		elseif not exists sv in seq instance.eModelVariables & sv.base.causality = <structuralParameter>
+		then -- @Printf("Cannot call fmi3EnterConfigurationMode with no structural parameters defined\n")
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3EnterConfigurationMode_Impl(instance)
+	 post
+	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
+
+
+	/**
+	 * Implementation and API for fmi3ExitConfigurationMode.
+	 */
+	fmi3ExitConfigurationMode_Impl: fmi3Instance +> fmi3Status * fmi3Instance
+	fmi3ExitConfigurationMode_Impl(instance) ==
+		mk_(<fmi3OK>, mu(instance, fmuState |-> <INITIALIZATION>))
+	pre
+		instance.fmuState in set STATES_fmi3ExitConfigurationMode
+		and instance.startTime <> nil
+		and exists sv in seq instance.eModelVariables & sv.base.causality = <structuralParameter>
+	post
+		RESULT.#2.fmuState = <INITIALIZATION>;
+
+	fmi3ExitConfigurationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
+	fmi3ExitConfigurationMode(instance) ==
+		if instance.fmuState not in set STATES_fmi3ExitConfigurationMode
+		then -- @Printf("Cannot call fmi3ExitConfigurationMode in state %s\n", instance.fmuState)
+			mk_(<fmi3Error>, nil)
+		elseif not exists sv in seq instance.eModelVariables & sv.base.causality = <structuralParameter>
+		then -- @Printf("Cannot call fmi3ExitConfigurationMode with no structural parameters defined\n")
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3ExitConfigurationMode_Impl(instance)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -155,7 +209,7 @@ functions
 	fmi3Reset_Impl: fmi3Instance +> fmi3Status * fmi3Instance
 	fmi3Reset_Impl(instance) ==
 		mk_(<fmi3OK>, mu(instance,
-			variables	|-> startValues(instance.indexmap, effectiveScalarVariables(instance.model)),
+			variables	|-> getStartValues(instance.aliasMap, effectiveScalarVariables(instance.xmlModel)),
 			dirty		|-> true,
 			fmuState	|-> <INSTANTIATED>))
 	pre

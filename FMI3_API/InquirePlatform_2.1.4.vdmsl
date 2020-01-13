@@ -28,7 +28,7 @@
  */
 
 /**
- * 2.1.4 inquire Platform and Version Number of Header Files.
+ * 2.1.4 Inquire Platform and Version Number of Header Files.
  */
 functions
 	fmi3GetVersion: () +> fmi3String

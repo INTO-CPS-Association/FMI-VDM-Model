@@ -38,10 +38,10 @@ functions
 					 fmi3CallbackFunctions * fmi3Boolean * fmi3Boolean * [fmi3CoSimulationConfiguration] +> fmi3Instance
 	fmi3Instantiate_Impl(instanceName, fmuType, fmuInstantiationToken, -/*fmuResourceLocation*/,
 					funcs, -/*visible*/, loggingOn, fmuCoSimulationConfiguration) ==
-		let model = funcs.instanceEnvironment.model,
-			eModelVariables = effectiveScalarVariables(model),
+		let xmlModel = funcs.instanceEnvironment.xmlModel,
+			eModelVariables = effectiveScalarVariables(xmlModel),
 			allTags = setToSeq[AliasTag](dom getAliasRefMap(eModelVariables)),
-			aliasmap : map AliasTag to nat1 = { allTags(i) |-> i | i in set inds allTags }
+			aliasMap : map AliasTag to nat1 = { allTags(i) |-> i | i in set inds allTags }
 		in
 			mk_fmi3Instance
 			(
@@ -55,42 +55,42 @@ functions
 				funcs,
 
 				-- The XML model
-				model,
+				xmlModel,
 
-				-- The effective ScalarVariables, after all defaults and inherited values set
+				-- The effective scalar variables, after all defaults and inherited values set
 				eModelVariables,
 
 				-- The continuous time state references
-				[ u.valueReference | u in seq model.modelStructure.unknowns & u.kind = <Derivative> ],
+				[ u.valueReference | u in seq xmlModel.modelStructure.unknowns & u.kind = <Derivative> ],
 
 				-- The initial unknown references, which may be an empty set
-				{ u.valueReference | u in seq model.modelStructure.unknowns & u.kind = <InitialUnknown> },
+				{ u.valueReference | u in seq xmlModel.modelStructure.unknowns & u.kind = <InitialUnknown> },
 
 				-- The solver derivative references
 				[ sd | sd in seq funcs.instanceEnvironment.solverData.derivatives ],
 
 				-- The initial setting of log categories (nil means debugging is disabled)
-				if loggingOn and model.logCategories <> nil
-				then { cat.name | cat in seq model.logCategories }
+				if loggingOn and xmlModel.logCategories <> nil
+				then { cat.name | cat in seq xmlModel.logCategories }
 				else nil,
 
-				-- The reference map of SV alias tags to variable indexes (below)
-				aliasmap,
+				-- The reference map of SV alias tags to variable state indexes (below)
+				aliasMap,
 
 				-- The state vector, indexed via the aliasmap, created from the effective SVs
 				-- Initially either the start value given, or the default start value for the type.
-				startValues(aliasmap, eModelVariables),
+				getStartValues(aliasMap, eModelVariables),
 
-				-- The solver data vector, indexed by SolverData's index
+				-- The solver data vector, addressed by SolverData's vref
 				[ 0.0 | - in seq funcs.instanceEnvironment.solverData.derivatives ],
 
 				-- The eventIndicators
-				[ 0.0 | - in set {1, ..., nilNat(model.attributes.numberOfEventIndicators)} ],
+				[ 0.0 | - in set {1, ..., nilNat(xmlModel.attributes.numberOfEventIndicators)} ],
 
-				-- Initially dirty, because "start" values above need calculate call
+				-- Initially dirty, because "start" values above need a calculate call
 				true,
 
-				-- tolerance, set by fmi3SetupExperiment (defaults to model DefaultExperiment)
+				-- tolerance, set by fmi3SetupExperiment (defaults to xmlModel DefaultExperiment)
 				nil,
 
 				-- IsNewEventIteration, used in ME only
@@ -118,10 +118,10 @@ functions
 	pre
 		instanceName <> ""
 		and (fmuCoSimulationConfiguration <> nil => fmuType = <fmi3CoSimulation>)
-		and let model = funcs.instanceEnvironment.model in
-			fmuInstantiationToken = model.attributes.instantiationToken
-			and (fmuType = <fmi3CoSimulation>  => model.coSimulation <> nil)
-			and (fmuType = <fmi3ModelExchange> => model.modelExchange <> nil)
+		and let xmlModel = funcs.instanceEnvironment.xmlModel in
+			fmuInstantiationToken = xmlModel.attributes.instantiationToken
+			and (fmuType = <fmi3CoSimulation>  => xmlModel.coSimulation <> nil)
+			and (fmuType = <fmi3ModelExchange> => xmlModel.modelExchange <> nil)
 	post
 		RESULT.fmuState = <INSTANTIATED>
 		and RESULT.fmuType = fmuType;
@@ -135,31 +135,32 @@ functions
 					 fmi3CallbackFunctions * fmi3Boolean * fmi3Boolean * [fmi3CoSimulationConfiguration] +> [fmi3Instance]
 	fmi3Instantiate(instanceName, fmuType, fmuInstantiationToken, fmuResourceLocation,
 					funcs, visible, loggingOn, fmuCoSimulationConfiguration) ==
-		let model = funcs.instanceEnvironment.model in
+		let xmlModel = funcs.instanceEnvironment.xmlModel in
 			if instanceName = ""
 			then -- @Printf("fmi3Instantiate instanceName cannot be empty\n")
 				nil
 			elseif fmuCoSimulationConfiguration <> nil and fmuType <> <fmi3CoSimulation>
-			then -- @Printf("fmuCoSimulationConfiguration must have CoSimulation fmuType\n")
+			then -- @Printf("fmi3Instantiate fmuCoSimulationConfiguration implies CoSimulation fmuType\n")
 				nil
-			elseif fmuInstantiationToken <> model.attributes.instantiationToken
+			elseif fmuInstantiationToken <> xmlModel.attributes.instantiationToken
 			then -- @Printf("fmi3Instantiate fmuInstantiationToken does not match XML configuration\n")
 				nil
-			elseif fmuType = <fmi3CoSimulation> and model.coSimulation = nil
+			elseif fmuType = <fmi3CoSimulation> and xmlModel.coSimulation = nil
 			then -- @Printf("CoSimulation FMU must define CoSimulation XML configuration\n")
 				nil
-			elseif fmuType = <fmi3ModelExchange> and model.modelExchange = nil
+			elseif fmuType = <fmi3ModelExchange> and xmlModel.modelExchange = nil
 			then -- @Printf("ModelExchange FMU must define ModelExchange XML configuration\n")
 				nil
 			else
-				fmi3Instantiate_Impl(instanceName, fmuType, fmuInstantiationToken, fmuResourceLocation, funcs, visible, loggingOn, fmuCoSimulationConfiguration);
+				fmi3Instantiate_Impl(instanceName, fmuType, fmuInstantiationToken, fmuResourceLocation,
+									 funcs, visible, loggingOn, fmuCoSimulationConfiguration);
 
 	/**
 	 * Calculate the initial vector of SV values, given their "start" attributes.
 	 * Called by fmi3Instantiate and fmi3Reset.
 	 */
-	startValues: map AliasTag to nat1 * seq1 of Variable +> seq1 of fmi3Value
-	startValues(aliasmap, eModelVariables) ==
+	getStartValues: map AliasTag to nat1 * seq1 of Variable +> seq1 of fmi3Value
+	getStartValues(aliasmap, eModelVariables) ==
 	[
 		let sv in seq eModelVariables be st aliasTag(sv) = tag in	-- Choose any alias
 			if sv.start <> nil
@@ -181,7 +182,7 @@ functions
 	 */
 	fmi3FreeInstance_Impl: fmi3Instance +> <VOID>
 	fmi3FreeInstance_Impl(c) ==
-		<VOID>	-- Logically calls c.model.funcs.freeMemory()
+		<VOID>	-- Logically calls c.xmlModel.funcs.freeMemory()
 	pre
 		c.fmuState in set STATES_fmi3FreeInstance;
 
@@ -211,7 +212,7 @@ functions
 				if loggingOn
 				then
 					if nCategories = 0
-					then [ cat.name | cat in seq c.model.logCategories ]
+					then [ cat.name | cat in seq c.xmlModel.logCategories ]
 					else elems categories
 				else nil))
 	pre
@@ -219,7 +220,7 @@ functions
 		and nCategories = len categories
 		and card elems categories = nCategories
 		and (nCategories > 0 =>
-			let logcats = c.model.logCategories in
+			let logcats = c.xmlModel.logCategories in
 				logcats <> nil
 				and forall cname in seq categories &
 					exists lc in seq logcats &
@@ -228,7 +229,7 @@ functions
 		RESULT.#2.logCategories =
 			if loggingOn
 			then if nCategories = 0
-				then [ cat.name | cat in seq c.model.logCategories ]
+				then [ cat.name | cat in seq c.xmlModel.logCategories ]
 				else elems categories
 			else nil;
 
@@ -244,7 +245,7 @@ functions
 		elseif nCategories <> len categories or card elems categories <> nCategories
 		then -- @Printf("nCategories does not match categories length\n")
 			mk_(<fmi3Error>, nil)
-		else let logcats = c.model.logCategories in
+		else let logcats = c.xmlModel.logCategories in
 			if logcats = nil
 			then -- @Printf("No log categories defined in XML configuration\n")
 				mk_(<fmi3Error>, nil)

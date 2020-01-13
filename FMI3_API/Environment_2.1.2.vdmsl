@@ -1,0 +1,101 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.2 Platform Dependent Definitions
+ */
+types
+	SolverDerivative ::
+		vref							: fmi3ValueReference	-- SV reference of base variable
+		order							: nat1					-- Order of solver's derivative
+		type							: <input> | <output>;
+
+	SolverData ::
+		derivatives						: seq of SolverDerivative;
+
+	-- The opaque data for the model - the XML model and solver data
+	fmi3InstanceEnvironment ::
+		xmlModel						: FMIModelDescription
+		solverData						: SolverData
+	inv ienv ==
+		-- The FMI model is valid
+		isValidFMIModelDescription(ienv.xmlModel)
+
+		-- And the solver data does not contain any derivatives of SVs that are
+		-- already represented in the SV list
+		and (forall sd in seq ienv.solverData.derivatives &
+			not exists sv in set inds ienv.xmlModel.modelVariables &
+				let mk_(o, b) = getDerivativeBase(sv, ienv.xmlModel.modelVariables) in
+					sd.order = o and sd.vref = b)
+
+		-- And CoSim solver data output derivative orders do not exceed
+		-- maxOutputDerivativeOrder
+		and (ienv.xmlModel.coSimulation <> nil =>
+			let max = ienv.xmlModel.coSimulation.maxOutputDerivativeOrder in
+				max <> nil => forall sd in seq ienv.solverData.derivatives &
+					sd.type = <output> => sd.order <= max);
+
+	-- The opaque instance data for the model, passed to and from API functions
+	fmi3Instance ::
+		fmuType					: fmi3InterfaceType
+		fmuState				: fmi3State
+		callbacks				: fmi3CallbackFunctions
+
+		-- convenience read-only fields, copied from componentEnvironment
+		xmlModel					: FMIModelDescription
+		eModelVariables			: seq1 of Variable
+		continuousTimeStates	: seq of fmi3ValueReference
+		initialUnknowns			: set of fmi3ValueReference
+		solverDerivatives		: seq of SolverDerivative
+
+		-- state, events and settings
+		logCategories			: [set1 of fmi3String]				-- nil means logging off
+		aliasMap				: map AliasTag to nat1				-- map alias tag to variables index
+		variables				: seq1 of fmi3Value					-- Raw SV data values
+		derivatives				: seq of fmi3Float					-- Solver derivative data
+		eventIndicators			: seq of fmi3Float					-- ME events
+		dirty					: bool								-- True if SVs updated but not recalculated
+		tolerance				: [fmi3Float]						-- From DefaultExperiment or fmi3SetupExperiment
+		isNewEventIteration		: bool								-- Used in ME
+		eventInfo				: fmi3EventInfo						-- Used in ME and CS?
+
+		-- time values
+		startTime				: [fmi3Float]
+		stopTime				: [fmi3Float]
+		currentTime				: [fmi3Float]	-- TODO should be independent SV?
+
+	inv c ==
+		len c.variables = card rng c.aliasMap
+		and (len c.continuousTimeStates = len [u | u in seq c.xmlModel.modelStructure.unknowns & u.kind = <Derivative>])
+		and (len c.derivatives = len c.solverDerivatives)
+		and (len c.eventIndicators = nilNat(c.xmlModel.attributes.numberOfEventIndicators))
+		and (c.isNewEventIteration => c.fmuType = <fmi3ModelExchange>)
+		and (c.currentTime <> nil <=> c.startTime <> nil)
+		and (c.currentTime <> nil => c.currentTime >= c.startTime)
+		and (c.stopTime <> nil and c.startTime <> nil => c.stopTime > c.startTime and c.currentTime <= c.stopTime);

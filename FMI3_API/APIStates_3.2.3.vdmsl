@@ -38,15 +38,18 @@ values
 --------------------------------------------------------------------------------
 -- Function calls for both Model-exchange and Co-simulation
 --------------------------------------------------------------------------------
-STATES_fmi3GetVersion               = { <START>, <END>, <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_IN_PROGRESS>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
-STATES_fmi3SetDebugLogging          = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_IN_PROGRESS>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
+STATES_fmi3GetVersion               = { <START>, <END>, <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <CONFIGURATION_MODE>, <RECONFIGURATION_MODE>, <STEP_COMPLETE>, <STEP_IN_PROGRESS>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
+STATES_fmi3SetDebugLogging          = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <CONFIGURATION_MODE>, <RECONFIGURATION_MODE>, <STEP_COMPLETE>, <STEP_IN_PROGRESS>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
 STATES_fmi3Instantiate              = { <START>, <END> };
-STATES_fmi3FreeInstance             = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
+STATES_fmi3FreeInstance             = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <CONFIGURATION_MODE>, <RECONFIGURATION_MODE>, <STEP_COMPLETE>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
 STATES_fmi3SetupExperiment          = { <INSTANTIATED> };
 STATES_fmi3EnterInitializationMode  = { <INSTANTIATED> };
 STATES_fmi3ExitInitializationMode   = { <INITIALIZATION> };
+STATES_fmi3EnterConfigurationMode   = { <INSTANTIATED>, <EVENT_MODE> };
+STATES_fmi3ExitConfigurationMode    = { <CONFIGURATION_MODE>, <RECONFIGURATION_MODE> };
 STATES_fmi3Terminate                = { <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_FAILED> };
 STATES_fmi3Reset                    = STATES_fmi3FreeInstance;
+
 STATES_fmi3GetReal                  = { <INITIALIZATION>, <EVENT_MODE>, <CT_MODE>, <STEP_COMPLETE>, <STEP_FAILED>, <STEP_CANCELLED>, <TERMINATED>, <ERROR> };
 STATES_fmi3GetInteger               = STATES_fmi3GetReal;
 STATES_fmi3GetBoolean               = STATES_fmi3GetReal;
