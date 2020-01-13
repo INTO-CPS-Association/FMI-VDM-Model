@@ -105,6 +105,10 @@ types
 		variable		: Variable
 		annotations		: [seq1 of Tool];
 
+	-- A tag used to uniquely identify aliased variables (since refs are only unique per type),
+	-- made of the SV valueReference and the type name.
+	AliasTag = nat * seq1 of char
+
 functions
 	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
@@ -594,7 +598,7 @@ functions
 	/**
 	 * Get the alias refmap, from valueReference/type pairs to sets of SVs
 	 */
-	getAliasRefMap: seq1 of ScalarVariable -> map nat * seq of char to set of ScalarVariable
+	getAliasRefMap: seq1 of ScalarVariable -> map AliasTag to set of ScalarVariable
 	getAliasRefMap(svs) ==
 		let tags = { svi |-> aliasTag(svs(svi)) | svi in set inds svs } in
 		{
@@ -606,6 +610,6 @@ functions
 	 * Generate an alias "tag" for a ScalarVariable, made of the valueReference and
 	 * the type of the variable. All aliases of a variable have the same tag.
 	 */
-	aliasTag: ScalarVariable +> nat * seq1 of char
+	aliasTag: ScalarVariable +> AliasTag
 	aliasTag(sv) ==
 		mk_(sv.valueReference, typeName(sv.variable));

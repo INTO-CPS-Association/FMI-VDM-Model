@@ -80,46 +80,10 @@ types
 	inv
 		info == info.nextEventTimeDefined <=> info.nextEventTime <> nil;
 
-	fmi2Component ::
-		fmuType					: fmi2Type
-		fmuState				: fmi2State
-		callbacks				: fmi2CallbackFunctions
+	fmi2CallbackFunctions ::
+		logger					: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> <VOID>
+		allocateMemory			: nat1 * nat1 +> token
+		freeMemory				: token +> <VOID>
+		stepFinished			: fmi2ComponentEnvironment * fmi2Status +> <VOID>
+		componentEnvironment	: fmi2ComponentEnvironment;
 
-		-- Implementation functions, called from fmi2GetXXX and fmi2DoStep
-		calculateValues			: fmi2Component -> fmi2Status * [fmi2Component]
-		calculateDoStep			: fmi2Component * fmi2Real * fmi2Real -> fmi2Status * [fmi2Component]
-		calculateEvents			: fmi2Component -> fmi2Status * [fmi2Component]
-
-		-- convenience read-only fields, copied from componentEnvironment
-		model					: FMIModelDescription
-		eModelVariables			: seq1 of ScalarVariable
-		continuousTimeStates	: seq of fmi2ValueReference
-		initialUnknowns			: set of fmi2ValueReference
-		solverDerivatives		: seq of SolverDerivative
-
-		-- state, events and settings
-		logCategories			: [set1 of fmi2String]				-- nil means logging off
-		indexmap				: map fmi2ValueReference to nat1	-- map SV index to variables index
-		variables				: seq1 of fmi2Value					-- Raw SV data values
-		derivatives				: seq of fmi2Real					-- Solver derivative data
-		eventIndicators			: seq of fmi2Real					-- ME events
-		dirty					: bool								-- True if SVs updated but not recalculated
-		tolerance				: [fmi2Real]						-- From DefaultExperiment or fmi2SetupExperiment
-		isNewEventIteration		: bool								-- Used in ME
-		eventInfo				: fmi2EventInfo						-- Used in ME and CS?
-
-		-- time values
-		startTime				: [real]
-		stopTime				: [real]
-		currentTime				: [real]	-- TODO should be independent SV?
-
-	inv c ==
-		len c.variables = card rng c.indexmap
-		and (len c.continuousTimeStates = len nilSeq[Unknown](c.model.modelStructure.derivatives))
-		and (forall sd in seq c.solverDerivatives & sd.index <= len c.eModelVariables)
-		and (len c.derivatives = len c.solverDerivatives)
-		and (len c.eventIndicators = nilNat(c.model.attributes.numberOfEventIndicators))
-		and (c.isNewEventIteration => c.fmuType = <fmi2ModelExchange>)
-		and (c.currentTime <> nil <=> c.startTime <> nil)
-		and (c.currentTime <> nil => c.currentTime >= c.startTime)
-		and (c.stopTime <> nil and c.startTime <> nil => c.stopTime > c.startTime and c.currentTime <= c.stopTime);

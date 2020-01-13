@@ -166,8 +166,8 @@ functions
 		mk_(<fmi2OK>, mu(c, dirty |-> false));	-- TODO!
 
 	calculateDoStep: fmi2Component * fmi2Real * fmi2Real -> fmi2Status * [fmi2Component]
-	calculateDoStep(c, -, -) ==
-		mk_(<fmi2OK>, c);	-- TODO!
+	calculateDoStep(c, current, step) ==
+		mk_(<fmi2OK>, mu(c, currentTime |-> current + step));	-- TODO!
 
 	calculateEvents: fmi2Component -> fmi2Status * [fmi2Component]
 	calculateEvents(c) ==

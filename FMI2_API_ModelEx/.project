@@ -102,6 +102,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/FMI2_API/CreateDestroy_2.1.5.vdmsl</locationURI>
 		</link>
 		<link>
+			<name>FMI2_API/Environment_2.1.2.vdmsl</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/FMI2_API/Environment_2.1.2.vdmsl</locationURI>
+		</link>
+		<link>
 			<name>FMI2_API/EvalEquations_3.2.2.vdmsl</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/FMI2_API/EvalEquations_3.2.2.vdmsl</locationURI>
