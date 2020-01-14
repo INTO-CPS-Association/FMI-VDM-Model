@@ -35,26 +35,26 @@ functions
 	 * Implementation and API for fmi3SetupExperiment.
 	 */
 	fmi3SetupExperiment_Impl: fmi3Instance * fmi3Boolean * fmi3Float * fmi3Float * fmi3Boolean * fmi3Float +> fmi3Status * fmi3Instance
-	fmi3SetupExperiment_Impl(instance, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
-		mk_(<fmi3OK>, mu(instance,
+	fmi3SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
+		mk_(<fmi3OK>, mu(c,
 			tolerance	|-> if toleranceDefined then tolerance
-							elseif instance.xmlModel.defaultExperiment <> nil
-							then instance.xmlModel.defaultExperiment.tolerance
+							elseif c.xmlModel.defaultExperiment <> nil
+							then c.xmlModel.defaultExperiment.tolerance
 							else nil,
 			startTime	|-> startTime,
 			stopTime	|-> if stopTimeDefined then stopTime else nil,
 			currentTime	|-> startTime))		-- TODO should set independent variable?
 	pre
-		instance.fmuState in set STATES_fmi3SetupExperiment
+		c.fmuState in set STATES_fmi3SetupExperiment
 		and (stopTimeDefined => stopTime > startTime)
 		and (toleranceDefined => tolerance >= 0)
 	post
 		RESULT.#2.fmuState = <INSTANTIATED>;
 
 	fmi3SetupExperiment: fmi3Instance * fmi3Boolean * fmi3Float * fmi3Float * fmi3Boolean * fmi3Float +> fmi3Status * [fmi3Instance]
-	fmi3SetupExperiment(instance, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
-		if instance.fmuState not in set STATES_fmi3SetupExperiment
-		then -- @Printf("Cannot call fmi3SetupExperiment in state %s\n", instance.fmuState)
+	fmi3SetupExperiment(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
+		if c.fmuState not in set STATES_fmi3SetupExperiment
+		then -- @Printf("Cannot call fmi3SetupExperiment in state %s\n", c.fmuState)
 			mk_(<fmi3Error>, nil)
 		elseif stopTimeDefined and stopTime <= startTime
 		then -- @Printf("stopTime is not > startTime\n")
@@ -63,7 +63,7 @@ functions
 		then -- @Printf("Tolerance must be >= 0\n")
 			mk_(<fmi3Error>, nil)
 		else
-			fmi3SetupExperiment_Impl(instance, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime)
+			fmi3SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -72,25 +72,29 @@ functions
 	 * Implementation and API for fmi3EnterConfigurationMode.
 	 */
 	fmi3EnterConfigurationMode_Impl: fmi3Instance +> fmi3Status * fmi3Instance
-	fmi3EnterConfigurationMode_Impl(instance) ==
-		mk_(<fmi3OK>, mu(instance, fmuState |-> <INITIALIZATION>))
+	fmi3EnterConfigurationMode_Impl(c) ==
+		mk_(<fmi3OK>, mu(c,
+			fmuState |->
+				if c.fmuState = <INITIALIZATION>
+				then <CONFIGURATION_MODE>
+				else <RECONFIGURATION_MODE>))
 	pre
-		instance.fmuState in set STATES_fmi3EnterConfigurationMode
-		and instance.startTime <> nil
-		and exists sv in seq instance.eModelVariables & sv.base.causality = <structuralParameter>
+		c.fmuState in set STATES_fmi3EnterConfigurationMode
+		and c.startTime <> nil
+		and exists sv in seq c.eModelVariables & sv.base.causality = <structuralParameter>
 	post
-		RESULT.#2.fmuState = <INITIALIZATION>;
+		RESULT.#2.fmuState in set {<CONFIGURATION_MODE>, <RECONFIGURATION_MODE>};
 
 	fmi3EnterConfigurationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
-	fmi3EnterConfigurationMode(instance) ==
-		if instance.fmuState not in set STATES_fmi3EnterConfigurationMode
-		then -- @Printf("Cannot call fmi3EnterConfigurationMode in state %s\n", instance.fmuState)
+	fmi3EnterConfigurationMode(c) ==
+		if c.fmuState not in set STATES_fmi3EnterConfigurationMode
+		then -- @Printf("Cannot call fmi3EnterConfigurationMode in state %s\n", c.fmuState)
 			mk_(<fmi3Error>, nil)
-		elseif not exists sv in seq instance.eModelVariables & sv.base.causality = <structuralParameter>
+		elseif not exists sv in seq c.eModelVariables & sv.base.causality = <structuralParameter>
 		then -- @Printf("Cannot call fmi3EnterConfigurationMode with no structural parameters defined\n")
 			mk_(<fmi3Error>, nil)
 		else
-			fmi3EnterConfigurationMode_Impl(instance)
+			fmi3EnterConfigurationMode_Impl(c)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -99,25 +103,30 @@ functions
 	 * Implementation and API for fmi3ExitConfigurationMode.
 	 */
 	fmi3ExitConfigurationMode_Impl: fmi3Instance +> fmi3Status * fmi3Instance
-	fmi3ExitConfigurationMode_Impl(instance) ==
-		mk_(<fmi3OK>, mu(instance, fmuState |-> <INITIALIZATION>))
+	fmi3ExitConfigurationMode_Impl(c) ==
+		mk_(<fmi3OK>, mu(c,
+			fmuState |->
+				if c.fmuState = <CONFIGURATION_MODE>
+				then <INITIALIZATION>
+				else <EVENT_MODE>))
+
 	pre
-		instance.fmuState in set STATES_fmi3ExitConfigurationMode
-		and instance.startTime <> nil
-		and exists sv in seq instance.eModelVariables & sv.base.causality = <structuralParameter>
+		c.fmuState in set STATES_fmi3ExitConfigurationMode
+		and c.startTime <> nil
+		and exists sv in seq c.eModelVariables & sv.base.causality = <structuralParameter>
 	post
-		RESULT.#2.fmuState = <INITIALIZATION>;
+		RESULT.#2.fmuState in set {<INITIALIZATION>, <EVENT_MODE>};
 
 	fmi3ExitConfigurationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
-	fmi3ExitConfigurationMode(instance) ==
-		if instance.fmuState not in set STATES_fmi3ExitConfigurationMode
-		then -- @Printf("Cannot call fmi3ExitConfigurationMode in state %s\n", instance.fmuState)
+	fmi3ExitConfigurationMode(c) ==
+		if c.fmuState not in set STATES_fmi3ExitConfigurationMode
+		then -- @Printf("Cannot call fmi3ExitConfigurationMode in state %s\n", c.fmuState)
 			mk_(<fmi3Error>, nil)
-		elseif not exists sv in seq instance.eModelVariables & sv.base.causality = <structuralParameter>
+		elseif not exists sv in seq c.eModelVariables & sv.base.causality = <structuralParameter>
 		then -- @Printf("Cannot call fmi3ExitConfigurationMode with no structural parameters defined\n")
 			mk_(<fmi3Error>, nil)
 		else
-			fmi3ExitConfigurationMode_Impl(instance)
+			fmi3ExitConfigurationMode_Impl(c)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -126,24 +135,24 @@ functions
 	 * Implementation and API for fmi3EnterInitializationMode.
 	 */
 	fmi3EnterInitializationMode_Impl: fmi3Instance +> fmi3Status * fmi3Instance
-	fmi3EnterInitializationMode_Impl(instance) ==
-		mk_(<fmi3OK>, mu(instance, fmuState |-> <INITIALIZATION>))
+	fmi3EnterInitializationMode_Impl(c) ==
+		mk_(<fmi3OK>, mu(c, fmuState |-> <INITIALIZATION>))
 	pre
-		instance.fmuState in set STATES_fmi3EnterInitializationMode
-		and instance.startTime <> nil
+		c.fmuState in set STATES_fmi3EnterInitializationMode
+		and c.startTime <> nil
 	post
 		RESULT.#2.fmuState = <INITIALIZATION>;
 
 	fmi3EnterInitializationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
-	fmi3EnterInitializationMode(instance) ==
-		if instance.fmuState not in set STATES_fmi3EnterInitializationMode
-		then -- @Printf("Cannot call fmi3EnterInitializationMode in state %s\n", instance.fmuState)
+	fmi3EnterInitializationMode(c) ==
+		if c.fmuState not in set STATES_fmi3EnterInitializationMode
+		then -- @Printf("Cannot call fmi3EnterInitializationMode in state %s\n", c.fmuState)
 			mk_(<fmi3Error>, nil)
-		elseif instance.startTime = nil
+		elseif c.startTime = nil
 		then -- @Printf("fmi3SetupExperiment has not been called (startTime is nil)?\n")
 			mk_(<fmi3Error>, nil)
 		else
-			fmi3EnterInitializationMode_Impl(instance)
+			fmi3EnterInitializationMode_Impl(c)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -152,31 +161,27 @@ functions
 	 * Implementation and API for fmi3ExitInitializationMode.
 	 */
 	fmi3ExitInitializationMode_Impl: fmi3Instance +> fmi3Status * [fmi3Instance]
-	fmi3ExitInitializationMode_Impl(instance) ==
---		let mk_(s, i2) = if instance.dirty then instance.calculateValues(instance) else mk_(<fmi3OK>, instance) in
-		let mk_(s, i2) = mk_(<fmi3OK>, instance) in
+	fmi3ExitInitializationMode_Impl(c) ==
+		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
 			if s <> <fmi3OK>
 			then mk_(s, nil)
-			else mk_(<fmi3OK>, mu(i2,
+			else mk_(<fmi3OK>, mu(c2,
 				fmuState |->
-					if instance.fmuType = <fmi3CoSimulation>
-					then <STEP_COMPLETE>
-					else <EVENT_MODE>))
+					if c.fmuType = <fmi3CoSimulation>
+					then <EVENT_MODE>
+					else <STEP_MODE>))
 	pre
-		instance.fmuState in set STATES_fmi3ExitInitializationMode
+		c.fmuState in set STATES_fmi3ExitInitializationMode
 	post
-		RESULT.#2.fmuState =
-			if instance.fmuType = <fmi3CoSimulation>
-			then <STEP_COMPLETE>
-			else <EVENT_MODE>;
+		RESULT.#2.fmuState in set {<EVENT_MODE>, <STEP_MODE>};
 
 	fmi3ExitInitializationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
-	fmi3ExitInitializationMode(instance) ==
-		if instance.fmuState not in set STATES_fmi3ExitInitializationMode
-		then -- @Printf("Cannot call fmi3ExitInitializationMode in state %s\n", instance.fmuState)
+	fmi3ExitInitializationMode(c) ==
+		if c.fmuState not in set STATES_fmi3ExitInitializationMode
+		then -- @Printf("Cannot call fmi3ExitInitializationMode in state %s\n", c.fmuState)
 			mk_(<fmi3Error>, nil)
 		else
-			fmi3ExitInitializationMode_Impl(instance)
+			fmi3ExitInitializationMode_Impl(c)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -185,20 +190,20 @@ functions
 	 * Implementation and API for fmi3Terminate.
 	 */
 	fmi3Terminate_Impl: fmi3Instance +> fmi3Status * fmi3Instance
-	fmi3Terminate_Impl(instance) ==
-		mk_(<fmi3OK>, mu(instance, fmuState |-> <TERMINATED>))
+	fmi3Terminate_Impl(c) ==
+		mk_(<fmi3OK>, mu(c, fmuState |-> <TERMINATED>))
 	pre
-		instance.fmuState in set STATES_fmi3Terminate
+		c.fmuState in set STATES_fmi3Terminate
 	post
 		RESULT.#2.fmuState = <TERMINATED>;
 
 	fmi3Terminate: fmi3Instance +> fmi3Status * [fmi3Instance]
-	fmi3Terminate(instance) ==
-		if instance.fmuState not in set STATES_fmi3Terminate
-		then -- @Printf("Cannot call fmi3Terminate in state %s\n", instance.fmuState)
+	fmi3Terminate(c) ==
+		if c.fmuState not in set STATES_fmi3Terminate
+		then -- @Printf("Cannot call fmi3Terminate in state %s\n", c.fmuState)
 			mk_(<fmi3Error>, nil)
 		else
-			fmi3Terminate_Impl(instance)
+			fmi3Terminate_Impl(c)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -207,23 +212,23 @@ functions
 	 * Implementation and API for fmi3Reset.
 	 */
 	fmi3Reset_Impl: fmi3Instance +> fmi3Status * fmi3Instance
-	fmi3Reset_Impl(instance) ==
-		mk_(<fmi3OK>, mu(instance,
-			variables	|-> getStartValues(instance.aliasMap, effectiveScalarVariables(instance.xmlModel)),
+	fmi3Reset_Impl(c) ==
+		mk_(<fmi3OK>, mu(c,
+			variables	|-> getStartValues(c.aliasMap, c.eModelVariables),
 			dirty		|-> true,
 			fmuState	|-> <INSTANTIATED>))
 	pre
-		instance.fmuState in set STATES_fmi3Reset
+		c.fmuState in set STATES_fmi3Reset
 	post
 		RESULT.#2.fmuState = <INSTANTIATED>;
 
 	fmi3Reset: fmi3Instance +> fmi3Status * [fmi3Instance]
-	fmi3Reset(instance) ==
-		if instance.fmuState not in set STATES_fmi3Reset
-		then -- @Printf("Cannot call fmi3Reset in state %s\n", instance.fmuState)
+	fmi3Reset(c) ==
+		if c.fmuState not in set STATES_fmi3Reset
+		then -- @Printf("Cannot call fmi3Reset in state %s\n", c.fmuState)
 			mk_(<fmi3Error>, nil)
 		else
-			fmi3Reset_Impl(instance)
+			fmi3Reset_Impl(c)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 	

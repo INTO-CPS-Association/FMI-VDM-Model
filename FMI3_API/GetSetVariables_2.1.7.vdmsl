@@ -37,16 +37,17 @@ functions
 	generalGetPrecondition: fmi3Instance * seq of fmi3ValueReference +> bool
 	generalGetPrecondition(c, vrs) ==
 		cases c.fmuState:
-			<INSTANTIATED>		-> false,
-			<INITIALIZATION>	-> varsINIT(c, vrs),
-			<EVENT_MODE>		-> true,
-			<CT_MODE>			-> true,
-			<STEP_COMPLETE>		-> true,
-			<STEP_IN_PROGRESS>	-> false,
-			<STEP_FAILED>		-> true,
-			<STEP_CANCELLED>	-> true,
-			<TERMINATED>		-> true,
-			<ERROR>				-> true,
+			<INSTANTIATED>				-> false,
+			<INITIALIZATION>			-> varsINIT(c, vrs),
+			<CONFIGURATION_MODE>		-> true,
+			<EVENT_MODE>				-> true,
+			<CONTINUOUS_TIME_MODE>		-> true,
+			<RECONFIGURATION_MODE>		-> true,
+			<STEP_MODE>					-> true,
+			<INTERMEDIATE_UPDATE_MODE>	-> false,
+			<STEP_DISCARDED>			-> true,
+			<TERMINATED>				-> true,
+			<ERROR>						-> true,
 
 			others -> undefined
 		end;
@@ -56,28 +57,37 @@ functions
 		if c.fmuType = <fmi3ModelExchange>
 		then
 			cases c.fmuState:
-				<INSTANTIATED>		-> varsSEA(c, vrs),
-				<INITIALIZATION>	-> varsSE(c, vrs),
-				<EVENT_MODE>		-> varsIN(c, vrs) or varsINC(c, vrs),
-				<CT_MODE>			-> varsINC(c, vrs),
-				<TERMINATED>		-> false,
-				<ERROR>				-> false,
+				<INSTANTIATED>			-> varsSEA(c, vrs),
+				<INITIALIZATION>		-> varsSE(c, vrs),
+				<EVENT_MODE>			-> varsIN(c, vrs) or varsINC(c, vrs),
+				<CONTINUOUS_TIME_MODE>	-> varsINC(c, vrs),
+				<TERMINATED>			-> false,
+				<ERROR>					-> false,
 
 				others -> undefined
 			end
 		else	-- fmi3CoSimulation
 			cases c.fmuState:
-				<INSTANTIATED>		-> varsINI(c, vrs),
-				<INITIALIZATION>	-> varsIN(c, vrs) or varsINI(c, vrs),
-				<STEP_COMPLETE>		-> varsIN(c, vrs),
-				<STEP_IN_PROGRESS>	-> false,
-				<STEP_FAILED>		-> false,
-				<STEP_CANCELLED>	-> false,
-				<TERMINATED>		-> false,
-				<ERROR>				-> false,
+				<INSTANTIATED>				-> varsINI(c, vrs),
+				<INITIALIZATION>			-> varsIN(c, vrs) or varsINI(c, vrs),
+				<STEP_MODE>					-> varsIN(c, vrs),
+				<INTERMEDIATE_UPDATE_MODE>	-> false,
+				<STEP_DISCARDED>			-> false,
+				<TERMINATED>				-> false,
+				<ERROR>						-> false,
 
 				others -> undefined
 			end;
+
+	/**
+	 * Lookup a valueReference in the effective variable list.
+	 */
+	lookup: fmi3Instance * fmi3ValueReference +> [Variable]
+	lookup(c, vr) ==
+		let found = { v | v in seq c.eModelVariables & v.base.valueReference = vr } in
+			if found = {}
+			then nil
+			else let {v} = found in v;
 
 	/**
 	 * Implementation and API for fmi3GetFloatXX.
@@ -87,12 +97,12 @@ functions
 		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
 			if s <> <fmi3OK>
 			then mk_(s, nil)
-			else mk_(<fmi3OK>, [ c2.variables(c2.aliasMap(mk_(vr, kind))) | vr in seq vrs ])
+			else mk_(<fmi3OK>, [ c2.variables(c2.aliasMap(aliasTag(lookup(c, vr)))) | vr in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
 		and forall vr in seq vrs &
-			vr <= len c.eModelVariables and is_Real(c.eModelVariables(vr))
+			exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = kind
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nvr;
 
@@ -105,8 +115,7 @@ functions
 		then -- @Printf("Get preconditions failed\n")
 			mk_(<fmi3Error>, nil)
 		elseif exists vr in seq vrs &
-			vr > len c.eModelVariables
-			or not c.eModelVariables(vr).kind = kind
+			(not exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = kind)
 		then -- @Printf("Value references are not all %s variables\n", kind)
 			mk_(<fmi3Error>, nil)
 		else
