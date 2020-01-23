@@ -151,6 +151,16 @@ types
 
 functions
 	/**
+	 * Lookup a valueReference in the effective variable list.
+	 */
+	lookup: seq1 of Variable * fmi3ValueReference +> [Variable]
+	lookup(svs, vr) ==
+		let found = { v | v in seq svs & v.base.valueReference = vr } in
+			if found = {}
+			then nil
+			else let {v} = found in v;
+
+	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
 	 */
 	isInRange[@T]: [@T] * [@T] * [seq1 of @T] * Kind +> bool
@@ -430,11 +440,8 @@ functions
 	{
 		-- @OnFail("2.2.10 Dimensions of %s do not match start value at line %s", sv.base.name, sv.base.location)
 		( sv.start <> nil =>
-			if sv.base.dimensions <> nil
-			then
-				let size = dimensionsProduct(sv.base.dimensions) in
-					size > 0 => size = len sv.start
-			else len sv.start = 1 )
+			let size = dimensionsProduct(svs, sv.base.dimensions) in
+				size > 0 => size = len sv.start )
 
 		| sv in seq svs
 	}
@@ -495,20 +502,25 @@ functions
 
 	/**
 	 * Calculate the overall number of start values expected from dimensions. If a variable is referenced,
-	 * we cannot know its value and so return 0.
+	 * and we do not know its value, we return 0.
 	 */
-	dimensionsProduct: seq of Dimension +> nat
-	dimensionsProduct(dims) ==
-		if dims = []
+	dimensionsProduct: seq1 of Variable * [seq of Dimension] +> nat
+	dimensionsProduct(svs, dims) ==
+		if dims = nil or dims = []
 		then 1
-		else dimensionSize(hd dims) * dimensionsProduct(tl dims)
+		else dimensionSize(svs, hd dims) * dimensionsProduct(svs, tl dims)
 	measure len dims;
 
-	dimensionSize: Dimension +> nat
-	dimensionSize(dim) ==
+	dimensionSize: seq1 of Variable * Dimension +> nat
+	dimensionSize(svs, dim) ==
 		if dim.start <> nil
 		then dim.start
-		else 0;		-- variable, so we cannot know
+		else if dim.valueReference = nil
+		then 0
+		else let s = lookup(svs, dim.valueReference) in
+			if s <> nil and s.start <> nil and len s.start > 0
+			then hd s.start
+			else 0;
 
 	/**
 	 * The default value for initial, defined by the (effective) values of causality and

@@ -73,6 +73,13 @@ functions
 			card e + count[@T](s \ {e})
 	measure card s;
 
+	sum: seq of nat +> nat
+	sum(s) ==
+		if s = []
+		then 0
+		else hd s + sum(tl s)
+	measure len s;
+
 	setToSeq[@T]: set of @T +> seq of @T
 	setToSeq(s) ==
 		if s = {}
