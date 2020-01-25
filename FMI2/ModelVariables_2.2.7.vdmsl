@@ -107,9 +107,22 @@ types
 
 	-- A tag used to uniquely identify aliased variables (since refs are only unique per type),
 	-- made of the SV valueReference and the type name.
-	AliasTag = nat * seq1 of char
+	AliasTag = nat * seq1 of char;
+
+	-- Value references
+	fmi2ValueReference = nat;
 
 functions
+	/**
+	 * Lookup a valueReference in the effective variable list.
+	 */
+	lookup: seq1 of ScalarVariable * fmi2ValueReference +> [ScalarVariable]
+	lookup(svs, vr) ==
+		let found = { v | v in seq svs & v.valueReference = vr } in
+			if found = {}
+			then nil
+			else let {v} union  - = found in v;
+
 	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
 	 */
