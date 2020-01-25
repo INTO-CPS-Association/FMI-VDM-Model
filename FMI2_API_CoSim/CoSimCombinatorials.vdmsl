@@ -219,8 +219,8 @@ operations
 					and exists dv in seq c.eModelVariables &
 						is_Real(dv.variable)
 						and dv.variable.derivative = vr ]
-					^
-					[ sd.index | sd in seq c.solverDerivatives & sd.type = <input> ]
+				--	^
+				--	[ sd.vref | sd in seq c.solverDerivatives & sd.type = <input> ]
 				in
 					if ders = []
 					then skip
@@ -291,13 +291,13 @@ operations
 						else c := c2;
 
 				if nilBool(c.callbacks.componentEnvironment.model.coSimulation.canInterpolateInputs)
-				then let ders = [ vr | vr in set inds c.eModelVariables &
+				then let ders = [ c.eModelVariables(vr).valueReference | vr in set inds c.eModelVariables &
 					c.eModelVariables(vr).causality = <input>
 					and exists dv in seq c.eModelVariables &
 						is_Real(dv.variable)
 						and dv.variable.derivative = vr ]
-					^
-					[ sd.index | sd in seq c.solverDerivatives & sd.type = <input> ]
+				--	^
+				--	[ sd.vref | sd in seq c.solverDerivatives & sd.type = <input> ]
 				in
 					if ders = []
 					then skip
@@ -319,7 +319,7 @@ operations
 
 			<fmi2GetINIT> ->
 			(
-				let vars = [ vr | vr in set inds c.eModelVariables & isINIT(c, vr) ] in
+				let vars = [ sv.valueReference | sv in seq c.eModelVariables & isINIT(c, sv.valueReference) ] in
 					if vars = []
 					then skip
 					else let mk_(s, -) = fmi2GetReal(c, vars, len vars) in
@@ -333,7 +333,7 @@ operations
 					if unknown = []
 					then skip
 					else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknown, len unknown, known, len known,
-						[ c.variables(c.indexmap(v)) | v in seq known ]) in
+						[ c.variables(c.indexmap(aliasTag(c.eModelVariables(v)))) | v in seq known ]) in
 						if s <> <fmi2OK>
 						then exit "Cannot get INIT directional derivatives"
 			),
@@ -351,7 +351,7 @@ operations
 			<fmi2GetX> ->
 				let vars = [ vr | vr in set inds c.eModelVariables & is_Real(c.eModelVariables(vr).variable) ] in
 				(
-					let reals = [ vr | vr in seq vars & c.eModelVariables(vr).variable.derivative = nil ] in
+					let reals = [ c.eModelVariables(vr).valueReference | vr in seq vars & c.eModelVariables(vr).variable.derivative = nil ] in
 						if reals = []
 						then skip
 						else let mk_(s, -) = fmi2GetReal(c, reals, len reals) in
@@ -365,7 +365,7 @@ operations
 							is_Real(dv.variable)
 							and dv.variable.derivative = vr ]
 						^
-						[ sd.index | sd in seq c.solverDerivatives & sd.type = <output> ]
+						[ sd.vref | sd in seq c.solverDerivatives & sd.type = <output> ]
 					in
 						if iders = []
 						then skip
@@ -380,7 +380,7 @@ operations
 						if unknown = []
 						then skip
 						else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknown, len unknown, known, len known,
-							[ c.variables(c.indexmap(v)) | v in seq known ]) in
+							[ c.variables(c.indexmap(aliasTag(c.eModelVariables(v)))) | v in seq known ]) in
 							if s <> <fmi2OK>
 							then exit "Cannot get X directional derivatives"
 				),

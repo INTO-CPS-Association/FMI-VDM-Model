@@ -286,7 +286,7 @@ operations
 
 			<fmi2GetINIT> ->
 			(
-				let vars = [ vr | vr in set inds c.eModelVariables & isINIT(c, vr) ] in
+				let vars = [ sv.valueReference | sv in seq c.eModelVariables & isINIT(c, sv.valueReference) ] in
 					if vars = []
 					then skip
 					else let mk_(s, -) = fmi2GetReal(c, vars, len vars) in
@@ -300,7 +300,7 @@ operations
 					if unknown = []
 					then skip
 					else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknown, len unknown, known, len known,
-						[ c.variables(c.indexmap(v)) | v in seq known ]) in
+						[ c.variables(c.indexmap(aliasTag(c.eModelVariables(v)))) | v in seq known ]) in
 						if s <> <fmi2OK>
 						then exit "Cannot get INIT directional derivatives";
 
@@ -415,9 +415,9 @@ operations
 					else c := c2,
 
 			<fmi2GetX> ->
-				let vars = [ vr | vr in set inds c.eModelVariables & is_Real(c.eModelVariables(vr).variable) ] in
+				let vars = [ sv | sv in seq c.eModelVariables & is_Real(sv.variable) ] in
 				(
-					let reals = [ vr | vr in seq vars & c.eModelVariables(vr).variable.derivative = nil ] in
+					let reals = [ sv.valueReference | sv in seq vars & sv.variable.derivative = nil ] in
 						if reals = []
 						then skip
 						else let mk_(s, -) = fmi2GetReal(c, reals, len reals) in
@@ -444,7 +444,7 @@ operations
 						if unknown = []
 						then skip
 						else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknown, len unknown, known, len known,
-							[ c.variables(c.indexmap(v)) | v in seq known ]) in
+							[ c.variables(c.indexmap(aliasTag(c.eModelVariables(v)))) | v in seq known ]) in
 							if s <> <fmi2OK>
 							then exit "Cannot GetX DirectionalDerivative"
 				),
@@ -506,12 +506,12 @@ ModelExTests:
 	let a7 in set dom stateMachine(s7) be st isOK(s7, [a1, a2, a3, a4, a5, a6], a7) in
 	(
 	process(a7);
-	-- ))))))) /***
+	))))))) /***
 	let s8 in set stateMachine(s7)(a7) in
 	let a8 in set dom stateMachine(s8) be st isOK(s8, [a1, a2, a3, a4, a5, a6, a7], a8) in
 	(
 	process(a8);
-	)))))))) /***
+	-- )))))))) /***
 	let s9 in set stateMachine(s8)(a8) in
 	let a9 in set dom stateMachine(s9) be st isOK(s9, [a1, a2, a3, a4, a5, a6, a7, a8], a9) in
 	(
