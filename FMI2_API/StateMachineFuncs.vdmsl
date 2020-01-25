@@ -37,81 +37,95 @@ functions
 
 	varsSEA: fmi2Component * seq of fmi2ValueReference +> bool
 	varsSEA(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isSEA(c, vr);
+		forall vr in seq vrs & isSEA(c, vr);
 
 	isSEA: fmi2Component * fmi2ValueReference +> bool
 	isSEA(c, vr) ==
-		c.eModelVariables(vr).variability <> <constant>
-		and c.eModelVariables(vr).initial in set { <exact>, <approx> };
+		let sv = lookup(c.eModelVariables, vr) in
+			sv <> nil and
+			sv.variability <> <constant>
+			and sv.initial in set { <exact>, <approx> };
 
 
 	varsSE: fmi2Component * seq of fmi2ValueReference +> bool
 	varsSE(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isSE(c, vr);
+		forall vr in seq vrs & isSE(c, vr);
 
 	isSE: fmi2Component * fmi2ValueReference +> bool
 	isSE(c, vr) ==
-		c.eModelVariables(vr).variability <> <constant>
-		and (c.eModelVariables(vr).causality = <input>
-			 or c.eModelVariables(vr).initial = <exact>);
+		let sv = lookup(c.eModelVariables, vr) in
+			sv <> nil and
+			sv.variability <> <constant>
+			and (sv.causality = <input>
+				 or sv.initial = <exact>);
 
 
 	varsINC: fmi2Component * seq of fmi2ValueReference +> bool
 	varsINC(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isINC(c, vr);
+		forall vr in seq vrs & isINC(c, vr);
 
 	isINC: fmi2Component * fmi2ValueReference +> bool
 	isINC(c, vr) ==
-		is_Real(c.eModelVariables(vr).variable)
-		and c.eModelVariables(vr).causality = <input>
-		and c.eModelVariables(vr).variability = <continuous>;
+		let sv = lookup(c.eModelVariables, vr) in
+			sv <> nil and
+			is_Real(sv.variable)
+			and sv.causality = <input>
+			and sv.variability = <continuous>;
 
 
 	varsINI: fmi2Component * seq of fmi2ValueReference +> bool
 	varsINI(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isINI(c, vr);
+		forall vr in seq vrs & isINI(c, vr);
 
 	isINI: fmi2Component * fmi2ValueReference +> bool
 	isINI(c, vr) ==
-		(c.eModelVariables(vr).causality = <input>
-			and c.eModelVariables(vr).variable.derivative <> nil)
-		or (c.eModelVariables(vr).variability <> <constant>
-			and c.eModelVariables(vr).initial in set { <exact>, <approx> });
+		let sv = lookup(c.eModelVariables, vr) in
+			sv <> nil and
+			((sv.causality = <input>
+				and sv.variable.derivative <> nil)
+			  or (sv.variability <> <constant>
+				and sv.initial in set { <exact>, <approx> }));
 
 
 	varsIN: fmi2Component * seq of fmi2ValueReference +> bool
 	varsIN(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isIN(c, vr);
+		forall vr in seq vrs & isIN(c, vr);
 
 	isIN: fmi2Component * fmi2ValueReference +> bool
 	isIN(c, vr) ==
-		if c.fmuType = <fmi2ModelExchange>
-		then
-			(c.eModelVariables(vr).variability = <discrete>
-				and c.eModelVariables(vr).causality = <input>)
-			or c.eModelVariables(vr).variability = <tunable>
-		else
-			vr in set c.initialUnknowns
-			or (c.eModelVariables(vr).causality = <input>
-			 	 or (c.eModelVariables(vr).causality = <parameter>
-					 and c.eModelVariables(vr).variability = <tunable>));
+		let sv = lookup(c.eModelVariables, vr) in
+			sv <> nil and
+			if c.fmuType = <fmi2ModelExchange>
+			then
+				(sv.variability = <discrete>
+					and sv.causality = <input>)
+				or sv.variability = <tunable>
+			else
+				vr in set c.initialUnknowns
+				or (sv.causality = <input>
+				 	 or (sv.causality = <parameter>
+						 and sv.variability = <tunable>));
 
 
 	varsINIT: fmi2Component * seq of fmi2ValueReference +> bool
 	varsINIT(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isINIT(c, vr);
+		forall vr in seq vrs & isINIT(c, vr);
 
 	isINIT: fmi2Component * fmi2ValueReference +> bool
 	isINIT(c, vr) ==
-		c.eModelVariables(vr).causality = <output>
-		or vr in set c.initialUnknowns;
+		let sv = lookup(c.eModelVariables, vr) in
+			sv <> nil and
+			sv.causality = <output>
+			or vr in set c.initialUnknowns;
 
 
 	varsINIE: fmi2Component * seq of fmi2ValueReference +> bool
 	varsINIE(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isINIE(c, vr);
+		forall vr in seq vrs & isINIE(c, vr);
 
 	isINIE: fmi2Component * fmi2ValueReference +> bool
 	isINIE(c, vr) ==
-		c.eModelVariables(vr).variability <> <constant>
-		and c.eModelVariables(vr).initial = <exact>;
+		let sv = lookup(c.eModelVariables, vr) in
+			sv <> nil and
+			sv.variability <> <constant>
+			and sv.initial = <exact>;

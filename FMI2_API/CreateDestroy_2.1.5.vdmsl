@@ -40,14 +40,9 @@ functions
 		let model = callbacks.componentEnvironment.model,
 			eModelVariables = effectiveScalarVariables(model),
 			initialUnknowns = nilSeq[Unknown](model.modelStructure.initialUnknowns),
-			vorder = setToSeq[nat * seq1 of char](dom getAliasRefMap(eModelVariables)),
-			indexmap =
-			{
-				svi |->	iota i in set inds vorder &
-					vorder(i) = aliasTag(eModelVariables(svi))
-
-				| svi in set inds eModelVariables
-			}
+			aliasmap = getAliasRefMap(eModelVariables),
+			vorder = setToSeq[nat * seq1 of char](dom aliasmap),
+			indexmap = { vorder(i) |-> i | i in set inds vorder }
 		in
 			mk_fmi2Component
 			(
@@ -88,9 +83,9 @@ functions
 				-- The reference map of SV indexes to variable indexes (below)
 				indexmap,
 
-				-- The state vector, indexed via the indexmap, created from the effective SVs
+				-- The state vector, indexed via the aliasmap, created from the effective SVs
 				-- Initially either the start value given, or the default start value for the type.
-				startValues(indexmap, eModelVariables),
+				startValues(aliasmap),
 
 				-- The solver data vector, indexed by SolverData's index
 				[
@@ -168,13 +163,12 @@ functions
 	 * Calculate the initial vector of SV values, given their "start" attributes.
 	 * Called by fmi2Instantiate and fmi2Reset.
 	 */
-	startValues: map fmi2ValueReference to nat1 * seq1 of ScalarVariable +> seq1 of fmi2Value
-	startValues(indexmap, eModelVariables) ==
+	startValues: map AliasTag to set of ScalarVariable +> seq1 of fmi2Value
+	startValues(aliasmap) ==
 	[
-		let svi in set dom indexmap be st indexmap(svi) = v in	-- Choose any alias
-		let sv = eModelVariables(svi) in
+		let sv in set aliasmap(tag) in	-- Choose any alias
 			if sv.variable.start <> nil
-			then sv.variable.start	-- All aliases have the same start
+			then sv.variable.start		-- All aliases have the same start
 			else
 				-- Set default value for variable type
 				if is_Real(sv.variable) then 0.0
@@ -184,7 +178,7 @@ functions
 				else if is_Enumeration(sv.variable) then 0
 				else undefined
 
-		| v in set rng indexmap
+		| tag in seq setToSeq[AliasTag](dom aliasmap)
 	];
 
 	/**

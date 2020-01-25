@@ -154,7 +154,7 @@ functions
 	fmi2Reset_Impl: fmi2Component +> fmi2Status * fmi2Component
 	fmi2Reset_Impl(c) ==
 		mk_(<fmi2OK>, mu(c,
-			variables	|-> startValues(c.indexmap, effectiveScalarVariables(c.model)),
+			variables	|-> startValues(getAliasRefMap(c.eModelVariables)),
 			dirty		|-> true,
 			fmuState	|-> <INSTANTIATED>))
 	pre

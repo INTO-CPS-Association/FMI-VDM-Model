@@ -40,26 +40,26 @@ functions
 		let svUpdates = merge
 			{
 				{
-					-- Update all SVs that are the Nth derivative of vr(ref)
-					c.indexmap(v) |-> value(ref) | v in set inds c.eModelVariables
+					-- Update all SVs that are the Nth derivative of vr(ri)
+					c.indexmap(aliasTag(c.eModelVariables(v))) |-> value(ri) | v in set inds c.eModelVariables
 
 					& let mk_(o, b) = getDerivativeBase(v, c.eModelVariables) in
-						b = vr(ref) and o = order(ref)
+						b = vr(ri) and o = order(ri)
 				}
 
-				| ref in set inds vr
+				| ri in set inds vr
 			},
 
 			solverUpdates = merge
 			{
 				{
 					-- Update all solver data that is the Nth derivative of vr(ref)
-					c.indexmap(v) |-> value(ref) | v in set inds c.solverDerivatives
+					sd |-> value(ri) | sd in set inds c.solverDerivatives
 
-					& c.solverDerivatives(v) = mk_SolverDerivative(vr(ref), order(ref), <input>)
+					& c.solverDerivatives(sd) = mk_SolverDerivative(vr(ri), order(ri), <input>)
 				}
 
-				| ref in set inds vr
+				| ri in set inds vr
 			}
 		in
 			mk_(<fmi2OK>, mu(c,
@@ -81,7 +81,7 @@ functions
 		-- or be defined in solver data (but not both!)
 		and (forall i in set inds vr &
 			(exists sd in seq c.solverDerivatives &
-				sd.index = vr(i) and sd.order = order(i))
+				sd.vref = vr(i) and sd.order = order(i))
 			<=>
 			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
@@ -124,7 +124,7 @@ functions
 		-- or be defined in solver data (but not both!)
 		elseif not forall i in set inds vr &
 			(exists sd in seq c.solverDerivatives &
-				sd.index = vr(i) and sd.order = order(i))
+				sd.vref = vr(i) and sd.order = order(i))
 			<=>
 			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
@@ -169,7 +169,7 @@ functions
 						let mk_(o, b) = getDerivativeBase(svi, c.eModelVariables) in
 							b = vr(i) and o = order(i) ]
 					in
-						c.variables(c.indexmap(hd svis))	-- Precondition guarantees len >0
+						c.variables(c.indexmap(aliasTag(c.eModelVariables(hd svis))))	-- Precondition guarantees len >0
 
 			| i in set inds vr
 		]
@@ -187,7 +187,7 @@ functions
 		-- or be defined in solver data (but not both!)
 		and (forall i in set inds vr &
 			(exists sd in seq c.solverDerivatives &
-				sd.index = vr(i) and sd.order = order(i))
+				sd.vref = vr(i) and sd.order = order(i))
 			<=>
 			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
@@ -218,7 +218,7 @@ functions
 		-- or be defined in solver data (but not both!)
 		elseif not forall i in set inds vr &
 			(exists sd in seq c.solverDerivatives &
-				sd.index = vr(i) and sd.order = order(i))
+				sd.vref = vr(i) and sd.order = order(i))
 			<=>
 			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in

@@ -32,7 +32,7 @@
  */
 types
 	SolverDerivative ::
-		index					: fmi2ValueReference	-- SV index of base variable
+		vref					: fmi2ValueReference	-- SV index of base variable
 		order					: nat1					-- Order of solver's derivative
 		type					: <input> | <output>;
 
@@ -55,7 +55,7 @@ types
 		and (forall sd in seq cenv.solver.derivatives &
 			not exists sv in set inds cenv.model.modelVariables &
 				let mk_(o, b) = getDerivativeBase(sv, cenv.model.modelVariables) in
-					sd.order = o and sd.index = b)
+					sd.order = o and sd.vref = b)
 
 		-- And CoSim solver data output derivative orders do not exceed
 		-- maxOutputDerivativeOrder
@@ -83,7 +83,7 @@ types
 
 		-- state, events and settings
 		logCategories			: [set1 of fmi2String]				-- nil means logging off
-		indexmap				: map fmi2ValueReference to nat1	-- map SV index to variables index
+		indexmap				: map AliasTag to nat1				-- map alias to variables index
 		variables				: seq1 of fmi2Value					-- Raw SV data values
 		derivatives				: seq of fmi2Real					-- Solver derivative data
 		eventIndicators			: seq of fmi2Real					-- ME events
@@ -100,7 +100,7 @@ types
 	inv c ==
 		len c.variables = card rng c.indexmap
 		and (len c.continuousTimeStates = len nilSeq[Unknown](c.model.modelStructure.derivatives))
-		and (forall sd in seq c.solverDerivatives & sd.index <= len c.eModelVariables)
+		and (forall sd in seq c.solverDerivatives & sd.vref in set { sv.valueReference | sv in seq c.eModelVariables })
 		and (len c.derivatives = len c.solverDerivatives)
 		and (len c.eventIndicators = nilNat(c.model.attributes.numberOfEventIndicators))
 		and (c.isNewEventIteration => c.fmuType = <fmi2ModelExchange>)
