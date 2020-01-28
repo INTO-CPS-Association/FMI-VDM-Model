@@ -41,7 +41,7 @@ functions
 			eModelVariables = effectiveScalarVariables(model),
 			initialUnknowns = nilSeq[Unknown](model.modelStructure.initialUnknowns),
 			aliasmap = getAliasRefMap(eModelVariables),
-			vorder = setToSeq[nat * seq1 of char](dom aliasmap),
+			vorder = setToSeq[AliasTag](dom aliasmap),
 			indexmap = { vorder(i) |-> i | i in set inds vorder }
 		in
 			mk_fmi2Component

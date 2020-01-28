@@ -81,7 +81,7 @@ functions
 		-- or be defined in solver data (but not both!)
 		and (forall i in set inds vr &
 			(exists sd in seq c.solverDerivatives &
-				sd.vref = vr(i) and sd.order = order(i))
+				sd.index = vr(i) and sd.order = order(i))
 			<=>
 			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
@@ -124,7 +124,7 @@ functions
 		-- or be defined in solver data (but not both!)
 		elseif not forall i in set inds vr &
 			(exists sd in seq c.solverDerivatives &
-				sd.vref = vr(i) and sd.order = order(i))
+				sd.index = vr(i) and sd.order = order(i))
 			<=>
 			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
@@ -187,7 +187,7 @@ functions
 		-- or be defined in solver data (but not both!)
 		and (forall i in set inds vr &
 			(exists sd in seq c.solverDerivatives &
-				sd.vref = vr(i) and sd.order = order(i))
+				sd.index = vr(i) and sd.order = order(i))
 			<=>
 			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
@@ -218,7 +218,7 @@ functions
 		-- or be defined in solver data (but not both!)
 		elseif not forall i in set inds vr &
 			(exists sd in seq c.solverDerivatives &
-				sd.vref = vr(i) and sd.order = order(i))
+				sd.index = vr(i) and sd.order = order(i))
 			<=>
 			not exists dv in set inds c.eModelVariables &
 				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in

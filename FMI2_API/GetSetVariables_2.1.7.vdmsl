@@ -34,11 +34,11 @@ functions
 	/**
 	 * The general contracts for calling fmi2GetXXX and fmi2SetXXX functions in a given state.
 	 */
-	generalGetPrecondition: fmi2Component * seq of fmi2ValueReference +> bool
-	generalGetPrecondition(c, vrs) ==
+	generalGetPrecondition: fmi2Component * seq of fmi2ValueReference * Kind +> bool
+	generalGetPrecondition(c, vrs, kind) ==
 		cases c.fmuState:
 			<INSTANTIATED>		-> false,
-			<INITIALIZATION>	-> varsINIT(c, vrs),
+			<INITIALIZATION>	-> varsINIT(c, vrs, kind),
 			<EVENT_MODE>		-> true,
 			<CT_MODE>			-> true,
 			<STEP_COMPLETE>		-> true,
@@ -51,15 +51,15 @@ functions
 			others -> undefined
 		end;
 
-	generalSetPrecondition: fmi2Component * seq of fmi2ValueReference +> bool
-	generalSetPrecondition(c, vrs) ==
+	generalSetPrecondition: fmi2Component * seq of fmi2ValueReference * Kind +> bool
+	generalSetPrecondition(c, vrs, kind) ==
 		if c.fmuType = <fmi2ModelExchange>
 		then
 			cases c.fmuState:
-				<INSTANTIATED>		-> varsSEA(c, vrs),
-				<INITIALIZATION>	-> varsSE(c, vrs),
-				<EVENT_MODE>		-> varsIN(c, vrs) or varsINC(c, vrs),
-				<CT_MODE>			-> varsINC(c, vrs),
+				<INSTANTIATED>		-> varsSEA(c, vrs, kind),
+				<INITIALIZATION>	-> varsSE(c, vrs, kind),
+				<EVENT_MODE>		-> varsIN(c, vrs, kind) or varsINC(c, vrs, kind),
+				<CT_MODE>			-> varsINC(c, vrs, kind),
 				<TERMINATED>		-> false,
 				<ERROR>				-> false,
 
@@ -67,9 +67,9 @@ functions
 			end
 		else	-- fmi2CoSimulation
 			cases c.fmuState:
-				<INSTANTIATED>		-> varsINI(c, vrs),
-				<INITIALIZATION>	-> varsIN(c, vrs) or varsINI(c, vrs),
-				<STEP_COMPLETE>		-> varsIN(c, vrs),
+				<INSTANTIATED>		-> varsINI(c, vrs, kind),
+				<INITIALIZATION>	-> varsIN(c, vrs, kind) or varsINI(c, vrs, kind),
+				<STEP_COMPLETE>		-> varsIN(c, vrs, kind),
 				<STEP_IN_PROGRESS>	-> false,
 				<STEP_FAILED>		-> false,
 				<STEP_CANCELLED>	-> false,
@@ -89,13 +89,11 @@ functions
 		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
-			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_(i, "Real"))) | i in seq vrs ])
+			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <Real>))) | vr in seq vrs ])
 	pre
 		len vrs = nvr
-		and generalGetPrecondition(c, vrs)
-		and forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil and is_Real(sv.variable)
+		and generalGetPrecondition(c, vrs, <Real>)
+		and forall vr in seq vrs & lookup(c.eModelVariables, vr, <Real>) <> nil
 	post
 		RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr;
 
@@ -104,12 +102,10 @@ functions
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
 			mk_(<fmi2Error>, nil)
-		elseif not generalGetPrecondition(c, vrs)
+		elseif not generalGetPrecondition(c, vrs, <Real>)
 		then -- @Printf("Get preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv = nil or not is_Real(sv.variable)
+		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Real>) = nil
 		then -- @Printf("Value references are not all Real variables\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -126,13 +122,11 @@ functions
 		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
-			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_(i, "Integer"))) | i in seq vrs ])
+			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <Integer>))) | vr in seq vrs ])
 	pre
 		len vrs = nvr
-		and generalGetPrecondition(c, vrs)
-		and forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil and is_Integer(sv.variable)
+		and generalGetPrecondition(c, vrs, <Integer>)
+		and forall vr in seq vrs & lookup(c.eModelVariables, vr, <Integer>) <> nil
 	post
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
@@ -142,12 +136,10 @@ functions
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
 			mk_(<fmi2Error>, nil)
-		elseif not generalGetPrecondition(c, vrs)
+		elseif not generalGetPrecondition(c, vrs, <Integer>)
 		then -- @Printf("Get preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv = nil or not is_Real(sv.variable)
+		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Integer>) = nil
 		then -- @Printf("Value references are not all Integer variables\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -164,13 +156,11 @@ functions
 		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
-			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_(i, "Boolean"))) | i in seq vrs ])
+			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <Boolean>))) | vr in seq vrs ])
 	pre
 		len vrs = nvr
-		and generalGetPrecondition(c, vrs)
-		and forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil and is_Boolean(sv.variable)
+		and generalGetPrecondition(c, vrs, <Boolean>)
+		and forall vr in seq vrs & lookup(c.eModelVariables, vr, <Boolean>) <> nil
 	post
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
@@ -180,12 +170,10 @@ functions
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
 			mk_(<fmi2Error>, nil)
-		elseif not generalGetPrecondition(c, vrs)
+		elseif not generalGetPrecondition(c, vrs, <Boolean>)
 		then -- @Printf("Get preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv = nil or not is_Boolean(sv.variable)
+		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Boolean>) = nil
 		then -- @Printf("Value references are not all Boolean variables\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -202,13 +190,11 @@ functions
 		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
-			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_(i, "String"))) | i in seq vrs ])
+			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <String>))) | vr in seq vrs ])
 	pre
 		len vrs = nvr
-		and generalGetPrecondition(c, vrs)
-		and forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil and is_String(sv.variable)
+		and generalGetPrecondition(c, vrs, <String>)
+		and forall vr in seq vrs & lookup(c.eModelVariables, vr, <String>) <> nil
 	post
 		RESULT.#1 <> <fmi2Discard>
 		and (RESULT.#1 = <fmi2OK> => len RESULT.#2 = nvr);
@@ -218,12 +204,10 @@ functions
 		if len vrs <> nvr
 		then -- @Printf("vrs and nvr do not match\n")
 			mk_(<fmi2Error>, nil)
-		elseif not generalGetPrecondition(c, vrs)
+		elseif not generalGetPrecondition(c, vrs, <String>)
 		then -- @Printf("Get preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv = nil or not is_String(sv.variable)
+		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <String>) = nil
 		then -- @Printf("Value references are not all String variables\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -237,23 +221,23 @@ functions
 	 */
 	fmi2SetReal_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetReal_Impl(c, vrs, nvr, value) ==
-		let updates = { c.indexmap(mk_(vrs(i), "Real")) |-> value(i) | i in set inds vrs } in
+		let updates = { c.indexmap(mk_AliasTag(vrs(i), <Real>)) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
 		len vrs = nvr and len vrs = len value
-		and generalSetPrecondition(c, vrs)
-		and (forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil and is_Real(sv.variable))
-		and (forall vr in seq vrs &
-			c.eModelVariables(vr).causality <> <independent>)
-		and (forall i in set inds vrs &
-			let min = c.eModelVariables(vrs(i)).variable.min,
-				max = c.eModelVariables(vrs(i)).variable.max
+		and generalSetPrecondition(c, vrs, <Real>)
+		and forall i in set inds vrs &
+			let vr = vrs(i),
+				sv = lookup(c.eModelVariables, vr, <Real>)
 			in
-				(min <> nil => value(i) >= min)	and (max <> nil => value(i) <= max));
+				sv <> nil
+				and sv.causality <> <independent>
+				and let min = sv.variable.min,
+						max = sv.variable.max
+					in
+						(min <> nil => value(i) >= min)	and (max <> nil => value(i) <= max);
 
 	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status * [fmi2Component]
 	fmi2SetReal(c, vrs, nvr, value) ==
@@ -263,21 +247,22 @@ functions
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
 			mk_(<fmi2Error>, nil)
-		elseif not generalSetPrecondition(c, vrs)
+		elseif not generalSetPrecondition(c, vrs, <Real>)
 		then -- @Printf("Set preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv = nil or not is_Real(sv.variable)
+		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Real>) = nil
 		then -- @Printf("Value references are not all Real variables\n")
 			mk_(<fmi2Error>, nil)
 		elseif exists i in set inds vrs &
-			let min = c.eModelVariables(vrs(i)).variable.min,
-				max = c.eModelVariables(vrs(i)).variable.max in
-			(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
+			let sv = lookup(c.eModelVariables, vrs(i), <Real>),
+				min = sv.variable.min,
+				max = sv.variable.max
+			in
+				(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
 		then -- @Printf("Values not all within min/max for variables\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs & c.eModelVariables(vr).causality = <independent>
+		elseif exists i in set inds vrs &
+			let sv = lookup(c.eModelVariables, vrs(i), <Real>) in sv.causality = <independent>
 		then -- @Printf("Cannot set value of independent variable\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -291,21 +276,22 @@ functions
 	 */
 	fmi2SetInteger_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status * fmi2Component
 	fmi2SetInteger_Impl(c, vrs, nvr, value) ==
-		let updates = { c.indexmap(mk_(vrs(i), "Integer")) |-> value(i) | i in set inds vrs } in
+		let updates = { c.indexmap(mk_AliasTag(vrs(i), <Integer>)) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
 		len vrs = nvr and len vrs = len value
-		and generalSetPrecondition(c, vrs)
-		and (forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil and is_Integer(sv.variable))
-		and (forall i in set inds vrs &
-			let min = c.eModelVariables(vrs(i)).variable.min,
-				max = c.eModelVariables(vrs(i)).variable.max
+		and generalSetPrecondition(c, vrs, <Integer>)
+		and forall i in set inds vrs &
+			let vr = vrs(i),
+				sv = lookup(c.eModelVariables, vr, <Integer>)
 			in
-				(min <> nil => value(i) >= min)	and (max <> nil => value(i) <= max));
+				sv <> nil
+				and let min = sv.variable.min,
+						max = sv.variable.max
+					in
+						(min <> nil => value(i) >= min)	and (max <> nil => value(i) <= max);
 
 	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status * [fmi2Component]
 	fmi2SetInteger(c, vrs, nvr, value) ==
@@ -315,18 +301,18 @@ functions
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
 			mk_(<fmi2Error>, nil)
-		elseif not generalSetPrecondition(c, vrs)
+		elseif not generalSetPrecondition(c, vrs, <Integer>)
 		then -- @Printf("Set preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv = nil or not is_Integer(sv.variable)
+		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Integer>) = nil
 		then -- @Printf("Value references are not all Integer variables\n")
 			mk_(<fmi2Error>, nil)
 		elseif exists i in set inds vrs &
-			let min = c.eModelVariables(vrs(i)).variable.min,
-				max = c.eModelVariables(vrs(i)).variable.max in
-			(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
+			let sv = lookup(c.eModelVariables, vrs(i), <Integer>),
+				min = sv.variable.min,
+				max = sv.variable.max
+			in
+				(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
 		then -- @Printf("Values not all within min/max for variables\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -340,16 +326,15 @@ functions
 	 */
 	fmi2SetBoolean_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status * [fmi2Component]
 	fmi2SetBoolean_Impl(c, vrs, nvr, value) ==
-		let updates = { c.indexmap(mk_(vrs(i), "Boolean")) |-> value(i) | i in set inds vrs } in
+		let updates = { c.indexmap(mk_AliasTag(vrs(i), <Boolean>)) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
 		len vrs = nvr and len vrs = len value
-		and generalSetPrecondition(c, vrs)
+		and generalSetPrecondition(c, vrs, <Boolean>)
 		and forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil and is_Boolean(sv.variable);
+			lookup(c.eModelVariables, vr, <Boolean>) <> nil;
 
 	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status * [fmi2Component]
 	fmi2SetBoolean(c, vrs, nvr, value) ==
@@ -359,12 +344,10 @@ functions
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
 			mk_(<fmi2Error>, nil)
-		elseif not generalSetPrecondition(c, vrs)
+		elseif not generalSetPrecondition(c, vrs, <Boolean>)
 		then -- @Printf("Set preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv = nil or not is_Boolean(sv.variable)
+		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Boolean>) = nil
 		then -- @Printf("Value references are not all Boolean variables\n")
 			mk_(<fmi2Error>, nil)
 		else
@@ -378,16 +361,15 @@ functions
 	 */
 	fmi2SetString_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status * fmi2Component
 	fmi2SetString_Impl(c, vrs, nvr, value) ==
-		let updates = { c.indexmap(mk_(vrs(i), "String")) |-> value(i) | i in set inds vrs } in
+		let updates = { c.indexmap(mk_AliasTag(vrs(i), <String>)) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
 		len vrs = nvr and len vrs = len value
-		and generalSetPrecondition(c, vrs)
+		and generalSetPrecondition(c, vrs, <String>)
 		and forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil and is_String(sv.variable);
+			lookup(c.eModelVariables, vr, <String>) <> nil;
 
 	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status * [fmi2Component]
 	fmi2SetString(c, vrs, nvr, value) ==
@@ -397,12 +379,10 @@ functions
 		elseif len vrs <> len value
 		then -- @Printf("vrs and value do not match\n")
 			mk_(<fmi2Error>, nil)
-		elseif not generalSetPrecondition(c, vrs)
+		elseif not generalSetPrecondition(c, vrs, <String>)
 		then -- @Printf("Set preconditions failed\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv = nil or not is_String(sv.variable)
+		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <String>) = nil
 		then -- @Printf("Value references are not all String variables\n")
 			mk_(<fmi2Error>, nil)
 		else

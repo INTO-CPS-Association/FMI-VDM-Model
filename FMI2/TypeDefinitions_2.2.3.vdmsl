@@ -71,6 +71,8 @@ types
 		description			: [AnyString]
 		type				: RealType | IntegerType | BooleanType | StringType | EnumerationType;
 
+	Kind = <Real> | <Integer> | <Boolean> | <String>;	-- Note: Enumeration is Integer
+
 functions
 	isValidType: SimpleType +> bool
 	isValidType(stype) ==

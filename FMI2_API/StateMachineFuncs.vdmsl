@@ -35,51 +35,51 @@ functions
 	-- State transition validation functions, where XXX in the Standard is a
 	-- pair of predicates called varsXXX and isXXX.
 
-	varsSEA: fmi2Component * seq of fmi2ValueReference +> bool
-	varsSEA(c, vrs) ==
-		forall vr in seq vrs & isSEA(c, vr);
+	varsSEA: fmi2Component * seq of fmi2ValueReference * Kind +> bool
+	varsSEA(c, vrs, kind) ==
+		forall vr in seq vrs & isSEA(c, vr, kind);
 
-	isSEA: fmi2Component * fmi2ValueReference +> bool
-	isSEA(c, vr) ==
-		let sv = lookup(c.eModelVariables, vr) in
+	isSEA: fmi2Component * fmi2ValueReference * Kind +> bool
+	isSEA(c, vr, kind) ==
+		let sv = lookup(c.eModelVariables, vr, kind) in
 			sv <> nil and
 			sv.variability <> <constant>
 			and sv.initial in set { <exact>, <approx> };
 
 
-	varsSE: fmi2Component * seq of fmi2ValueReference +> bool
-	varsSE(c, vrs) ==
-		forall vr in seq vrs & isSE(c, vr);
+	varsSE: fmi2Component * seq of fmi2ValueReference * Kind +> bool
+	varsSE(c, vrs, kind) ==
+		forall vr in seq vrs & isSE(c, vr, kind);
 
-	isSE: fmi2Component * fmi2ValueReference +> bool
-	isSE(c, vr) ==
-		let sv = lookup(c.eModelVariables, vr) in
+	isSE: fmi2Component * fmi2ValueReference * Kind +> bool
+	isSE(c, vr, kind) ==
+		let sv = lookup(c.eModelVariables, vr, kind) in
 			sv <> nil and
 			sv.variability <> <constant>
 			and (sv.causality = <input>
 				 or sv.initial = <exact>);
 
 
-	varsINC: fmi2Component * seq of fmi2ValueReference +> bool
-	varsINC(c, vrs) ==
-		forall vr in seq vrs & isINC(c, vr);
+	varsINC: fmi2Component * seq of fmi2ValueReference * Kind +> bool
+	varsINC(c, vrs, kind) ==
+		forall vr in seq vrs & isINC(c, vr, kind);
 
-	isINC: fmi2Component * fmi2ValueReference +> bool
-	isINC(c, vr) ==
-		let sv = lookup(c.eModelVariables, vr) in
+	isINC: fmi2Component * fmi2ValueReference * Kind +> bool
+	isINC(c, vr, kind) ==
+		let sv = lookup(c.eModelVariables, vr, kind) in
 			sv <> nil and
 			is_Real(sv.variable)
 			and sv.causality = <input>
 			and sv.variability = <continuous>;
 
 
-	varsINI: fmi2Component * seq of fmi2ValueReference +> bool
-	varsINI(c, vrs) ==
-		forall vr in seq vrs & isINI(c, vr);
+	varsINI: fmi2Component * seq of fmi2ValueReference * Kind +> bool
+	varsINI(c, vrs, kind) ==
+		forall vr in seq vrs & isINI(c, vr, kind);
 
-	isINI: fmi2Component * fmi2ValueReference +> bool
-	isINI(c, vr) ==
-		let sv = lookup(c.eModelVariables, vr) in
+	isINI: fmi2Component * fmi2ValueReference * Kind +> bool
+	isINI(c, vr, kind) ==
+		let sv = lookup(c.eModelVariables, vr, kind) in
 			sv <> nil and
 			((sv.causality = <input>
 				and sv.variable.derivative <> nil)
@@ -87,13 +87,13 @@ functions
 				and sv.initial in set { <exact>, <approx> }));
 
 
-	varsIN: fmi2Component * seq of fmi2ValueReference +> bool
-	varsIN(c, vrs) ==
-		forall vr in seq vrs & isIN(c, vr);
+	varsIN: fmi2Component * seq of fmi2ValueReference * Kind +> bool
+	varsIN(c, vrs, kind) ==
+		forall vr in seq vrs & isIN(c, vr, kind);
 
-	isIN: fmi2Component * fmi2ValueReference +> bool
-	isIN(c, vr) ==
-		let sv = lookup(c.eModelVariables, vr) in
+	isIN: fmi2Component * fmi2ValueReference * Kind +> bool
+	isIN(c, vr, kind) ==
+		let sv = lookup(c.eModelVariables, vr, kind) in
 			sv <> nil and
 			if c.fmuType = <fmi2ModelExchange>
 			then
@@ -107,25 +107,25 @@ functions
 						 and sv.variability = <tunable>));
 
 
-	varsINIT: fmi2Component * seq of fmi2ValueReference +> bool
-	varsINIT(c, vrs) ==
-		forall vr in seq vrs & isINIT(c, vr);
+	varsINIT: fmi2Component * seq of fmi2ValueReference * Kind +> bool
+	varsINIT(c, vrs, kind) ==
+		forall vr in seq vrs & isINIT(c, vr, kind);
 
-	isINIT: fmi2Component * fmi2ValueReference +> bool
-	isINIT(c, vr) ==
-		let sv = lookup(c.eModelVariables, vr) in
+	isINIT: fmi2Component * fmi2ValueReference * Kind +> bool
+	isINIT(c, vr, kind) ==
+		let sv = lookup(c.eModelVariables, vr, kind) in
 			sv <> nil and
 			sv.causality = <output>
 			or vr in set c.initialUnknowns;
 
 
-	varsINIE: fmi2Component * seq of fmi2ValueReference +> bool
-	varsINIE(c, vrs) ==
-		forall vr in seq vrs & isINIE(c, vr);
+	varsINIE: fmi2Component * seq of fmi2ValueReference * Kind +> bool
+	varsINIE(c, vrs, kind) ==
+		forall vr in seq vrs & isINIE(c, vr, kind);
 
-	isINIE: fmi2Component * fmi2ValueReference +> bool
-	isINIE(c, vr) ==
-		let sv = lookup(c.eModelVariables, vr) in
+	isINIE: fmi2Component * fmi2ValueReference * Kind +> bool
+	isINIE(c, vr, kind) ==
+		let sv = lookup(c.eModelVariables, vr, kind) in
 			sv <> nil and
 			sv.variability <> <constant>
 			and sv.initial = <exact>;

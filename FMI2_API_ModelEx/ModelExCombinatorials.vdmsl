@@ -221,10 +221,10 @@ operations
 					else c := c2,
 
 			<fmi2SetSEA> ->
-				let vars = [ vr | vr in set inds c.eModelVariables &
-					isSEA(c, vr)
-					and is_Real(c.eModelVariables(vr).variable)
-					and c.eModelVariables(vr).variable.derivative = nil ]
+				let vars = [ sv.valueReference | sv in seq c.eModelVariables &
+					isSEA(c, sv.valueReference, kindOf(sv.variable))
+					and is_Real(sv.variable)
+					and sv.variable.derivative = nil ]
 				in
 					if vars = []
 					then skip
@@ -286,10 +286,12 @@ operations
 
 			<fmi2GetINIT> ->
 			(
-				let vars = [ sv.valueReference | sv in seq c.eModelVariables & isINIT(c, sv.valueReference) ] in
-					if vars = []
+				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
+					isINIT(c, sv.valueReference, kindOf(sv.variable)) ]
+				in
+					if vrefs = []
 					then skip
-					else let mk_(s, -) = fmi2GetReal(c, vars, len vars) in
+					else let mk_(s, -) = fmi2GetReal(c, vrefs, len vrefs) in
 						if s <> <fmi2OK>
 						then exit "Cannot get INIT variables";
 
@@ -310,14 +312,14 @@ operations
 			),
 
 			<fmi2SetSE> ->
-				let vars = [ vr | vr in set inds c.eModelVariables &
-					isSE(c, vr)
-					and is_Real(c.eModelVariables(vr).variable)
-					and c.eModelVariables(vr).variable.derivative = nil ]
+				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
+					isSE(c, sv.valueReference, kindOf(sv.variable))
+					and is_Real(sv.variable)
+					and sv.variable.derivative = nil ]
 				in
-					if vars = []
+					if vrefs = []
 					then skip
-					else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
+					else let mk_(s, c2) = fmi2SetReal(c, vrefs, len vrefs, [ v * 1.23 | v in seq vrefs ]) in
 						if s <> <fmi2OK>
 						then exit "Cannot set SE variables"
 						else c := c2,
@@ -344,23 +346,25 @@ operations
 				),
 
 			<fmi2SetIN> ->
-				let vars = [ vr | vr in set inds c.eModelVariables &
-					isIN(c, vr)
-					and is_Real(c.eModelVariables(vr).variable)
-					and c.eModelVariables(vr).variable.derivative = nil ]
+				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
+					isIN(c, sv.valueReference, kindOf(sv.variable))
+					and is_Real(sv.variable)
+					and sv.variable.derivative = nil ]
 				in
-					if vars = []
+					if vrefs = []
 					then skip
-					else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
+					else let mk_(s, c2) = fmi2SetReal(c, vrefs, len vrefs, [ v * 1.23 | v in seq vrefs ]) in
 						if s <> <fmi2OK>
 						then exit "Cannot set IN variables"
 						else c := c2,
 
 			<fmi2SetINC> ->
-				let vars = [ vr | vr in set inds c.eModelVariables & isINC(c, vr) ] in
-					if vars = []
+				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
+					isINC(c, sv.valueReference, kindOf(sv.variable)) ]
+				in
+					if vrefs = []
 					then skip
-					else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
+					else let mk_(s, c2) = fmi2SetReal(c, vrefs, len vrefs, [ v * 1.23 | v in seq vrefs ]) in
 						if s <> <fmi2OK>
 						then exit "Cannot set INC variables"
 						else c := c2,
