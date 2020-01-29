@@ -161,12 +161,7 @@ functions
 			/* @OnFail("2.2.7 ScalarVariable names are not unique: %s",
 				{ svs(a).name | a, b in set inds svs &
 					a <> b and svs(a).name = svs(b).name } ) */
-			( card { sv.name | sv in seq svs } = len svs ),
-
-			forall kind : Kind &
-				-- @OnFail("2.2.7 Variables of type %s have some duplicate value references", kind)
-				( let ksvs = { sv | sv in seq svs & kindOf(sv.variable) = kind } in
-					card ksvs = card { sv.valueReference | sv in set ksvs } ) 
+			( card { sv.name | sv in seq svs } = len svs )
 		}
 		union
 		{
