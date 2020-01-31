@@ -221,14 +221,14 @@ operations
 					else c := c2,
 
 			<fmi2SetSEA> ->
-				let vars = [ sv.valueReference | sv in seq c.eModelVariables &
+				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
 					isSEA(c, sv.valueReference, kindOf(sv.variable))
 					and is_Real(sv.variable)
 					and sv.variable.derivative = nil ]
 				in
-					if vars = []
+					if vrefs = []
 					then skip
-					else let mk_(s, c2) = fmi2SetReal(c, vars, len vars, [ v * 1.23 | v in seq vars ]) in
+					else let mk_(s, c2) = fmi2SetReal(c, vrefs, len vrefs, [ v * 1.23 | v in seq vrefs ]) in
 						if s <> <fmi2OK>
 						then exit "Cannot set SEA variables"
 						else c := c2,
@@ -297,12 +297,12 @@ operations
 
 				if nilBool(c.model.modelExchange.providesDirectionalDerivative)
 				then let outputs = nilSeq[Unknown](c.model.modelStructure.outputs),
-					unknown = [ u.index | u in seq outputs ],
-					known = conc [ nilSeq[nat1](u.dependencies) | u in seq outputs ] in
-					if unknown = []
+					unknowns = [ u.index | u in seq outputs ],
+					knowns = conc [ nilSeq[nat1](u.dependencies) | u in seq outputs ] in
+					if unknowns = []
 					then skip
-					else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknown, len unknown, known, len known,
-						[ c.variables(c.indexmap(aliasTag(c.eModelVariables(v)))) | v in seq known ]) in
+					else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknowns, len unknowns, knowns, len knowns,
+						[ c.variables(c.indexmap(aliasTag(c.eModelVariables(v)))) | v in seq knowns ]) in
 						if s <> <fmi2OK>
 						then exit "Cannot get INIT directional derivatives";
 
@@ -421,10 +421,10 @@ operations
 			<fmi2GetX> ->
 				let vars = [ sv | sv in seq c.eModelVariables & is_Real(sv.variable) ] in
 				(
-					let reals = [ sv.valueReference | sv in seq vars & sv.variable.derivative = nil ] in
-						if reals = []
+					let vrefs = [ sv.valueReference | sv in seq vars & sv.variable.derivative = nil ] in
+						if vrefs = []
 						then skip
-						else let mk_(s, -) = fmi2GetReal(c, reals, len reals) in
+						else let mk_(s, -) = fmi2GetReal(c, vrefs, len vrefs) in
 							if s <> <fmi2OK>
 							then exit "Cannot GetX variables";
 
@@ -443,14 +443,15 @@ operations
 
 					if nilBool(c.model.modelExchange.providesDirectionalDerivative)
 					then let outputs = nilSeq[Unknown](c.model.modelStructure.outputs),
-						unknown = [ u.index | u in seq outputs ],
-						known = conc [ nilSeq[nat1](u.dependencies) | u in seq outputs ] in
-						if unknown = []
+						unknowns = [ u.index | u in seq outputs ],
+						knowns = conc [ nilSeq[nat1](u.dependencies) | u in seq outputs ] in
+						if unknowns = []
 						then skip
-						else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknown, len unknown, known, len known,
-							[ c.variables(c.indexmap(aliasTag(c.eModelVariables(v)))) | v in seq known ]) in
-							if s <> <fmi2OK>
-							then exit "Cannot GetX DirectionalDerivative"
+						else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknowns, len unknowns, knowns, len knowns,
+							[ c.variables(c.indexmap(aliasTag(c.eModelVariables(v)))) | v in seq knowns ])
+							in
+								if s <> <fmi2OK>
+								then exit "Cannot GetX DirectionalDerivative"
 				),
 
 			<fmi2Terminate> ->
