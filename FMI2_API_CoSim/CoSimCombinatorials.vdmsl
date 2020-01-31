@@ -178,7 +178,7 @@ operations
 	process(api) ==
 		cases api:
 			<fmi2Instantiate> ->
-				let solver = mk_SolverData([ mk_SolverDerivative(1, 1, <input>) ]) in
+				let solver = mk_SolverData([ mk_SolverDerivative(0, 1, <input>) ]) in
 				let cenv = mk_fmi2ComponentEnvironment(solver, springMassDamper, calculateValues, calculateDoStep, calculateEvents) in
 				let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
 				let r = fmi2Instantiate("CosimTest", <fmi2CoSimulation>, "GUID", "", callbacks, false, true) in
@@ -219,8 +219,8 @@ operations
 					and exists dv in seq c.eModelVariables &
 						is_Real(dv.variable)
 						and dv.variable.derivative = idx ]
-				--	^
-				--	[ sd.vref | sd in seq c.solverDerivatives & sd.type = <input> ]
+					^
+					[ sd.vref | sd in seq c.solverDerivatives & sd.type = <input> ]
 				in
 					if ders = []
 					then skip
@@ -296,8 +296,8 @@ operations
 					and exists dv in seq c.eModelVariables &
 						is_Real(dv.variable)
 						and dv.variable.derivative = idx ]
-				--	^
-				--	[ sd.vref | sd in seq c.solverDerivatives & sd.type = <input> ]
+					^
+					[ sd.vref | sd in seq c.solverDerivatives & sd.type = <input> ]
 				in
 					if ders = []
 					then skip
@@ -363,13 +363,13 @@ operations
 							then exit "Cannot get X variables";
 
 					if nilNat(c.callbacks.componentEnvironment.model.coSimulation.maxOutputDerivativeOrder) = 1
-					then let ders = [ idx | idx in seq vars &
+					then let ders = [ c.eModelVariables(idx).valueReference | idx in seq vars &
 						c.eModelVariables(idx).causality = <output>
 						and exists dv in seq c.eModelVariables &
 							is_Real(dv.variable)
 							and dv.variable.derivative = idx ]
 						^
-						[ sd.index | sd in seq c.solverDerivatives & sd.type = <output> ]
+						[ sd.vref | sd in seq c.solverDerivatives & sd.type = <output> ]
 					in
 						if ders = []
 						then skip

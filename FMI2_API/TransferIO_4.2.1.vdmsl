@@ -36,30 +36,31 @@ functions
 	 */
 	fmi2SetRealInputDerivatives_Impl: fmi2Component * seq of fmi2ValueReference * nat *
 								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status * fmi2Component
-	fmi2SetRealInputDerivatives_Impl(c, vr, nvr, order, value) ==
+	fmi2SetRealInputDerivatives_Impl(c, vrs, nvr, order, value) ==
 		let svUpdates = merge
 			{
 				{
 					-- Update all SVs that are the Nth derivative of vr(ri)
-					c.indexmap(aliasTag(c.eModelVariables(v))) |-> value(ri) | v in set inds c.eModelVariables
+					c.indexmap(aliasTag(c.eModelVariables(idx))) |-> value(ri) | idx in set inds c.eModelVariables
 
-					& let mk_(o, b) = getDerivativeBase(v, c.eModelVariables) in
-						b = vr(ri) and o = order(ri)
+					& let mk_(o, bidx) = getDerivativeBase(idx, c.eModelVariables) in
+						c.eModelVariables(bidx).valueReference = vrs(ri) and o = order(ri)
 				}
 
-				| ri in set inds vr
+				| ri in set inds vrs
 			},
 
 			solverUpdates = merge
 			{
+				let sv = lookup(c.eModelVariables, vrs(ri), <Real>) in
 				{
 					-- Update all solver data that is the Nth derivative of vr(ref)
 					sd |-> value(ri) | sd in set inds c.solverDerivatives
 
-					& c.solverDerivatives(sd) = mk_SolverDerivative(vr(ri), order(ri), <input>)
+					& c.solverDerivatives(sd) = mk_SolverDerivative(sv.valueReference, order(ri), <input>)
 				}
 
-				| ri in set inds vr
+				| ri in set inds vrs
 			}
 		in
 			mk_(<fmi2OK>, mu(c,
@@ -69,36 +70,37 @@ functions
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2SetRealInputDerivatives
 		and nilBool(c.model.coSimulation.canInterpolateInputs)
-		and nvr = len vr
+		and nvr = len vrs
 		and nvr = len value
 		and nvr = len order
 		and (forall o in seq order & o > 0)
-		and (forall v in seq vr &
-			c.eModelVariables(v).causality = <input>
-			and is_Real(c.eModelVariables(v).variable))
+		and (forall vr in seq vrs &
+			let sv = lookup(c.eModelVariables, vr, <Real>) in
+				sv <> nil and sv.causality = <input>)
 
 		-- Input derivatives must exist as SVs with "derivative" set,
 		-- or be defined in solver data (but not both!)
-		and (forall i in set inds vr &
+		and (forall i in set inds vrs &
 			(exists sd in seq c.solverDerivatives &
-				sd.index = vr(i) and sd.order = order(i))
+				sd.vref = vrs(i) and sd.order = order(i))
 			<=>
-			not exists dv in set inds c.eModelVariables &
-				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
-					o = order(i) and b = vr(i))
+			not exists didx in set inds c.eModelVariables &
+				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
+					o = order(i) and c.eModelVariables(bidx).valueReference = vrs(i))
 
 		-- If each input derivative is a variable, the new value must be within min/max
-		and (forall i in set inds vr &
-			forall dv in set inds c.eModelVariables &
-				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
-					o = order(i) and b = vr(i) =>
-						let min = c.eModelVariables(vr(i)).variable.min,
-							max = c.eModelVariables(vr(i)).variable.max in
-						(min <> nil => value(i) >= min) and (max <> nil => value(i) <= max));
+		and (forall vidx in set inds vrs &
+			forall didx in set inds c.eModelVariables &
+				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
+					o = order(vidx) and c.eModelVariables(bidx).valueReference = vrs(vidx) =>
+						let min = c.eModelVariables(bidx).variable.min,
+							max = c.eModelVariables(bidx).variable.max in
+						(min <> nil => value(vidx) >= min) and (max <> nil => value(vidx) <= max));
+
 
 	fmi2SetRealInputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
 								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status * [fmi2Component]
-	fmi2SetRealInputDerivatives(c, vr, nvr, order, value) ==
+	fmi2SetRealInputDerivatives(c, vrs, nvr, order, value) ==
 		if c.fmuType <> <fmi2CoSimulation>
 		then -- @Printf("Cannot call fmi2SetRealInputDerivatives for fmi2ModelExchange\n")
 			mk_(<fmi2Error>, nil)
@@ -108,43 +110,43 @@ functions
 		elseif not nilBool(c.model.coSimulation.canInterpolateInputs)
 		then -- @Printf("Cannot inperpolate inputs\n")
 			mk_(<fmi2Error>, nil)
-		elseif nvr <> len vr or nvr <> len value or nvr <> len order
-		then -- @Printf("nvr, vr, value and order are not consistent\n")
+		elseif nvr <> len vrs or nvr <> len value or nvr <> len order
+		then -- @Printf("nvr, vrs, value and order are not consistent\n")
 			mk_(<fmi2Error>, nil)
 		elseif exists o in seq order & o <= 0
 		then -- @Printf("Order entries must all be >0\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists v in seq vr &
-			c.eModelVariables(v).causality <> <input>
-			and is_Real(c.eModelVariables(v).variable)
-		then -- @Printf("Some arguments are not Real inputs\n")
+		elseif exists vr in seq vrs &
+			let sv = lookup(c.eModelVariables, vr, <Real>) in
+				sv = nil or sv.causality <> <input>
+		then -- @Printf("Some arguments are not Real input value references\n")
 			mk_(<fmi2Error>, nil)
 
 		-- Input derivatives must exist as SVs with "derivative" set
 		-- or be defined in solver data (but not both!)
-		elseif not forall i in set inds vr &
+		elseif not forall i in set inds vrs &
 			(exists sd in seq c.solverDerivatives &
-				sd.index = vr(i) and sd.order = order(i))
+				sd.vref = vrs(i) and sd.order = order(i))
 			<=>
-			not exists dv in set inds c.eModelVariables &
-				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
-					o = order(i) and b = vr(i)
+			not exists didx in set inds c.eModelVariables &
+				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
+					o = order(i) and c.eModelVariables(bidx).valueReference = vrs(i)
 		then -- @Printf("Some inputs do not have derivatives of the right order\n")
 			mk_(<fmi2Error>, nil)
 
 		-- If each input derivative is a variable, the new value must be within min/max
-		elseif exists i in set inds vr &
-			exists dv in set inds c.eModelVariables &
-				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
-					o = order(i) and b = vr(i) and
-						let min = c.eModelVariables(vr(i)).variable.min,
-							max = c.eModelVariables(vr(i)).variable.max in
+		elseif exists i in set inds vrs &
+			exists didx in set inds c.eModelVariables &
+				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
+					o = order(i) and c.eModelVariables(bidx).valueReference = vrs(i) and
+						let min = c.eModelVariables(bidx).variable.min,
+							max = c.eModelVariables(bidx).variable.max in
 						(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
-		then -- @Printf("Values not all within min/max for variables\n")
+		then -- @Printf("Values not all within min/max for derivative variables\n")
 			mk_(<fmi2Error>, nil)
 
 		else
-			fmi2SetRealInputDerivatives_Impl(c, vr, nvr, order, value);
+			fmi2SetRealInputDerivatives_Impl(c, vrs, nvr, order, value);
 
 
 	/**
@@ -152,81 +154,85 @@ functions
 	 */
 	fmi2GetRealOutputDerivatives_Impl: fmi2Component * seq of fmi2ValueReference * nat *
 								  seq of fmi2Integer +> fmi2Status * seq of fmi2Real
-	fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order) ==
+	fmi2GetRealOutputDerivatives_Impl(c, vrs, nvr, order) ==
 		let reals =
 		[
 			let sdis = [ sdi | sdi in set inds c.solverDerivatives &
-				c.solverDerivatives(sdi) = mk_SolverDerivative(vr(i), order(i), <output>) ]
+				c.solverDerivatives(sdi) = mk_SolverDerivative(vrs(i), order(i), <output>) ]
 			in
 				if order(i) > c.model.coSimulation.maxOutputDerivativeOrder
-				then
-					0
+				then 0
 				elseif sdis <> []	-- May be multiple matches, but should be all the same
 				then
 					c.derivatives(hd sdis)
 				else
 					let svis = [ svi | svi in set inds c.eModelVariables &
-						let mk_(o, b) = getDerivativeBase(svi, c.eModelVariables) in
-							b = vr(i) and o = order(i) ]
+						let mk_(o, bidx) = getDerivativeBase(svi, c.eModelVariables) in
+							c.eModelVariables(bidx).valueReference = vrs(i) and o = order(i) ]
 					in
 						c.variables(c.indexmap(aliasTag(c.eModelVariables(hd svis))))	-- Precondition guarantees len >0
 
-			| i in set inds vr
+			| i in set inds vrs
 		]
 		in 
 			mk_(<fmi2OK>, reals)
 	pre
 		c.fmuType = <fmi2CoSimulation>
 		and c.fmuState in set STATES_fmi2GetRealOutputDerivatives
-		and nvr = len vr
+		and nvr = len vrs
 		and nvr = len order
 		and (forall o in seq order & o > 0)
-		and (forall v in seq vr & c.eModelVariables(v).causality = <output>)
+		and (forall vr in seq vrs &
+			let sv = lookup(c.eModelVariables, vr, <Real>) in
+				sv <> nil and sv.causality = <output>)
 
 		-- Output derivatives must exist as SVs with "derivative" set,
 		-- or be defined in solver data (but not both!)
-		and (forall i in set inds vr &
+		and (forall i in set inds vrs &
 			(exists sd in seq c.solverDerivatives &
-				sd.index = vr(i) and sd.order = order(i))
+				sd.vref = vrs(i) and sd.order = order(i))
 			<=>
-			not exists dv in set inds c.eModelVariables &
-				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
-					o = order(i) and b = vr(i))
+			not exists didx in set inds c.eModelVariables &
+				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
+					o = order(i) and c.eModelVariables(bidx).valueReference = vrs(i))
 	post
 		RESULT.#1 = <fmi2OK> => nvr = len RESULT.#2;
 
+
 	fmi2GetRealOutputDerivatives: fmi2Component * seq of fmi2ValueReference * nat *
 								  seq of fmi2Integer +> fmi2Status * [seq of fmi2Real]
-	fmi2GetRealOutputDerivatives(c, vr, nvr, order) ==
+	fmi2GetRealOutputDerivatives(c, vrs, nvr, order) ==
 		if c.fmuType <> <fmi2CoSimulation>
 		then -- @Printf("Cannot call fmi2GetRealOutputDerivatives for fmi2ModelExchange\n")
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2GetRealOutputDerivatives
 		then -- @Printf("Cannot call fmi2GetRealOutputDerivatives in state %s\n", c.fmuState)
 			mk_(<fmi2Error>, nil)
-		elseif nvr <> len vr or nvr <> len order
+		elseif nvr <> len vrs or nvr <> len order
 		then -- @Printf("nvr, vr and order are not consistent\n")
 			mk_(<fmi2Error>, nil)
 		elseif exists o in seq order & o <= 0
 		then -- @Printf("Order entries must all be >0\n")
 			mk_(<fmi2Error>, nil)
-		elseif exists v in seq vr & c.eModelVariables(v).causality <> <output>
+		elseif exists vr in seq vrs &
+			let sv = lookup(c.eModelVariables, vr, <Real>) in
+				sv = nil or sv.causality <> <output>
 		then -- @Printf("Some arguments are not outputs\n")
 			mk_(<fmi2Error>, nil)
 
 		-- Output derivatives must exist as SVs with "derivative" set
 		-- or be defined in solver data (but not both!)
-		elseif not forall i in set inds vr &
+		elseif not forall i in set inds vrs &
 			(exists sd in seq c.solverDerivatives &
-				sd.index = vr(i) and sd.order = order(i))
+				sd.vref = vrs(i) and sd.order = order(i))
 			<=>
-			not exists dv in set inds c.eModelVariables &
-				let mk_(o, b) = getDerivativeBase(dv, c.eModelVariables) in
-					o = order(i) and b = vr(i)
+			not exists didx in set inds c.eModelVariables &
+				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
+					o = order(i) and c.eModelVariables(bidx).valueReference = vrs(i)
 		then -- @Printf("Some outputs do not have derivatives of the right order\n")
 			mk_(<fmi2Error>, nil)
 
 		else
-			fmi2GetRealOutputDerivatives_Impl(c, vr, nvr, order)
+			fmi2GetRealOutputDerivatives_Impl(c, vrs, nvr, order)
 	 post
 	 	RESULT.#1 <> <fmi2OK> <=> RESULT.#2 = nil;
