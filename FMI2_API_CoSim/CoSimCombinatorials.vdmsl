@@ -145,20 +145,20 @@ functions
 				others -> true	-- No restrictions
 			end;
 
-	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String +> <VOID>
-	logger(-, -, -, -, -) ==
+	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * [seq1 of fmi2Value] +> <VOID>
+	logger(componentEnvironment, instanceName, status, category, message, args) ==
 		is not yet specified;
 
 	allocateMemory: nat1 * nat1 +> token
-	allocateMemory(-, -) ==
+	allocateMemory(nobj, size) ==
 		is not yet specified;
 
 	freeMemory: token +> <VOID>
-	freeMemory(-) ==
+	freeMemory(obj) ==
 		is not yet specified;
 
 	stepFinished: fmi2ComponentEnvironment * fmi2Status +> <VOID>
-	stepFinished(-, -) ==
+	stepFinished(componentEnvironment, status) ==
 		is not yet specified;
 
 	calculateValues: fmi2Component -> fmi2Status * [fmi2Component]
