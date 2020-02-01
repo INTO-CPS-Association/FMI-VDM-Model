@@ -165,7 +165,7 @@ functions
 				others -> true	-- No restrictions
 			end;
 
-	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * [seq1 of fmi2Value] +> <VOID>
+	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * [seq1 of ?] +> <VOID>
 	logger(componentEnvironment, instanceName, status, category, message, args) ==
 		is not yet specified;
 

@@ -265,6 +265,6 @@ functions
 	/**
 	 * The implementation of the standard logger function.
 	 */
-	logger_Impl: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * [seq1 of fmi2Value] +> <VOID>
+	logger_Impl: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * [seq1 of ?] +> <VOID>
 	logger_Impl(componentEnvironment, instanceName, status, category, message, args) ==
 		is not yet specified;
