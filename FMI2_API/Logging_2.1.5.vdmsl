@@ -1,0 +1,108 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2020, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.5 Logging of FMU Instances.
+ */
+functions
+	/**
+	 * The implementation of the standard logger function.
+	 */
+	fmi2Logger_Impl: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * [seq1 of ?] +> <VOID>
+	fmi2Logger_Impl(componentEnvironment, instanceName, status, category, message, args) ==
+		let expanded = expandValueRefs(componentEnvironment, message) in
+			-- @Printf("%s: %s %s %s %s\n", instanceName, status, category, expanded, args)
+			<VOID>
+	pre
+		exists c in seq nilSeq[Category](componentEnvironment.model.logCategories) & c.name = category;
+
+	/**
+	 * The interface of the standard logger function.
+	 */
+	fmi2Logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * [seq1 of ?] +> <VOID>
+	fmi2Logger(componentEnvironment, instanceName, status, category, message, args) ==
+		if not exists c in seq nilSeq[Category](componentEnvironment.model.logCategories) & c.name = category
+		then <VOID>
+		else fmi2Logger_Impl(componentEnvironment, instanceName, status, category, message, args);
+
+	/**
+	 * Support functions to expand logger strings.
+	 */
+	expandValueRefs: fmi2ComponentEnvironment * fmi2String +> fmi2String
+	expandValueRefs(env, s) ==
+		if s = []
+		then []
+		elseif hd s = '#'
+		then
+			let mk_(hash, tail) = readToHash(s) in
+				cases hash:
+					"##" -> "#" ^ expandValueRefs(env, tail),
+
+					"#" ^ [type] ^ digits ^ "#" ->
+						let vref = valueOf(digits) in
+						let kind = 
+							cases type:
+								'r' -> <Real>,
+								'i' -> <Integer>,
+								'b' -> <Boolean>,
+								's' -> <String>,
+								others -> undefined
+							end in
+						let sv = lookup(env.model.modelVariables, vref, kind) in
+							if sv = nil
+							then "?" ^ expandValueRefs(env, tail)
+							else sv.name ^ expandValueRefs(env, tail),
+
+					others -> "?" ^ expandValueRefs(env, tail)
+				end
+		else
+			[hd s] ^ expandValueRefs(env, tl s) 
+	measure len s;
+
+	readToHash: fmi2String +> fmi2String * fmi2String
+	readToHash(s) ==
+		if exists i in set inds s & i > 1 and s(i) = '#'
+		then
+			let i in seq [ p | p in set inds s ] be st i > 1 and s(i) = '#' in
+				mk_(s(1, ..., i), s(i+1, ..., len s))
+		else
+			mk_("", tl s)
+	pre
+		s <> "" and s(1) = '#';
+
+	valueOf: fmi2String +> nat
+	valueOf(s) ==
+		if s = []
+		then 0
+		else digitValueOf(s(len s)) + 10 * valueOf(s(1, ..., len s - 1))
+	pre elems s subset elems DIGITS 
+	measure len s;
+
+values
+	digitValueOf : map char to nat = { DIGITS(i) |-> (i-1) | i in set inds DIGITS };

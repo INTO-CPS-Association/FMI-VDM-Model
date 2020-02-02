@@ -31,10 +31,6 @@
  * Simple tests of the API, based on the BouncingBall models from the fmu-sdk.
  */
 functions
-	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * [seq1 of ?] +> <VOID>
-	logger(componentEnvironment, instanceName, status, category, message, args) ==
-		is not yet specified;
-
 	allocateMemory: nat1 * nat1 +> token
 	allocateMemory(nobj, size) ==
 		is not yet specified;
@@ -53,7 +49,7 @@ operations
 	(
 		let solver = mk_SolverData([]) in
 		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall, calculateValues, calculateDoStep, calculateEvents) in
-		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
+		let callbacks = mk_fmi2CallbackFunctions(fmi2Logger, allocateMemory, freeMemory, stepFinished, cenv) in
 		let startTime : real = bouncingBall.defaultExperiment.startTime in
 		let endTime : real = bouncingBall.defaultExperiment.stopTime in
 		(
@@ -125,7 +121,7 @@ operations
 	(
 		let solver = mk_SolverData([]) in
 		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall, calculateValues, calculateDoStep, calculateEvents) in
-		let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
+		let callbacks = mk_fmi2CallbackFunctions(fmi2Logger, allocateMemory, freeMemory, stepFinished, cenv) in
 		let startTime : real = bouncingBall.defaultExperiment.startTime in
 		let endTime : real = bouncingBall.defaultExperiment.stopTime in
 		(
@@ -289,3 +285,9 @@ operations
 			let - = fmi2FreeInstance(c) in skip		-- ignore <VOID> function result
 		)
 	);
+
+	loggerTest: fmi2String ==> <VOID>
+	loggerTest(message) ==
+		let solver = mk_SolverData([]) in
+		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall, calculateValues, calculateDoStep, calculateEvents) in
+			return fmi2Logger(cenv, "instance", <fmi2OK>, "logFmiCall", message, nil);
