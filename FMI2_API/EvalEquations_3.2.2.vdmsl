@@ -62,7 +62,7 @@ functions
 	 */
 	fmi2NewDiscreteStates_Impl: fmi2Component +> fmi2Status * [fmi2Component] * [fmi2EventInfo]
 	fmi2NewDiscreteStates_Impl(c) ==
-    	let mk_(s, c2) = c.calculateEvents(c) in
+    	let mk_(s, c2) = c.componentEnvironment.calculateEvents(c) in
 			mk_(s, c2, if c2 = nil then nil else c2.eventInfo)
 	pre
 		c.fmuType = <fmi2ModelExchange>

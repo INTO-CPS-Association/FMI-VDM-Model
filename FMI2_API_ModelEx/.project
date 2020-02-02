@@ -132,6 +132,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/FMI2_API/InquirePlatform_2.1.4.vdmsl</locationURI>
 		</link>
 		<link>
+			<name>FMI2_API/Logging_2.1.5.vdmsl</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/FMI2_API/Logging_2.1.5.vdmsl</locationURI>
+		</link>
+		<link>
 			<name>FMI2_API/PartialDerivatives_2.1.9.vdmsl</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/FMI2_API/PartialDerivatives_2.1.9.vdmsl</locationURI>

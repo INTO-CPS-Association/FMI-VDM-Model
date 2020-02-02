@@ -165,10 +165,6 @@ functions
 				others -> true	-- No restrictions
 			end;
 
-	logger: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * [seq1 of ?] +> <VOID>
-	logger(componentEnvironment, instanceName, status, category, message, args) ==
-		is not yet specified;
-
 	allocateMemory: nat1 * nat1 +> token
 	allocateMemory(nobj, size) ==
 		is not yet specified;
@@ -201,7 +197,7 @@ operations
 			<fmi2Instantiate> ->
 				let solver = mk_SolverData([ mk_SolverDerivative(0, 1, <input>) ]) in
 				let cenv = mk_fmi2ComponentEnvironment(solver, springMassDamper, calculateValues, calculateDoStep, calculateEvents) in
-				let callbacks = mk_fmi2CallbackFunctions(logger, allocateMemory, freeMemory, stepFinished, cenv) in
+				let callbacks = mk_fmi2CallbackFunctions(fmi2Logger, allocateMemory, freeMemory, stepFinished, cenv) in
 				let r = fmi2Instantiate("CosimTest", <fmi2ModelExchange>, "GUID", "", callbacks, false, true) in
 				(
 					if r = nil

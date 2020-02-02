@@ -52,13 +52,9 @@ functions
 				-- The initial state
 				<INSTANTIATED>,
 
-				-- The callbacks passed in
+				-- The callbacks and environment passed in
 				callbacks,
-
-				-- The recalculation functions
-				callbacks.componentEnvironment.calculateValues,
-				callbacks.componentEnvironment.calculateDoStep,
-				callbacks.componentEnvironment.calculateEvents,
+				callbacks.componentEnvironment,
 
 				-- The XML model
 				model,
@@ -145,19 +141,26 @@ functions
 	fmi2Instantiate(instanceName, fmuType, fmuGUID, fmuResourceLocation, callbacks, visible, loggingOn) ==
 		let model = callbacks.componentEnvironment.model in
 			if instanceName = ""
-			then -- @Printf("fmi2Instantiate instanceName cannot be empty\n")
+			then let - = logAPI(callbacks, "fmi2Instantiate instanceName cannot be empty") in
 				nil
 			elseif fmuGUID <> model.attributes.guid
-			then -- @Printf("fmi2Instantiate fmuGUID does not match XML configuration\n")
+			then let - = logAPI(callbacks, "fmi2Instantiate fmuGUID does not match XML configuration") in
 				nil
 			elseif fmuType = <fmi2CoSimulation> and model.coSimulation = nil
-			then -- @Printf("CoSimulation FMU must defined CoSimulation XML configuration\n")
+			then let - = logAPI(callbacks, "CoSimulation FMU must defined CoSimulation XML configuration") in
 				nil
 			elseif fmuType = <fmi2ModelExchange> and model.modelExchange = nil
-			then -- @Printf("ModelExchange FMU must define ModelExchange XML configuration\n")
+			then let - = logAPI(callbacks, "ModelExchange FMU must define ModelExchange XML configuration") in
 				nil
 			else
 				fmi2Instantiate_Impl(instanceName, fmuType, fmuGUID, fmuResourceLocation, callbacks, visible, loggingOn);
+
+	/**
+	 * Helper to log fmi2Instantiate errors
+	 */
+	logAPI: fmi2CallbackFunctions * fmi2String +> <VOID>
+	logAPI(callbacks, message) ==
+		callbacks.logger(callbacks.componentEnvironment, "?", <fmi2Error>, "?", message, nil);
 
 	/**
 	 * Calculate the initial vector of SV values, given their "start" attributes.

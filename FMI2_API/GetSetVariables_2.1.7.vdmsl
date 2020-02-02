@@ -86,7 +86,7 @@ functions
 	 */
 	fmi2GetReal_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetReal_Impl(c, vrs, nvr) ==
-		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
+		let mk_(s, c2) = if c.dirty then c.componentEnvironment.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
 			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <Real>))) | vr in seq vrs ])
@@ -119,7 +119,7 @@ functions
 	 */
 	fmi2GetInteger_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Integer]
 	fmi2GetInteger_Impl(c, vrs, nvr) ==
-		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
+		let mk_(s, c2) = if c.dirty then c.componentEnvironment.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
 			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <Integer>))) | vr in seq vrs ])
@@ -153,7 +153,7 @@ functions
 	 */
 	fmi2GetBoolean_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Boolean]
 	fmi2GetBoolean_Impl(c, vrs, nvr) ==
-		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
+		let mk_(s, c2) = if c.dirty then c.componentEnvironment.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
 			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <Boolean>))) | vr in seq vrs ])
@@ -187,7 +187,7 @@ functions
 	 */
 	fmi2GetString_Impl: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2String]
 	fmi2GetString_Impl(c, vrs, nvr) ==
-		let mk_(s, c2) = if c.dirty then c.calculateValues(c) else mk_(<fmi2OK>, c) in
+		let mk_(s, c2) = if c.dirty then c.componentEnvironment.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
 			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <String>))) | vr in seq vrs ])

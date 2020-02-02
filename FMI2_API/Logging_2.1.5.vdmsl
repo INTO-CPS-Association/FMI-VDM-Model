@@ -37,7 +37,12 @@ functions
 	fmi2Logger_Impl: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * [seq1 of ?] +> <VOID>
 	fmi2Logger_Impl(componentEnvironment, instanceName, status, category, message, args) ==
 		let expanded = expandValueRefs(componentEnvironment, message) in
-			-- @Printf("%s: %s %s %s %s\n", instanceName, status, category, expanded, args)
+			/* @Printf("%s: %s %s %s %s\n", instanceName, status, category, expanded,
+			  		if args <> nil and len args > 0 then args(1) else nil,
+			  		if args <> nil and len args > 1 then args(2) else nil,
+			  		if args <> nil and len args > 2 then args(3) else nil,
+			  		if args <> nil and len args > 3 then args(4) else nil)
+			 */
 			<VOID>
 	pre
 		exists c in seq nilSeq[Category](componentEnvironment.model.logCategories) & c.name = category;
@@ -101,8 +106,9 @@ functions
 		if s = []
 		then 0
 		else digitValueOf(s(len s)) + 10 * valueOf(s(1, ..., len s - 1))
-	pre elems s subset elems DIGITS 
+	pre elems s subset elems DECIMALS 
 	measure len s;
 
 values
-	digitValueOf : map char to nat = { DIGITS(i) |-> (i-1) | i in set inds DIGITS };
+	DECIMALS = "0123456789";
+	digitValueOf : map char to nat = { DECIMALS(i) |-> (i-1) | i in set inds DECIMALS };

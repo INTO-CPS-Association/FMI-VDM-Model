@@ -36,7 +36,7 @@ functions
 	 */
 	fmi2DoStep_Impl: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * [fmi2Component]
 	fmi2DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, -/*noSetFMUStatePriorToCurrentPoint*/) ==
-		let mk_(s, c2) = c.calculateDoStep(c,  currentCommunicationPoint, communicationStepSize) in
+		let mk_(s, c2) = c.componentEnvironment.calculateDoStep(c,  currentCommunicationPoint, communicationStepSize) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
 			else mk_(s, c2)
