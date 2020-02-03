@@ -106,7 +106,7 @@ types
 
 	fmi3CallbackFunctions ::
 		instanceEnvironment		: fmi3InstanceEnvironment
-		logMessage				: fmi3InstanceEnvironment * fmi3String * fmi3Status * fmi3String * fmi3String -> <VOID>
+		logMessage				: fmi3Instance * fmi3String * fmi3Status * fmi3String * fmi3String -> <VOID>
 		allocateMemory			: fmi3InstanceEnvironment * nat * nat -> token
 		freeMemory				: fmi3InstanceEnvironment * token -> <VOID>
 		intermediateUpdate		: fmi3InstanceEnvironment * fmi3IntermediateUpdateInfo -> <VOID>

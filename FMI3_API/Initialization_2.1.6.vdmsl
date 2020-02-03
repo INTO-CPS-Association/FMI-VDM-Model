@@ -54,13 +54,13 @@ functions
 	fmi3SetupExperiment: fmi3Instance * fmi3Boolean * fmi3Float * fmi3Float * fmi3Boolean * fmi3Float +> fmi3Status * [fmi3Instance]
 	fmi3SetupExperiment(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
 		if c.fmuState not in set STATES_fmi3SetupExperiment
-		then -- @Printf("Cannot call fmi3SetupExperiment in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi3SetupExperiment in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif stopTimeDefined and stopTime <= startTime
-		then -- @Printf("stopTime is not > startTime\n")
+		then let - = logAPIError(c, "stopTime is not > startTime") in
 			mk_(<fmi3Error>, nil)
 		elseif toleranceDefined and tolerance < 0
-		then -- @Printf("Tolerance must be >= 0\n")
+		then let - = logAPIError(c, "Tolerance must be >= 0") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime)
@@ -88,10 +88,10 @@ functions
 	fmi3EnterConfigurationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3EnterConfigurationMode(c) ==
 		if c.fmuState not in set STATES_fmi3EnterConfigurationMode
-		then -- @Printf("Cannot call fmi3EnterConfigurationMode in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi3EnterConfigurationMode in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif not exists sv in seq c.eModelVariables & sv.base.causality = <structuralParameter>
-		then -- @Printf("Cannot call fmi3EnterConfigurationMode with no structural parameters defined\n")
+		then let - = logAPIError(c, "Cannot call fmi3EnterConfigurationMode with no structural parameters defined") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3EnterConfigurationMode_Impl(c)
@@ -120,10 +120,10 @@ functions
 	fmi3ExitConfigurationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3ExitConfigurationMode(c) ==
 		if c.fmuState not in set STATES_fmi3ExitConfigurationMode
-		then -- @Printf("Cannot call fmi3ExitConfigurationMode in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi3ExitConfigurationMode in this state") in 
 			mk_(<fmi3Error>, nil)
 		elseif not exists sv in seq c.eModelVariables & sv.base.causality = <structuralParameter>
-		then -- @Printf("Cannot call fmi3ExitConfigurationMode with no structural parameters defined\n")
+		then let - = logAPIError(c, "Cannot call fmi3ExitConfigurationMode with no structural parameters defined") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3ExitConfigurationMode_Impl(c)
@@ -146,10 +146,10 @@ functions
 	fmi3EnterInitializationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3EnterInitializationMode(c) ==
 		if c.fmuState not in set STATES_fmi3EnterInitializationMode
-		then -- @Printf("Cannot call fmi3EnterInitializationMode in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi3EnterInitializationMode in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif c.startTime = nil
-		then -- @Printf("fmi3SetupExperiment has not been called (startTime is nil)?\n")
+		then let - = logAPIError(c, "fmi3SetupExperiment has not been called (startTime is nil)?") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3EnterInitializationMode_Impl(c)
@@ -178,7 +178,7 @@ functions
 	fmi3ExitInitializationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3ExitInitializationMode(c) ==
 		if c.fmuState not in set STATES_fmi3ExitInitializationMode
-		then -- @Printf("Cannot call fmi3ExitInitializationMode in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi3ExitInitializationMode in this state") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3ExitInitializationMode_Impl(c)
@@ -200,7 +200,7 @@ functions
 	fmi3Terminate: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3Terminate(c) ==
 		if c.fmuState not in set STATES_fmi3Terminate
-		then -- @Printf("Cannot call fmi3Terminate in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi3Terminate in this state") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3Terminate_Impl(c)
@@ -225,7 +225,7 @@ functions
 	fmi3Reset: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3Reset(c) ==
 		if c.fmuState not in set STATES_fmi3Reset
-		then -- @Printf("Cannot call fmi3Reset in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi3Reset in this state") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3Reset_Impl(c)

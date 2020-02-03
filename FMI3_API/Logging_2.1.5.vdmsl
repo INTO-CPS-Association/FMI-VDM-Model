@@ -1,0 +1,118 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2020, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.5 Logging of FMU Instances.
+ */
+functions
+	/**
+	 * The implementation of the standard logger function.
+	 */
+	fmi3Logger_Impl: fmi3InstanceEnvironment * fmi3String * fmi3Status * fmi3String * fmi3String -> <VOID>
+	fmi3Logger_Impl(instanceEnvironment, instanceName, status, category, message) ==
+		let expanded = expandValueRefs(instanceEnvironment, message) in
+			-- @Printf("%s: %s %s %s\n", instanceName, status, category, expanded)
+			<VOID>;
+
+	/**
+	 * The Logger interface includes a check of whether a category is enabled. Note that
+	 * log calls can be made with unknown Categories, but if the category is not in the
+	 * list of enabled Categories, it will not appear.
+	 *
+	 * Note that the interface is slightly different to the logger function in the FMI Standard.
+	 * This is because the function needs access to the fmi3Instance data to see which log
+	 * categories are enabled. This replaces the fmi3InstanceEnvironment (for access to the model)
+	 * which is available via the fmi3Instance.
+	 */
+	fmi3Logger: fmi3Instance * fmi3String * fmi3Status * fmi3String * fmi3String -> <VOID>
+	fmi3Logger(c, instanceName, status, category, message) ==
+		if c.logCategories = nil or not category in set c.logCategories
+		then <VOID>		-- logging disabled or category not enabled
+		else fmi3Logger_Impl(c.instanceEnvironment, instanceName, status, category, message);
+
+
+	/**
+	 * Helper functions for the APIs to raise various status code log messages.
+	 */
+	logAPIError: fmi3Instance * fmi3String +> <VOID>
+	logAPIError(c, message) ==
+		c.callbacks.logMessage(c, c.instanceName, <fmi3Error>, "logAll", message);
+
+
+	/**
+	 * Support functions to expand logger strings.
+	 */
+	expandValueRefs: fmi3InstanceEnvironment * fmi3String +> fmi3String
+	expandValueRefs(ienv, s) ==
+		if s = []
+		then []
+		elseif hd s = '#'
+		then
+			let mk_(hash, tail) = readToHash(s) in
+				cases hash:
+					"##" -> "#" ^ expandValueRefs(ienv, tail),
+
+					"#" ^ digits ^ "#" ->
+						let vref = valueOf(digits) in
+						let sv = lookup(ienv.xmlModel.modelVariables, vref) in
+							if sv = nil
+							then "?" ^ expandValueRefs(ienv, tail)
+							else sv.base.name ^ expandValueRefs(ienv, tail),
+
+					others -> "?" ^ expandValueRefs(ienv, tail)
+				end
+		else
+			[hd s] ^ expandValueRefs(ienv, tl s)
+	measure len s;
+
+	readToHash: fmi3String +> fmi3String * fmi3String
+	readToHash(s) ==
+		let hashes = [ i | i in set inds s & i > 1 and s(i) = '#' ] in
+			if hashes <> []
+			then
+				let i = hd hashes in
+					mk_(s(1, ..., i), s(i+1, ..., len s))
+			else
+				mk_("", tl s)
+	pre
+		s <> "" and s(1) = '#';
+
+	valueOf: fmi3String +> nat
+	valueOf(s) ==
+		if s = []
+		then 0
+		else let rest ^ [last] = s in
+			digitValueOf(last) + 10 * valueOf(rest)
+	pre
+		elems s subset elems DECIMALS 
+	measure len s;
+
+values
+	DECIMALS = "0123456789";
+	digitValueOf : map char to nat = { DECIMALS(i) |-> (i-1) | i in set inds DECIMALS };

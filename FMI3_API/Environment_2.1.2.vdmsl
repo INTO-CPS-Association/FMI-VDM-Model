@@ -63,11 +63,14 @@ types
 
 	-- The opaque instance data for the model, passed to and from API functions
 	fmi3Instance ::
-		fmuType					: fmi3InterfaceType
-		fmuState				: fmi3State
-		callbacks				: fmi3CallbackFunctions
+		instanceName				: fmi3String
+		fmuType						: fmi3InterfaceType
+		fmuState					: fmi3State
+		callbacks					: fmi3CallbackFunctions
+		instanceEnvironment			: fmi3InstanceEnvironment
+		coSimulationConfiguration	: fmi3CoSimulationConfiguration 
 
-		-- convenience read-only fields, copied from componentEnvironment
+		-- convenience read-only fields, copied from instanceEnvironment
 		xmlModel				: FMIModelDescription
 		eModelVariables			: seq1 of Variable
 		continuousTimeStates	: seq of fmi3ValueReference

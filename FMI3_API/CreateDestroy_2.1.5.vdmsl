@@ -45,14 +45,19 @@ functions
 		in
 			mk_fmi3Instance
 			(
+				-- The instance name
+				instanceName,
+
 				-- The FMU type
 				fmuType,
 
 				-- The initial state
 				<INSTANTIATED>,
 
-				-- The callbacks passed in
+				-- The callbacks and environment passed
 				funcs,
+				funcs.instanceEnvironment,
+				fmuCoSimulationConfiguration,
 
 				-- The XML model
 				xmlModel,
@@ -135,25 +140,37 @@ functions
 					 fmi3CallbackFunctions * fmi3Boolean * fmi3Boolean * [fmi3CoSimulationConfiguration] +> [fmi3Instance]
 	fmi3Instantiate(instanceName, fmuType, fmuInstantiationToken, fmuResourceLocation,
 					funcs, visible, loggingOn, fmuCoSimulationConfiguration) ==
-		let xmlModel = funcs.instanceEnvironment.xmlModel in
+		let ienv = funcs.instanceEnvironment,
+			xmlModel = ienv.xmlModel
+		in
 			if instanceName = ""
-			then -- @Printf("fmi3Instantiate instanceName cannot be empty\n")
+			then let - = logInst(ienv, instanceName, "fmi3Instantiate instanceName cannot be empty") in
 				nil
 			elseif fmuCoSimulationConfiguration <> nil and fmuType <> <fmi3CoSimulation>
-			then -- @Printf("fmi3Instantiate fmuCoSimulationConfiguration implies CoSimulation fmuType\n")
+			then let - = logInst(ienv, instanceName, "fmi3Instantiate fmuCoSimulationConfiguration implies CoSimulation fmuType") in
 				nil
 			elseif fmuInstantiationToken <> xmlModel.attributes.instantiationToken
-			then -- @Printf("fmi3Instantiate fmuInstantiationToken does not match XML configuration\n")
+			then let - = logInst(ienv, instanceName, "fmi3Instantiate fmuInstantiationToken does not match XML configuration") in
 				nil
 			elseif fmuType = <fmi3CoSimulation> and xmlModel.coSimulation = nil
-			then -- @Printf("CoSimulation FMU must define CoSimulation XML configuration\n")
+			then let - = logInst(ienv, instanceName, "CoSimulation FMU must define CoSimulation XML configuration") in
 				nil
 			elseif fmuType = <fmi3ModelExchange> and xmlModel.modelExchange = nil
-			then -- @Printf("ModelExchange FMU must define ModelExchange XML configuration\n")
+			then let - = logInst(ienv, instanceName, "ModelExchange FMU must define ModelExchange XML configuration") in
 				nil
 			else
 				fmi3Instantiate_Impl(instanceName, fmuType, fmuInstantiationToken, fmuResourceLocation,
 									 funcs, visible, loggingOn, fmuCoSimulationConfiguration);
+
+	/**
+	 * Helper to log fmi3Instantiate errors. These cannot use the callback logger because the
+	 * fmi3Instance that defines the enabled categories has not yet been created. It implicitly
+	 * uses the raw implementation - ie. it is guaranteed to log.
+	 */
+	logInst: fmi3InstanceEnvironment * fmi3String * fmi3String +> <VOID>
+	logInst(ienv, instanceName, message) ==
+		fmi3Logger_Impl(ienv, instanceName, <fmi3Error>, "logAll", message);
+
 
 	/**
 	 * Calculate the initial vector of SV values, given their "start" attributes.
@@ -196,7 +213,7 @@ functions
 		then -- The function ignores a "null" argument
 			<VOID>
 		elseif c.fmuState not in set STATES_fmi3FreeInstance
-		then -- @Printf("Cannot call fmi3FreeInstance in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi3FreeInstance in this state") in
 			<VOID>
 		else
 			fmi3FreeInstance_Impl(c);
@@ -240,17 +257,17 @@ functions
 	fmi3SetDebugLogging: fmi3Instance * fmi3Boolean * nat * seq of fmi3String +> fmi3Status * [fmi3Instance]
 	fmi3SetDebugLogging(c, loggingOn, nCategories, categories) ==
 		if c.fmuState not in set STATES_fmi3SetDebugLogging
-		then -- @Printf("Cannot call fmi3SetDebugLogging in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi3SetDebugLogging in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif nCategories <> len categories or card elems categories <> nCategories
-		then -- @Printf("nCategories does not match categories length\n")
+		then let - = logAPIError(c, "nCategories does not match categories length") in
 			mk_(<fmi3Error>, nil)
 		else let logcats = c.xmlModel.logCategories in
 			if logcats = nil
-			then -- @Printf("No log categories defined in XML configuration\n")
+			then let - = logAPIError(c, "No log categories defined in XML configuration") in
 				mk_(<fmi3Error>, nil)
 			elseif exists cname in seq categories & not exists lc in seq logcats & lc.name = cname
-			then -- @Printf("Some log categories not found in XML configuration\n")
+			then let - = logAPIError(c, "Some log categories not found in XML configuration") in
 				mk_(<fmi3Error>, nil)
 			else
 				fmi3SetDebugLogging_Impl(c, loggingOn, nCategories, categories)

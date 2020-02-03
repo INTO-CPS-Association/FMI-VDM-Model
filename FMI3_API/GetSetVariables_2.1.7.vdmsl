@@ -108,17 +108,17 @@ functions
 	fmi3GetReal: fmi3Instance * FloatKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetReal(c, kind, vrs, nvr, nval) ==
 		if len vrs <> nvr
-		then -- @Printf("vrs and nvr do not match\n")
+		then let - = logAPIError(c, "vrs and nvr do not match") in
 			mk_(<fmi3Error>, nil)
 		elseif not generalGetPrecondition(c, vrs)
-		then -- @Printf("Get preconditions failed\n")
+		then let - = logAPIError(c, "Get preconditions failed") in
 			mk_(<fmi3Error>, nil)
 		elseif exists vr in seq vrs &
 			(not exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = kind)
-		then -- @Printf("Value references are not all %s variables\n", kind)
+		then let - = logAPIError(c, "Value references are not all the same kind") in
 			mk_(<fmi3Error>, nil)
 		elseif nval <> totalValues(c, vrs)
-		then -- @Printf("nValues (%s) does not match valueReference dimensions (%s)\n", nval, totalValues(c, vrs))
+		then let - = logAPIError(c, "nValues does not match valueReference dimensions") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3GetReal_Impl(c, kind, vrs, nvr, nval)
