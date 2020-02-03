@@ -100,13 +100,13 @@ functions
 	fmi2GetReal: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetReal(c, vrs, nvr) ==
 		if len vrs <> nvr
-		then -- @Printf("vrs and nvr do not match\n")
+		then let - = logAPIError(c, "vrs and nvr do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif not generalGetPrecondition(c, vrs, <Real>)
-		then -- @Printf("Get preconditions failed\n")
+		then let - = logAPIError(c, "Get preconditions failed", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Real>) = nil
-		then -- @Printf("Value references are not all Real variables\n")
+		then let - = logAPIError(c, "Value references are not all Real variables", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetReal_Impl(c, vrs, nvr)
@@ -134,13 +134,13 @@ functions
 	fmi2GetInteger: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Integer]
 	fmi2GetInteger(c, vrs, nvr) ==
 		if len vrs <> nvr
-		then -- @Printf("vrs and nvr do not match\n")
+		then let - = logAPIError(c, "vrs and nvr do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif not generalGetPrecondition(c, vrs, <Integer>)
-		then -- @Printf("Get preconditions failed\n")
+		then let - = logAPIError(c, "Get preconditions failed", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Integer>) = nil
-		then -- @Printf("Value references are not all Integer variables\n")
+		then let - = logAPIError(c, "Value references are not all Integer variables", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetInteger_Impl(c, vrs, nvr)
@@ -168,13 +168,13 @@ functions
 	fmi2GetBoolean: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2Boolean]
 	fmi2GetBoolean(c, vrs, nvr) ==
 		if len vrs <> nvr
-		then -- @Printf("vrs and nvr do not match\n")
+		then let - = logAPIError(c, "vrs and nvr do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif not generalGetPrecondition(c, vrs, <Boolean>)
-		then -- @Printf("Get preconditions failed\n")
+		then let - = logAPIError(c, "Get preconditions failed", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Boolean>) = nil
-		then -- @Printf("Value references are not all Boolean variables\n")
+		then let - = logAPIError(c, "Value references are not all Boolean variables", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetBoolean_Impl(c, vrs, nvr)
@@ -202,13 +202,13 @@ functions
 	fmi2GetString: fmi2Component * seq of fmi2ValueReference * nat +> fmi2Status * [seq of fmi2String]
 	fmi2GetString(c, vrs, nvr) ==
 		if len vrs <> nvr
-		then -- @Printf("vrs and nvr do not match\n")
+		then let - = logAPIError(c, "vrs and nvr do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif not generalGetPrecondition(c, vrs, <String>)
-		then -- @Printf("Get preconditions failed\n")
+		then let - = logAPIError(c, "Get preconditions failed", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <String>) = nil
-		then -- @Printf("Value references are not all String variables\n")
+		then let - = logAPIError(c, "Value references are not all String variables", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetString_Impl(c, vrs, nvr)
@@ -242,16 +242,16 @@ functions
 	fmi2SetReal: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status * [fmi2Component]
 	fmi2SetReal(c, vrs, nvr, value) ==
 		if len vrs <> nvr
-		then -- @Printf("vrs and nvr do not match\n")
+		then let - = logAPIError(c, "vrs and nvr do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif len vrs <> len value
-		then -- @Printf("vrs and value do not match\n")
+		then let - = logAPIError(c, "vrs and value do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif not generalSetPrecondition(c, vrs, <Real>)
-		then -- @Printf("Set preconditions failed\n")
+		then let - = logAPIError(c, "Set preconditions failed", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Real>) = nil
-		then -- @Printf("Value references are not all Real variables\n")
+		then let - = logAPIError(c, "Value references are not all Real variables", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists i in set inds vrs &
 			let sv = lookup(c.eModelVariables, vrs(i), <Real>),
@@ -259,11 +259,11 @@ functions
 				max = sv.variable.max
 			in
 				(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
-		then -- @Printf("Values not all within min/max for variables\n")
+		then let - = logAPIError(c, "Values not all within min/max for variables", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists i in set inds vrs &
 			let sv = lookup(c.eModelVariables, vrs(i), <Real>) in sv.causality = <independent>
-		then -- @Printf("Cannot set value of independent variable\n")
+		then let - = logAPIError(c, "Cannot set value of independent variable", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetReal_Impl(c, vrs, nvr, value)
@@ -296,16 +296,16 @@ functions
 	fmi2SetInteger: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status * [fmi2Component]
 	fmi2SetInteger(c, vrs, nvr, value) ==
 		if len vrs <> nvr
-		then -- @Printf("vrs and nvr do not match\n")
+		then let - = logAPIError(c, "vrs and nvr do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif len vrs <> len value
-		then -- @Printf("vrs and value do not match\n")
+		then let - = logAPIError(c, "vrs and value do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif not generalSetPrecondition(c, vrs, <Integer>)
-		then -- @Printf("Set preconditions failed\n")
+		then let - = logAPIError(c, "Set preconditions failed", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Integer>) = nil
-		then -- @Printf("Value references are not all Integer variables\n")
+		then let - = logAPIError(c, "Value references are not all Integer variables", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists i in set inds vrs &
 			let sv = lookup(c.eModelVariables, vrs(i), <Integer>),
@@ -313,7 +313,7 @@ functions
 				max = sv.variable.max
 			in
 				(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
-		then -- @Printf("Values not all within min/max for variables\n")
+		then let - = logAPIError(c, "Values not all within min/max for variables", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetInteger_Impl(c, vrs, nvr, value)
@@ -339,16 +339,16 @@ functions
 	fmi2SetBoolean: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status * [fmi2Component]
 	fmi2SetBoolean(c, vrs, nvr, value) ==
 		if len vrs <> nvr
-		then -- @Printf("vrs and nvr do not match\n")
+		then let - = logAPIError(c, "vrs and nvr do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif len vrs <> len value
-		then -- @Printf("vrs and value do not match\n")
+		then let - = logAPIError(c, "vrs and value do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif not generalSetPrecondition(c, vrs, <Boolean>)
-		then -- @Printf("Set preconditions failed\n")
+		then let - = logAPIError(c, "Set preconditions failed", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <Boolean>) = nil
-		then -- @Printf("Value references are not all Boolean variables\n")
+		then let - = logAPIError(c, "Value references are not all Boolean variables", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetBoolean_Impl(c, vrs, nvr, value)
@@ -374,16 +374,16 @@ functions
 	fmi2SetString: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status * [fmi2Component]
 	fmi2SetString(c, vrs, nvr, value) ==
 		if len vrs <> nvr
-		then -- @Printf("vrs and nvr do not match\n")
+		then let - = logAPIError(c, "vrs and nvr do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif len vrs <> len value
-		then -- @Printf("vrs and value do not match\n")
+		then let - = logAPIError(c, "vrs and value do not match", []) in
 			mk_(<fmi2Error>, nil)
 		elseif not generalSetPrecondition(c, vrs, <String>)
-		then -- @Printf("Set preconditions failed\n")
+		then let - = logAPIError(c, "Set preconditions failed", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr, <String>) = nil
-		then -- @Printf("Value references are not all String variables\n")
+		then let - = logAPIError(c, "Value references are not all String variables", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetString_Impl(c, vrs, nvr, value)

@@ -48,10 +48,10 @@ functions
 	fmi2EnterEventMode: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2EnterEventMode(c) ==
 		if c.fmuType <> <fmi2ModelExchange>
-		then -- @Printf("Cannot call fmi2EnterEventMode for fmi2CoSimulation\n")
+		then let - = logAPIError(c, "Cannot call fmi2EnterEventMode for fmi2CoSimulation", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2EnterEventMode
-		then -- @Printf("Cannot call fmi2EnterEventMode in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2EnterEventMode in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 	 	else
 	 		fmi2EnterEventMode_Impl(c);
@@ -72,13 +72,13 @@ functions
 	fmi2NewDiscreteStates: fmi2Component +> fmi2Status * [fmi2Component] * [fmi2EventInfo]
 	fmi2NewDiscreteStates(c) ==
 		if c.fmuType <> <fmi2ModelExchange>
-		then -- @Printf("Cannot call fmi2NewDiscreteStates for fmi2CoSimulation\n")
+		then let - = logAPIError(c, "Cannot call fmi2NewDiscreteStates for fmi2CoSimulation", []) in
 			mk_(<fmi2Error>, nil, nil)
 		elseif c.fmuState not in set STATES_fmi2NewDiscreteStates
-		then -- @Printf("Cannot call fmi2NewDiscreteStates in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2NewDiscreteStates in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil, nil)
 --		elseif c.eventInfo = nil
---		then -- @Printf("Cannot call fmi2NewDiscreteStates with no eventInfo\n")
+--		then let - = logAPIError(c, "Cannot call fmi2NewDiscreteStates with no eventInfo", []) in
 --			mk_(<fmi2Error>, nil, nil)
 	 	else
 	 		fmi2NewDiscreteStates_Impl(c);
@@ -99,10 +99,10 @@ functions
 	fmi2EnterContinuousTimeMode: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2EnterContinuousTimeMode(c) ==
 		if c.fmuType <> <fmi2ModelExchange>
-		then -- @Printf("Cannot call fmi2EnterContinuousTimeMode for fmi2CoSimulation\n")
+		then let - = logAPIError(c, "Cannot call fmi2EnterContinuousTimeMode for fmi2CoSimulation", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2EnterContinuousTimeMode
-		then -- @Printf("Cannot call fmi2EnterContinuousTimeMode in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2EnterContinuousTimeMode in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 	 	else
 	 		fmi2EnterContinuousTimeMode_Impl(c)
@@ -124,13 +124,13 @@ functions
 	fmi2CompletedIntegratorStep: fmi2Component * fmi2Boolean +> fmi2Status * [fmi2Boolean] * [fmi2Boolean]
 	fmi2CompletedIntegratorStep(c, noSetFMUStatePriorToCurrentPoint) ==
 		if c.fmuType <> <fmi2ModelExchange>
-		then -- @Printf("Cannot call fmi2CompletedIntegratorStep for fmi2CoSimulation\n")
+		then let - = logAPIError(c, "Cannot call fmi2CompletedIntegratorStep for fmi2CoSimulation", []) in
 			mk_(<fmi2Error>, nil, nil)
 		elseif c.fmuState not in set STATES_fmi2CompletedIntegratorStep
-		then -- @Printf("Cannot call fmi2CompletedIntegratorStep in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2CompletedIntegratorStep in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil, nil)
 		elseif nilBool(c.model.modelExchange.completedIntegratorStepNotNeeded)
-		then -- @Printf("fmi2CompletedIntegratorStep not needed\n")
+		then let - = logAPIError(c, "fmi2CompletedIntegratorStep not needed", []) in
 			mk_(<fmi2Error>, nil, nil)
 	 	else
 	 		fmi2CompletedIntegratorStep_Impl(c, noSetFMUStatePriorToCurrentPoint)
@@ -153,13 +153,13 @@ functions
 	fmi2GetDerivatives: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetDerivatives(c, nx) ==
 		if c.fmuType <> <fmi2ModelExchange>
-		then -- @Printf("Cannot call fmi2GetDerivatives for fmi2CoSimulation\n")
+		then let - = logAPIError(c, "Cannot call fmi2GetDerivatives for fmi2CoSimulation", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2GetDerivatives
-		then -- @Printf("Cannot call fmi2GetDerivatives in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2GetDerivatives in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif nx <> len c.continuousTimeStates
-		then -- @Printf("Wrong number of derivates requested, expecting %s\n", len c.continuousTimeStates)
+		then let - = logAPIError(c, "Wrong number of derivates requested, expecting %s", [len c.continuousTimeStates]) in
 			mk_(<fmi2Error>, nil)
 	 	else
 	 		fmi2GetDerivatives_Impl(c, nx)
@@ -182,13 +182,13 @@ functions
 	fmi2GetEventIndicators: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetEventIndicators(c, ni) ==
 		if c.fmuType <> <fmi2ModelExchange>
-		then -- @Printf("Cannot call fmi2GetEventIndicators for fmi2CoSimulation\n")
+		then let - = logAPIError(c, "Cannot call fmi2GetEventIndicators for fmi2CoSimulation", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2GetEventIndicators
-		then -- @Printf("Cannot call fmi2GetEventIndicators in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2GetEventIndicators in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif ni <> nilNat(c.model.attributes.numberOfEventIndicators)
-		then -- @Printf("Wrong number of event indicators passed\n")
+		then let - = logAPIError(c, "Wrong number of event indicators passed", []) in
 			mk_(<fmi2Error>, nil)
 	 	else
 	 		fmi2GetEventIndicators_Impl(c, ni)
@@ -210,13 +210,13 @@ functions
 	fmi2GetContinuousStates: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetContinuousStates(c, nx) ==
 		if c.fmuType <> <fmi2ModelExchange>
-		then -- @Printf("Cannot call fmi2GetContinuousStates for fmi2CoSimulation\n")
+		then let - = logAPIError(c, "Cannot call fmi2GetContinuousStates for fmi2CoSimulation", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2GetContinuousStates
-		then -- @Printf("Cannot call fmi2GetContinuousStates in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2GetContinuousStates in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif nx <> len c.continuousTimeStates
-		then -- @Printf("Wrong number of derivates requested, expecting %s\n", len c.continuousTimeStates)
+		then let - = logAPIError(c, "Wrong number of derivates requested, expecting %s", [len c.continuousTimeStates]) in
 			mk_(<fmi2Error>, nil)
 	 	else
 	 		fmi2GetContinuousStates_Impl(c, nx)
@@ -238,13 +238,13 @@ functions
 	fmi2GetNominalsOfContinuousStates: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetNominalsOfContinuousStates(c, nx) ==
 		if c.fmuType <> <fmi2ModelExchange>
-		then -- @Printf("Cannot call fmi2GetNominalsOfContinuousStates for fmi2CoSimulation\n")
+		then let - = logAPIError(c, "Cannot call fmi2GetNominalsOfContinuousStates for fmi2CoSimulation", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2GetNominalsOfContinuousStates
-		then -- @Printf("Cannot call fmi2GetNominalsOfContinuousStates in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2GetNominalsOfContinuousStates in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif nx <> len c.continuousTimeStates
-		then -- @Printf("Wrong number of derivates requested, expecting %s\n", len c.continuousTimeStates)
+		then let - = logAPIError(c, "Wrong number of derivates requested, expecting %s", [len c.continuousTimeStates]) in
 			mk_(<fmi2Error>, nil)
 	 	else
 	 		fmi2GetNominalsOfContinuousStates_Impl(c, nx)

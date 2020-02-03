@@ -45,10 +45,10 @@ functions
 	fmi2SetTime: fmi2Component * fmi2Real +> fmi2Status * [fmi2Component]
 	fmi2SetTime(c, time) ==
 		if c.fmuType <> <fmi2ModelExchange>
-		then -- @Printf("Cannot call fmi2SetTime for fmi2CoSimulation\n")
+		then let - = logAPIError(c, "Cannot call fmi2SetTime for fmi2CoSimulation", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2SetTime
-		then -- @Printf("Cannot call fmi2SetTime in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2SetTime in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetTime_Impl(c, time)
@@ -73,16 +73,16 @@ functions
 	fmi2SetContinuousStates: fmi2Component * seq of fmi2Real * nat +> fmi2Status * [fmi2Component]
 	fmi2SetContinuousStates(c, x, nx) ==
 		if c.fmuType <> <fmi2ModelExchange>
-		then -- @Printf("Cannot call fmi2SetContinuousStates for fmi2CoSimulation\n")
+		then let - = logAPIError(c, "Cannot call fmi2SetContinuousStates for fmi2CoSimulation", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2SetContinuousStates
-		then -- @Printf("Cannot call fmi2SetContinuousStates in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2SetContinuousStates in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif nx <> len x
-		then -- @Printf("nx and x are not consistent\n");
+		then let - = logAPIError(c, "nx and x are not consistent", []) in
 			mk_(<fmi2Error>, nil)
 		elseif nx <> len c.continuousTimeStates
-		then -- @Printf("Expecting %s continuous state values\n", len c.continuousTimeStates)
+		then let - = logAPIError(c, "Expecting %s continuous state values", [len c.continuousTimeStates]) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetContinuousStates_Impl(c, x, nx)

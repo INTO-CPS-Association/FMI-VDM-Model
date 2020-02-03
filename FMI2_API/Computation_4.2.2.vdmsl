@@ -57,16 +57,16 @@ functions
 	fmi2DoStep: fmi2Component * fmi2Real * fmi2Real * fmi2Boolean +> fmi2Status * [fmi2Component]
 	fmi2DoStep(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
 		if c.fmuType <> <fmi2CoSimulation>
-		then -- @Printf("Cannot call fmi2DoStep for fmi2ModelExchange\n")
+		then let - = logAPIError(c, "Cannot call fmi2DoStep for fmi2ModelExchange", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2DoStep
-		then -- @Printf("Cannot call fmi2DoStep in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2DoStep in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif communicationStepSize <= 0.0
-		then -- @Printf("Communication step size must be >0\n")
+		then let - = logAPIError(c, "Communication step size must be >0", []) in
 			mk_(<fmi2Error>, nil)
 		elseif currentCommunicationPoint < 0.0
-		then -- @Printf("Curret communication point must be >=0\n")
+		then let - = logAPIError(c, "Curret communication point must be >=0", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint)
@@ -91,10 +91,10 @@ functions
 	fmi2CancelStep: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2CancelStep(c) ==
 		if c.fmuType <> <fmi2CoSimulation>
-		then -- @Printf("Cannot call fmi2CancelStep for fmi2ModelExchange\n")
+		then let - = logAPIError(c, "Cannot call fmi2CancelStep for fmi2ModelExchange", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2CancelStep
-		then -- @Printf("Cannot call fmi2CancelStep in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2CancelStep in state %s\n", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 	 	else
 	 		fmi2CancelStep_Impl(c)

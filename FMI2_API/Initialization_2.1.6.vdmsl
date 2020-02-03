@@ -54,13 +54,13 @@ functions
 	fmi2SetupExperiment: fmi2Component * fmi2Boolean * fmi2Real * fmi2Real * fmi2Boolean * fmi2Real +> fmi2Status * [fmi2Component]
 	fmi2SetupExperiment(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
 		if c.fmuState not in set STATES_fmi2SetupExperiment
-		then -- @Printf("Cannot call fmi2SetupExperiment in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2SetupExperiment in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif stopTimeDefined and stopTime <= startTime
-		then -- @Printf("stopTime is not > startTime\n")
+		then let - = logAPIError(c, "stopTime is not > startTime", []) in
 			mk_(<fmi2Error>, nil)
 		elseif toleranceDefined and tolerance < 0
-		then -- @Printf("Tolerance must be >= 0\n")
+		then let - = logAPIError(c, "Tolerance must be >= 0", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime)
@@ -83,10 +83,10 @@ functions
 	fmi2EnterInitializationMode: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2EnterInitializationMode(c) ==
 		if c.fmuState not in set STATES_fmi2EnterInitializationMode
-		then -- @Printf("Cannot call fmi2EnterInitializationMode in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2EnterInitializationMode in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif c.startTime = nil
-		then -- @Printf("fmi2SetupExperiment has not been called (startTime is nil)?\n")
+		then let - = logAPIError(c, "fmi2SetupExperiment has not been called (startTime is nil)?", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2EnterInitializationMode_Impl(c)
@@ -118,7 +118,7 @@ functions
 	fmi2ExitInitializationMode: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2ExitInitializationMode(c) ==
 		if c.fmuState not in set STATES_fmi2ExitInitializationMode
-		then -- @Printf("Cannot call fmi2ExitInitializationMode in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2ExitInitializationMode in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2ExitInitializationMode_Impl(c)
@@ -140,7 +140,7 @@ functions
 	fmi2Terminate: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2Terminate(c) ==
 		if c.fmuState not in set STATES_fmi2Terminate
-		then -- @Printf("Cannot call fmi2Terminate in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2Terminate in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2Terminate_Impl(c)
@@ -165,7 +165,7 @@ functions
 	fmi2Reset: fmi2Component +> fmi2Status * [fmi2Component]
 	fmi2Reset(c) ==
 		if c.fmuState not in set STATES_fmi2Reset
-		then -- @Printf("Cannot call fmi2Reset in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2Reset in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2Reset_Impl(c)

@@ -46,6 +46,9 @@ functions
 		in
 			mk_fmi2Component
 			(
+				-- The instance name!
+				instanceName,
+
 				-- The FMU type
 				fmuType,
 
@@ -164,7 +167,7 @@ functions
 	 */
 	logInst: fmi2ComponentEnvironment * fmi2String * fmi2String +> <VOID>
 	logInst(cenv, instanceName, message) ==
-		fmi2Logger_Impl(cenv, instanceName, <fmi2Error>, "logEvents", message, []);
+		fmi2Logger_Impl(cenv, instanceName, <fmi2Error>, "logAll", message, []);
 
 	/**
 	 * Calculate the initial vector of SV values, given their "start" attributes.
@@ -207,7 +210,7 @@ functions
 		then -- The function ignores a "null" argument
 			<VOID>
 		elseif c.fmuState not in set STATES_fmi2FreeInstance
-		then -- @Printf("Cannot call fmi2FreeInstance in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2FreeInstance in state %s", [c.fmuState]) in
 			<VOID>
 		else
 			fmi2FreeInstance_Impl(c);
@@ -251,17 +254,17 @@ functions
 	fmi2SetDebugLogging: fmi2Component * fmi2Boolean * nat * seq of fmi2String +> fmi2Status * [fmi2Component]
 	fmi2SetDebugLogging(c, loggingOn, nCategories, categories) ==
 		if c.fmuState not in set STATES_fmi2SetDebugLogging
-		then -- @Printf("Cannot call fmi2SetDebugLogging in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2SetDebugLogging in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif nCategories <> len categories or card elems categories <> nCategories
-		then -- @Printf("nCategories does not match categories length\n")
+		then let - = logAPIError(c, "nCategories does not match categories length", []) in
 			mk_(<fmi2Error>, nil)
 		else let logcats = c.model.logCategories in
 			if logcats = nil
-			then -- @Printf("No log categories defined in XML configuration\n")
+			then let - = logAPIError(c, "No log categories defined in XML configuration", []) in
 				mk_(<fmi2Error>, nil)
 			elseif exists cname in seq categories & not exists lc in seq logcats & lc.name = cname
-			then -- @Printf("Some log categories not found in XML configuration\n")
+			then let - = logAPIError(c, "Some log categories not found in XML configuration", []) in
 				mk_(<fmi2Error>, nil)
 			else
 				fmi2SetDebugLogging_Impl(c, loggingOn, nCategories, categories)

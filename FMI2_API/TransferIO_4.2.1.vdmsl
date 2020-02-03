@@ -102,24 +102,24 @@ functions
 								 seq of fmi2Integer * seq of fmi2Real +> fmi2Status * [fmi2Component]
 	fmi2SetRealInputDerivatives(c, vrs, nvr, order, value) ==
 		if c.fmuType <> <fmi2CoSimulation>
-		then -- @Printf("Cannot call fmi2SetRealInputDerivatives for fmi2ModelExchange\n")
+		then let - = logAPIError(c, "Cannot call fmi2SetRealInputDerivatives for fmi2ModelExchange", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2SetRealInputDerivatives
-		then -- @Printf("Cannot call fmi2SetRealInputDerivatives in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2SetRealInputDerivatives in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif not nilBool(c.model.coSimulation.canInterpolateInputs)
-		then -- @Printf("Cannot inperpolate inputs\n")
+		then let - = logAPIError(c, "Cannot inperpolate inputs", []) in
 			mk_(<fmi2Error>, nil)
 		elseif nvr <> len vrs or nvr <> len value or nvr <> len order
-		then -- @Printf("nvr, vrs, value and order are not consistent\n")
+		then let - = logAPIError(c, "nvr, vrs, value and order are not consistent", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists o in seq order & o <= 0
-		then -- @Printf("Order entries must all be >0\n")
+		then let - = logAPIError(c, "Order entries must all be >0", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr, <Real>) in
 				sv = nil or sv.causality <> <input>
-		then -- @Printf("Some arguments are not Real input value references\n")
+		then let - = logAPIError(c, "Some arguments are not Real input value references", []) in
 			mk_(<fmi2Error>, nil)
 
 		-- Input derivatives must exist as SVs with "derivative" set
@@ -131,7 +131,7 @@ functions
 			not exists didx in set inds c.eModelVariables &
 				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
 					o = order(i) and c.eModelVariables(bidx).valueReference = vrs(i)
-		then -- @Printf("Some inputs do not have derivatives of the right order\n")
+		then let - = logAPIError(c, "Some inputs do not have derivatives of the right order", []) in
 			mk_(<fmi2Error>, nil)
 
 		-- If each input derivative is a variable, the new value must be within min/max
@@ -142,7 +142,7 @@ functions
 						let min = c.eModelVariables(bidx).variable.min,
 							max = c.eModelVariables(bidx).variable.max in
 						(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
-		then -- @Printf("Values not all within min/max for derivative variables\n")
+		then let - = logAPIError(c, "Values not all within min/max for derivative variables", []) in
 			mk_(<fmi2Error>, nil)
 
 		else
@@ -203,21 +203,21 @@ functions
 								  seq of fmi2Integer +> fmi2Status * [seq of fmi2Real]
 	fmi2GetRealOutputDerivatives(c, vrs, nvr, order) ==
 		if c.fmuType <> <fmi2CoSimulation>
-		then -- @Printf("Cannot call fmi2GetRealOutputDerivatives for fmi2ModelExchange\n")
+		then let - = logAPIError(c, "Cannot call fmi2GetRealOutputDerivatives for fmi2ModelExchange", []) in
 			mk_(<fmi2Error>, nil)
 		elseif c.fmuState not in set STATES_fmi2GetRealOutputDerivatives
-		then -- @Printf("Cannot call fmi2GetRealOutputDerivatives in state %s\n", c.fmuState)
+		then let - = logAPIError(c, "Cannot call fmi2GetRealOutputDerivatives in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
 		elseif nvr <> len vrs or nvr <> len order
-		then -- @Printf("nvr, vr and order are not consistent\n")
+		then let - = logAPIError(c, "nvr, vr and order are not consistent", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists o in seq order & o <= 0
-		then -- @Printf("Order entries must all be >0\n")
+		then let - = logAPIError(c, "Order entries must all be >0", []) in
 			mk_(<fmi2Error>, nil)
 		elseif exists vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr, <Real>) in
 				sv = nil or sv.causality <> <output>
-		then -- @Printf("Some arguments are not outputs\n")
+		then let - = logAPIError(c, "Some arguments are not outputs", []) in
 			mk_(<fmi2Error>, nil)
 
 		-- Output derivatives must exist as SVs with "derivative" set
@@ -229,7 +229,7 @@ functions
 			not exists didx in set inds c.eModelVariables &
 				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
 					o = order(i) and c.eModelVariables(bidx).valueReference = vrs(i)
-		then -- @Printf("Some outputs do not have derivatives of the right order\n")
+		then let - = logAPIError(c, "Some outputs do not have derivatives of the right order", []) in
 			mk_(<fmi2Error>, nil)
 
 		else

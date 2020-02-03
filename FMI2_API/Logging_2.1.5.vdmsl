@@ -37,11 +37,9 @@ functions
 	fmi2Logger_Impl: fmi2ComponentEnvironment * fmi2String * fmi2Status * fmi2String * fmi2String * seq of ? +> <VOID>
 	fmi2Logger_Impl(componentEnvironment, instanceName, status, category, message, args) ==
 		let expanded = expandValueRefs(componentEnvironment, message) in
-			/* @Printf("%s: %s %s %s %s\n", instanceName, status, category, expanded,
+			/* @Printf("%s: %s %s %s %s %s\n", instanceName, status, category, expanded,
 			  		if len args > 0 then args(1) else nil,
-			  		if len args > 1 then args(2) else nil,
-			  		if len args > 2 then args(3) else nil,
-			  		if len args > 3 then args(4) else nil)
+			  		if len args > 1 then args(2) else nil)
 			 */
 			<VOID>;
 
@@ -60,6 +58,14 @@ functions
 		if c.logCategories = nil or not category in set c.logCategories
 		then <VOID>		-- logging disabled or category not enabled
 		else fmi2Logger_Impl(c.componentEnvironment, instanceName, status, category, message, args);
+
+
+	/**
+	 * Helper functions for the APIs to raise various status code log messages.
+	 */
+	logAPIError: fmi2Component * fmi2String * seq of ? +> <VOID>
+	logAPIError(c, message, args) ==
+		c.callbacks.logger(c, c.instanceName, <fmi2Error>, "logAll", message, args);
 
 
 	/**

@@ -65,6 +65,7 @@ types
 					sd.type = <output> => sd.order <= max);
 
 	fmi2Component ::
+		instanceName			: fmi2String
 		fmuType					: fmi2Type
 		fmuState				: fmi2State
 		callbacks				: fmi2CallbackFunctions

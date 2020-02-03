@@ -54,7 +54,7 @@ functions
 	fmi2GetFMUstate: fmi2Component +> fmi2Status * [fmi2FMUState]
 	fmi2GetFMUstate(c) ==
 		if not canDoGetSetState(c, STATES_fmi2GetFMUstate)
-		then -- @Printf("Can't call fmi2GetFMUstate\n")
+		then let - = logAPIError(c, "Can't call fmi2GetFMUstate", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2GetFMUstate_Impl(c)
@@ -74,7 +74,7 @@ functions
 	fmi2SetFMUstate: fmi2Component * fmi2FMUState +> fmi2Status * [fmi2Component]
 	fmi2SetFMUstate(c, FMUstate) ==
 		if not canDoGetSetState(c, STATES_fmi2SetFMUstate)
-		then -- @Printf("Can't call fmi2SetFMUstate\n")
+		then let - = logAPIError(c, "Can't call fmi2SetFMUstate", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2SetFMUstate_Impl(c, FMUstate)
@@ -94,7 +94,7 @@ functions
 	fmi2FreeFMUstate: fmi2Component * fmi2FMUState +> fmi2Status
 	fmi2FreeFMUstate(c, FMUstate) ==
 		if not canDoGetSetState(c, STATES_fmi2FreeFMUstate)
-		then -- @Printf("Can't call fmi2FreeFMUstate\n")
+		then let - = logAPIError(c, "Can't call fmi2FreeFMUstate", []) in
 			<fmi2Error>
 		else
 			fmi2FreeFMUstate_Impl(c, FMUstate);
@@ -112,7 +112,7 @@ functions
 	fmi2SerializedFMUstateSize: fmi2Component * fmi2FMUState +> fmi2Status * [nat]
 	fmi2SerializedFMUstateSize(c, FMUstate) ==
 		if not canDoGetSetState(c, STATES_fmi2SerializedFMUstateSize)
-		then -- @Printf("Can't call fmi2SerializedFMUstateSize\n")
+		then let - = logAPIError(c, "Can't call fmi2SerializedFMUstateSize", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2SerializedFMUstateSize_Impl(c, FMUstate)
@@ -132,7 +132,7 @@ functions
 	fmi2SerializeFMUstate: fmi2Component * fmi2FMUState * nat +> fmi2Status * [SerializedState]
 	fmi2SerializeFMUstate(c, FMUstate, size) ==
 		if not canDoGetSetState(c, STATES_fmi2SerializeFMUstate)
-		then -- @Printf("Can't call fmi2SerializeFMUstate\n")
+		then let - = logAPIError(c, "Can't call fmi2SerializeFMUstate", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2SerializeFMUstate_Impl(c, FMUstate, size)
@@ -153,10 +153,10 @@ functions
 	fmi2DeSerializeFMUstate: fmi2Component * SerializedState * nat +> fmi2Status * [fmi2FMUState]
 	fmi2DeSerializeFMUstate(c, serializedState, size) ==
 		if serializedState.#2 <> size
-		then -- @Printf("Size does not match serialised state\n")
+		then let - = logAPIError(c, "Size does not match serialised state", []) in
 			mk_(<fmi2Error>, nil)
 		elseif not canDoGetSetState(c, STATES_fmi2DeSerializeFMUstate)
-		then -- @Printf("Can't call fmi2DeSerializeFMUstate\n")
+		then let - = logAPIError(c, "Can't call fmi2DeSerializeFMUstate", []) in
 			mk_(<fmi2Error>, nil)
 		else
 			fmi2DeSerializeFMUstate_Impl(c, serializedState, size)
