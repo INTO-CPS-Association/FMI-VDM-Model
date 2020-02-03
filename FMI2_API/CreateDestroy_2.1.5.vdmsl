@@ -139,28 +139,32 @@ functions
 	fmi2Instantiate: fmi2String * fmi2Type * fmi2String * fmi2String *
 					 fmi2CallbackFunctions * fmi2Boolean * fmi2Boolean +> [fmi2Component]
 	fmi2Instantiate(instanceName, fmuType, fmuGUID, fmuResourceLocation, callbacks, visible, loggingOn) ==
-		let model = callbacks.componentEnvironment.model in
+		let cenv = callbacks.componentEnvironment,
+			model = cenv.model
+		in
 			if instanceName = ""
-			then let - = logAPI(callbacks, "fmi2Instantiate instanceName cannot be empty") in
+			then let - = logInst(cenv, instanceName, "fmi2Instantiate instanceName cannot be empty") in
 				nil
 			elseif fmuGUID <> model.attributes.guid
-			then let - = logAPI(callbacks, "fmi2Instantiate fmuGUID does not match XML configuration") in
+			then let - = logInst(cenv, instanceName, "fmi2Instantiate fmuGUID does not match XML configuration") in
 				nil
 			elseif fmuType = <fmi2CoSimulation> and model.coSimulation = nil
-			then let - = logAPI(callbacks, "CoSimulation FMU must defined CoSimulation XML configuration") in
+			then let - = logInst(cenv, instanceName, "CoSimulation FMU must defined CoSimulation XML configuration") in
 				nil
 			elseif fmuType = <fmi2ModelExchange> and model.modelExchange = nil
-			then let - = logAPI(callbacks, "ModelExchange FMU must define ModelExchange XML configuration") in
+			then let - = logInst(cenv, instanceName, "ModelExchange FMU must define ModelExchange XML configuration") in
 				nil
 			else
 				fmi2Instantiate_Impl(instanceName, fmuType, fmuGUID, fmuResourceLocation, callbacks, visible, loggingOn);
 
 	/**
-	 * Helper to log fmi2Instantiate errors
+	 * Helper to log fmi2Instantiate errors. These cannot use the callback logger because the
+	 * fmi2Component that defines the enabled categories has not yet been created. It implicitly
+	 * uses the raw implementation - ie. it is guaranteed to log.
 	 */
-	logAPI: fmi2CallbackFunctions * fmi2String +> <VOID>
-	logAPI(callbacks, message) ==
-		callbacks.logger(callbacks.componentEnvironment, "?", <fmi2Error>, "?", message, nil);
+	logInst: fmi2ComponentEnvironment * fmi2String * fmi2String +> <VOID>
+	logInst(cenv, instanceName, message) ==
+		fmi2Logger_Impl(cenv, instanceName, <fmi2Error>, "logEvents", message, []);
 
 	/**
 	 * Calculate the initial vector of SV values, given their "start" attributes.

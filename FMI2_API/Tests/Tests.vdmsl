@@ -290,4 +290,7 @@ operations
 	loggerTest(message) ==
 		let solver = mk_SolverData([]) in
 		let cenv = mk_fmi2ComponentEnvironment(solver, bouncingBall, calculateValues, calculateDoStep, calculateEvents) in
-			return fmi2Logger(cenv, "instance", <fmi2OK>, "logFmiCall", message, nil);
+		let callbacks = mk_fmi2CallbackFunctions(fmi2Logger, allocateMemory, freeMemory, stepFinished, cenv) in
+		let c = fmi2Instantiate("bouncingBall_CS",
+				<fmi2CoSimulation>, "{8c4e810f-3df3-4a00-8276-176fa3c9f003}", "", callbacks, false, true) in
+			return fmi2Logger(c, "instance", <fmi2OK>, "logAll", message, []);
