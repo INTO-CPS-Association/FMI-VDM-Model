@@ -79,7 +79,7 @@ types
 
 		-- state, events and settings
 		logCategories			: [set1 of fmi3String]				-- nil means logging off
-		aliasMap				: map AliasTag to nat1				-- map alias tag to variables index
+		aliasMap				: map fmi3ValueReference to nat1	-- map vref to variables index
 		variables				: seq1 of fmi3Value					-- Raw SV data values
 		derivatives				: seq of fmi3Float					-- Solver derivative data
 		eventIndicators			: seq of fmi3Float					-- ME events

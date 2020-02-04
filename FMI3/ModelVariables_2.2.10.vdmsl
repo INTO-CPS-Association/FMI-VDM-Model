@@ -69,12 +69,8 @@ types
 		<approx> |
 		<calculated>;
 
+	-- Note that FMI3 value references are effectively alias tags
 	fmi3ValueReference = nat;
-
-	-- A tag used to uniquely identify aliased variables (since refs are only unique per type)
-	AliasTag = fmi3ValueReference * Kind
-	ord a < b ==
-		a.#1 < b.#1 or a.#2 < b.#2 ;
 
 	-- Common variable attributes
 	fmi3RealVariableAttributes ::
@@ -438,7 +434,7 @@ functions
 	}
 	union
 	{
-		-- @OnFail("2.2.10 Dimensions of %s do not match start value at line %s", sv.base.name, sv.base.location)
+		-- @OnFail("2.2.10 Dimensions of %s do not match start vector at line %s", sv.base.name, sv.base.location)
 		( sv.start <> nil =>
 			let size = dimensionsProduct(svs, sv.base.dimensions) in
 				size > 0 => size = len sv.start )
@@ -454,25 +450,25 @@ functions
 			{
 				let aliases = refmap(ref) in
 				{
-					/* @OnFail("2.2.10 Multiple aliases of reference %s/%s are settable: %s", ref.#1, ref.#2,
+					/* @OnFail("2.2.10 Multiple aliases of reference %s are settable: %s", ref,
 							{ a.base.name | a in set aliases & isSettable(a) }) */
 					( card { a | a in set aliases & isSettable(a) } <= 1 ),
 
-					/* @OnFail("2.2.10 Aliases of reference %s/%s are settable and independent: %s", ref.#1, ref.#2,
+					/* @OnFail("2.2.10 Aliases of reference %s are settable and independent: %s", ref,
 							{ {a.base.name, b.base.name} | a, b in set aliases &
 								a <> b and isSettable(a) and b.base.causality = <independent> } ) */
 					( not exists a, b in set aliases & a <> b and isSettable(a) and b.base.causality = <independent> ),
 
-					-- @OnFail("2.2.10 Too many aliases of reference %s/%s have start set", ref.#1, ref.#2)
+					-- @OnFail("2.2.10 Too many aliases of reference %s have start set", ref)
 					( card { a.start | a in set aliases & a.base.variability <> <constant> and a.start <> nil } <= 1 ),
 
-					-- @OnFail("2.2.10 Constant aliases of reference %s/%s have different start values", ref.#1, ref.#2)
+					-- @OnFail("2.2.10 Constant aliases of reference %s have different start values", ref)
 					( card { a.start | a in set aliases & a.base.variability = <constant> and a.start <> nil } <= 1 ),
 
-					-- @OnFail("2.2.10 Aliases of reference %s/%s must all be constant or variable", ref.#1, ref.#2)
+					-- @OnFail("2.2.10 Aliases of reference %s must all be constant or variable", ref)
 					( card { a | a in set aliases & a.base.variability = <constant> } in set {0, card aliases} ),
 
-					-- @OnFail("2.2.10 Aliases of reference %s/%s must all have same unit/baseUnits", ref.#1, ref.#2)
+					-- @OnFail("2.2.10 Aliases of reference %s must all have same unit/baseUnits", ref)
 					( card { a.realAtts.unit | a in set aliases & is_Real(a) } <= 1 ),
 
 					/*
@@ -485,12 +481,12 @@ functions
 					 	if exists a in set aliases & a.base.causality in set {<input>, <parameter>}
 					 	then
 					 		let a in set aliases be st a.base.causality in set {<input>, <parameter>} in
-				 				/* @OnFail("2.2.10 Warning: aliases of reference %s/%s must all be %s, because of %s",
-				 						ref.#1, ref.#2, a.base.variability, a.base.name) */
+				 				/* @OnFail("2.2.10 Warning: aliases of reference %s must all be %s, because of %s",
+				 						ref, a.base.variability, a.base.name) */
 				 				( vars = { a.base.variability } ) or true
 					 	else
 					 		let highest in set vars be st not exists v in set vars & v > highest in
-					 			-- @OnFail("2.2.10 Warning: aliases of reference %s/%s must all be %s", ref.#1, ref.#2, highest)
+					 			-- @OnFail("2.2.10 Warning: aliases of reference %s must all be %s", ref, highest)
 					 			( vars = { highest } ) or true
 				}
 
@@ -509,7 +505,7 @@ functions
 		if dims = nil or dims = []
 		then 1
 		else dimensionSize(svs, hd dims) * dimensionsProduct(svs, tl dims)
-	measure len dims;
+	measure if dims <> nil then len dims else 0;
 
 	dimensionSize: seq1 of Variable * Dimension +> nat
 	dimensionSize(svs, dim) ==
@@ -525,7 +521,7 @@ functions
 	/**
 	 * The default value for initial, defined by the (effective) values of causality and
 	 * variability, via the table on p48/49.
-	 */ 
+	 */
 	effectiveInitial: [Initial] * Causality * Variability -> [Initial]
 	effectiveInitial(i, eCausality, eVariability) ==
 		if i <> nil
@@ -783,20 +779,12 @@ functions
 	measure is not yet specified;
 
 	/**
-	 * Get the alias refmap, from valueReference/type pairs to sets of SVs
+	 * Get the alias refmap, from valueReferences to sets of SVs
 	 */
-	getAliasRefMap: seq1 of Variable -> map AliasTag to set of Variable
+	getAliasRefMap: seq1 of Variable -> map fmi3ValueReference to set of Variable
 	getAliasRefMap(svs) ==
-		let tags = { svi |-> aliasTag(svs(svi)) | svi in set inds svs } in
+		let vrefs = { svi |-> svs(svi).base.valueReference | svi in set inds svs } in
 		{
-			tags(svi) |-> { svs(v) | v in set inds svs & tags(v) = tags(svi) }
+			vrefs(svi) |-> { svs(v) | v in set inds svs & vrefs(v) = vrefs(svi) }
 			| svi in set inds svs
 		};
-
-	/**
-	 * Generate an alias "tag" for a Variable, made of the valueReference and
-	 * the type of the variable. All aliases of a variable have the same tag.
-	 */
-	aliasTag: Variable +> AliasTag
-	aliasTag(sv) ==
-		mk_(sv.base.valueReference, sv.kind);

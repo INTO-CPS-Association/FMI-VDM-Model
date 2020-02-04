@@ -95,7 +95,7 @@ functions
 		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
 			if s <> <fmi3OK>
 			then mk_(s, nil)
-			else mk_(<fmi3OK>, [ c2.variables(c2.aliasMap(aliasTag(lookup(c.eModelVariables, vr)))) | vr in seq vrs ])
+			else mk_(<fmi3OK>, [ c2.variables(c2.aliasMap(vr)) | vr in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
