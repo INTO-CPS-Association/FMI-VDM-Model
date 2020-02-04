@@ -95,7 +95,7 @@ functions
 		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
 			if s <> <fmi3OK>
 			then mk_(s, nil)
-			else mk_(<fmi3OK>, [ c2.variables(c2.aliasMap(vr)) | vr in seq vrs ])
+			else mk_(<fmi3OK>, [ c2.variables(c2.aliasIndex(vr)) | vr in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
@@ -110,16 +110,20 @@ functions
 		if len vrs <> nvr
 		then let - = logAPIError(c, "vrs and nvr do not match") in
 			mk_(<fmi3Error>, nil)
+
 		elseif not generalGetPrecondition(c, vrs)
 		then let - = logAPIError(c, "Get preconditions failed") in
 			mk_(<fmi3Error>, nil)
+
 		elseif exists vr in seq vrs &
 			(not exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = kind)
-		then let - = logAPIError(c, "Value references are not all the same kind") in
+		then let - = logAPIError(c, "Value references are not all defined for kind") in
 			mk_(<fmi3Error>, nil)
+
 		elseif nval <> totalValues(c, vrs)
-		then let - = logAPIError(c, "nValues does not match valueReference dimensions") in
+		then let - = logAPIError(c, "nValues does not match total valueReference dimensions") in
 			mk_(<fmi3Error>, nil)
+
 		else
 			fmi3GetReal_Impl(c, kind, vrs, nvr, nval)
 	post

@@ -40,8 +40,9 @@ functions
 					funcs, -/*visible*/, loggingOn, fmuCoSimulationConfiguration) ==
 		let xmlModel = funcs.instanceEnvironment.xmlModel,
 			eModelVariables = effectiveScalarVariables(xmlModel),
-			allTags = setToSeq[fmi3ValueReference](dom getAliasRefMap(eModelVariables)),
-			aliasMap : map fmi3ValueReference to nat1 = { allTags(i) |-> i | i in set inds allTags }
+			aliasVars = getAliasRefMap(eModelVariables),
+			allTags = setToSeq[fmi3ValueReference](dom aliasVars),
+			aliasIndex : map fmi3ValueReference to nat1 = { allTags(i) |-> i | i in set inds allTags }
 		in
 			mk_fmi3Instance
 			(
@@ -79,12 +80,14 @@ functions
 				then { cat.name | cat in seq xmlModel.logCategories }
 				else nil,
 
-				-- The reference map of SV alias tags to variable state indexes (below)
-				aliasMap,
+				-- The map of valueReferences to sets of Variables
+				aliasVars,
+				-- The map of valueReferences to variable state indexes (below)
+				aliasIndex,
 
 				-- The state vector, indexed via the aliasmap, created from the effective SVs
 				-- Initially either the start value given, or the default start value for the type.
-				getStartValues(aliasMap, eModelVariables),
+				getStartValues(aliasIndex, eModelVariables),
 
 				-- The solver data vector, addressed by SolverData's vref
 				[ 0.0 | - in seq funcs.instanceEnvironment.solverData.derivatives ],

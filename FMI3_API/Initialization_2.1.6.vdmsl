@@ -214,7 +214,7 @@ functions
 	fmi3Reset_Impl: fmi3Instance +> fmi3Status * fmi3Instance
 	fmi3Reset_Impl(c) ==
 		mk_(<fmi3OK>, mu(c,
-			variables	|-> getStartValues(c.aliasMap, c.eModelVariables),
+			variables	|-> getStartValues(c.aliasIndex, c.eModelVariables),
 			dirty		|-> true,
 			fmuState	|-> <INSTANTIATED>))
 	pre
