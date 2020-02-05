@@ -84,8 +84,7 @@ functions
 	 */
 	totalValues: fmi3Instance * seq1 of fmi3ValueReference +> nat
 	totalValues(c, vrs) ==
-		sum([ let sv = lookup(c.eModelVariables, vr) in
-				dimensionsProduct(c.eModelVariables, sv.base.dimensions) | vr in seq vrs ]);
+		sum([ len c.variables(vr) | vr in seq vrs ]);
 
 	/**
 	 * Implementation and API for fmi3GetFloatXX.
@@ -95,7 +94,7 @@ functions
 		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
 			if s <> <fmi3OK>
 			then mk_(s, nil)
-			else mk_(<fmi3OK>, [ c2.variables(c2.aliasIndex(vr)) | vr in seq vrs ])
+			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)

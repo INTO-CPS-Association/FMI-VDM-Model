@@ -40,9 +40,7 @@ functions
 					funcs, -/*visible*/, loggingOn, fmuCoSimulationConfiguration) ==
 		let xmlModel = funcs.instanceEnvironment.xmlModel,
 			eModelVariables = effectiveScalarVariables(xmlModel),
-			aliasVars = getAliasRefMap(eModelVariables),
-			allTags = setToSeq[fmi3ValueReference](dom aliasVars),
-			aliasIndex : map fmi3ValueReference to nat1 = { allTags(i) |-> i | i in set inds allTags }
+			aliasVars = getAliasRefMap(eModelVariables)
 		in
 			mk_fmi3Instance
 			(
@@ -80,14 +78,12 @@ functions
 				then { cat.name | cat in seq xmlModel.logCategories }
 				else nil,
 
-				-- The map of valueReferences to sets of Variables
+				-- The map of valueReferences to sets of effective Variables
 				aliasVars,
-				-- The map of valueReferences to variable state indexes (below)
-				aliasIndex,
 
-				-- The state vector, indexed via the aliasmap, created from the effective SVs
+				-- The state map indexed by valueReference, created from the effective SVs
 				-- Initially either the start value given, or the default start value for the type.
-				getStartValues(aliasIndex, eModelVariables),
+				getStartValues(aliasVars, eModelVariables),
 
 				-- The solver data vector, addressed by SolverData's vref
 				[ 0.0 | - in seq funcs.instanceEnvironment.solverData.derivatives ],
@@ -176,26 +172,29 @@ functions
 
 
 	/**
-	 * Calculate the initial vector of SV values, given their "start" attributes.
+	 * Calculate the initial map of SV values, given their "start" attributes.
 	 * Called by fmi3Instantiate and fmi3Reset.
 	 */
-	getStartValues: map fmi3ValueReference to nat1 * seq1 of Variable +> seq1 of fmi3Value
-	getStartValues(aliasmap, eModelVariables) ==
-	[
-		let sv in seq eModelVariables be st sv.base.valueReference = tag in		-- Choose any alias
-			if sv.start <> nil
-			then sv.start	-- All aliases have the same start
-			else
-				-- Set default value for variable type
-				if is_Real(sv) then 0.0
-				else if is_Integer(sv) then 0
-				else if is_Boolean(sv) then false
-				else if is_String(sv) then ""
-				else if is_Enumeration(sv) then 0
-				else undefined
+	getStartValues: map fmi3ValueReference to set of Variable * seq1 of Variable +> map fmi3ValueReference to seq1 of fmi3Value
+	getStartValues(aliasVars, eModelVariables) ==
+	{
+		vref |->
+			let sv in set aliasVars(vref) in	-- Choose any alias from the set
+				if sv.start <> nil
+				then sv.start		-- All aliases have the same start
+				else
+					let defValue =	-- Set default scalar value for variable type
+						if is_Real(sv) then [0.0]
+						else if is_Integer(sv) then [0]
+						else if is_Boolean(sv) then [false]
+						else if is_String(sv) then [""]
+						else if is_Enumeration(sv) then [0]
+						else undefined
+					in
+						[defValue | - in set {1, ..., dimensionsProduct(eModelVariables, sv.base.dimensions)}]
 
-		| tag in set dom aliasmap
-	];
+		| vref in set dom aliasVars
+	};
 
 	/**
 	 * Implementation of fmi3FreeInstance. See API method below.

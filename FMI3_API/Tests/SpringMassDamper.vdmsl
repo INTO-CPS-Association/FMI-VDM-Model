@@ -44,9 +44,9 @@ functions
 
 	calculateDoStep: fmi3Instance * fmi3Float * fmi3Float -> fmi3Status * [fmi3Instance]
 	calculateDoStep(c, currentCommunicationPoint, communicationStepSize) ==
-		let height   = c.variables(HEIGHT),
-			velocity = c.variables(VELOCITY),
-			gravity  = c.variables(GRAVITY),
+		let height   = hd c.variables(HEIGHT),
+			velocity = hd c.variables(VELOCITY),
+			gravity  = hd c.variables(GRAVITY),
 			endstep  = currentCommunicationPoint + communicationStepSize,
 			stepsize =
 				if c.eventInfo.nextEventTimeDefined and c.eventInfo.nextEventTime < endstep
@@ -57,7 +57,7 @@ functions
 	        	velocity2 = velocity + stepsize * gravity,	-- forward Euler steps
 	        	c2 = mu(c,
 					currentTime |-> currentCommunicationPoint + stepsize,
-					variables   |-> c.variables ++ { HEIGHT |-> height2, VELOCITY |-> velocity2 })
+					variables   |-> c.variables ++ { HEIGHT |-> [height2], VELOCITY |-> [velocity2] })
 	        in
 	        	-- @Printf("DoStep: %s %s\n", c.currentTime, c.variables)
 	        	if stepsize < communicationStepSize		-- Time event occurred
@@ -79,10 +79,10 @@ functions
 				false,	-- valuesOfContinuousStatesChanged		: fmi3Boolean
 				false	-- nextEventTimeDefined					: fmi3Boolean
 			),
-			height   = c.variables(HEIGHT),
-			velocity = c.variables(VELOCITY),
-			rebound  = c.variables(REBOUND),
-			minimum  = c.variables(MINIMUM)
+			height   = hd c.variables(HEIGHT),
+			velocity = hd c.variables(VELOCITY),
+			rebound  = hd c.variables(REBOUND),
+			minimum  = hd c.variables(MINIMUM)
 		in
 			let updates =
 			    if height <= 0

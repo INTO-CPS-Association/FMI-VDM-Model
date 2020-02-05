@@ -79,9 +79,8 @@ types
 
 		-- state, events and settings
 		logCategories			: [set1 of fmi3String]				-- nil means logging off
-		aliasVars				: map fmi3ValueReference to set of Variable	-- map vref to Variables
-		aliasIndex				: map fmi3ValueReference to nat1	-- map vref to variables index
-		variables				: seq1 of fmi3Value					-- Raw SV data values
+		aliasVars				: map fmi3ValueReference to set of Variable		-- map vref to Variables
+		variables				: map fmi3ValueReference to seq1 of fmi3Value	-- Raw SV data values (scalar and array)
 		derivatives				: seq of fmi3Float					-- Solver derivative data
 		eventIndicators			: seq of fmi3Float					-- ME events
 		dirty					: bool								-- True if SVs updated but not recalculated
@@ -95,7 +94,7 @@ types
 		currentTime				: [fmi3Float]	-- TODO should be independent SV?
 
 	inv c ==
-		len c.variables = card rng c.aliasIndex
+		card dom c.variables = card rng c.aliasVars
 		and (len c.continuousTimeStates = len [u | u in seq c.xmlModel.modelStructure.unknowns & u.kind = <Derivative>])
 		and (len c.derivatives = len c.solverDerivatives)
 		and (len c.eventIndicators = nilNat(c.xmlModel.attributes.numberOfEventIndicators))
