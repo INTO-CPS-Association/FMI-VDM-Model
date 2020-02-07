@@ -40,9 +40,7 @@ functions
 		let model = callbacks.componentEnvironment.model,
 			eModelVariables = effectiveScalarVariables(model),
 			initialUnknowns = nilSeq[Unknown](model.modelStructure.initialUnknowns),
-			aliasmap = getAliasRefMap(eModelVariables),
-			vorder = setToSeq[AliasTag](dom aliasmap),
-			indexmap = { vorder(i) |-> i | i in set inds vorder }
+			aliasmap = getAliasRefMap(eModelVariables)
 		in
 			mk_fmi2Component
 			(
@@ -79,10 +77,7 @@ functions
 				then { cat.name | cat in seq model.logCategories }
 				else nil,
 
-				-- The reference map of SV indexes to variable indexes (below)
-				indexmap,
-
-				-- The state vector, indexed via the aliasmap, created from the effective SVs
+				-- The state vector, created using the aliasmap from the effective SVs.
 				-- Initially either the start value given, or the default start value for the type.
 				startValues(aliasmap),
 
@@ -173,23 +168,24 @@ functions
 	 * Calculate the initial vector of SV values, given their "start" attributes.
 	 * Called by fmi2Instantiate and fmi2Reset.
 	 */
-	startValues: map AliasTag to set of ScalarVariable +> seq1 of fmi2Value
+	startValues: map AliasTag to set of ScalarVariable +> map AliasTag to fmi2Value
 	startValues(aliasmap) ==
-	[
-		let sv in set aliasmap(tag) in	-- Choose any alias
-			if sv.variable.start <> nil
-			then sv.variable.start		-- All aliases have the same start
-			else
-				-- Set default value for variable type
-				if is_Real(sv.variable) then 0.0
-				else if is_Integer(sv.variable) then 0
-				else if is_Boolean(sv.variable) then false
-				else if is_String(sv.variable) then ""
-				else if is_Enumeration(sv.variable) then 0
-				else undefined
+	{
+		tag |-> 
+			let sv in set aliasmap(tag) in	-- Choose any alias
+				if sv.variable.start <> nil
+				then sv.variable.start		-- All aliases have the same start
+				else
+					-- Set default value for variable type
+					if is_Real(sv.variable) then 0.0
+					else if is_Integer(sv.variable) then 0
+					else if is_Boolean(sv.variable) then false
+					else if is_String(sv.variable) then ""
+					else if is_Enumeration(sv.variable) then 0
+					else undefined
 
 		| tag in seq setToSeq[AliasTag](dom aliasmap)
-	];
+	};
 
 	/**
 	 * Implementation of fmi2FreeInstance. See API method below.

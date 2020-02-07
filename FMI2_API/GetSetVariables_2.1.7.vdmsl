@@ -89,7 +89,7 @@ functions
 		let mk_(s, c2) = if c.dirty then c.componentEnvironment.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
-			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <Real>))) | vr in seq vrs ])
+			else mk_(<fmi2OK>, [ c2.variables(mk_AliasTag(vr, <Real>)) | vr in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs, <Real>)
@@ -122,7 +122,7 @@ functions
 		let mk_(s, c2) = if c.dirty then c.componentEnvironment.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
-			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <Integer>))) | vr in seq vrs ])
+			else mk_(<fmi2OK>, [ c2.variables(mk_AliasTag(vr, <Integer>)) | vr in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs, <Integer>)
@@ -156,7 +156,7 @@ functions
 		let mk_(s, c2) = if c.dirty then c.componentEnvironment.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
-			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <Boolean>))) | vr in seq vrs ])
+			else mk_(<fmi2OK>, [ c2.variables(mk_AliasTag(vr, <Boolean>)) | vr in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs, <Boolean>)
@@ -190,7 +190,7 @@ functions
 		let mk_(s, c2) = if c.dirty then c.componentEnvironment.calculateValues(c) else mk_(<fmi2OK>, c) in
 			if s <> <fmi2OK>
 			then mk_(s, nil)
-			else mk_(<fmi2OK>, [ c2.variables(c2.indexmap(mk_AliasTag(vr, <String>))) | vr in seq vrs ])
+			else mk_(<fmi2OK>, [ c2.variables(mk_AliasTag(vr, <String>)) | vr in seq vrs ])
 	pre
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs, <String>)
@@ -221,7 +221,7 @@ functions
 	 */
 	fmi2SetReal_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Real +> fmi2Status * fmi2Component
 	fmi2SetReal_Impl(c, vrs, nvr, value) ==
-		let updates = { c.indexmap(mk_AliasTag(vrs(i), <Real>)) |-> value(i) | i in set inds vrs } in
+		let updates = { mk_AliasTag(vrs(i), <Real>) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
@@ -276,7 +276,7 @@ functions
 	 */
 	fmi2SetInteger_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Integer +> fmi2Status * fmi2Component
 	fmi2SetInteger_Impl(c, vrs, nvr, value) ==
-		let updates = { c.indexmap(mk_AliasTag(vrs(i), <Integer>)) |-> value(i) | i in set inds vrs } in
+		let updates = { mk_AliasTag(vrs(i), <Integer>) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
@@ -326,7 +326,7 @@ functions
 	 */
 	fmi2SetBoolean_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2Boolean +> fmi2Status * [fmi2Component]
 	fmi2SetBoolean_Impl(c, vrs, nvr, value) ==
-		let updates = { c.indexmap(mk_AliasTag(vrs(i), <Boolean>)) |-> value(i) | i in set inds vrs } in
+		let updates = { mk_AliasTag(vrs(i), <Boolean>) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
@@ -361,7 +361,7 @@ functions
 	 */
 	fmi2SetString_Impl: fmi2Component * seq1 of fmi2ValueReference * nat1 * seq1 of fmi2String +> fmi2Status * fmi2Component
 	fmi2SetString_Impl(c, vrs, nvr, value) ==
-		let updates = { c.indexmap(mk_AliasTag(vrs(i), <String>)) |-> value(i) | i in set inds vrs } in
+		let updates = { mk_AliasTag(vrs(i), <String>) |-> value(i) | i in set inds vrs } in
 			mk_(<fmi2OK>, mu(c,
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))

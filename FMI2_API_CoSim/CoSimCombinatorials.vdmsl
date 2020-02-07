@@ -333,7 +333,7 @@ operations
 					if unknowns = []
 					then skip
 					else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknowns, len unknowns, knowns, len knowns,
-						[ c.variables(c.indexmap(aliasTag(c.eModelVariables(v)))) | v in seq knowns ]) in
+						[ c.variables(aliasTag(c.eModelVariables(idx))) | idx in seq knowns ]) in
 						if s <> <fmi2OK>
 						then exit "Cannot get INIT directional derivatives"
 			),
@@ -380,7 +380,7 @@ operations
 						if unknowns = []
 						then skip
 						else let mk_(s, -) = fmi2GetDirectionalDerivative(c, unknowns, len unknowns, knowns, len knowns,
-							[ c.variables(c.indexmap(aliasTag(c.eModelVariables(idx)))) | idx in seq knowns ]) in
+							[ c.variables(aliasTag(c.eModelVariables(idx))) | idx in seq knowns ]) in
 							if s <> <fmi2OK>
 							then exit "Cannot get X directional derivatives"
 				),

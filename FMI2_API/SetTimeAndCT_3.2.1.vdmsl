@@ -61,7 +61,7 @@ functions
 	 */
 	fmi2SetContinuousStates_Impl: fmi2Component * seq of fmi2Real * nat +> fmi2Status * fmi2Component
 	fmi2SetContinuousStates_Impl(c, x, nx) ==
-		let modifiers = { c.indexmap(mk_AliasTag(c.eModelVariables(c.continuousTimeStates(i)).valueReference, <Real>)) |-> x(i) | i in set inds x } in 
+		let modifiers = { aliasTag(c.eModelVariables(c.continuousTimeStates(i))) |-> x(i) | i in set inds x } in 
 			mk_(<fmi2OK>, mu(c,
 				variables |-> c.variables ++ modifiers))
 	pre

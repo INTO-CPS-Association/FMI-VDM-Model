@@ -31,11 +31,11 @@
  * Model generated from win64/Test-FMUs BouncingBall implementation.
  */
 values
-	HEIGHT			= 1;
-	VELOCITY		= 2;
-	GRAVITY			= 3;
-	REBOUND			= 4;
-	MINIMUM			= 5;
+	HEIGHT		= mk_AliasTag(0, <Real>);
+	VELOCITY	= mk_AliasTag(1, <Real>);
+	GRAVITY		= mk_AliasTag(2, <Real>);
+	REBOUND		= mk_AliasTag(3, <Real>);
+	MINIMUM		= mk_AliasTag(4, <Real>);
 
 functions
 	calculateValues: fmi2Component -> fmi2Status * [fmi2Component]

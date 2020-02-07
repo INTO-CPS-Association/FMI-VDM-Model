@@ -41,7 +41,7 @@ functions
 			{
 				{
 					-- Update all SVs that are the Nth derivative of vr(ri)
-					c.indexmap(aliasTag(c.eModelVariables(idx))) |-> value(ri) | idx in set inds c.eModelVariables
+					aliasTag(c.eModelVariables(idx)) |-> value(ri) | idx in set inds c.eModelVariables
 
 					& let mk_(o, bidx) = getDerivativeBase(idx, c.eModelVariables) in
 						c.eModelVariables(bidx).valueReference = vrs(ri) and o = order(ri)
@@ -170,7 +170,7 @@ functions
 						let mk_(o, bidx) = getDerivativeBase(svi, c.eModelVariables) in
 							c.eModelVariables(bidx).valueReference = vrs(i) and o = order(i) ]
 					in
-						c.variables(c.indexmap(aliasTag(c.eModelVariables(hd svis))))	-- Precondition guarantees len >0
+						c.variables(aliasTag(c.eModelVariables(hd svis)))	-- Precondition guarantees len >0
 
 			| i in set inds vrs
 		]

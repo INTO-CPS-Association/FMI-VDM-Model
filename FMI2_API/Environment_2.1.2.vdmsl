@@ -80,8 +80,7 @@ types
 
 		-- state, events and settings
 		logCategories			: [set1 of fmi2String]				-- nil means logging off
-		indexmap				: map AliasTag to nat1				-- map alias to variables index
-		variables				: seq1 of fmi2Value					-- Raw SV data values
+		variables				: map AliasTag to fmi2Value			-- Raw SV data values
 		derivatives				: seq of fmi2Real					-- Solver derivative data
 		eventIndicators			: seq of fmi2Real					-- ME events
 		dirty					: bool								-- True if SVs updated but not recalculated
@@ -95,8 +94,7 @@ types
 		currentTime				: [real]	-- TODO should be independent SV?
 
 	inv c ==
-		len c.variables = card rng c.indexmap
-		and (len c.continuousTimeStates = len nilSeq[Unknown](c.model.modelStructure.derivatives))
+		(len c.continuousTimeStates = len nilSeq[Unknown](c.model.modelStructure.derivatives))
 		and (forall sd in seq c.solverDerivatives & lookup(c.eModelVariables, sd.vref, <Real>) <> nil)
 		and (len c.derivatives = len c.solverDerivatives)
 		and (len c.eventIndicators = nilNat(c.model.attributes.numberOfEventIndicators))
