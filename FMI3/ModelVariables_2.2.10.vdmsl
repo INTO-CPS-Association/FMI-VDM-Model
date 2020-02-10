@@ -140,6 +140,7 @@ types
 
 	Clock ::
 		base				: fmi3VariableBase
+		clockAtts			: fmi3ClockAttributes
 		start				: [bool];
 
 	Variable = Real | Integer | Boolean | String | Binary | Enumeration | Clock;

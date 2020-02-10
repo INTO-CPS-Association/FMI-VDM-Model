@@ -117,5 +117,5 @@ values
 	fmi3True			: fmi3Boolean = true;
 	fmi3False			: fmi3Boolean = false;
 
-	fmi3ClockActive		: fmi3Clock	= 1;
+	fmi3ClockActive		: fmi3Clock	= 1;	-- See parameters of fmi3GetClock and fmi3SetClock
 	fmi3ClockInactive	: fmi3Clock	= 0;

@@ -29,16 +29,35 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class ClockVariable extends Variable
 {
+	private String clockType;
+	private BigInteger priority;
+	private Boolean periodic;
+	private Boolean strict;
+	private BigInteger intervalCounter;
+	private BigInteger shiftCounter;
+	private BigInteger resolution;
+
 	private Boolean start;
 
 	public ClockVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
+
+		clockType = stringOf(attributes, "clockType");
+		priority = intOf(attributes, "priority");
+		periodic = boolOf(attributes, "periodic");
+		strict = boolOf(attributes, "strict");
+		intervalCounter = intOf(attributes, "intervalCounter");
+		shiftCounter = intOf(attributes, "shiftCounter");
+		resolution = intOf(attributes, "resolution");
+
 		start = boolOf(attributes, "start");
 	}
 
@@ -48,7 +67,18 @@ public class ClockVariable extends Variable
 		System.out.println(indent + "mk_Clock");
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");	// base
-		printQuoteAttribute(",\n" + indent + "\t", "ClockKind", ",\n");
+		System.out.println(",");
+
+		System.out.print(indent + "\tmk_fmi3ClockAttributes(");
+		printQuoteAttribute("", clockType, ", ");
+		printRawAttribute("", priority, ", ");
+		printRawAttribute("", periodic, ", ");
+		printRawAttribute("", strict, ", ");
+		printRawAttribute("", intervalCounter, ", ");
+		printRawAttribute("", shiftCounter, ", ");
+		printRawAttribute("", resolution, "");
+		System.out.print("),\n");
+
 		printRawAttribute(indent + "\t", start, "\n");
 		System.out.print(indent + ")");
 	}

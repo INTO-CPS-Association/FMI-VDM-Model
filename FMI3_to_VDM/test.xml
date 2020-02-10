@@ -84,7 +84,7 @@
 		</String>
 		<Binary name="e" valueReference="5" />
 		<Enumeration name="f" valueReference="5" declaredType="f" />
-		<Clock name="g" valueReference="6" />
+		<Clock name="g" valueReference="6" clockType="synchronousTime" priority="10" />
 	</ModelVariables>
 	<Terminals>
 		<Terminal name="nnn" matchingRule="rule" terminalKind="kind">
