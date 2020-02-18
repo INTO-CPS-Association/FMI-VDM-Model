@@ -76,7 +76,7 @@ case $(file -b --mime-type $FILE) in
 	;;
 		
 	*)
-		echo "Input is neither a ZIP nor an XML file?\n"
+		echo "Input is neither a ZIP nor an XML file?"
 		exit 1
 	;;
 esac
