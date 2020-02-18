@@ -76,7 +76,7 @@ case $(file -b --mime-type $FILE) in
 	;;
 		
 	*)
-		echo "Input is neither a ZIP nor an XML file?"
+		echo "Input is neither a ZIP nor an XML file?\n"
 		exit 1
 	;;
 esac
@@ -96,7 +96,7 @@ esac
 	
 	if ! java -jar fmi2vdm-${project.version}.jar "$XML" "$VAR" >$VDM
 	then
-		echo "Problem converting modelDescription.xml to VDM-SL?"
+		echo "Problem converting modelDescription.xml to VDM-SL? This might be caused by a spelling mistake."
 		exit 2
 	fi
 	
