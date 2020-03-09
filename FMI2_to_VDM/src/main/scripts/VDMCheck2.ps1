@@ -80,11 +80,11 @@ java -jar fmi2vdm-${project.version}.jar $xmlFile $vdm_var | out-file $vdm_file 
 java -Xmx1g -cp "vdmj-4.3.0.jar;annotations-1.0.0.jar;annotations2-1.0.0.jar" com.fujitsu.vdmj.VDMJ -vdmsl -q -annotations -e "isValidFMIModelDescription($vdm_var)" model $vdm_file
 
 if (!($unzipDir -eq "")) {
-	Remove-Item �path $unzipDir[0] �recurse -force
+	Remove-Item -path $unzipDir[0] -recurse -force
 }
 
 if ($v -eq "") {
-	Remove-Item �path $vdm_file -force
+	Remove-Item -path $vdm_file -force
 } else {
-	Rename-Item �path $vdm_file $v
+	Rename-Item -path $vdm_file $v
 }
