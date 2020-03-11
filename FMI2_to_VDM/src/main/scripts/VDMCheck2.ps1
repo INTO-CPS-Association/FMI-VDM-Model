@@ -77,7 +77,14 @@ $vdm_var = "vdm_sl_model"
 java -jar fmi2vdm-${project.version}.jar $xmlFile $vdm_var | out-file $vdm_file -Encoding ascii
 
 # See https://stackoverflow.com/questions/219585/including-all-the-jars-in-a-directory-within-the-java-classpath
-java -Xmx1g -cp "vdmj-4.3.0.jar;annotations-1.0.0.jar;annotations2-1.0.0.jar" com.fujitsu.vdmj.VDMJ -vdmsl -q -annotations -e "isValidFMIModelDescription($vdm_var)" model $vdm_file
+$res = java -Xmx1g -cp "vdmj-4.3.0.jar;annotations-1.0.0.jar;annotations2-1.0.0.jar" com.fujitsu.vdmj.VDMJ -vdmsl -q -annotations -e "isValidFMIModelDescription($vdm_var)" model $vdm_file
+
+if ($res -eq 'true') {
+	return "No errors found."
+}
+else {
+	return "Errors found."
+}
 
 if (!($unzipDir -eq "")) {
 	Remove-Item -path $unzipDir[0] -recurse -force
