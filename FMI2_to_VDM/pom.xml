@@ -48,7 +48,7 @@
 				<configuration>
 					<archive>
 						<manifestEntries>
-							<Main-Class>fmi2vdm.FMI2SaxParser</Main-Class>
+							<Main-Class>VDMCheck</Main-Class>
 							<Implementation-Version>${project.version} build ${maven.build.timestamp}</Implementation-Version>
 							<Class-Path>.</Class-Path>
 						</manifestEntries>
