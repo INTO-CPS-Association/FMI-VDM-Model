@@ -56,7 +56,7 @@ then
 	FILE=$1
 fi
 
-if [ "$INXML" -a "$FILE" ]
+if [ "$INXML" -a "$FILE" ] || [ -z "$INXML" -a -z "$FILE" ]
 then
 	echo "$USAGE"
 	exit 1
