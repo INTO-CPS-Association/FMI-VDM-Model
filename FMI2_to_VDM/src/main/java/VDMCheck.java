@@ -28,6 +28,7 @@
  */
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -36,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.StringReader;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -44,8 +46,8 @@ import java.util.zip.ZipFile;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
 import fmi2vdm.FMI2SaxParser;
 
 public class VDMCheck
@@ -53,43 +55,41 @@ public class VDMCheck
 	public static void main(String[] args)
 	{
 		String filename = null;
-		String vdmOutput = null;
+		String vdmOUT = null;
+		String xmlIN = null;
 		
-		switch (args.length)
+		for (int a=0; a < args.length; a++)
 		{
-			case 1:
-				filename = args[0];
-				break;
+			switch (args[a])
+			{
+				default:
+					filename = args[a];
+					break;
+					
+				case "-v":
+					vdmOUT = args[++a];
+					break;
 				
-			case 3:
-				if (args[0].equals("-v"))
-				{
-					vdmOutput = args[1];
-					filename = args[2];
-				}
-				break;
+				case "-x":
+					xmlIN = args[++a];
+					break;
+			}
 		}
 		
-		if (filename == null)
+		if (filename == null && xmlIN == null)
 		{
-			System.err.println("Usage: $0 [-v <VDM outfile>] <FMU or modelDescription.xml file>");
+			System.err.println("Usage: VDMCheck [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml");
 			System.exit(1);
 		}
 		else
 		{
-			System.exit(run(filename, vdmOutput));
+			System.exit(run(filename, xmlIN, vdmOUT));
 		}
 	}
 	
-	private static int run(String filename, String vdmOutput)
+	private static int run(String filename, String xmlIN, String vdmOUT)
 	{
-		File fmuFile = new File(filename);
-		
-		if (!fmuFile.exists())
-		{
-			System.err.printf("File %s not found\n", filename);
-			return 1;
-		}
+		File fmuFile = filename == null ? null : new File(filename);
 		
 		File tempXML = null;
 		File tempVDM = null;
@@ -101,47 +101,73 @@ public class VDMCheck
 			tempVDM = File.createTempFile("vdm", "tmp");
 			ZipFile zip = null;
 			
-			try
+			if (fmuFile != null && !fmuFile.exists())
 			{
-				zip = new ZipFile(fmuFile);
-				ZipEntry entry = zip.getEntry("modelDescription.xml");
-				
-				if (entry == null)
-				{
-					System.err.printf("Cannot locate modelDescription.xml in %s\n", filename);
-					return 1;
-				}
-				
-				copy(zip.getInputStream(entry), tempXML);
+				System.err.printf("File %s not found\n", filename);
+				return 1;
 			}
-			catch (ZipException e)	// Not a zip file
+			
+			if (xmlIN != null)
 			{
 				try
 				{
 					DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-					dBuilder.parse(fmuFile);
+					dBuilder.parse(new InputSource(new StringReader(xmlIN)));
 				}
-				catch (SAXException e1)
+				catch (SAXException e)
 				{
-					System.err.printf("Exception: %s\n", e1.getMessage());
-					System.err.printf("Input %s is neither a ZIP nor an XML file?\n", filename);
-					return 1;
-				}
-				catch (Exception e1)
-				{
-					System.err.printf("Input %s is neither a ZIP nor an XML file?\n", filename);
+					System.err.println("XML errors found");
 					return 1;
 				}
 				
-				copy(new FileInputStream(fmuFile), tempXML);
+				// Write XML into tempXML
+				copy(new ByteArrayInputStream(xmlIN.getBytes()), tempXML);
 			}
-			finally
+			else
 			{
-				if (zip != null) zip.close();
+				try
+				{
+					zip = new ZipFile(fmuFile);
+					ZipEntry entry = zip.getEntry("modelDescription.xml");
+					
+					if (entry == null)
+					{
+						System.err.printf("Cannot locate modelDescription.xml in %s\n", filename);
+						return 1;
+					}
+					
+					copy(zip.getInputStream(entry), tempXML);
+				}
+				catch (ZipException e)	// Not a zip file
+				{
+					try
+					{
+						DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+						DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+						dBuilder.parse(fmuFile);
+					}
+					catch (SAXException e1)
+					{
+						System.err.printf("Exception: %s\n", e1.getMessage());
+						System.err.printf("Input %s is neither a ZIP nor an XML file?\n", filename);
+						return 1;
+					}
+					catch (Exception e1)
+					{
+						System.err.printf("Input %s is neither a ZIP nor an XML file?\n", filename);
+						return 1;
+					}
+					
+					copy(new FileInputStream(fmuFile), tempXML);
+				}
+				finally
+				{
+					if (zip != null) zip.close();
+				}
 			}
 			
-			// Execute VDMJ to first convert the file to VDM-SL, then validate the VDM.
+			// Execute VDMJ to first convert tempXML to VDM-SL, then validate the VDM.
 			
 			File jarLocation = getJarLocation();
 			String varName = "model" + (new Random().nextInt(9999));
@@ -161,8 +187,18 @@ public class VDMCheck
 					"com.fujitsu.vdmj.VDMJ", "-vdmsl", "-q", "-annotations",
 					"-e", "isValidFMIModelDescription(" + varName + ")", "model", tempVDM.getCanonicalPath());
 
-			filter(tempOUT);
+			sed(tempOUT, System.out,
+					"^true$", "No errors found.",
+					"^false$", "Errors found.");
 
+			if (vdmOUT != null)
+			{
+				if (filename == null) filename = "XML";
+				
+				sed(tempVDM, new PrintStream(new FileOutputStream(vdmOUT)),
+					"generated from " + tempXML, "generated from " + filename);
+			}
+			
 			return exit;
 		}
 		catch (Exception e)
@@ -216,20 +252,30 @@ public class VDMCheck
 		}
 		catch (InterruptedException e)
 		{
+			// Never happens?
 		}
 		
 		return p.exitValue();
 	}
 	
-	private static void filter(File out) throws IOException
+	private static void sed(File input, PrintStream output, String... subs) throws IOException
 	{
-		BufferedReader br = new BufferedReader(new FileReader(out));
+		if (subs.length % 2 != 0)
+		{
+			throw new IOException("Substitutions must be pairs");
+		}
+		
+		BufferedReader br = new BufferedReader(new FileReader(input));
 		String line = br.readLine();
 		
 		while (line != null)
 		{
-			line = line.replaceAll("^true$", "No errors found.").replaceAll("^false$", "Errors found.");
-			System.out.println(line);
+			for (int s=0; s < subs.length; s+=2)
+			{
+				line = line.replaceAll(subs[s], subs[s+1]);
+			}
+			
+			output.println(line);
 			line = br.readLine();
 		}
 		

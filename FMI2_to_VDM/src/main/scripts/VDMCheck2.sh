@@ -31,30 +31,54 @@
 # Process an FMI V2 FMU or XML file, and validate the XML structure using the VDM-SL model.
 #
 
-if [ "$1" = "-v" -a $# -gt 2 ]
-then
-	SAVE=$2
-	shift 2
-fi
+USAGE="Usage: $0 [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
 
-if [ $# -ne 1 ]
+while getopts ":v:x:" OPT
+do
+    case "$OPT" in
+        v)
+            SAVE=${OPTARG}
+            ;;
+        x)
+            INXML=${OPTARG}
+            ;;
+        *)
+			echo "$USAGE"
+			exit 1
+            ;;
+    esac
+done
+
+shift "$((OPTIND-1))"
+
+if [ $# = 1 ]
 then
-	echo "Usage: $0 [-v <VDM outfile>] <FMU or modelDescription.xml file>"
-	exit 1
-else
 	FILE=$1
 fi
 
-if [ ! -e "$FILE" ]
+if [ "$INXML" -a "$FILE" ]
+then
+	echo "$USAGE"
+	exit 1
+fi
+
+if [ ! -z "$FILE" -a ! -e "$FILE" ]
 then
 	echo "File not found: $FILE"
 	exit 1
 fi
 
+if [ "$INXML" ]
+then
+	FILE=/tmp/xml$$.xml
+	TMPX=$FILE
+	echo "$INXML" >$FILE
+fi
+
 XML=/tmp/modelDescription$$.xml
 VDM=/tmp/vdm$$.vdmsl
 
-trap "rm -f $XML $VDM" EXIT
+trap "rm -f $XML $VDM $TMPX" EXIT
 
 case $(file -b --mime-type $FILE) in
 	application/zip)
@@ -83,9 +107,9 @@ esac
 
 # Subshell cd, so we can set the classpath
 (
-	dir=$(dirname "$0")
+	path=$(which "$0")
+	dir=$(dirname "$path")
 	cd "$dir"
-	
 	VAR=model$$
 	
 	if ! type java 2>/dev/null 1>&2
@@ -108,6 +132,7 @@ esac
 
 if [ "$SAVE" ]
 then
+	if [ $FILE="" ]; then FILE="XML"; fi
 	sed -e "s+generated from $XML+generated from $FILE+" $VDM > "$SAVE"
 	echo "VDM source written to $SAVE"
 fi
