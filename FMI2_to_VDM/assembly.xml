@@ -16,11 +16,6 @@
 			<filtered>true</filtered>
 		</file>
 		<file>
-			<source>src/main/scripts/VDMCheck2.ps1</source>
-			<destName>VDMCheck2.ps1</destName>
-			<filtered>true</filtered>
-		</file>
-		<file>
 			<source>../LICENCE</source>
 			<destName>LICENCE</destName>
 		</file>
