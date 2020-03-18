@@ -18,7 +18,7 @@ The FMI\{2,3\} static semantic models and the FMI\{2,3\}_to_VDM tool are package
 
 ```
 $ VDMCheck2.sh
-Usage: VDMCheck2.sh [-v <VDM outfile>] <FMU or modelDescription.xml file>
+Usage: VDMCheck2.sh [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml
 
 $ VDMCheck2.sh WaterTank_Control.fmu
 No errors found.
