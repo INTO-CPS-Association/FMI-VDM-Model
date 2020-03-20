@@ -4,18 +4,17 @@
 	<id>distribution</id>
 
 	<formats>
-		<format>jar</format>
+		<format>zip</format>
 	</formats>
 	
-	<!-- <baseDirectory>vdmcheck-${project.version}</baseDirectory> -->
-	<includeBaseDirectory>false</includeBaseDirectory>
+	<baseDirectory>vdmcheck-${project.version}</baseDirectory>
 
 	<files>
-		<!-- <file>
+		<file>
 			<source>src/main/scripts/VDMCheck2.sh</source>
 			<destName>VDMCheck2.sh</destName>
 			<filtered>true</filtered>
-		</file> -->
+		</file>
 		<file>
 			<source>../LICENCE</source>
 			<destName>LICENCE</destName>
@@ -35,37 +34,14 @@
 					<exclude>META-INF/**</exclude>
 				</excludes>
 			</unpackOptions>
-			<scope>runtime</scope>
-		</dependencySet>
-		<dependencySet>
-			<includes>
-				<include>com.fujitsu:vdmj</include>
-				<include>com.fujitsu:annotations</include>
-				<include>com.fujitsu:annotations2</include>
-			</includes>
-			<unpack>true</unpack>
-			<outputDirectory>/</outputDirectory>
-			<unpackOptions>
-				<excludes>
-					<exclude>Tests/**</exclude>
-					<exclude>META-INF/**</exclude>
-				</excludes>
-			</unpackOptions>
-			<scope>runtime</scope>
 		</dependencySet>
 		<dependencySet>
 			<includes>
 				<include>fmi2:fmi2vdm</include>
+				<include>com.fujitsu:vdmj</include>
+				<include>com.fujitsu:annotations</include>
+				<include>com.fujitsu:annotations2</include>
 			</includes>
-			<unpack>true</unpack>
-			<unpackOptions>
-				<excludes>
-					<exclude>Tests/**</exclude>
-					<exclude>META-INF/**</exclude>
-				</excludes>
-			</unpackOptions>
-			<useProjectArtifact>true</useProjectArtifact>
-			<scope>runtime</scope>
 		</dependencySet>
 	</dependencySets>
 </assembly>

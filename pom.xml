@@ -18,6 +18,8 @@
       <module>COSIM_to_VDM</module>
       <module>FMI2</module>
       <module>FMI2_to_VDM</module>
+      <module>FMI3</module>
+      <module>FMI3_to_VDM</module>
   </modules>
 	
 </project>

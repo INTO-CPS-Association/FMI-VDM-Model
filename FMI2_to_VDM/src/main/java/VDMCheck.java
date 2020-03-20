@@ -183,7 +183,7 @@ public class VDMCheck
 			tempOUT = File.createTempFile("out", "tmp");
 			
 			int exit = runCommand(jarLocation, tempOUT,
-					"java", "-Xmx1g", "-cp", "vdmj-4.3.0.jar:annotations-1.0.0.jar:annotations2-1.0.0.jar", 
+					"java", "-Xmx1g", "-cp", "./*", 
 					"com.fujitsu.vdmj.VDMJ", "-vdmsl", "-q", "-annotations",
 					"-e", "isValidFMIModelDescription(" + varName + ")", "model", tempVDM.getCanonicalPath());
 

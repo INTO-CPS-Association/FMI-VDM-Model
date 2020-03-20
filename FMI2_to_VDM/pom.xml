@@ -65,15 +65,6 @@
 					<descriptors>
 						<descriptor>assembly.xml</descriptor>
 					</descriptors>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<mainClass>VDMCheck</mainClass>
-						</manifest>
-						<manifestEntries>
-							<Class-Path>./</Class-Path>
-						</manifestEntries>
-					</archive>
 					<finalName>vdmcheck-${project.version}-${maven.build.timestamp}</finalName>
 				</configuration>
 				<executions>
