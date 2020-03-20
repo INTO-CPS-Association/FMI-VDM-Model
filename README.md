@@ -30,6 +30,12 @@ $ VDMCheck2.sh invalidOutputs2.xml
 2.2.8 Outputs should be omitted at line 10
 Errors found.
 $
+
+C:\> java -jar <path to installation>/fmi2vdm-0.0.2.jar
+Usage: java -jar fmi2vdm-<version>.jar [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml
+
+C:\> java -jar <path to installation>/fmi2vdm-0.0.2.jar WaterTank_Control.fmu 
+No errors found.
 ```
 
 ## Building and Exporting the Tool
