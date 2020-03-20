@@ -1,2 +1,0 @@
-To build a Maven artifact for the project, use "mvn install". This can then be used by other
-projects to include the model sources.

@@ -31,3 +31,29 @@ $ VDMCheck2.sh invalidOutputs2.xml
 Errors found.
 $
 ```
+
+## Building and Exporting the Tool
+
+1. Install maven.
+
+2. At the root of the repo, run the following commands, to install the dependencies in the local maven repository:
+```
+mvn install:install-file -Dfile=".\lib\vdmj-4.3.0.jar" -DgroupId="com.fujitsu" -DartifactId="vdmj" -Dversion="4.3.0" -Dpackaging="jar"
+mvn install:install-file -Dfile=".\lib\annotations-1.0.0.jar" -DgroupId="com.fujitsu" -DartifactId="annotations" -Dversion="1.0.0" -Dpackaging="jar"
+mvn install:install-file -Dfile=".\lib\annotations2-1.0.0.jar" -DgroupId="com.fujitsu" -DartifactId="annotations2" -Dversion="1.0.0" -Dpackaging="jar"
+```
+
+3. Run maven package:
+```
+mvn package
+```
+
+4. The distributed packages will be generated in the target folders of the projects "FMI2_to_VDM" and "FMI3_to_VDM".
+
+## Installation
+
+To install the package, unzip the distribution ZIP somewhere and run:
+```
+java -jar fmi2vdm-<version>.jar
+```
+This will print the usage.
