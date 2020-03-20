@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.net.URISyntaxException;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -182,11 +183,10 @@ public class VDMCheck
 			
 			tempOUT = File.createTempFile("out", "tmp");
 			
-			String pathSeparator = System.getProperty("path.separator");
 			String[] dependencies = {"vdmj-4.3.0.jar", "annotations-1.0.0.jar", "annotations2-1.0.0.jar"};
 
 			int exit = runCommand(jarLocation, tempOUT,
-					"java", "-Xmx1g", "-cp", String.join(pathSeparator, dependencies), 
+					"java", "-Xmx1g", "-cp", String.join(File.pathSeparator, dependencies), 
 					"com.fujitsu.vdmj.VDMJ", "-vdmsl", "-q", "-annotations",
 					"-e", "isValidFMIModelDescription(" + varName + ")", "model", tempVDM.getCanonicalPath());
 
@@ -234,10 +234,18 @@ public class VDMCheck
 	
 	private static File getJarLocation()
 	{
-		File location = new File(VDMCheck.class.getProtectionDomain()
-				.getCodeSource().getLocation().getPath().replaceAll("%20", " "));
-		
-		return location.getParentFile();
+		try
+		{
+			File location = new File(VDMCheck.class.getProtectionDomain()
+					.getCodeSource().getLocation().toURI());
+			
+			return location.getParentFile();
+		}
+		catch (URISyntaxException e)
+		{
+			// can't happen?
+			return null;
+		}
 	}
 	
 	private static int runCommand(File dir, File output, String... cmd) throws IOException
