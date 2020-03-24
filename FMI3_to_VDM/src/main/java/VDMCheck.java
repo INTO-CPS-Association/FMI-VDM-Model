@@ -58,6 +58,7 @@ public class VDMCheck
 		String filename = null;
 		String vdmOUT = null;
 		String xmlIN = null;
+		String xsdIN = null;
 		
 		for (int a=0; a < args.length; a++)
 		{
@@ -74,21 +75,25 @@ public class VDMCheck
 				case "-x":
 					xmlIN = args[++a];
 					break;
+					
+				case "-s":
+					xsdIN = args[++a];
+					break;
 			}
 		}
 		
 		if (filename == null && xmlIN == null)
 		{
-			System.err.println("Usage: java -jar fmi2vdm-<version>.jar [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml");
+			System.err.println("Usage: java -jar fmi2vdm-<version>.jar [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml");
 			System.exit(1);
 		}
 		else
 		{
-			System.exit(run(filename, xmlIN, vdmOUT));
+			System.exit(run(filename, xmlIN, vdmOUT, xsdIN));
 		}
 	}
 	
-	private static int run(String filename, String xmlIN, String vdmOUT)
+	private static int run(String filename, String xmlIN, String vdmOUT, String xsdIN)
 	{
 		File fmuFile = filename == null ? null : new File(filename);
 		
@@ -172,7 +177,16 @@ public class VDMCheck
 			
 			File jarLocation = getJarLocation();
 			String varName = "model" + (new Random().nextInt(9999));
-			String[] args = { tempXML.getCanonicalPath(), varName };
+			String[] args = null;
+			
+			if (xsdIN == null)
+			{
+				args = new String[] { tempXML.getCanonicalPath(), varName };
+			}
+			else
+			{
+				args = new String[] { tempXML.getCanonicalPath(), varName, xsdIN };
+			}
 
 			PrintStream savedIO = System.out;
 			PrintStream vdmsl = new PrintStream(tempVDM);

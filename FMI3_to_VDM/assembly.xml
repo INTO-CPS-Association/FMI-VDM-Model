@@ -21,6 +21,13 @@
 		</file>
 	</files>
 
+	<fileSets>
+		<fileSet>
+			<directory>src/main/resources/schema</directory>
+			<outputDirectory>schema</outputDirectory>
+		</fileSet>
+	</fileSets>
+
 	<dependencySets>
 		<dependencySet>
 			<includes>

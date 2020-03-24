@@ -31,9 +31,9 @@
 # Process an FMI V3 FMU or XML file, and validate the XML structure using the VDM-SL model.
 #
 
-USAGE="Usage: $0 [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
+USAGE="Usage: $0 [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml"
 
-while getopts ":v:x:" OPT
+while getopts ":v:x:s:" OPT
 do
     case "$OPT" in
         v)
@@ -42,6 +42,9 @@ do
         x)
             INXML=${OPTARG}
             ;;
+        s)
+        	INXSD=${OPTARG}
+        	;;
         *)
 			echo "$USAGE"
 			exit 1
@@ -118,9 +121,15 @@ esac
 		exit 2
 	fi
 	
-	if ! java -cp fmi3vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$XML" "$VAR" >$VDM
+	if [ -z "$INXSD" ]
+	then java -cp fmi3vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$XML" "$VAR" >$VDM
+	else java -cp fmi3vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$XML" "$VAR" "$INXSD" >$VDM
+	fi
+	
+	if [ $? -ne 0 ]
 	then
-		echo "Problem converting modelDescription.xml to VDM-SL? This might be caused by a spelling mistake."
+		echo "Problem converting modelDescription.xml to VDM-SL?"
+		echo "This might be caused by a spelling mistake."
 		exit 2
 	fi
 	

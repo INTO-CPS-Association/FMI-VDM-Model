@@ -29,11 +29,18 @@
 
 package fmi2vdm;
 
+import java.io.File;
 import java.io.IOException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
@@ -45,10 +52,15 @@ public class FMI3SaxParser
 
 	public static void main(String[] args) throws SAXException, IOException, ParserConfigurationException
 	{
-		if (args.length != 2)
+		if (args.length != 2 && args.length != 3)
 		{
-			System.err.printf("Usage: %s <xml file> <VDM var name>\n", FMI3SaxParser.class.getSimpleName());
+			System.err.println("Usage: FMI3SaxParser <xml file> <VDM var name> [<XSD schema>]");
 			System.exit(1);
+		}
+		
+		if (args.length == 3)
+		{
+			validate(args[0], args[2]);
 		}
 
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -67,6 +79,25 @@ public class FMI3SaxParser
 		if (errors > 0)
 		{
 			System.err.println("XML parse errors found.");
+			System.exit(1);
+		}
+	}
+	
+	private static void validate(String xml, String xsd) throws SAXException, IOException
+	{
+		try
+		{
+			Source xmlFile = new StreamSource(new File(xml));
+			Source xsdFile = new StreamSource(new File(xsd));
+			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			
+			Schema schema = schemaFactory.newSchema(xsdFile);
+			Validator validator = schema.newValidator();
+			validator.validate(xmlFile);
+		}
+		catch (Exception e)
+		{
+			System.err.println("XML validation: " + e.getMessage());
 			System.exit(1);
 		}
 	}
