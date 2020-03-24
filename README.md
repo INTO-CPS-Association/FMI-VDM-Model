@@ -18,7 +18,7 @@ The FMI\{2,3\} static semantic models and the FMI\{2,3\}_to_VDM tool are package
 
 ```
 $ VDMCheck2.sh
-Usage: VDMCheck2.sh [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml
+Usage: VDMCheck2.sh [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml
 
 $ VDMCheck2.sh WaterTank_Control.fmu
 No errors found.
@@ -32,7 +32,7 @@ Errors found.
 $
 
 C:\> java -jar <path to installation>/fmi2vdm-0.0.2.jar
-Usage: java -jar fmi2vdm-<version>.jar [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml
+Usage: java -jar fmi2vdm-<version>.jar [-v <VDM outfile>][-s <XSD>] -x <XML> | <file>.fmu | <file>.xml
 
 C:\> java -jar <path to installation>/fmi2vdm-0.0.2.jar WaterTank_Control.fmu 
 No errors found.
