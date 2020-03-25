@@ -58,7 +58,7 @@ public class VDMCheck
 		String filename = null;
 		String vdmOUT = null;
 		String xmlIN = null;
-		String xsdIN = null;
+		String xsdIN = "schema/fmi2ModelDescription.xsd";
 		
 		for (int a=0; a < args.length; a++)
 		{
@@ -177,16 +177,15 @@ public class VDMCheck
 			
 			File jarLocation = getJarLocation();
 			String varName = "model" + (new Random().nextInt(9999));
-			String[] args = null;
+			File schema = new File(xsdIN);
 			
-			if (xsdIN == null)
+			if (!schema.isAbsolute())
 			{
-				args = new String[] { tempXML.getCanonicalPath(), varName };
+				// Relative paths are relative to the jar location
+				schema = new File(jarLocation.getAbsolutePath() + File.separator + schema.getPath());
 			}
-			else
-			{
-				args = new String[] { tempXML.getCanonicalPath(), varName, xsdIN };
-			}
+			
+			String[] args = new String[] { tempXML.getCanonicalPath(), varName, schema.getCanonicalPath() };
 
 			PrintStream savedIO = System.out;
 			PrintStream vdmsl = new PrintStream(tempVDM);
