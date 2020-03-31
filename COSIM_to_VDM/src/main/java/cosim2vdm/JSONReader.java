@@ -1,227 +1,466 @@
-/**
- * Originally from https://sourceforge.net/projects/stringtree/.
- * Apache Software License, GNU Library or Lesser General Public License version 2.0 (LGPLv2)
- */
+/*******************************************************************************
+ *
+ *	Copyright (c) 2020 Nick Battle.
+ *
+ *	Author: Nick Battle
+ *
+ *	This file is part of VDMJ.
+ *
+ *	VDMJ is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	VDMJ is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with VDMJ.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ******************************************************************************/
 
 package cosim2vdm;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.text.CharacterIterator;
-import java.text.StringCharacterIterator;
-import java.util.ArrayList;
-import java.util.TreeMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.io.Reader;
 
-public class JSONReader {
+public class JSONReader
+{
+	private static final char EOF = (char)-1;
+	private final Reader ireader;
+	private char ch = 0;
+	private boolean quotedQuote;
 
-    private static final Object OBJECT_END = new Object();
-    private static final Object ARRAY_END = new Object();
-    private static final Object COLON = new Object();
-    private static final Object COMMA = new Object();
-    public static final int FIRST = 0;
-    public static final int CURRENT = 1;
-    public static final int NEXT = 2;
+	public JSONReader(Reader ireader) throws IOException
+	{
+		this.ireader = ireader;
+		init();
+	}
+	
+	private void init() throws IOException
+	{
+		rdCh();
+		quotedQuote = false;
+	}
+	
+	/**
+	 * Check the next character is as expected. If the character is
+	 * not as expected, throw the message as an IOException.
+	 *
+	 * @param c	The expected next character.
+	 * @param message The error message.
+	 * @throws IOException
+	 */
+	private void checkFor(char c, String message) throws IOException
+	{
+		skipWhitespace();
+		
+		if (ch == c)
+		{
+			rdCh();
+		}
+		else
+		{
+			throw new IOException(message);
+		}
+	}
 
-    private static Map<Character, Character> escapes = new TreeMap<Character, Character>();
-    static {
-        escapes.put(new Character('"'), new Character('"'));
-        escapes.put(new Character('\\'), new Character('\\'));
-        escapes.put(new Character('/'), new Character('/'));
-        escapes.put(new Character('b'), new Character('\b'));
-        escapes.put(new Character('f'), new Character('\f'));
-        escapes.put(new Character('n'), new Character('\n'));
-        escapes.put(new Character('r'), new Character('\r'));
-        escapes.put(new Character('t'), new Character('\t'));
-    }
+	/**
+	 * Read the next character from the stream.
+	 *
+	 * The next character is set in the "ch" field, as well as being returned for
+	 * convenience.
+	 *
+	 * @return the next character.
+	 */
+	private char rdCh() throws IOException
+	{
+		ch = (char) ireader.read();
+		return ch;
+	}
 
-    private CharacterIterator it;
-    private char c;
-    private Object token;
-    private StringBuffer buf = new StringBuffer();
+	/**
+	 * Skip any whitespace characters.
+	 */
+	private void skipWhitespace() throws IOException
+	{
+		while (Character.isWhitespace(ch))
+		{
+			rdCh();
+		}
+	}
 
-    private char next() {
-        c = it.next();
-        return c;
-    }
+	/**
+	 * Read a backslash quoted character from the stream. This method is used
+	 * when parsing strings which may include things like "\n".
+	 *
+	 * @return The actual character value (eg. "\n" returns 10).
+	 * @throws IOException 
+	 */
+	private char rdQuotedCh() throws IOException
+	{
+		char c = rdCh();
+		quotedQuote = false;
 
-    private void skipWhiteSpace() {
-        while (Character.isWhitespace(c)) {
-            next();
-        }
-    }
+	    if (c == '\\')
+	    {
+    		rdCh();
 
-    public Object read(CharacterIterator ci, int start) {
-        it = ci;
-        switch (start) {
-        case FIRST:
-            c = it.first();
-            break;
-        case CURRENT:
-            c = it.current();
-            break;
-        case NEXT:
-            c = it.next();
-            break;
-        }
-        return read();
-    }
+    		switch (ch)
+    		{
+    		    case 'r':  ch = '\r'; break;
+    		    case 'n':  ch = '\n'; break;
+    		    case 't':  ch = '\t'; break;
+    		    case 'f':  ch = '\f'; break;
+    		    case 'b':  ch = '\b'; break;
+    		    case 'v':  ch = '\u000B'; break;
 
-    public Object read(CharacterIterator it) {
-        return read(it, NEXT);
-    }
+    		    case '\"': ch = '\"'; quotedQuote = true; break;
+    		    case '\\': ch = '\\'; break;
+    		    case '/':  ch = '/'; break;
 
-    public Object read(String string) {
-        return read(new StringCharacterIterator(string), FIRST);
-    }
+    		    case 'u':
+    		    	ch = (char)(valCh(rdCh(), 16)*4096 + valCh(rdCh(), 16)*256 +
+    		    				valCh(rdCh(), 16)*16 + valCh(rdCh(), 16));
+    		    	break;
 
-    private Object read() {
-        skipWhiteSpace();
-        char ch = c;
-        next();
-        switch (ch) {
-            case '"': token = string(); break;
-            case '[': token = array(); break;
-            case ']': token = ARRAY_END; break;
-            case ',': token = COMMA; break;
-            case '{': token = object(); break;
-            case '}': token = OBJECT_END; break;
-            case ':': token = COLON; break;
-            case 't':
-                next(); next(); next(); // assumed r-u-e
-                token = Boolean.TRUE;
-                break;
-            case'f':
-                next(); next(); next(); next(); // assumed a-l-s-e
-                token = Boolean.FALSE;
-                break;
-            case 'n':
-                next(); next(); next(); // assumed u-l-l
-                token = null;
-                break;
-            default:
-                c = it.previous();
-                if (Character.isDigit(c) || c == '-') {
-                    token = number();
-                }
-        }
-        // System.out.println("token: " + token); // enable this line to see the token stream
-        return token;
-    }
-    
-    private Object object() {
-        Map<Object, Object> ret = new TreeMap<Object, Object>();
-        Object key = read();
-        while (token != OBJECT_END) {
-            read(); // should be a colon
-            if (token != OBJECT_END) {
-                ret.put(key, read());
-                if (read() == COMMA) {
-                    key = read();
-                }
-            }
-        }
+    		    default:
+    		    	throw new IOException("Malformed quoted character");
+    		}
+	    }
 
-        return ret;
-    }
+	    return ch;
+	}
+	
+	/**
+	 * Check and return the value of a character in a particular base.
+	 * @throws LexException 
+	 */
+	private int valCh(char c, int base) throws IOException
+	{
+		int val = value(c);
+		
+		if (val == -1 || val >= base)
+		{
+			throw new IOException("Illegal character for base " + base);
+		}
+		
+		return val;
+	}
 
-    private Object array() {
-        List<Object> ret = new ArrayList<Object>();
-        Object value = read();
-        while (token != ARRAY_END) {
-            ret.add(value);
-            if (read() == COMMA) {
-                value = read();
-            }
-        }
-        return ret;
-    }
+	/**
+	 * Return the value of a character for parsing numbers. The ASCII characters
+	 * 0-9 are turned into decimal 0-9, while a-f and A-F are turned into the
+	 * hex values 10-15. Characters outside these ranges return -1.
+	 *
+	 * @param c	The ASCII value to convert.
+	 * @return	The converted value.
+	 */
+	private int value(char c)
+	{
+		switch (c)
+		{
+			case '0': case '1':	case '2': case '3': case '4':
+			case '5': case '6':	case '7': case '8': case '9':
+				return c - '0';
 
-    private Object number() {
-        int length = 0;
-        boolean isFloatingPoint = false;
-        buf.setLength(0);
-        
-        if (c == '-') {
-            add();
-        }
-        length += addDigits();
-        if (c == '.') {
-            add();
-            length += addDigits();
-            isFloatingPoint = true;
-        }
-        if (c == 'e' || c == 'E') {
-            add();
-            if (c == '+' || c == '-') {
-                add();
-            }
-            addDigits();
-            isFloatingPoint = true;
-        }
- 
-        String s = buf.toString();
-        return isFloatingPoint 
-            ? (length < 17) ? (Object)Double.valueOf(s) : new BigDecimal(s)
-            : (length < 19) ? (Object)Long.valueOf(s) : new BigInteger(s);
-    }
- 
-    private int addDigits() {
-        int ret;
-        for (ret = 0; Character.isDigit(c); ++ret) {
-            add();
-        }
-        return ret;
-    }
+			case 'a': case 'b':	case 'c': case 'd':
+			case 'e': case 'f':
+				return c - 'a' + 10;
 
-    private Object string() {
-        buf.setLength(0);
-        while (c != '"') {
-            if (c == '\\') {
-                next();
-                if (c == 'u') {
-                    add(unicode());
-                } else {
-                    Object value = escapes.get(new Character(c));
-                    if (value != null) {
-                        add(((Character) value).charValue());
-                    }
-                }
-            } else {
-                add();
-            }
-        }
-        next();
+			case 'A': case 'B': case 'C': case 'D':
+			case 'E': case 'F':
+				return c - 'A' + 10;
 
-        return buf.toString();
-    }
+			default:
+				return -1;
+		}
+	}
 
-    private void add(char cc) {
-        buf.append(cc);
-        next();
-    }
+	/**
+	 * Read a decimal number. Parsing terminates when a character
+	 * not within the number base is read.
+	 *
+	 * @return The string value of the number read.
+	 */
+	private String rdDecimal() throws IOException
+	{
+		StringBuilder v = new StringBuilder();
+		
+		if (ch == '+' || ch == '-')
+		{
+			v.append(ch);
+			rdCh();
+		}
+		
+		int n = value(ch);
+		v.append(ch);
 
-    private void add() {
-        add(c);
-    }
+		if (n < 0 || n >= 10)
+		{
+			throw new IOException("Invalid char [" + ch + "] in base 10");
+		}
 
-    private char unicode() {
-        int value = 0;
-        for (int i = 0; i < 4; ++i) {
-            switch (next()) {
-            case '0': case '1': case '2': case '3': case '4': 
-            case '5': case '6': case '7': case '8': case '9':
-                value = (value << 4) + c - '0';
-                break;
-            case 'a': case 'b': case 'c': case 'd': case 'e': case 'f':
-                value = (value << 4) + c - 'k';
-                break;
-            case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
-                value = (value << 4) + c - 'K';
-                break;
-            }
-        }
-        return (char) value;
-    }
+		while (true)
+		{
+			rdCh();
+			n = value(ch);
+
+			if (n < 0 || n >= 10)
+			{
+				return v.toString();
+			}
+
+			v.append(ch);
+		}
+	}
+
+	/**
+	 * Read a decimal floating point number.
+	 *
+	 * @throws IOException
+	 */
+	private Number rdReal() throws IOException
+	{
+		String floatSyntax = "Expecting [+/-]<digits>[.<digits>][e[+/-]<digits>]";
+		String value = rdDecimal();
+		String fraction = null;
+		String exponent = null;
+		boolean negative = false;
+
+		if (ch == '.')
+		{
+			rdCh();
+
+			if (ch >= '0' && ch <= '9')
+			{
+				fraction = rdDecimal();
+				exponent = "0";
+			}
+			else
+			{
+				throw new IOException("Expecting digits after decimal point");
+			}
+		}
+
+		if (ch == 'e' || ch == 'E')
+		{
+			if (fraction == null) fraction = "0";
+
+			switch (rdCh())
+			{
+				case '+':
+				{
+					rdCh();
+					exponent = rdDecimal();
+					break;
+				}
+
+				case '-':
+				{
+					rdCh();
+					exponent = rdDecimal();
+					negative = true;
+					break;
+				}
+
+				case '0': case '1': case '2': case '3': case '4':
+				case '5': case '6': case '7': case '8': case '9':
+				{
+					exponent = rdDecimal();
+					break;
+				}
+
+				default:
+					throw new IOException(floatSyntax);
+			}
+		}
+
+		if (fraction != null)
+		{
+			String real = value + "." + fraction + "e" + (negative ? "-" : "+") + exponent;
+			return Double.parseDouble(real);
+		}
+
+		return Long.parseLong(value);
+	}
+	
+	/**
+	 * Read a JSON name.
+	 *
+	 * @throws IOException
+	 */
+	private String rdName() throws IOException
+	{
+		if (Character.isJavaIdentifierStart(ch))
+		{
+			StringBuilder sb = new StringBuilder();
+			sb.append(ch);
+			rdCh();
+			
+			while (Character.isJavaIdentifierPart(ch))
+			{
+				sb.append(ch);
+				rdCh();
+			}
+			
+			return sb.toString();
+		}
+		
+		throw new IOException("Illegal name");
+	}
+
+	/**
+	 * Read a JSON quoted string.
+	 *
+	 * @throws IOException
+	 */
+	private String rdString() throws IOException
+	{
+		if (ch != '\"')
+		{
+			throw new IOException("Expecting \"quoted\" string");
+		}
+		else
+		{
+			rdQuotedCh();	// NB. checkFor would use rdCh()
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		
+		while ((ch != '"' || quotedQuote) && ch != EOF)
+		{
+			sb.append(ch);
+			rdQuotedCh();
+		}
+		
+		if (ch != '\"')		// NB. checkFor would call skipWhitespace
+		{
+			throw new IOException("Missing close quote in string");
+		}
+		
+		rdCh();
+		return sb.toString();
+	}
+
+	/**
+	 * Read a JSON value (object, array or literal).
+	 *
+	 * @throws IOException
+	 */
+	private Object readValue() throws IOException
+	{
+		skipWhitespace();
+		
+		switch (ch)
+		{
+			case '{':
+				return readObject();
+			
+			case '[':
+				return readArray();
+			
+			case '\"':
+				return rdString();
+				
+			default:
+			{
+				if ((ch >= '0' && ch <= '9') || ch == '-' || ch == '+')
+				{
+					return rdReal();
+				}
+				else if (Character.isJavaIdentifierStart(ch))
+				{
+					String word = rdName();
+					
+					switch (word)
+					{
+						case "true":
+							return Boolean.TRUE;
+							
+						case "false":
+							return Boolean.FALSE;
+							
+						case "null":
+							return null;	// Hmmm...
+							
+						default:
+							throw new IOException("Unexpected word: " + word);
+					}
+				}
+				else
+				{
+					throw new IOException("Unexpected character: " + ch);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Read a JSON array of values.
+	 *
+	 * @throws IOException
+	 */
+	private JSONArray readArray() throws IOException
+	{
+		checkFor('[', "Expecting '[' at start of array");
+		JSONArray array = new JSONArray();
+		skipWhitespace();
+		
+		while (ch != ']' && ch != EOF)
+		{
+			array.add(readValue());
+			skipWhitespace();
+			
+			if (ch == ',')
+			{
+				rdCh();
+				skipWhitespace();
+			}
+		}
+		
+		checkFor(']', "Missing closing brace in array");
+		return array;
+	}
+
+	/**
+	 * Read a JSON object.
+	 *
+	 * @throws IOException
+	 */
+	public JSONObject readObject() throws IOException
+	{
+		JSONObject map = new JSONObject();
+	
+		checkFor('{', "Expecting '{' at start of object");
+		skipWhitespace();
+		
+		if (ch == '}')	// Empty object allowed
+		{
+			return map;
+		}
+		
+		String key = rdString();
+		checkFor(':', "Expecting <name> : <value>");
+		Object value = readValue();
+		
+		map.put(key, value);
+		skipWhitespace();
+		
+		while (ch == ',')
+		{
+			rdCh();
+			skipWhitespace();
+			key = rdString();
+			checkFor(':', "Expecting <name> : <value>");
+			value = readValue();
+			map.put(key, value);
+			skipWhitespace();
+		}
+		
+		checkFor('}', "Missing closing bracket in object");
+		return map;
+	}
 }

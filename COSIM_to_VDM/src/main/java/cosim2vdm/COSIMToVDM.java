@@ -34,11 +34,9 @@
 package cosim2vdm;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -54,7 +52,6 @@ public class COSIMToVDM
 			error("Usage: COSIMToVDM <json file> <VDM var name>");
 		}
 		
-		JSONReader reader = new JSONReader();
 		System.out.println("/**");
 		System.out.println(" * VDM Model generated from " + args[0] + " on " + new Date());
 		System.out.println(" */");
@@ -67,7 +64,9 @@ public class COSIMToVDM
 		System.out.println("values");
 		System.out.println(args[1] + " = mk_CoSimulation");
 		System.out.println("(");
-		processConfiguration(reader.read(readFile(args[0])));
+
+		JSONReader reader = new JSONReader(new FileReader(args[0]));
+		processConfiguration(reader.readObject());
 		System.out.println(");");
 	}
 	
@@ -77,42 +76,33 @@ public class COSIMToVDM
 		System.exit(1);
 	}
 	
-	private static void processConfiguration(Object object)
+	private static void processConfiguration(JSONObject map)
 	{
-		if (object instanceof Map<?,?>)
+		if (map.containsKey("fmus"))
 		{
-			Map<String, Object> map = (Map<String, Object>)object;
-			
-			if (map.containsKey("fmus"))
-			{
-				processFMUs(map.get("fmus"));
-			}
-			else
-			{
-				error("Configuration does not define fmus");
-			}
-			
-			if (map.containsKey("connections"))
-			{
-				processConnections(map.get("connections"));
-			}
-			else
-			{
-				error("Configuration does not define connections");
-			}
-			
-			if (map.containsKey("parameters"))
-			{
-				processParameters(map.get("parameters"));
-			}
-			else
-			{
-				error("Configuration does not define parameters");
-			}
+			processFMUs(map.get("fmus"));
 		}
 		else
 		{
-			error("JSON config is not an object");
+			error("Configuration does not define fmus");
+		}
+		
+		if (map.containsKey("connections"))
+		{
+			processConnections(map.get("connections"));
+		}
+		else
+		{
+			error("Configuration does not define connections");
+		}
+		
+		if (map.containsKey("parameters"))
+		{
+			processParameters(map.get("parameters"));
+		}
+		else
+		{
+			error("Configuration does not define parameters");
 		}
 	}
 	
@@ -120,107 +110,89 @@ public class COSIMToVDM
 	private static Map<String, Integer> FMUIndex = new TreeMap<String, Integer>();
 	private static Map<Integer, String> FMUspec = new TreeMap<Integer, String>();
 
-	private static void processFMUs(Object object)
+	private static void processFMUs(JSONObject map)
 	{
-		if (object instanceof Map<?,?>)
+		int index = 0;
+		System.out.println("\t-- FMUs\n\t[");
+		String sep = "";
+		
+		for (String fmu: map.keySet())
 		{
-			Map<String, Object> map = (Map<String, Object>) object;
-			int index = 0;
-			System.out.println("\t-- FMUs\n\t[");
-			String sep = "";
+			FMURoot.put(fmu, ++index);							// eg. "{wt}" = 1
 			
-			for (String fmu: map.keySet())
-			{
-				FMURoot.put(fmu, ++index);							// eg. "{wt}" = 1
-				
-				String raw = fmu.substring(1, fmu.length() - 1);	// eg. "wt"
-				FMUspec.put(index, raw + ".vdmsl");					// eg. "wt.vdmsl"
-				
-				System.out.print(sep + "\t\t" + raw );
-				sep = ",\n";
-			}
+			String raw = fmu.substring(1, fmu.length() - 1);	// eg. "wt"
+			FMUspec.put(index, raw + ".vdmsl");					// eg. "wt.vdmsl"
+			
+			System.out.print(sep + "\t\t" + raw );
+			sep = ",\n";
+		}
 
-			System.out.println("\n\t],\n");
-		}
-		else
-		{
-			error("fmus entry is not an object");
-		}
+		System.out.println("\n\t],\n");
 	}
 
-	private static void processConnections(Object object)
+	private static void processConnections(JSONObject map)
 	{
-		if (object instanceof Map<?,?>)
+		System.out.println("\t-- Connections\n\t{");
+		String sep = "";
+		
+		// Collect unique FMU stems first
+		for (String source: map.keySet())
 		{
-			Map<String, Object> map = (Map<String, Object>) object;
-			System.out.println("\t-- Connections\n\t{");
-			String sep = "";
+			String[] parts = source.split("\\.");
+			String key = (parts.length > 1 ? parts[0] + "." + parts[1] : parts[0]);
 			
-			// Collect unique FMU stems first
-			for (String source: map.keySet())
+			if (!FMUIndex.containsKey(key))
 			{
-				String[] parts = source.split("\\.");
-				String key = (parts.length > 1 ? parts[0] + "." + parts[1] : parts[0]);
+				FMUIndex.put(key, FMURoot.get(parts[0]));
+			}
+
+			JSONArray list = map.get(source);
+			
+			for (Object obj: list)
+			{
+				String name = (String)obj;
+				parts = name.split("\\.");
+				key = (parts.length > 1 ? parts[0] + "." + parts[1] : parts[0]);
 				
 				if (!FMUIndex.containsKey(key))
 				{
 					FMUIndex.put(key, FMURoot.get(parts[0]));
 				}
-
-				List<String> list = (List<String>)map.get(source);
-				
-				for (String name: list)
-				{
-					parts = name.split("\\.");
-					key = (parts.length > 1 ? parts[0] + "." + parts[1] : parts[0]);
-					
-					if (!FMUIndex.containsKey(key))
-					{
-						FMUIndex.put(key, FMURoot.get(parts[0]));
-					}
-				}
+			}
+		}
+		
+		for (String source: map.keySet())
+		{
+			System.out.println(sep + "\t\t" + fmuVariable(source) + " |->\n\t\t{");
+			JSONArray list = map.get(source);
+			String sep2 = "";
+			
+			for (Object obj: list)
+			{
+				String name = (String)obj;
+				System.out.println(sep2 + "\t\t\t" + fmuVariable(name));
+				sep2 = ",\n";
 			}
 			
-			for (String source: map.keySet())
-			{
-				System.out.println(sep + "\t\t" + fmuVariable(source) + " |->\n\t\t{");
-				List<String> list = (List<String>)map.get(source);
-				String sep2 = "";
-				
-				for (String name: list)
-				{
-					System.out.println(sep2 + "\t\t\t" + fmuVariable(name));
-					sep2 = ",\n";
-				}
-				
-				System.out.print("\t\t}");
-				sep = ",\n\n";
-			}
-	
-			System.out.println("\n\t},\n");
+			System.out.print("\t\t}");
+			sep = ",\n\n";
 		}
-		else
-		{
-			error("connections entry is not an object");
-		}
+
+		System.out.println("\n\t},\n");
 	}
 	
-	private static void processParameters(Object object)
+	private static void processParameters(JSONObject map)
 	{
-		if (object instanceof Map<?,?>)
+		System.out.println("\t-- Parameters\n\t{");
+		String sep = "";
+		
+		for (String source: map.keySet())
 		{
-			Map<String, Object> map = (Map<String, Object>) object;
-			System.out.println("\t-- Parameters\n\t{");
-			String sep = "";
-			
-			for (String source: map.keySet())
-			{
-				System.out.print(sep + "\t\t" + fmuVariable(source) + " |-> " + map.get(source));
-				sep = ",\n";
-			}
-	
-			System.out.println("\n\t}");
+			System.out.print(sep + "\t\t" + fmuVariable(source) + " |-> " + map.get(source));
+			sep = ",\n";
 		}
+
+		System.out.println("\n\t}");
 	}
 
 	private static String fmuVariable(String varname)
@@ -294,15 +266,5 @@ public class COSIMToVDM
 
 		error("Could not find " + varname + " in " + spec);
 		return 0;
-	}
-
-	private static String readFile(String filename) throws IOException
-	{
-		File file = new File(filename);
-		char[] buffer = new char[(int) file.length()];
-		BufferedReader ir = new BufferedReader(new FileReader(file));
-		ir.read(buffer);
-		ir.close();
-		return new String(buffer);
 	}
 }
