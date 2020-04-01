@@ -30,6 +30,7 @@
 package fmi2vdm;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import javax.xml.XMLConstants;
@@ -75,12 +76,16 @@ public class FMI2SaxParser
 		}
 	}
 	
-	private static void validate(String xml, String xsd) throws SAXException, IOException
+	private static void validate(String xml, String xsd)
 	{
 		try
 		{
-			Source xmlFile = new StreamSource(new File(xml));
-			Source xsdFile = new StreamSource(new File(xsd));
+			// Note that we pass a stream to allow the validator to determine the
+			// encoding, rather than passing a File, which seems to use default encoding.
+			Source xmlFile = new StreamSource(new FileInputStream(xml));
+			xmlFile.setSystemId(new File(xml).toURI().toASCIIString());
+			Source xsdFile = new StreamSource(new FileInputStream(xsd));
+			xsdFile.setSystemId(new File(xsd).toURI().toASCIIString());
 			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			
 			Schema schema = schemaFactory.newSchema(xsdFile);
