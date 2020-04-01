@@ -44,7 +44,7 @@
 		</dependencySet>
 		<dependencySet>
 			<includes>
-				<include>fmi3:fmi3vdm</include>
+				<include>fmi3:fmi2vdm</include>
 				<include>com.fujitsu:vdmj</include>
 				<include>com.fujitsu:annotations</include>
 				<include>com.fujitsu:annotations2</include>
