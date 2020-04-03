@@ -29,4 +29,4 @@ jobs:
     - name: Import Annotations2
       run: mvn install:install-file -Dfile="lib/annotations2-1.0.0.jar" -DgroupId="com.fujitsu" -DartifactId="annotations2" -Dversion="1.0.0" -Dpackaging="jar"
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn test
