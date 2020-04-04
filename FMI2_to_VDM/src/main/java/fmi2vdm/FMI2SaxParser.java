@@ -92,6 +92,11 @@ public class FMI2SaxParser
 			Validator validator = schema.newValidator();
 			validator.validate(xmlFile);
 		}
+		catch (SAXException e)
+		{
+			System.err.println("XML validation: " + e);		// Raw exception gives file/line/col
+			System.exit(1);
+		}
 		catch (Exception e)
 		{
 			System.err.println("XML validation: " + e.getMessage());
