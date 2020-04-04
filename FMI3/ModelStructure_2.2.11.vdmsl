@@ -50,14 +50,14 @@ types
 		dependencies			: [seq of fmi3ValueReference]
 		dependenciesKind		: [seq of DependencyKind];
 
+	EventIndicator ::
+		location				: Location
+		valueReference			: fmi3ValueReference;
+
 	ModelStructure ::
 		location				: Location
 		unknowns				: [seq1 of Unknown]
-		numberOfEventIndicators	: [NumberOfEventIndicators];
-
-	NumberOfEventIndicators ::
-		location				: Location
-		dependencies			: seq1 of fmi3ValueReference;
+		eventIndicators			: [seq1 of EventIndicator];
 
 functions
 	/**

@@ -61,11 +61,4 @@ public class Item extends Element
 		System.out.print(")");
 
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "name", name, true);
-		validate(root, "value", value, true);
-	}
 }

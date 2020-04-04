@@ -34,29 +34,23 @@ import java.math.BigInteger;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class NumberOfEventIndicators extends Element
+public class EventIndicator extends Element
 {
-	private BigInteger[] dependencies;
+	private BigInteger valueReference;
 
-	public NumberOfEventIndicators(Attributes attributes, Locator locator)
+	public EventIndicator(Attributes attributes, Locator locator)
 	{
 		super(locator);
 
-		dependencies = intsOf(attributes, "dependencies");
+		valueReference = intOf(attributes, "valueReference");
 	}
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_NumberOfEventIndicators(");
+		System.out.print(indent + "mk_EventIndicator(");
 		System.out.print(lineNumber + ", ");
-		printSequence("", dependencies, "");
+		printRawAttribute("", valueReference, "");
 		System.out.print(")");
-	}
-
-	@Override
-	public void validate(String root)
-	{
-		// None
 	}
 }

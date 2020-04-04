@@ -32,7 +32,7 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class FMUType extends Element
+public class InterfaceType extends Element
 {
 	private VendorAnnotations annotations;
 	private String modelIdentifier;
@@ -42,9 +42,10 @@ public class FMUType extends Element
 	private Boolean canGetAndSetFMUState;
 	private Boolean canSerializeFMUState;
 	private Boolean providesDirectionalDerivative;
+	private Boolean providesAdjointDerivative;
 	private Boolean providesPerElementDependencies;;
 
-	protected FMUType(Attributes attributes, Locator locator)
+	protected InterfaceType(Attributes attributes, Locator locator)
 	{
 		super(locator);
 		
@@ -55,6 +56,7 @@ public class FMUType extends Element
 		canGetAndSetFMUState = boolOf(attributes, "canGetAndSetFMUState");
 		canSerializeFMUState = boolOf(attributes, "canSerializeFMUState");
 		providesDirectionalDerivative = boolOf(attributes, "providesDirectionalDerivative");
+		providesAdjointDerivative = boolOf(attributes, "providesAdjointDerivative");
 		providesPerElementDependencies = boolOf(attributes, "providesPerElementDependencies");
 	}
 	
@@ -74,7 +76,7 @@ public class FMUType extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_fmi3FMUType");
+		System.out.println(indent + "mk_fmi3InterfaceType");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		
@@ -87,14 +89,8 @@ public class FMUType extends Element
 		printRawAttribute(indent + "\t", canGetAndSetFMUState, ",\n");
 		printRawAttribute(indent + "\t", canSerializeFMUState, ",\n");
 		printRawAttribute(indent + "\t", providesDirectionalDerivative, ",\n");
+		printRawAttribute(indent + "\t", providesAdjointDerivative, ",\n");
 		printRawAttribute(indent + "\t", providesPerElementDependencies, "\n");
 		System.out.print(indent + ")");
-	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "modelIdentifier", modelIdentifier, true);
-		validate(root, "annotations", annotations, false);
 	}
 }

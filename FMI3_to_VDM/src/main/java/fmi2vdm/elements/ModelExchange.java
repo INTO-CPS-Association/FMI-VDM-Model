@@ -32,7 +32,7 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class ModelExchange extends FMUType
+public class ModelExchange extends InterfaceType
 {
 	private Boolean completedIntegratorStepNotNeeded;
 
@@ -51,6 +51,7 @@ public class ModelExchange extends FMUType
 		super.toVDM(indent + "\t");
 		System.out.println(",");
 		
+		printQuoteAttribute(indent + "\t", this.getClass().getSimpleName(), ",\n");
 		printRawAttribute(indent + "\t", completedIntegratorStepNotNeeded, "\n");
 		System.out.print(indent + ")");
 	}

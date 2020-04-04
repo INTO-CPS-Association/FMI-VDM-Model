@@ -63,10 +63,4 @@ public class UnitDefinitions extends Element
 	{
 		printSequence(indent, unitDefinitions, "");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "unitDefinitions", unitDefinitions, false);
-	}
 }

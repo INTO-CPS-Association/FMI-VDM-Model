@@ -58,12 +58,4 @@ public class TerminalMemberVariable extends Element
 		printStringAttribute(indent + "\t", variableName, "\n");
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "variableKind", variableKind, true);
-		validate(root, "memberName", memberName, true);
-		validate(root, "variableName", variableName, true);
-	}
 }

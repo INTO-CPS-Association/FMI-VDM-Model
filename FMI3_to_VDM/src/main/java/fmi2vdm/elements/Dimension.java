@@ -54,10 +54,4 @@ public class Dimension extends Element
 		printRawAttribute("", start, ", ");
 		printRawAttribute("", valueReference, ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		// None
-	}
 }

@@ -81,6 +81,11 @@ types
 		start				: [nat]
 		valueReference		: [fmi3ValueReference];
 
+	Alias ::
+		name				: NormalizedString
+		description			: [AnyString]
+		displayUnit			: [NormalizedString];	-- Only for floats
+
 	fmi3VariableBase ::
 		location							: Location
 		name								: NormalizedString
@@ -94,7 +99,8 @@ types
 		clockReference						: [fmi3ValueReference]
 		intermediateAccess					: [bool]
 		dimensions							: [seq1 of Dimension]
-		annotations							: [fmi3Annotation];
+		annotations							: [fmi3Annotation]
+		aliases								: [seq1 of Alias];
 
 	Real ::
 		base				: fmi3VariableBase
@@ -613,6 +619,7 @@ functions
 							"Implicit independent time variable",
 							<independent>,
 							<continuous>,
+							nil,
 							nil,
 							nil,
 							nil,

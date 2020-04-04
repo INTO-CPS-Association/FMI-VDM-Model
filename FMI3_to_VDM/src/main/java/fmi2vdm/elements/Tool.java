@@ -81,10 +81,4 @@ public class Tool extends Element
 
 		System.out.print(")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "name", name, true);
-	}
 }

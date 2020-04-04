@@ -67,7 +67,7 @@ public class EnumerationType extends Type
 		System.out.println(indent + "mk_EnumerationType");
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");
-		printQuoteAttribute(",\n" + indent + "\t", "Int32", ",\n");
+		printQuoteAttribute(",\n" + indent + "\t", "IntegerKind", ",\n");
 		printStringAttribute(indent + "\t", quantity, ",\n");
 		printSequence(indent + "\t", items, "\n");
 		System.out.print(indent + ")");

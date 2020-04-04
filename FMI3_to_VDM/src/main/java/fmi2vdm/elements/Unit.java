@@ -78,12 +78,4 @@ public class Unit extends Element
 		printSequence(indent + "\t", displayUnits, "\n");
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "name", name, true);
-		validate(root, "baseUnit", baseUnit, false);
-		validate(root, "displayUnits", displayUnits, false);
-	}
 }

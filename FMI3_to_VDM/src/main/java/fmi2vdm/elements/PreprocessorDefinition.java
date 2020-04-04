@@ -81,11 +81,4 @@ public class PreprocessorDefinition extends Element
 		printOptional(indent + "\t", options, "\n");
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "name", name, true);
-		validate(root, "options", options, false);
-	}
 }

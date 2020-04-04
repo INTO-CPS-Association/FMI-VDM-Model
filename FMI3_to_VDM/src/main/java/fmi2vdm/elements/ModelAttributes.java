@@ -94,12 +94,4 @@ public class ModelAttributes extends Element
 
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "fmiVersion", fmiVersion, true);
-		validate(root, "modelName", modelName, true);
-		validate(root, "instantiationToken", instantiationToken, true);
-	}
 }

@@ -46,10 +46,6 @@ types
 	-- Possible values for a Variable
 	fmi3Value			= fmi3Float | fmi3Integer | fmi3Boolean | fmi3String;
 
-	fmi3InterfaceType =
-		<fmi3ModelExchange> |
-		<fmi3CoSimulation>;
-
 	fmi3Status =
 		<fmi3OK> |
 		<fmi3Warning> |
@@ -83,6 +79,9 @@ types
 		nextEventTimeDefined				: fmi3Boolean
 	inv
 		info == info.nextEventTimeDefined <=> info.nextEventTime <> nil;
+
+
+	fmi3FMUKind = CoSimulationKind | ModelExchangeKind;
 
 	fmi3CoSimulationMode =
 	    <fmi3ModeCoSimulation> |

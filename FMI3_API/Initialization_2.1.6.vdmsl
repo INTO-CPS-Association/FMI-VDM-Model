@@ -167,7 +167,7 @@ functions
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, mu(c2,
 				fmuState |->
-					if c.fmuType = <fmi3CoSimulation>
+					if is_(c.fmuKind, CoSimulationKind)
 					then <EVENT_MODE>
 					else <STEP_MODE>))
 	pre

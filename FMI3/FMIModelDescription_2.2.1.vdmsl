@@ -312,13 +312,14 @@ functions
 			),
 
 			(
-				md.modelStructure.numberOfEventIndicators <> nil =>
+				md.modelStructure.eventIndicators <> nil =>
 				{
-					/* @OnFail("2.2.8 NumberOfEventIndicators dependency %s invalid at line %s",
-							vr, md.modelStructure.numberOfEventIndicators.location)
-					 */
-					( exists sv in seq eModelVariables & sv.base.valueReference = vr )
-					| vr in seq md.modelStructure.numberOfEventIndicators.dependencies
+					exists sv in seq eModelVariables &
+						/* @OnFail("2.2.8 EventIndicator valueReference %s invalid at line %s",
+							ei.valueReference, ei.location)	 */
+						( sv.base.valueReference = ei.valueReference )
+
+					| ei in seq md.modelStructure.eventIndicators
 				}
 				= {true}
 			),

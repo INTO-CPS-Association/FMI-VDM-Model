@@ -31,8 +31,11 @@
  * 4.3.1 Definition of a ModelExchange section of an FMU.
  */
 types
+	ModelExchangeKind = <ModelExchange>;	-- May be others one day, see CoSimulationKind
+
 	ModelExchange ::
-		base								: fmi3FMUType
+		base								: fmi3InterfaceType
+		kind								: ModelExchangeKind
 		completedIntegratorStepNotNeeded	: [bool];
 
 functions

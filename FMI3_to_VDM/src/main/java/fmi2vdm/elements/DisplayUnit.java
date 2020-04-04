@@ -57,10 +57,4 @@ public class DisplayUnit extends Element
 		printRawAttribute(indent + "\t", offset, "\n");
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, ".name", name, true);
-	}
 }

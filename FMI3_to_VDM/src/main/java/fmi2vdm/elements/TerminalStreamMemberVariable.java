@@ -61,13 +61,4 @@ public class TerminalStreamMemberVariable extends Element
 		printStringAttribute(indent + "\t", outStreamVariableName, "\n");
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "inStreamMemberName", inStreamMemberName, true);
-		validate(root, "outStreamMemberName", outStreamMemberName, true);
-		validate(root, "inStreamVariableName", inStreamVariableName, true);
-		validate(root, "outStreamVariableName", outStreamVariableName, true);
-	}
 }

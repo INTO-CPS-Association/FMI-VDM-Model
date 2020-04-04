@@ -59,10 +59,4 @@ public class VendorAnnotations extends Element
 	{
 		printSequence(indent, tools, "");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "tools", tools, false);
-	}
 }

@@ -80,12 +80,4 @@ public class GraphicalRepresentation extends Element
 		printOptional(indent + "\t", terminals, "\n");
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "coordinateSystem", coordinateSystem, false);
-		validate(root, "icon", icon, false);
-		validate(root, "terminals", terminals, false);
-	}
 }

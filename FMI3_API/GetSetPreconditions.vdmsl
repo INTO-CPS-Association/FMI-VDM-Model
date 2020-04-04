@@ -86,7 +86,7 @@ functions
 
 	isIN: fmi3Instance * fmi3ValueReference +> bool
 	isIN(c, vr) ==
-		if c.fmuType = <fmi3ModelExchange>
+		if is_(c.fmuKind, ModelExchangeKind)
 		then
 			(c.eModelVariables(vr).base.variability = <discrete>
 				and c.eModelVariables(vr).base.causality = <input>)

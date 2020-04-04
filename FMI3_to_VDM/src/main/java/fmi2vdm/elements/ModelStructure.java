@@ -31,12 +31,10 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
-import fmi2vdm.FMI3SaxParser;
-
 public class ModelStructure extends Element
 {
 	private ElementList<Unknown> unknowns;
-	private NumberOfEventIndicators numberOfEventindicators;
+	private ElementList<EventIndicator> eventindicators;
 
 	public ModelStructure(Locator locator)
 	{
@@ -55,14 +53,14 @@ public class ModelStructure extends Element
 			
 			unknowns.add(element);
 		}
-		else if (element instanceof NumberOfEventIndicators)
+		else if (element instanceof EventIndicator)
 		{
-			if (numberOfEventindicators != null)
+			if (eventindicators == null)
 			{
-				FMI3SaxParser.error("ModelStructure has too many NumberOfEventIndicators");
+				eventindicators = new ElementList<EventIndicator>();
 			}
 
-			numberOfEventindicators = (NumberOfEventIndicators) element;
+			eventindicators.add(element);
 		}
 		else
 		{
@@ -78,15 +76,8 @@ public class ModelStructure extends Element
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		
 		printOptional(indent + "\t", unknowns, ",\n");
-		printOptional(indent + "\t", numberOfEventindicators, "\n");
+		printOptional(indent + "\t", eventindicators, "\n");
 
 		System.out.println(indent + ")");
-	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "unknowns", unknowns, false);
-		validate(root, "numberOfEventindicators", numberOfEventindicators, false);
 	}
 }

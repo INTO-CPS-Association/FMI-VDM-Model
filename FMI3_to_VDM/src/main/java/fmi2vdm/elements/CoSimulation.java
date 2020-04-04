@@ -34,17 +34,15 @@ import java.math.BigInteger;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class CoSimulation extends FMUType
+abstract public class CoSimulation extends InterfaceType
 {
 	private Boolean canHandleVariableCommunicationStepSize;
 	private Boolean canInterpolateInputs;
 	private BigInteger maxOutputDerivativeOrder;
 	private Boolean providesIntermediateVariableAccess;
 	private Boolean canReturnEarlyAfterIntermediateUpdate;
-	private Boolean providesHybridCoSimulation;
-	private Boolean providesScheduledExecutionSimulation;
-	private Boolean canNotUseBasicCoSimulation;
-
+	private Double fixedInternalStepSize;
+	
 	public CoSimulation(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
@@ -54,9 +52,7 @@ public class CoSimulation extends FMUType
 		maxOutputDerivativeOrder = uintOf(attributes, "maxOutputDerivativeOrder");
 		providesIntermediateVariableAccess = boolOf(attributes, "providesIntermediateVariableAccess");
 		canReturnEarlyAfterIntermediateUpdate = boolOf(attributes, "canReturnEarlyAfterIntermediateUpdate");
-		providesHybridCoSimulation = boolOf(attributes, "providesHybridCoSimulation");
-		providesScheduledExecutionSimulation = boolOf(attributes, "providesScheduledExecutionSimulation");
-		canNotUseBasicCoSimulation = boolOf(attributes, "canNotUseBasicCoSimulation");
+		fixedInternalStepSize = doubleOf(attributes, "fixedInternalStepSize");
 	}
 
 	@Override
@@ -67,14 +63,13 @@ public class CoSimulation extends FMUType
 		super.toVDM(indent + "\t");
 		System.out.println(",");
 		
+		printQuoteAttribute(indent + "\t", this.getClass().getSimpleName(), ",\n");
 		printRawAttribute(indent + "\t", canHandleVariableCommunicationStepSize, ",\n");
 		printRawAttribute(indent + "\t", canInterpolateInputs, ",\n");
 		printRawAttribute(indent + "\t", maxOutputDerivativeOrder, ",\n");
 		printRawAttribute(indent + "\t", providesIntermediateVariableAccess, ",\n");
 		printRawAttribute(indent + "\t", canReturnEarlyAfterIntermediateUpdate, ",\n");
-		printRawAttribute(indent + "\t", providesHybridCoSimulation, ",\n");
-		printRawAttribute(indent + "\t", providesScheduledExecutionSimulation, ",\n");
-		printRawAttribute(indent + "\t", canNotUseBasicCoSimulation, "\n");
+		printRawAttribute(indent + "\t", fixedInternalStepSize, "\n");
 		System.out.print(indent + ")");
 	}
 }

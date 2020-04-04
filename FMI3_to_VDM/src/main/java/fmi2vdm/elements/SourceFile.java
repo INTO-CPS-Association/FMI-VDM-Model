@@ -51,10 +51,4 @@ public class SourceFile extends Element
 		printStringAttribute(indent + "\t", name, "\n");
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "name", name, true);
-	}
 }

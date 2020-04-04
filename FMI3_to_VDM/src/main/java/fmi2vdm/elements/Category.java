@@ -55,10 +55,4 @@ public class Category extends Element
 		printStringAttribute(indent + "\t", description, "\n");
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "name", name, true);
-	}
 }

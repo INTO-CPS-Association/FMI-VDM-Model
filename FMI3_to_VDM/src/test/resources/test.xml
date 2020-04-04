@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0-alpha"
 	modelName="" instantiationToken="{111-222-333-444}">
-	<CoSimulation modelIdentifier="Test FMU">
-		<Annotations>
+	<ModelExchange modelIdentifier="Test FMU">
+		<VendorAnnotations>
+			<Tool name="two">
+				<more></more>
+			</Tool>
+		</VendorAnnotations>
+	</ModelExchange>
+	<BasicCoSimulation modelIdentifier="Test FMU">
+		<VendorAnnotations>
 			<Tool name="one">
 				<stuff></stuff>
 			</Tool>
 			<Tool name="zzz">
 				<zzzstuff></zzzstuff>
 			</Tool>
-		</Annotations>
-	</CoSimulation>
-	<ModelExchange modelIdentifier="Test FMU">
-		<Annotations>
-			<Tool name="two">
-				<more></more>
-			</Tool>
-		</Annotations>
-	</ModelExchange>
+		</VendorAnnotations>
+	</BasicCoSimulation>
 	<BuildConfiguration modelIdentifier="PlantModel"
 		platform="unix" description="Build configuration for desktop platforms">
 		<SourceFileSet language="C99" compiler="X"
@@ -45,11 +45,10 @@
 			external="true" description="HDF5" />
 	</BuildConfiguration>
 	<TypeDefinitions>
-		<Float64 name="a">
-		</Float64>
+		<Float64 name="a" />
 		<Int64 name="b" />
-		<Boolean name="c" />
-		<String name="d" />
+<!-- 	<Boolean name="c" /> -->
+<!-- 	<String name="d" /> -->
 		<Binary name="e" />
 		<Enumeration name="f">
 			<Item name="a" value="1" />
@@ -58,6 +57,30 @@
 		</Enumeration>
 		<Clock name="g" clockType="synchronousTime" priority="1" />
 	</TypeDefinitions>
+	<Terminals>
+		<Terminal name="nnn" matchingRule="rule" terminalKind="kind">
+			<TerminalMemberVariable variableKind="k1"
+				memberName="mname" variableName="vname" />
+			<TerminalMemberVariable variableKind="k2"
+				memberName="mname" variableName="vname" />
+			<TerminalStreamMemberVariable
+				inStreamMemberName="inmname" outStreamMemberName="omname"
+				inStreamVariableName="isvname" outStreamVariableName="osvname" />
+			<Terminal name="subterm1" matchingRule="rule2" terminalKind="kind2" />
+			<Terminal name="subterm2" matchingRule="rule3" terminalKind="kind3" />
+		</Terminal>
+	</Terminals>
+	<GraphicalRepresentation>
+		<CoordinateSystem x1="1" y1="11" x2="2" y2="22"	suggestedScalingFactorTo_mm="123" />
+		<Icon x1="1" y1="11" x2="2" y2="22" />
+		<Terminal name="name" defaultConnectionColor="1 2 3" x1="1"	y1="11" x2="2" y2="22" iconBaseName="bbb">
+			<VendorAnnotations>
+				<Tool name="tool1">
+				</Tool>
+			</VendorAnnotations>
+		</Terminal>
+		<Terminal name="name2" x1="1" y1="11" x2="2" y2="22" iconBaseName="ccc" />
+	</GraphicalRepresentation>
 	<ModelVariables>
 		<Float64 name="a" valueReference="1" start="INF NaN -INF">
 			<Dimension valueReference="3" />
@@ -69,8 +92,9 @@
 					<more></more>
 				</Tool>
 			</Annotations>
+			<Alias name="alias1" />
 		</Float64>
-		<Int8 name="byte" valueReference="999" start="999" />
+		<Int8 name="byte" valueReference="999" start="9" />
 		<Int64 name="Int64" valueReference="9" start="-9223372036854775807 9223372036854775807 333">
 			<Dimension start="2" />
 		</Int64>
@@ -86,30 +110,6 @@
 		<Enumeration name="f" valueReference="5" declaredType="f" />
 		<Clock name="g" valueReference="6" clockType="synchronousTime" priority="10" />
 	</ModelVariables>
-	<Terminals>
-		<Terminal name="nnn" matchingRule="rule" terminalKind="kind">
-			<TerminalMemberVariable variableKind="k1"
-				memberName="mname" variableName="vname" />
-			<TerminalMemberVariable variableKind="k2"
-				memberName="mname" variableName="vname" />
-			<TerminalStreamMemberVariable
-				inStreamMemberName="inmname" outStreamMemberName="omname"
-				inStreamVariableName="isvname" outStreamVariableName="osvname" />
-			<Terminal name="subterm1" matchingRule="rule2" terminalKind="kind2" />
-			<Terminal name="subterm2" matchingRule="rule3" terminalKind="kind3" />
-		</Terminal>
-	</Terminals>
-	<GraphicalRepresentation>
-		<CoordinateSystem x1="1" y1="11" x2="2" y2="22"
-			suggestedScalingFactorTo_mm="123" />
-		<Icon x1="1" y1="11" x2="2" y2="22" iconSource_PNG="png" />
-		<Terminal name="name" defaultConnectionColor="1 2 3" x1="1"
-			y1="11" x2="2" y2="22" iconSource_PNG="png">
-			<Tool name="tool1">
-			</Tool>
-		</Terminal>
-		<Terminal name="name2" x1="1" y1="11" x2="2" y2="22" iconSource_PNG="png" />
-	</GraphicalRepresentation>
 	<ModelStructure>
 		<Output valueReference="1" dependencies="1" dependenciesKind="dependent" />
 		<Output valueReference="2" dependencies="1" dependenciesKind="dependent" />
@@ -122,6 +122,6 @@
 			dependenciesKind="dependent fixed tunable" />
 		<InitialUnknown valueReference="2" dependencies="1"
 			dependenciesKind="dependent" />
-		<NumberOfEventIndicators dependencies="1 2 3" />
+		<EventIndicator valueReference="123" />
 	</ModelStructure>
 </fmiModelDescription>

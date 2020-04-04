@@ -35,8 +35,10 @@ import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.DefaultHandler;
 
+import fmi2vdm.elements.Alias;
 import fmi2vdm.elements.Any;
 import fmi2vdm.elements.BaseUnit;
+import fmi2vdm.elements.BasicCoSimulation;
 import fmi2vdm.elements.BinaryType;
 import fmi2vdm.elements.BinaryVariable;
 import fmi2vdm.elements.BooleanType;
@@ -45,7 +47,6 @@ import fmi2vdm.elements.BuildConfiguration;
 import fmi2vdm.elements.Category;
 import fmi2vdm.elements.ClockType;
 import fmi2vdm.elements.ClockVariable;
-import fmi2vdm.elements.CoSimulation;
 import fmi2vdm.elements.CoordinateSystem;
 import fmi2vdm.elements.DefaultExperiment;
 import fmi2vdm.elements.Dimension;
@@ -55,6 +56,7 @@ import fmi2vdm.elements.EnumerationVariable;
 import fmi2vdm.elements.FMIModelDescription;
 import fmi2vdm.elements.GraphicalRepresentation;
 import fmi2vdm.elements.GraphicalTerminal;
+import fmi2vdm.elements.HybridCoSimulation;
 import fmi2vdm.elements.Icon;
 import fmi2vdm.elements.IncludeDirectory;
 import fmi2vdm.elements.IntegerType;
@@ -67,11 +69,12 @@ import fmi2vdm.elements.ModelExchange;
 import fmi2vdm.elements.ModelStructure;
 import fmi2vdm.elements.ModelVariables;
 import fmi2vdm.elements.Element;
-import fmi2vdm.elements.NumberOfEventIndicators;
+import fmi2vdm.elements.EventIndicator;
 import fmi2vdm.elements.Option;
 import fmi2vdm.elements.PreprocessorDefinition;
 import fmi2vdm.elements.SourceFile;
 import fmi2vdm.elements.RealVariable;
+import fmi2vdm.elements.ScheduledCoSimulation;
 import fmi2vdm.elements.RealType;
 import fmi2vdm.elements.SourceFileSet;
 import fmi2vdm.elements.SourceFiles;
@@ -128,8 +131,16 @@ public class FMI3SaxHandler extends DefaultHandler
 				stack.push(new ModelExchange(attributes, locator));
 				break;
 
-			case "CoSimulation":
-				stack.push(new CoSimulation(attributes, locator));
+			case "BasicCoSimulation":
+				stack.push(new BasicCoSimulation(attributes, locator));
+				break;
+
+			case "HybridCoSimulation":
+				stack.push(new HybridCoSimulation(attributes, locator));
+				break;
+
+			case "ScheduledCoSimulation":
+				stack.push(new ScheduledCoSimulation(attributes, locator));
 				break;
 
 			case "SourceFiles":
@@ -174,6 +185,10 @@ public class FMI3SaxHandler extends DefaultHandler
 				
 			case "Dimension":
 				stack.push(new Dimension(attributes, locator));
+				break;
+
+			case "Alias":
+				stack.push(new Alias(attributes, locator));
 				break;
 
 			case "Int64":
@@ -355,8 +370,8 @@ public class FMI3SaxHandler extends DefaultHandler
 				stack.push(new Unknown(qName, attributes, locator));
 				break;
 
-			case "NumberOfEventIndicators":
-				stack.push(new NumberOfEventIndicators(attributes, locator));
+			case "EventIndicator":
+				stack.push(new EventIndicator(attributes, locator));
 				break;
 				
 			default:

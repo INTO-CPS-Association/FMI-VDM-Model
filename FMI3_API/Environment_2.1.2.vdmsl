@@ -64,7 +64,7 @@ types
 	-- The opaque instance data for the model, passed to and from API functions
 	fmi3Instance ::
 		instanceName				: fmi3String
-		fmuType						: fmi3InterfaceType
+		fmuKind						: fmi3FMUKind
 		fmuState					: fmi3State
 		callbacks					: fmi3CallbackFunctions
 		instanceEnvironment			: fmi3InstanceEnvironment
@@ -98,7 +98,7 @@ types
 		and (len c.continuousTimeStates = len [u | u in seq c.xmlModel.modelStructure.unknowns & u.kind = <Derivative>])
 		and (len c.derivatives = len c.solverDerivatives)
 		and (len c.eventIndicators = nilNat(c.xmlModel.attributes.numberOfEventIndicators))
-		and (c.isNewEventIteration => c.fmuType = <fmi3ModelExchange>)
+		and (c.isNewEventIteration => is_(c.fmuKind, ModelExchangeKind))
 		and (c.currentTime <> nil <=> c.startTime <> nil)
 		and (c.currentTime <> nil => c.currentTime >= c.startTime)
 		and (c.stopTime <> nil and c.startTime <> nil => c.stopTime > c.startTime and c.currentTime <= c.stopTime);

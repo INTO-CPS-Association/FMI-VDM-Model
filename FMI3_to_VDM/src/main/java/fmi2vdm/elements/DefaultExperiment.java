@@ -61,10 +61,4 @@ public class DefaultExperiment extends Element
 		printRawAttribute(indent + "\t", stepSize, "\n");
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		// None
-	}
 }

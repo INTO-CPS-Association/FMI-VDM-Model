@@ -68,10 +68,4 @@ public class SourceFiles extends Element
 	{
 		return sourceFiles == null || sourceFiles.isEmpty();
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		// None
-	}
 }

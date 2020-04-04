@@ -63,10 +63,4 @@ public class Terminals extends Element
 	{
 		printSequence(indent, terminals, "");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "terminals", terminals, false);
-	}
 }

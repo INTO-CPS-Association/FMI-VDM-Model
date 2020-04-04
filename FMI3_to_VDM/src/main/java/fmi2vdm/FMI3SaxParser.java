@@ -70,7 +70,6 @@ public class FMI3SaxParser
 		saxParser.parse(args[0], handler);
 		
 		FMIModelDescription model = handler.getFMIModelDescription();
-		model.validate("FMIModelDescription");
 		
 		if (errors == 0)
 		{
@@ -100,6 +99,11 @@ public class FMI3SaxParser
 			Validator validator = schema.newValidator();
 			validator.validate(xmlFile);
 		}
+		catch (SAXException e)
+		{
+			System.err.println("XML validation: " + e);		// raw exception has file/line/col details
+			System.exit(1);
+		}
 		catch (Exception e)
 		{
 			System.err.println("XML validation: " + e.getMessage());
@@ -109,7 +113,7 @@ public class FMI3SaxParser
 
 	public static void error(String message, Object... args)
 	{
-		System.err.printf(message + "\n", args);
+		System.err.printf("VDMCheck3: " + message + "\n", args);
 		errors++;
 	}
 }

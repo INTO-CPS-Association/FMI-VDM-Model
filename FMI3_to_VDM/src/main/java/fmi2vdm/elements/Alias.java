@@ -32,33 +32,27 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class Icon extends Element
+public class Alias extends Element
 {
-	private Double x1;
-	private Double y1;
-	private Double x2;
-	private Double y2;
+	private String name;
+	private String description;
+	private String displayUnit;
 
-	public Icon(Attributes attributes, Locator locator)
+	public Alias(Attributes attributes, Locator locator)
 	{
 		super(locator);
 
-		x1 = doubleOf(attributes, "x1");
-		y1 = doubleOf(attributes, "y1");
-		x2 = doubleOf(attributes, "x2");
-		y2 = doubleOf(attributes, "y2");
+		name = stringOf(attributes, "name");
+		description = stringOf(attributes, "description");
+		displayUnit = stringOf(attributes, "displayUnit");
 	}
 
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_Icon");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printRawAttribute(indent + "\t", x1, ",\n");
-		printRawAttribute(indent + "\t", y1, ",\n");
-		printRawAttribute(indent + "\t", x2, ",\n");
-		printRawAttribute(indent + "\t", y2, "\n");
-		System.out.print(indent + ")");
+		System.out.print(indent + "mk_Alias(");
+		printStringAttribute("", name, ", ");
+		printStringAttribute("", description, ", ");
+		printStringAttribute("", displayUnit, ")");
 	}
 }

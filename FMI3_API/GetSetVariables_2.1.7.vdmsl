@@ -54,7 +54,7 @@ functions
 
 	generalSetPrecondition: fmi3Instance * seq of fmi3ValueReference +> bool
 	generalSetPrecondition(c, vrs) ==
-		if c.fmuType = <fmi3ModelExchange>
+		if is_(c.fmuKind, ModelExchangeKind)
 		then
 			cases c.fmuState:
 				<INSTANTIATED>			-> varsSEA(c, vrs),

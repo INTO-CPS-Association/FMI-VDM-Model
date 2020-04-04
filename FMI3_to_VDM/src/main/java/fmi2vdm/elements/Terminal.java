@@ -105,14 +105,4 @@ public class Terminal extends Element
 		
 		System.out.print(indent + ")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "name", name, true);
-		validate(root, "matchingRule", matchingRule, true);
-		validate(root, "variables", variables, false);
-		validate(root, "streams", streams, false);
-		validate(root, "subTerminals", subTerminals, false);
-	}
 }

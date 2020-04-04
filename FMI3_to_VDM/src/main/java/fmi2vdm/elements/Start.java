@@ -54,10 +54,4 @@ public class Start extends Element
 	{
 		return value;
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		// None
-	}
 }

@@ -43,9 +43,8 @@ public class GraphicalTerminal extends Element
 	private Double y1;
 	private Double x2;
 	private Double y2;
-	private String iconSource_PNG;
-	private String iconSource_SVG;
-	private ElementList<Tool> vendorAnnotations;
+	private String iconBaseName;
+	private VendorAnnotations annotations;
 
 	public GraphicalTerminal(Attributes attributes, Locator locator)
 	{
@@ -58,21 +57,15 @@ public class GraphicalTerminal extends Element
 		y1 = doubleOf(attributes, "y1");
 		x2 = doubleOf(attributes, "x2");
 		y2 = doubleOf(attributes, "y2");
-		iconSource_PNG = stringOf(attributes, "iconSource_PNG");
-		iconSource_SVG = stringOf(attributes, "iconSource_SVG");
+		iconBaseName = stringOf(attributes, "iconBaseName");
 	}
 
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof Tool)
+		if (element instanceof VendorAnnotations)
 		{
-			if (vendorAnnotations == null)
-			{
-				vendorAnnotations = new ElementList<Tool>();
-			}
-
-			vendorAnnotations.add(element);
+			annotations = (VendorAnnotations) element;
 		}
 		else
 		{
@@ -93,20 +86,8 @@ public class GraphicalTerminal extends Element
 		printRawAttribute(indent + "\t", y1, ",\n");
 		printRawAttribute(indent + "\t", x2, ",\n");
 		printRawAttribute(indent + "\t", y2, ",\n");
-		printStringAttribute(indent + "\t", iconSource_PNG, ",\n");
-		printStringAttribute(indent + "\t", iconSource_SVG, ",\n");
-		printSequence(indent + "\t", vendorAnnotations, "\n");
+		printStringAttribute(indent + "\t", iconBaseName, ",\n");
+		printOptional(indent + "\t", annotations, "\n");
 		System.out.print(indent + ")");
-	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, ".x1", x1, true);
-		validate(root, ".y1", y1, true);
-		validate(root, ".x2", x2, true);
-		validate(root, ".y2", y2, true);
-		validate(root, ".iconSource_PNG", iconSource_PNG, true);
-		validate(root, "vendorAnnotations", vendorAnnotations, false);
 	}
 }

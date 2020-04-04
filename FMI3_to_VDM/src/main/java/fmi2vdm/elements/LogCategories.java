@@ -63,10 +63,4 @@ public class LogCategories extends Element
 	{
 		printSequence(indent, logCategories, "");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "logCategories", logCategories, false);
-	}
 }

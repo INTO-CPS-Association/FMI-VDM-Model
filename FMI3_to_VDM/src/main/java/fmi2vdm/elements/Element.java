@@ -325,8 +325,6 @@ abstract public class Element
 
 	public abstract void toVDM(String indent);
 	
-	public abstract void validate(String root);
-
 	public void add(Element element)
 	{
 		FMI3SaxParser.error("Cannot add " + element.getClass().getSimpleName() + " to " + getClass().getSimpleName()
@@ -508,43 +506,6 @@ abstract public class Element
 			}
 
 			System.out.print(close);
-		}
-	}
-	
-	protected void validate(String root, String name, Object value, boolean mandatory)
-	{
-		validate(root, name, value, mandatory, false);
-	}
-	
-	protected void validate(String root, String name, Object value, boolean mandatory, boolean nonEmpty)
-	{
-		if (value == null && mandatory)
-		{
-			FMI3SaxParser.error("%s.%s must be provided at line %d", root, name, lineNumber);
-		}
-		else if (value instanceof String && mandatory)
-		{
-			String s = (String)value;
-			
-			if (s.isEmpty() && nonEmpty)
-			{
-				FMI3SaxParser.error("%s.%s cannot be blank at line %d", root, name, lineNumber);
-			}
-		}
-		else if (value instanceof ElementList)
-		{
-			ElementList<?> list = (ElementList<?>)value;
-			int n = 0;
-			
-			for (Element e: list)
-			{
-				e.validate(root + "." + name + ".#" + (++n));
-			}
-		}
-		else if (value instanceof Element)
-		{
-			Element e = (Element)value;
-			e.validate(root + "." + name);
 		}
 	}
 }

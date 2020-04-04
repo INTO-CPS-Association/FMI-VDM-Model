@@ -63,10 +63,4 @@ public class TypeDefinitions extends Element
 	{
 		printSet(indent, typeDefinitions, "");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		validate(root, "typeDefinitions", typeDefinitions, false);
-	}
 }

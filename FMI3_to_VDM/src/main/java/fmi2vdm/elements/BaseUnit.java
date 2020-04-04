@@ -79,10 +79,4 @@ public class BaseUnit extends Element
 		printRawAttribute("", offset, "");
 		System.out.print(")");
 	}
-
-	@Override
-	public void validate(String root)
-	{
-		// None
-	}
 }

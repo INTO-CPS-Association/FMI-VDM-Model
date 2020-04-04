@@ -21,51 +21,15 @@
  *
  ******************************************************************************/
 
-import static org.junit.Assert.fail;
+package fmi2vdm.elements;
 
-import org.junit.Test;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 
-import fmi2vdm.FMI3SaxParser;
-
-public class TestVDMCheck
+public class HybridCoSimulation extends CoSimulation
 {
-	@Test
-	public void testMinimal()
+	public HybridCoSimulation(Attributes attributes, Locator locator)
 	{
-		try
-		{
-			String[] args = new String[]
-			{
-				"src/test/resources/minimal.xml",
-				"var",
-				"src/main/resources/schema/fmi3ModelDescription.xsd"
-			};
-			
-			FMI3SaxParser.main(args);
-		}
-		catch (Exception e)
-		{
-			fail(e.getMessage());
-		}
-	}
-	
-	@Test
-	public void testNewFMI3Types()
-	{
-		try
-		{
-			String[] args = new String[]
-			{
-				"src/test/resources/test.xml",
-				"var",
-				"src/main/resources/schema/fmi3ModelDescription.xsd"
-			};
-			
-			FMI3SaxParser.main(args);
-		}
-		catch (Exception e)
-		{
-			fail(e.getMessage());
-		}
+		super(attributes, locator);
 	}
 }

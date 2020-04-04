@@ -131,7 +131,7 @@ values
 		-- CoSimulation
 		mk_CoSimulation
 		(
-			mk_fmi3FMUType
+			mk_fmi3InterfaceType
 			(
 				13,  -- Line
 				nil,
@@ -142,12 +142,12 @@ values
 				nil,
 				nil,
 				nil,
+				nil,
 				nil
 			),
+			<BasicCoSimulation>,
 			true,
 			true,
-			nil,
-			nil,
 			nil,
 			nil,
 			nil,
@@ -261,6 +261,7 @@ values
 					nil,
 					nil,
 					nil,
+					nil,
 					nil
 				),
 				<Float64>,
@@ -282,6 +283,7 @@ values
 					nil,
 					nil,
 					"Modelica.SIunits.Torque",
+					nil,
 					nil,
 					nil,
 					nil,
@@ -309,6 +311,7 @@ values
 					nil,
 					nil,
 					nil,
+					nil,
 					nil
 				),
 				<Float64>,
@@ -330,6 +333,7 @@ values
 					nil,
 					nil,
 					"Modelica.SIunits.AngularVelocity",
+					nil,
 					nil,
 					nil,
 					nil,

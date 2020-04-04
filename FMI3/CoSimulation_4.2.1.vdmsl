@@ -31,7 +31,7 @@
  * 4.2.1 Definition of a CoSimulation section of an FMU.
  */
 types
-	fmi3FMUType ::
+	fmi3InterfaceType ::
 		location								: Location
 		annotations								: [fmi3Annotation]
 		modelIdentifier							: NormalizedString
@@ -41,19 +41,20 @@ types
 		canGetAndSetFMUState					: [bool]
 		canSerializeFMUState					: [bool]
 		providesDirectionalDerivative			: [bool]
+		providesAdjointDerivative				: [bool]
 		providesPerElementDependencies			: [bool];
 
+	CoSimulationKind = <BasicCoSimulation> | <HybridCoSimulation> | <ScheduledCoSimulation>;
 
 	CoSimulation ::
-		base									: fmi3FMUType
+		base									: fmi3InterfaceType
+		kind									: CoSimulationKind
 		canHandleVariableCommunicationStepSize	: [bool]
 		canInterpolateInputs					: [bool]
 		maxOutputDerivativeOrder				: [nat]
 		providesIntermediateVariableAccess		: [bool]
 		canReturnEarlyAfterIntermediateUpdate	: [bool]
-		providesHybridCoSimulation				: [bool]
-		providesScheduledExecutionSimulation	: [bool]
-		canNotUseBasicCoSimulation				: [bool];
+		fixedInternalStepSize					: [real];
 
 functions
 
