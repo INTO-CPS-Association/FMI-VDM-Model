@@ -33,12 +33,12 @@ import org.xml.sax.Locator;
 
 public class LogCategories extends Element
 {
+	private ElementList<Category> logCategories = null;
+	
 	public LogCategories(Locator locator)
 	{
 		super(locator);
 	}
-	
-	private ElementList<Category> logCategories = null;
 	
 	@Override
 	public void add(Element element)

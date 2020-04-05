@@ -34,17 +34,15 @@ import org.xml.sax.Locator;
 
 public class Category extends Element
 {
-	public Category(Attributes attributes, Locator locator)
-	{
-		super(locator);
-		
-		name = stringOf(attributes, "name");
-		description = stringOf(attributes, "description");
-	}
-	
 	private String name;
 	private String description;
 
+	public Category(Attributes attributes, Locator locator)
+	{
+		super(locator);
+		setAttributes(attributes);
+	}
+	
 	@Override
 	void toVDM(String indent)
 	{

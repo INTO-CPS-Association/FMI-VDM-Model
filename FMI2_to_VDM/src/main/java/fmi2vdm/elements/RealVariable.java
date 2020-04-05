@@ -34,24 +34,6 @@ import org.xml.sax.Locator;
 
 public class RealVariable extends Variable
 {
-	public RealVariable(Attributes attributes, Locator locator)
-	{
-		super(locator);
-		
-		declaredType = stringOf(attributes, "declaredType");
-		quantity = stringOf(attributes, "quantity");
-		unit = stringOf(attributes, "unit");
-		displayUnit = stringOf(attributes, "displayUnit");
-		relativeQuantity = boolOf(attributes, "relativeQuantity");
-		min = doubleOf(attributes, "min");
-		max = doubleOf(attributes, "max");
-		nominal = doubleOf(attributes, "nominal");
-		unbounded = boolOf(attributes, "unbounded");
-		start = doubleOf(attributes, "start");
-		derivative = uintOf(attributes, "derivative");
-		reinit = boolOf(attributes, "reinit");
-	}
-	
 	private String declaredType;
 	private String quantity;
 	private String unit;
@@ -65,6 +47,12 @@ public class RealVariable extends Variable
 	private Long derivative;
 	private Boolean reinit;
 
+	public RealVariable(Attributes attributes, Locator locator)
+	{
+		super(locator);
+		setAttributes(attributes);
+	}
+	
 	@Override
 	void toVDM(String indent)
 	{

@@ -33,13 +33,14 @@ import org.xml.sax.Locator;
 
 public class Unknowns extends Element
 {
+	public final String kind;
+	private ElementList<Unknown> unknowns = null;
+
 	public Unknowns(String kind, Locator locator)
 	{
 		super(locator);
 		this.kind = kind;
 	}
-	
-	public final String kind;
 	
 	@Override
 	public void add(Element element)
@@ -59,8 +60,6 @@ public class Unknowns extends Element
 		}
 	}
 	
-	private ElementList<Unknown> unknowns = null;
-
 	@Override
 	void toVDM(String indent)
 	{

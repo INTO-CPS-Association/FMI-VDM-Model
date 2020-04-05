@@ -2,9 +2,21 @@
 <fmiModelDescription fmiVersion="2.0"
 	modelName="Christian Møldrup Legaard" guid="{111-222-333-444}">
 	<CoSimulation modelIdentifier="Test FMU" />
+	<UnitDefinitions>
+		<Unit name="rad/s">
+			<BaseUnit s="-1" rad="1" />
+			<DisplayUnit name="deg/s" factor="57.29577951308232" />
+			<DisplayUnit name="rev/min" factor="9.549296585513721" />
+		</Unit>
+	</UnitDefinitions>
 	<ModelVariables>
 		<ScalarVariable name="varname" valueReference="0">
 			<Real />
+			<Annotations>
+				<Tool name="wibble">
+					<stuff></stuff>
+				</Tool>
+			</Annotations>
 		</ScalarVariable>
 	</ModelVariables>
 	<ModelStructure>

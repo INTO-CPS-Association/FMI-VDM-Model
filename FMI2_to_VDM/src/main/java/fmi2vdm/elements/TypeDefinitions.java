@@ -33,12 +33,12 @@ import org.xml.sax.Locator;
 
 public class TypeDefinitions extends Element
 {
+	private ElementList<SimpleType> typeDefinitions = null;
+	
 	public TypeDefinitions(Locator locator)
 	{
 		super(locator);
 	}
-	
-	private ElementList<SimpleType> typeDefinitions = null;
 	
 	@Override
 	public void add(Element element)

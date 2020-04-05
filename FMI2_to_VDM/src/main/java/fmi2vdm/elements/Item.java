@@ -34,19 +34,16 @@ import org.xml.sax.Locator;
 
 public class Item extends Element
 {
-	public Item(Attributes attributes, Locator locator)
-	{
-		super(locator);
-		
-		name = stringOf(attributes, "name");
-		value = intOf(attributes, "value");
-		description = stringOf(attributes, "description");
-	}
-	
 	private String name;
 	private Integer value;
 	private String description;
 
+	public Item(Attributes attributes, Locator locator)
+	{
+		super(locator);
+		setAttributes(attributes);
+	}
+	
 	@Override
 	void toVDM(String indent)
 	{

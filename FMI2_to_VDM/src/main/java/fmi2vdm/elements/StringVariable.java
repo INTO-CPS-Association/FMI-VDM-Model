@@ -34,17 +34,15 @@ import org.xml.sax.Locator;
 
 public class StringVariable extends Variable
 {
-	public StringVariable(Attributes attributes, Locator locator)
-	{
-		super(locator);
-		
-		declaredType = stringOf(attributes, "declaredType");
-		start = stringOf(attributes, "start");
-	}
-	
 	private String declaredType;
 	private String start;
 
+	public StringVariable(Attributes attributes, Locator locator)
+	{
+		super(locator);
+		setAttributes(attributes);
+	}
+	
 	@Override
 	void toVDM(String indent)
 	{

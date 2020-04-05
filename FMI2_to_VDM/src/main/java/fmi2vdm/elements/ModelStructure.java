@@ -34,15 +34,15 @@ import org.xml.sax.Locator;
 
 public class ModelStructure extends Element
 {
+	private Unknowns outputs;
+	private Unknowns derivatives;
+	private Unknowns initialUnknowns;
+
 	public ModelStructure(Locator locator)
 	{
 		super(locator);
 	}
 	
-	private Unknowns outputs;
-	private Unknowns derivatives;
-	private Unknowns initialUnknowns;
-
 	@Override
 	public void add(Element element)
 	{

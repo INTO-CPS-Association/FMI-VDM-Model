@@ -34,17 +34,20 @@ import org.xml.sax.Locator;
 
 public class ScalarVariable extends Element
 {
+	private String name;
+	private Long valueReference;
+	private String description;
+	private String causality;
+	private String variability;
+	private String initial;
+	private Boolean canHandleMultipleSetPerTimeInstant;
+	private Variable variable;
+	private VendorAnnotations annotations;
+
 	public ScalarVariable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
-		name = stringOf(attributes, "name");
-		valueReference = uintOf(attributes, "valueReference");
-		description = stringOf(attributes, "description");
-		causality = stringOf(attributes, "causality");
-		variability = stringOf(attributes, "variability");
-		initial = stringOf(attributes, "initial");
-		canHandleMultipleSetPerTimeInstant = boolOf(attributes, "canHandleMultipleSetPerTimeInstant");
+		setAttributes(attributes);
 	}
 	
 	@Override
@@ -64,16 +67,6 @@ public class ScalarVariable extends Element
 		}
 	}
 	
-	private String name;
-	private Long valueReference;
-	private String description;
-	private String causality;
-	private String variability;
-	private String initial;
-	private Boolean canHandleMultipleSetPerTimeInstant;
-	private Variable variable;
-	private VendorAnnotations annotations;
-
 	@Override
 	void toVDM(String indent)
 	{

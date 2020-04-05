@@ -29,6 +29,7 @@
 
 package fmi2vdm.elements;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.xml.sax.Attributes;
@@ -43,6 +44,48 @@ abstract public class Element
 	protected Element(Locator locator)
 	{
 		lineNumber = locator.getLineNumber();
+	}
+	
+	/**
+	 * Called by all constructors with private attribute fields.
+	 * @param attributes
+	 */
+	protected void setAttributes(Attributes attributes)
+	{
+		try
+		{
+			for (Field field: getClass().getDeclaredFields())
+			{
+				Class<?> type = field.getType();
+				field.setAccessible(true);
+				
+				if (type.isAssignableFrom(String.class))
+				{
+					field.set(this, stringOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(Integer.class))
+				{
+					field.set(this, intOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(Long.class))
+				{
+					field.set(this, uintOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(Double.class))
+				{
+					field.set(this, doubleOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(Boolean.class))
+				{
+					field.set(this, boolOf(attributes, field.getName()));
+				}
+				// else not an attribute, hopefully!
+			}
+		}
+		catch (Exception e)
+		{
+			System.err.println(e);
+		}
 	}
 	
 	protected String stringOf(Attributes attributes, String name)

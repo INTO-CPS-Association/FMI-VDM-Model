@@ -36,11 +36,15 @@ import fmi2vdm.FMI2SaxParser;
 
 public class Unknown extends Element
 {
+	private Integer index;
+	private int[] dependencies;
+	private String[] dependenciesKind;
+
 	public Unknown(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
-		index = intOf(attributes, "index");
+		setAttributes(attributes);
+
 		String[] deps = arrayOf(stringOf(attributes, "dependencies"));
 		
 		if (deps == null)
@@ -87,10 +91,6 @@ public class Unknown extends Element
 			}
 		}
 	}
-
-	private Integer index;
-	private int[] dependencies;
-	private String[] dependenciesKind;
 
 	@Override
 	void toVDM(String indent)

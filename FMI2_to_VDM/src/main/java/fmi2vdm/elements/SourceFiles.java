@@ -33,12 +33,12 @@ import org.xml.sax.Locator;
 
 public class SourceFiles extends Element
 {
+	private ElementList<File> sourceFiles = null;
+	
 	public SourceFiles(Locator locator)
 	{
 		super(locator);
 	}
-	
-	private ElementList<File> sourceFiles = null;
 	
 	@Override
 	public void add(Element element)

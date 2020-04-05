@@ -34,12 +34,12 @@ import org.xml.sax.Locator;
 
 public class ModelVariables extends Element
 {
+	private ElementList<ScalarVariable> modelVariables = null;
+	
 	public ModelVariables(Locator locator)
 	{
 		super(locator);
 	}
-	
-	private ElementList<ScalarVariable> modelVariables = null;
 	
 	@Override
 	public void add(Element element)

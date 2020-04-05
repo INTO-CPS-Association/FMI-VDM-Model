@@ -34,21 +34,17 @@ import org.xml.sax.Locator;
 
 public class DefaultExperiment extends Element
 {
-	public DefaultExperiment(Attributes attributes, Locator locator)
-	{
-		super(locator);
-		
-		startTime = doubleOf(attributes, "startTime");
-		stopTime = doubleOf(attributes, "stopTime");
-		tolerance = doubleOf(attributes, "tolerance");
-		stepSize = doubleOf(attributes, "stepSize");
-	}
-	
 	private Double startTime;
 	private Double stopTime;
 	private Double tolerance;
 	private Double stepSize;
 
+	public DefaultExperiment(Attributes attributes, Locator locator)
+	{
+		super(locator);
+		setAttributes(attributes);
+	}
+	
 	@Override
 	void toVDM(String indent)
 	{

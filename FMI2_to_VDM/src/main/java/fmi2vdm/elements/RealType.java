@@ -34,20 +34,6 @@ import org.xml.sax.Locator;
 
 public class RealType extends Type
 {
-	public RealType(Attributes attributes, Locator locator)
-	{
-		super(locator);
-		
-		quantity = stringOf(attributes, "quantity");
-		unit = stringOf(attributes, "unit");
-		displayUnit = stringOf(attributes, "displayUnit");
-		relativeQuantity = boolOf(attributes, "relativeQuantity");
-		min = doubleOf(attributes, "min");
-		max = doubleOf(attributes, "max");
-		nominal = doubleOf(attributes, "nominal");
-		unbounded = boolOf(attributes, "unbounded");
-	}
-	
 	private String quantity;
 	private String unit;
 	private String displayUnit;
@@ -57,6 +43,12 @@ public class RealType extends Type
 	private Double nominal;
 	private Boolean unbounded;
 
+	public RealType(Attributes attributes, Locator locator)
+	{
+		super(locator);
+		setAttributes(attributes);
+	}
+	
 	@Override
 	void toVDM(String indent)
 	{

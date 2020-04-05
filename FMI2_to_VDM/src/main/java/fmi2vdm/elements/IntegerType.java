@@ -34,19 +34,16 @@ import org.xml.sax.Locator;
 
 public class IntegerType extends Type
 {
-	public IntegerType(Attributes attributes, Locator locator)
-	{
-		super(locator);
-		
-		quantity = stringOf(attributes, "quantity");
-		min = intOf(attributes, "min");
-		max = intOf(attributes, "max");
-	}
-	
 	private String quantity;
 	private Integer min;
 	private Integer max;
 
+	public IntegerType(Attributes attributes, Locator locator)
+	{
+		super(locator);
+		setAttributes(attributes);
+	}
+	
 	@Override
 	void toVDM(String indent)
 	{

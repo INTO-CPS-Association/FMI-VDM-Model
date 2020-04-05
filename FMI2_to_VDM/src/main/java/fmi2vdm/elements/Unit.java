@@ -34,11 +34,14 @@ import org.xml.sax.Locator;
 
 public class Unit extends Element
 {
+	private String name;
+	private BaseUnit baseUnit = null;
+	private ElementList<DisplayUnit> displayUnits = null;
+	
 	public Unit(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		lineNumber = locator.getLineNumber();
-		name = stringOf(attributes, "name");
+		setAttributes(attributes);
 	}
 	
 	@Override
@@ -63,10 +66,6 @@ public class Unit extends Element
 		}
 	}
 
-	private String name;
-	private BaseUnit baseUnit = null;
-	private ElementList<DisplayUnit> displayUnits = null;
-	
 	@Override
 	void toVDM(String indent)
 	{

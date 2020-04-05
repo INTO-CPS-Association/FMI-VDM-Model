@@ -34,18 +34,15 @@ import org.xml.sax.Locator;
 
 public class DisplayUnit extends Element
 {
-	public DisplayUnit(Attributes attributes, Locator locator)
-	{
-		super(locator);
-		
-		name = stringOf(attributes, "name");
-		factor = doubleOf(attributes, "factor");
-		offset = doubleOf(attributes, "offset");
-	}
-
 	private String name;
 	private Double factor;
 	private Double offset;
+
+	public DisplayUnit(Attributes attributes, Locator locator)
+	{
+		super(locator);
+		setAttributes(attributes);
+	}
 
 	@Override
 	void toVDM(String indent)

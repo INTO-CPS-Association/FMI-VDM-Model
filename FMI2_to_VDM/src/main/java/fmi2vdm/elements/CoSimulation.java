@@ -34,21 +34,23 @@ import org.xml.sax.Locator;
 
 public class CoSimulation extends Element
 {
+	private String modelIdentifier;
+	private Boolean needsExecutionTool;
+	private Boolean canHandleVariableCommunicationStepSize;
+	private Boolean canInterpolateInputs;
+	private Long maxOutputDerivativeOrder;
+	private Boolean canRunAsynchronuously;
+	private Boolean canBeInstantiatedOnlyOncePerProcess;
+	private Boolean canNotUseMemoryManagementFunctions;
+	private Boolean canGetAndSetFMUstate;
+	private Boolean canSerializeFMUstate;
+	private Boolean providesDirectionalDerivative;
+	private SourceFiles sourceFiles;
+
 	public CoSimulation(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
-		modelIdentifier = stringOf(attributes, "modelIdentifier");
-		needsExecutionTool = boolOf(attributes, "needsExecutionTool");
-		canHandleVariableCommunicationStepSize = boolOf(attributes, "canHandleVariableCommunicationStepSize");
-		canInterpolateInputs = boolOf(attributes, "canInterpolateInputs");
-		maxOutputDerivativeOrder = uintOf(attributes, "maxOutputDerivativeOrder");
-		canRunAsynchronuously = boolOf(attributes, "canRunAsynchronuously");
-		canBeInstantiatedOnlyOncePerProcess = boolOf(attributes, "canBeInstantiatedOnlyOncePerProcess");
-		canNotUseMemoryManagementFunctions = boolOf(attributes, "canNotUseMemoryManagementFunctions");
-		canGetAndSetFMUstate = boolOf(attributes, "canGetAndSetFMUstate");
-		canSerializeFMUstate = boolOf(attributes, "canSerializeFMUstate");
-		providesDirectionalDerivative = boolOf(attributes, "providesDirectionalDerivative");
+		setAttributes(attributes);
 	}
 	
 	@Override
@@ -63,19 +65,6 @@ public class CoSimulation extends Element
 			super.add(element);
 		}
 	}
-
-	private String modelIdentifier;
-	private Boolean needsExecutionTool;
-	private Boolean canHandleVariableCommunicationStepSize;
-	private Boolean canInterpolateInputs;
-	private Long maxOutputDerivativeOrder;
-	private Boolean canRunAsynchronuously;
-	private Boolean canBeInstantiatedOnlyOncePerProcess;
-	private Boolean canNotUseMemoryManagementFunctions;
-	private Boolean canGetAndSetFMUstate;
-	private Boolean canSerializeFMUstate;
-	private Boolean providesDirectionalDerivative;
-	private SourceFiles sourceFiles;
 
 	@Override
 	void toVDM(String indent)

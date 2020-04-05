@@ -33,6 +33,8 @@ import org.xml.sax.Locator;
 
 public class UnitDefinitions extends Element
 {
+	private ElementList<Unit> unitDefinitions = null;
+
 	public UnitDefinitions(Locator locator)
 	{
 		super(locator);
@@ -56,8 +58,6 @@ public class UnitDefinitions extends Element
 		}
 	}
 	
-	private ElementList<Unit> unitDefinitions = null;
-
 	@Override
 	void toVDM(String indent)
 	{

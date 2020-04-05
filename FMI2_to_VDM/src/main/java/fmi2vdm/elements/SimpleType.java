@@ -34,12 +34,14 @@ import org.xml.sax.Locator;
 
 public class SimpleType extends Element
 {
+	private String name;
+	private String description;
+	private Type type;
+
 	public SimpleType(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		description = stringOf(attributes, "description");
+		setAttributes(attributes);
 	}
 
 	@Override
@@ -55,10 +57,6 @@ public class SimpleType extends Element
 		}
 	}
 	
-	private String name;
-	private String description;
-	private Type type;
-
 	@Override
 	void toVDM(String indent)
 	{

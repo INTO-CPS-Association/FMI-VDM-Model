@@ -34,30 +34,6 @@ import org.xml.sax.Locator;
 
 public class ModelAttributes extends Element
 {
-	public ModelAttributes(Attributes attributes, Locator locator)
-	{
-		super(locator);
-
-		fmiVersion = stringOf(attributes, "fmiVersion");
-		modelName = stringOf(attributes, "modelName");
-		guid = stringOf(attributes, "guid");
-		description = stringOf(attributes, "description");
-		author = stringOf(attributes, "author");
-		version = stringOf(attributes, "version");
-		copyright = stringOf(attributes, "copyright");
-		license = stringOf(attributes, "license");
-		generationTool = stringOf(attributes, "generationTool");
-		generationDateAndTime = stringOf(attributes, "generationDateAndTime");
-		variableNamingConvention = stringOf(attributes, "variableNamingConvention");
-		numberOfEventIndicators = intOf(attributes, "numberOfEventIndicators");
-		
-		if (fmiVersion == null || !fmiVersion.equals("2.0"))
-		{
-			System.err.println("FMU is not FMI v2 format");
-			System.exit(1);
-		}
-	}
-
 	private String fmiVersion;
 	private String modelName;
 	private String guid;
@@ -70,6 +46,18 @@ public class ModelAttributes extends Element
 	private String generationDateAndTime;
 	private String variableNamingConvention;
 	private Integer numberOfEventIndicators;
+
+	public ModelAttributes(Attributes attributes, Locator locator)
+	{
+		super(locator);
+		setAttributes(attributes);
+		
+		if (fmiVersion == null || !fmiVersion.equals("2.0"))
+		{
+			System.err.println("FMU is not FMI v2 format");
+			System.exit(1);
+		}
+	}
 
 	@Override
 	public void toVDM(String indent)

@@ -70,6 +70,13 @@ public class Any extends Element
 	@Override
 	void toVDM(String indent)
 	{
-		// Ignore - see Tool.java
+		if (text == null)
+		{
+			System.out.println(indent + "nil");
+		}
+		else
+		{
+			System.out.println(indent + "mk_token(\"" + text + "\")");
+		}
 	}
 }

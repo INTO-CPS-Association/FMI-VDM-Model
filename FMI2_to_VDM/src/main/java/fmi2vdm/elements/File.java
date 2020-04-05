@@ -34,14 +34,14 @@ import org.xml.sax.Locator;
 
 public class File extends Element
 {
+	private String name;
+	
 	public File(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		name = stringOf(attributes, "name");
+		setAttributes(attributes);
 	}
 
-	private String name;
-	
 	@Override
 	void toVDM(String indent)
 	{
