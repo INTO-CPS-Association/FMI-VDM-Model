@@ -43,10 +43,7 @@ public class BinaryVariable extends Variable
 	public BinaryVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-		
-		mimeType = stringOf(attributes, "mimeType");
-		maxSize = intOf(attributes, "maxSize");
-		start = stringsOf(attributes, "start");
+		setAttributes(attributes);
 	}
 
 	@Override

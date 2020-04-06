@@ -40,9 +40,7 @@ abstract public class Type extends Element
 	protected Type(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		description = stringOf(attributes, "description");
+		setAttributes(Type.class, attributes);
 	}
 
 	@Override

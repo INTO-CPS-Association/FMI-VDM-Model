@@ -42,9 +42,7 @@ public class Dimension extends Element
 	public Dimension(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		start = intOf(attributes, "start");
-		valueReference = intOf(attributes, "valueReference");
+		setAttributes(attributes);
 	}
 
 	@Override

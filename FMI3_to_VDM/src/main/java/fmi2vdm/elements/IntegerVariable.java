@@ -45,11 +45,7 @@ public class IntegerVariable extends Variable
 	public IntegerVariable(String kind, Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-
-		quantity = stringOf(attributes, "quantity");
-		min = intOf(attributes, "min");
-		max = intOf(attributes, "max");
-		start = intsOf(attributes, "start");
+		setAttributes(attributes);
 		this.kind = kind;
 	}
 

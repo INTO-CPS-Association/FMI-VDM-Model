@@ -49,16 +49,7 @@ public class ClockVariable extends Variable
 	public ClockVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-
-		clockType = stringOf(attributes, "clockType");
-		priority = intOf(attributes, "priority");
-		periodic = boolOf(attributes, "periodic");
-		strict = boolOf(attributes, "strict");
-		intervalCounter = intOf(attributes, "intervalCounter");
-		shiftCounter = intOf(attributes, "shiftCounter");
-		resolution = intOf(attributes, "resolution");
-
-		start = boolOf(attributes, "start");
+		setAttributes(attributes);
 	}
 
 	@Override

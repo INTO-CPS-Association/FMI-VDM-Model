@@ -52,19 +52,7 @@ public class ModelAttributes extends Element
 	public ModelAttributes(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		fmiVersion = stringOf(attributes, "fmiVersion");
-		modelName = stringOf(attributes, "modelName");
-		instantiationToken = stringOf(attributes, "instantiationToken");
-		description = stringOf(attributes, "description");
-		author = stringOf(attributes, "author");
-		version = stringOf(attributes, "version");
-		copyright = stringOf(attributes, "copyright");
-		license = stringOf(attributes, "license");
-		generationTool = stringOf(attributes, "generationTool");
-		generationDateAndTime = stringOf(attributes, "generationDateAndTime");
-		variableNamingConvention = stringOf(attributes, "variableNamingConvention");
-		numberOfEventIndicators = intOf(attributes, "numberOfEventIndicators");
+		setAttributes(attributes);
 
 		if (fmiVersion == null || !fmiVersion.startsWith("3.0-alpha"))
 		{

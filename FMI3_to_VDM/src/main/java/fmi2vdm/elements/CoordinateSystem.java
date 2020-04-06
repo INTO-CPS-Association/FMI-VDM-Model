@@ -43,12 +43,7 @@ public class CoordinateSystem extends Element
 	public CoordinateSystem(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		x1 = doubleOf(attributes, "x1");
-		y1 = doubleOf(attributes, "y1");
-		x2 = doubleOf(attributes, "x2");
-		y2 = doubleOf(attributes, "y2");
-		suggestedScalingFactorTo_mm = doubleOf(attributes, "suggestedScalingFactorTo_mm");
+		setAttributes(attributes);
 	}
 
 	@Override

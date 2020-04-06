@@ -41,8 +41,7 @@ public class Unit extends Element
 	public Unit(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		lineNumber = locator.getLineNumber();
-		name = stringOf(attributes, "name");
+		setAttributes(attributes);
 	}
 
 	@Override

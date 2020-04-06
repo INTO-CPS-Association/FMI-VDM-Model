@@ -29,14 +29,12 @@
 
 package fmi2vdm.elements;
 
-import java.math.BigInteger;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class RealVariable extends Variable
 {
-	private BigInteger derivative;
+	private Long derivative;
 	private Boolean reinit;
 
 	private String quantity;
@@ -55,21 +53,7 @@ public class RealVariable extends Variable
 	public RealVariable(String kind, Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-		
-		derivative = uintOf(attributes, "derivative");
-		reinit = boolOf(attributes, "reinit");
-
-		quantity = stringOf(attributes, "quantity");
-		unit = stringOf(attributes, "unit");
-		displayUnit = stringOf(attributes, "displayUnit");
-		relativeQuantity = boolOf(attributes, "relativeQuantity");
-		unbounded = boolOf(attributes, "unbounded");
-
-		min = doubleOf(attributes, "min");
-		max = doubleOf(attributes, "max");
-		nominal = doubleOf(attributes, "nominal");
-
-		start = doublesOf(attributes, "start");
+		setAttributes(attributes);
 		this.kind = kind;
 	}
 

@@ -39,8 +39,7 @@ public class BooleanVariable extends Variable
 	public BooleanVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-
-		start = boolsOf(attributes, "start");
+		setAttributes(attributes);
 	}
 
 	@Override

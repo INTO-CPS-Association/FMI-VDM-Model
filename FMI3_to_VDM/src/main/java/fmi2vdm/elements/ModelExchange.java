@@ -39,8 +39,7 @@ public class ModelExchange extends InterfaceType
 	public ModelExchange(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-
-		completedIntegratorStepNotNeeded = boolOf(attributes, "completedIntegratorStepNotNeeded");
+		setAttributes(attributes);
 	}
 
 	@Override

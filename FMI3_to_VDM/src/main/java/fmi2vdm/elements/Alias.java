@@ -41,10 +41,7 @@ public class Alias extends Element
 	public Alias(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		description = stringOf(attributes, "description");
-		displayUnit = stringOf(attributes, "displayUnit");
+		setAttributes(attributes);
 	}
 
 	@Override

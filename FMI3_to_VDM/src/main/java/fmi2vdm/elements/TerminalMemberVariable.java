@@ -41,10 +41,7 @@ public class TerminalMemberVariable extends Element
 	public TerminalMemberVariable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		variableKind = stringOf(attributes, "variableKind");
-		memberName = stringOf(attributes, "memberName");
-		variableName = stringOf(attributes, "variableName");
+		setAttributes(attributes);
 	}
 
 	@Override

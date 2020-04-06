@@ -49,15 +49,7 @@ public class GraphicalTerminal extends Element
 	public GraphicalTerminal(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		defaultConnectionStrokeSize = doubleOf(attributes, "defaultConnectionStrokes");
-		defaultConnectionColor = intsOf(attributes, "defaultConnectionColor");
-		x1 = doubleOf(attributes, "x1");
-		y1 = doubleOf(attributes, "y1");
-		x2 = doubleOf(attributes, "x2");
-		y2 = doubleOf(attributes, "y2");
-		iconBaseName = stringOf(attributes, "iconBaseName");
+		setAttributes(attributes);
 	}
 
 	@Override

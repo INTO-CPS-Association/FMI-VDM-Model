@@ -41,8 +41,7 @@ public class EventIndicator extends Element
 	public EventIndicator(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		valueReference = intOf(attributes, "valueReference");
+		setAttributes(attributes);
 	}
 
 	@Override

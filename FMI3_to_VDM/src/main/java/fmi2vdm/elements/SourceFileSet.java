@@ -44,10 +44,7 @@ public class SourceFileSet extends Element
 	public SourceFileSet(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		language = stringOf(attributes, "language");
-		compiler = stringOf(attributes, "compiler");
-		compilerOptions = stringOf(attributes, "compilerOptions");
+		setAttributes(attributes);
 	}
 
 	@Override

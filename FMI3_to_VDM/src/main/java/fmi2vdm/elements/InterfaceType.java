@@ -48,16 +48,7 @@ public class InterfaceType extends Element
 	protected InterfaceType(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
-		modelIdentifier = stringOf(attributes, "modelIdentifier");
-		needsExecutionTool = boolOf(attributes, "needsExecutionTool");
-		canBeInstantiatedOnlyOncePerProcess = boolOf(attributes, "canBeInstantiatedOnlyOncePerProcess");
-		canNotUseMemoryManagementFunctions = boolOf(attributes, "canNotUseMemoryManagementFunctions");
-		canGetAndSetFMUState = boolOf(attributes, "canGetAndSetFMUState");
-		canSerializeFMUState = boolOf(attributes, "canSerializeFMUState");
-		providesDirectionalDerivative = boolOf(attributes, "providesDirectionalDerivative");
-		providesAdjointDerivative = boolOf(attributes, "providesAdjointDerivative");
-		providesPerElementDependencies = boolOf(attributes, "providesPerElementDependencies");
+		setAttributes(InterfaceType.class, attributes);
 	}
 	
 	@Override

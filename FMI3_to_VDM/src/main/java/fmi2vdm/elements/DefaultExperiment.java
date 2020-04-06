@@ -42,11 +42,7 @@ public class DefaultExperiment extends Element
 	public DefaultExperiment(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		startTime = doubleOf(attributes, "startTime");
-		stopTime = doubleOf(attributes, "stopTime");
-		tolerance = doubleOf(attributes, "tolerance");
-		stepSize = doubleOf(attributes, "stepSize");
+		setAttributes(attributes);
 	}
 
 	@Override

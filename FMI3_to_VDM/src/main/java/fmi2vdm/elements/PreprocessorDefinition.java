@@ -43,11 +43,7 @@ public class PreprocessorDefinition extends Element
 	public PreprocessorDefinition(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		optional = boolOf(attributes, "optional");
-		value = stringOf(attributes, "value");
-		description = stringOf(attributes, "description");
+		setAttributes(attributes);
 	}
 
 	@Override

@@ -40,9 +40,7 @@ public class Category extends Element
 	public Category(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		description = stringOf(attributes, "description");
+		setAttributes(attributes);
 	}
 
 	@Override

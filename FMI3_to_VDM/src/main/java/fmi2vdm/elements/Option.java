@@ -40,9 +40,7 @@ public class Option extends Element
 	public Option(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		value = stringOf(attributes, "value");
-		description = stringOf(attributes, "description");
+		setAttributes(attributes);
 	}
 
 	@Override

@@ -45,11 +45,7 @@ public class Terminal extends Element
 	public Terminal(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		matchingRule = stringOf(attributes, "matchingRule");
-		terminalKind = stringOf(attributes, "terminalKind");
-		description = stringOf(attributes, "description");
+		setAttributes(attributes);
 	}
 
 	@Override

@@ -53,17 +53,7 @@ abstract class Variable extends Element
 	protected Variable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		
-		name = stringOf(attributes, "name");
-		valueReference = intOf(attributes, "valueReference");
-		description = stringOf(attributes, "description");
-		causality = stringOf(attributes, "causality");
-		variability = stringOf(attributes, "variability");
-		initial = stringOf(attributes, "initial");
-		canHandleMultipleSetPerTimeInstant = boolOf(attributes, "canHandleMultipleSetPerTimeInstant");
-		declaredType = stringOf(attributes, "declaredType");
-		clockReference = intOf(attributes, "clockReference");
-		intermediateAccess = boolOf(attributes, "intermediateAccess");
+		setAttributes(Variable.class, attributes);
 	}
 	
 	@Override

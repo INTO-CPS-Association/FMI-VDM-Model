@@ -47,14 +47,7 @@ public class ClockType extends Type
 	public ClockType(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-		
-		clockType = stringOf(attributes, "clockType");
-		priority = intOf(attributes, "priority");
-		periodic = boolOf(attributes, "periodic");
-		strict = boolOf(attributes, "strict");
-		intervalCounter = intOf(attributes, "intervalCounter");
-		shiftCounter = intOf(attributes, "shiftCounter");
-		resolution = intOf(attributes, "resolution");
+		setAttributes(attributes);
 	}
 
 	@Override

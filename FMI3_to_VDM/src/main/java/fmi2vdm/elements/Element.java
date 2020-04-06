@@ -29,6 +29,7 @@
 
 package fmi2vdm.elements;
 
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -44,6 +45,69 @@ abstract public class Element
 	protected Element(Locator locator)
 	{
 		lineNumber = locator.getLineNumber();
+	}
+	
+	/**
+	 * Called by all constructors with private attribute fields.
+	 * @param attributes
+	 */
+	protected void setAttributes(Attributes attributes)
+	{
+		setAttributes(getClass(), attributes);
+	}
+	
+	protected void setAttributes(Class<?> clazz, Attributes attributes)
+	{
+		try
+		{
+			for (Field field: clazz.getDeclaredFields())
+			{
+				Class<?> type = field.getType();
+				field.setAccessible(true);
+				
+				if (type.isAssignableFrom(String.class))
+				{
+					field.set(this, stringOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(String[].class))
+				{
+					field.set(this, stringsOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(BigInteger.class))
+				{
+					field.set(this, intOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(BigInteger[].class))
+				{
+					field.set(this, intsOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(Long.class))
+				{
+					field.set(this, uintOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(Double.class))
+				{
+					field.set(this, doubleOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(Double[].class))
+				{
+					field.set(this, doublesOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(Boolean.class))
+				{
+					field.set(this, boolOf(attributes, field.getName()));
+				}
+				else if (type.isAssignableFrom(Boolean[].class))
+				{
+					field.set(this, boolsOf(attributes, field.getName()));
+				}
+				// else not an attribute, hopefully!
+			}
+		}
+		catch (Exception e)
+		{
+			System.err.println(e);
+		}
 	}
 
 	protected String stringOf(Attributes attributes, String name)
@@ -139,7 +203,10 @@ abstract public class Element
 		}
 	}
 
-	protected BigInteger uintOf(Attributes attributes, String name)
+	/**
+	 * Long is used for unsigned, so that we can distinguish from BigInteger.
+	 */
+	protected Long uintOf(Attributes attributes, String name)
 	{
 		String value = attributes.getValue(name);
 
@@ -151,12 +218,12 @@ abstract public class Element
 		{
 			try
 			{
-				BigInteger uint = new BigInteger(value);
+				Long uint = new Long(value);
 
-				if (uint.signum() < 0)
+				if (uint.compareTo(0L) < 0)
 				{
 					FMI3SaxParser.error("Negative unsigned int " + value + " at " + lineNumber);
-					return BigInteger.ZERO;
+					return 0L;
 				}
 
 				return uint;
@@ -164,7 +231,7 @@ abstract public class Element
 			catch (NumberFormatException e)
 			{
 				FMI3SaxParser.error(e.toString() + " at " + lineNumber);
-				return BigInteger.ZERO;
+				return 0L;
 			}
 		}
 	}

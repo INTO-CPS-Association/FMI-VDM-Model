@@ -49,17 +49,8 @@ public class RealType extends Type
 	public RealType(String kind, Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
+		setAttributes(attributes);
 		this.kind = kind;
-
-		quantity = stringOf(attributes, "quantity");
-		unit = stringOf(attributes, "unit");
-		displayUnit = stringOf(attributes, "displayUnit");
-		relativeQuantity = boolOf(attributes, "relativeQuantity");
-		unbounded = boolOf(attributes, "unbounded");
-
-		min = doubleOf(attributes, "min");
-		max = doubleOf(attributes, "max");
-		nominal = doubleOf(attributes, "nominal");
 	}
 
 	@Override

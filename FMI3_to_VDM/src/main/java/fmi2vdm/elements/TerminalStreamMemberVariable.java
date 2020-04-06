@@ -42,11 +42,7 @@ public class TerminalStreamMemberVariable extends Element
 	public TerminalStreamMemberVariable(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		inStreamMemberName = stringOf(attributes, "inStreamMemberName");
-		outStreamMemberName = stringOf(attributes, "outStreamMemberName");
-		inStreamVariableName = stringOf(attributes, "inStreamVariableName");
-		outStreamVariableName = stringOf(attributes, "outStreamVariableName");
+		setAttributes(attributes);
 	}
 
 	@Override

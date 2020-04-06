@@ -50,17 +50,7 @@ public class BaseUnit extends Element
 	public BaseUnit(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		kg = intOf(attributes, "kg");
-		m = intOf(attributes, "m");
-		s = intOf(attributes, "s");
-		A = intOf(attributes, "A");
-		K = intOf(attributes, "K");
-		mol = intOf(attributes, "mol");
-		cs = intOf(attributes, "cs");
-		rad = intOf(attributes, "rad");
-		factor = doubleOf(attributes, "factor");
-		offset = doubleOf(attributes, "offset");
+		setAttributes(attributes);
 	}
 
 	@Override

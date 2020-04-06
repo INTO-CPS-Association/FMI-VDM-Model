@@ -3,9 +3,9 @@
 	modelName="Christian Møldrup Legaard" instantiationToken="{111-222-333-444}" variableNamingConvention="flat">
 	<BasicCoSimulation modelIdentifier="Test FMU" />
 	<ModelVariables>
-		<Float64 name="varname" valueReference="0" variability="constant" start="123">
-			<Alias name="alias" description="desc" displayUnit="Kg" />
-		</Float64>
+		<Int64 name="varname" valueReference="0" variability="constant" start="123">
+			<Alias name="alias" description="desc" />
+		</Int64>
 	</ModelVariables>
 	<ModelStructure>
 	</ModelStructure>

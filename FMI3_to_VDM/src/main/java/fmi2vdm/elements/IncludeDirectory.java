@@ -39,8 +39,7 @@ public class IncludeDirectory extends Element
 	public IncludeDirectory(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
+		setAttributes(attributes);
 	}
 
 	@Override

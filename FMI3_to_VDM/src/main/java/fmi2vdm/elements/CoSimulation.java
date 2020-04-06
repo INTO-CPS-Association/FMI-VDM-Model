@@ -29,8 +29,6 @@
 
 package fmi2vdm.elements;
 
-import java.math.BigInteger;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
@@ -38,7 +36,7 @@ abstract public class CoSimulation extends InterfaceType
 {
 	private Boolean canHandleVariableCommunicationStepSize;
 	private Boolean canInterpolateInputs;
-	private BigInteger maxOutputDerivativeOrder;
+	private Long maxOutputDerivativeOrder;
 	private Boolean providesIntermediateVariableAccess;
 	private Boolean canReturnEarlyAfterIntermediateUpdate;
 	private Double fixedInternalStepSize;
@@ -46,13 +44,7 @@ abstract public class CoSimulation extends InterfaceType
 	public CoSimulation(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-
-		canHandleVariableCommunicationStepSize = boolOf(attributes, "canHandleVariableCommunicationStepSize");
-		canInterpolateInputs = boolOf(attributes, "canInterpolateInputs");
-		maxOutputDerivativeOrder = uintOf(attributes, "maxOutputDerivativeOrder");
-		providesIntermediateVariableAccess = boolOf(attributes, "providesIntermediateVariableAccess");
-		canReturnEarlyAfterIntermediateUpdate = boolOf(attributes, "canReturnEarlyAfterIntermediateUpdate");
-		fixedInternalStepSize = doubleOf(attributes, "fixedInternalStepSize");
+		setAttributes(CoSimulation.class, attributes);
 	}
 
 	@Override

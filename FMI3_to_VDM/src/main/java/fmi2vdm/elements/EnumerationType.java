@@ -40,7 +40,7 @@ public class EnumerationType extends Type
 	public EnumerationType(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-		quantity = stringOf(attributes, "quantity");
+		setAttributes(attributes);
 	}
 
 	@Override

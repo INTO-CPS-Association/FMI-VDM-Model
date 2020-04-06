@@ -39,7 +39,7 @@ public class Start extends Element
 	public Start(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		value = stringOf(attributes, "value");
+		setAttributes(attributes);
 	}
 
 	@Override

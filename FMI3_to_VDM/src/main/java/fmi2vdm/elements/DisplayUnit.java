@@ -41,10 +41,7 @@ public class DisplayUnit extends Element
 	public DisplayUnit(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		factor = doubleOf(attributes, "factor");
-		offset = doubleOf(attributes, "offset");
+		setAttributes(attributes);
 	}
 
 	@Override

@@ -42,9 +42,7 @@ public class BinaryType extends Type
 	public BinaryType(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-		
-		mimeType = stringOf(attributes, "mimeType");
-		maxSize = intOf(attributes, "maxSize");
+		setAttributes(attributes);
 	}
 
 	@Override

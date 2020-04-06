@@ -39,7 +39,7 @@ public class SourceFile extends Element
 	public SourceFile(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		name = stringOf(attributes, "name");
+		setAttributes(attributes);
 	}
 
 	@Override

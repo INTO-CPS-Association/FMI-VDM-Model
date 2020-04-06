@@ -35,12 +35,12 @@ import org.xml.sax.Locator;
 public class Tool extends Element
 {
 	private String name;
-	private String annotation;
+	private Any annotation;
 
 	public Tool(Attributes attributes, Locator locator)
 	{
 		super(locator);
-		name = stringOf(attributes, "name");
+		setAttributes(attributes);
 	}
 
 	@Override
@@ -48,14 +48,7 @@ public class Tool extends Element
 	{
 		if (element instanceof Any)
 		{
-			if (annotation == null)
-			{
-				annotation = element.toString();
-			}
-			else
-			{
-				annotation = annotation + ";" + element.toString();
-			}
+			annotation = (Any)element;
 		}
 		else
 		{
@@ -66,19 +59,11 @@ public class Tool extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Tool(");
-		System.out.print(lineNumber + ", ");
-		printStringAttribute("", name, ", ");
-
-		if (annotation == null)
-		{
-			System.out.print("nil");
-		}
-		else
-		{
-			System.out.print("mk_token(\"" + annotation + "\")");
-		}
-
-		System.out.print(")");
+		System.out.println(indent + "mk_Tool");
+		System.out.println(indent + "(");
+		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printStringAttribute(indent + "\t", name, ",\n");
+		printOptional(indent + "\t", annotation, "\n");
+		System.out.print(indent + ")");
 	}
 }

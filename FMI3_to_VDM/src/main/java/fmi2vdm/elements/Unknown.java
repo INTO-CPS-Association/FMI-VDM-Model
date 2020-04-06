@@ -44,11 +44,8 @@ public class Unknown extends Element
 	public Unknown(String kind, Attributes attributes, Locator locator)
 	{
 		super(locator);
-
+		setAttributes(attributes);
 		this.kind = kind;
-		valueReference = intOf(attributes, "valueReference");
-		dependencies = intsOf(attributes, "dependencies");
-		dependenciesKind = stringsOf(attributes, "dependenciesKind");
 	}
 
 	@Override

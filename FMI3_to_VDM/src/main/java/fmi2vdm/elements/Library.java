@@ -42,11 +42,7 @@ public class Library extends Element
 	public Library(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		version = stringOf(attributes, "version");
-		external = boolOf(attributes, "external");
-		description = stringOf(attributes, "description");
+		setAttributes(attributes);
 	}
 
 	@Override

@@ -43,10 +43,7 @@ public class Item extends Element
 	public Item(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		name = stringOf(attributes, "name");
-		value = intOf(attributes, "value");
-		description = stringOf(attributes, "description");
+		setAttributes(attributes);
 	}
 
 	@Override

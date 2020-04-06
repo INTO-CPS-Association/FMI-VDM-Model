@@ -43,10 +43,7 @@ public class BuildConfiguration extends Element
 	public BuildConfiguration(Attributes attributes, Locator locator)
 	{
 		super(locator);
-
-		modelIdentifier = stringOf(attributes, "modelIdentifier");
-		platform = stringOf(attributes, "platform");
-		description = stringOf(attributes, "description");
+		setAttributes(attributes);
 	}
 
 	@Override

@@ -42,11 +42,7 @@ public class EnumerationVariable extends Variable
 	public EnumerationVariable(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-
-		quantity = stringOf(attributes, "quantity");
-		min = doubleOf(attributes, "min");
-		max = doubleOf(attributes, "max");
-		start = doublesOf(attributes, "start");
+		setAttributes(attributes);
 	}
 
 	@Override

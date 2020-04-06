@@ -45,11 +45,8 @@ public class IntegerType extends Type
 	public IntegerType(String kind, Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
+		setAttributes(attributes);
 		this.kind = kind;
-
-		quantity = stringOf(attributes, "quantity");
-		min = intOf(attributes, "min");
-		max = intOf(attributes, "max");
 	}
 
 	@Override
