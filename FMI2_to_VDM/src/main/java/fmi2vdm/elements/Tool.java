@@ -63,7 +63,7 @@ public class Tool extends Element
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", name, ",\n");
-		printOptional(indent + "\t", annotation, "");
+		printOptional(indent + "\t", annotation, "\n");
 		System.out.print(indent + ")");
 	}
 }

@@ -72,11 +72,11 @@ public class Any extends Element
 	{
 		if (text == null)
 		{
-			System.out.println(indent + "nil");
+			System.out.print(indent + "nil");
 		}
 		else
 		{
-			System.out.println(indent + "mk_token(\"" + text + "\")");
+			System.out.print(indent + "mk_token(\"" + text + "\")");
 		}
 	}
 }
