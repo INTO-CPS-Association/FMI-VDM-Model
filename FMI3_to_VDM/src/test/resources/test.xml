@@ -47,8 +47,8 @@
 	<TypeDefinitions>
 		<Float64 name="a" />
 		<Int64 name="b" />
-<!-- 	<Boolean name="c" /> -->
-<!-- 	<String name="d" /> -->
+	 	<Boolean name="c" />
+ 		<String name="d" />
 		<Binary name="e" />
 		<Enumeration name="f">
 			<Item name="a" value="1" />
