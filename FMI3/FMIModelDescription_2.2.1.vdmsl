@@ -73,12 +73,6 @@ types
 		-- Default experiment
 		defaultExperiment		: [DefaultExperiment]		-- XSD 2.2.6
 
-		-- Terminals										-- XSD 2.2.7
-		terminals				: [seq1 of Terminal]
-
-		-- Graphical representation							-- XSD 2.2.8
-		graphicalRepresentation	: [GraphicalRepresentation]
-
 		-- Vendor annotations
 		vendorAnnotations		: [seq1 of Tool]			-- XSD 2.2.9
 
@@ -129,12 +123,6 @@ functions
 
 			-- @OnFail("2.2.1 DefaultExperiment invalid at line %s", md.defaultExperiment.location)
 			( isValidDefaultExperiment(md.defaultExperiment) ),
-
-			-- @OnFail("2.2.1 Terminals invalid")
-			( isValidTerminals(md.terminals) ),
-
-			-- @OnFail("2.2.1 GraphicalRepresentation invalid")
-			( isValidGraphicalRepresentation(md.graphicalRepresentation) ),
 
 			-- @OnFail("2.2.1 VendorAnnotations invalid")
 			( isValidVendorAnnotation(md.vendorAnnotations) ),
@@ -335,19 +323,6 @@ functions
 					}
 
 					| unk in seq nilSeq[Unknown](md.modelStructure.unknowns)
-				}
-				= {true}
-			),
-
-			(
-				md.graphicalRepresentation <> nil =>
-				{
-					/* @OnFail("2.2.8 Graphical terminal %s not declared in Terminals at line %s",
-						gterm.name, gterm.location) */
-					( md.terminals <> nil and
-					  exists term in seq md.terminals & term.name = gterm.name )
-
-					| gterm in seq md.graphicalRepresentation.terminals
 				}
 				= {true}
 			)

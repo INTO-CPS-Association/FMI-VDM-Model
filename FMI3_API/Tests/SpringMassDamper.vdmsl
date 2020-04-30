@@ -234,12 +234,6 @@ values
 			nil
 		),
 
-		-- Terminals
-		nil,
-
-		-- GraphicalRepresentation
-		nil,
-
 		-- VendorAnnotations
 		nil,
 
