@@ -54,8 +54,6 @@ import fmi2vdm.elements.DisplayUnit;
 import fmi2vdm.elements.EnumerationType;
 import fmi2vdm.elements.EnumerationVariable;
 import fmi2vdm.elements.FMIModelDescription;
-import fmi2vdm.elements.GraphicalRepresentation;
-import fmi2vdm.elements.GraphicalTerminal;
 import fmi2vdm.elements.HybridCoSimulation;
 import fmi2vdm.elements.Icon;
 import fmi2vdm.elements.IncludeDirectory;
@@ -81,10 +79,6 @@ import fmi2vdm.elements.SourceFiles;
 import fmi2vdm.elements.Start;
 import fmi2vdm.elements.StringType;
 import fmi2vdm.elements.StringVariable;
-import fmi2vdm.elements.Terminal;
-import fmi2vdm.elements.TerminalMemberVariable;
-import fmi2vdm.elements.TerminalStreamMemberVariable;
-import fmi2vdm.elements.Terminals;
 import fmi2vdm.elements.Tool;
 import fmi2vdm.elements.TypeDefinitions;
 import fmi2vdm.elements.Unit;
@@ -314,33 +308,6 @@ public class FMI3SaxHandler extends DefaultHandler
 
 			case "DefaultExperiment":
 				stack.push(new DefaultExperiment(attributes, locator));
-				break;
-
-			case "Terminals":
-				stack.push(new Terminals(locator));
-				break;
-
-			case "Terminal":
-				if (stack.peek() instanceof GraphicalRepresentation)
-				{
-					stack.push(new GraphicalTerminal(attributes, locator));
-				}
-				else
-				{
-					stack.push(new Terminal(attributes, locator)); // Terminals
-				}
-				break;
-
-			case "TerminalMemberVariable":
-				stack.push(new TerminalMemberVariable(attributes, locator));
-				break;
-
-			case "TerminalStreamMemberVariable":
-				stack.push(new TerminalStreamMemberVariable(attributes, locator));
-				break;
-
-			case "GraphicalRepresentation":
-				stack.push(new GraphicalRepresentation(locator));
 				break;
 
 			case "CoordinateSystem":

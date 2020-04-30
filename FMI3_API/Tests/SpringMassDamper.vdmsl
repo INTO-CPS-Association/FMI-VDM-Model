@@ -154,9 +154,6 @@ values
 			nil
 		),
 
-		-- BuildConfiguration
-		nil,
-
 		-- UnitDefinitions
 		[
 			mk_Unit

@@ -58,9 +58,6 @@ types
 		-- CoSimulation
 		coSimulation			: [CoSimulation ]			-- XSD 4.3.1
 
-		-- Build configuration
-		buildConfiguration		: [BuildConfiguration]		-- XSD 2.2.2
-
 		-- Unit Definitions that are utilized in "ModelVariables"
 		unitDefinitions			: [seq1 of Unit]			-- XSD 2.2.3
 
@@ -108,9 +105,6 @@ functions
 
 			-- @OnFail("2.2.1 CoSimulation invalid at line %s", md.coSimulation.base.location)
 			( isValidCoSimulation(md.coSimulation) ),
-
-			-- @OnFail("2.2.1 BuildConfiguration invalid"))
-			( isValidBuildConfiguration(md.buildConfiguration) ),
 
 			-- @OnFail("2.2.1 UnitDefinitions invalid"))
 			( isValidUnitDefinitions(md.unitDefinitions) ),

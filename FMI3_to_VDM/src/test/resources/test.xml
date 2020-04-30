@@ -18,32 +18,6 @@
 			</Tool>
 		</VendorAnnotations>
 	</BasicCoSimulation>
-	<BuildConfiguration modelIdentifier="PlantModel"
-		platform="unix" description="Build configuration for desktop platforms">
-		<SourceFileSet language="C99" compiler="X"
-			compilerOptions="XX">
-			<SourceFile name="fmi3Functions.c" />
-			<SourceFile name="solver.c" />
-		</SourceFileSet>
-		<SourceFileSet language="C++11" compiler="X"
-			compilerOptions="XX">
-			<SourceFile name="model.c" />
-			<SourceFile name="logging/src/logger.c" />
-			<PreprocessorDefinition name="FMI_VERSION"
-				value="3" />
-			<PreprocessorDefinition name="LOG_TO_FILE"
-				optional="true" />
-			<PreprocessorDefinition name="LOG_LEVEL"
-				value="0" optional="true">
-				<Option value="0" description="Log infos, warnings and errors" />
-				<Option value="1" description="Log warnings and errors" />
-				<Option value="2" description="Log only errors" />
-			</PreprocessorDefinition>
-			<IncludeDirectory name="logging/include" />
-		</SourceFileSet>
-		<Library name="hdf5" version="&gt;=1.8,!=1.8.17,&lt;1.10"
-			external="true" description="HDF5" />
-	</BuildConfiguration>
 	<TypeDefinitions>
 		<Float64 name="a" />
 		<Int64 name="b" />
@@ -57,30 +31,6 @@
 		</Enumeration>
 		<Clock name="g" clockType="synchronousTime" priority="1" />
 	</TypeDefinitions>
-	<Terminals>
-		<Terminal name="nnn" matchingRule="rule" terminalKind="kind">
-			<TerminalMemberVariable variableKind="k1"
-				memberName="mname" variableName="vname" />
-			<TerminalMemberVariable variableKind="k2"
-				memberName="mname" variableName="vname" />
-			<TerminalStreamMemberVariable
-				inStreamMemberName="inmname" outStreamMemberName="omname"
-				inStreamVariableName="isvname" outStreamVariableName="osvname" />
-			<Terminal name="subterm1" matchingRule="rule2" terminalKind="kind2" />
-			<Terminal name="subterm2" matchingRule="rule3" terminalKind="kind3" />
-		</Terminal>
-	</Terminals>
-	<GraphicalRepresentation>
-		<CoordinateSystem x1="1" y1="11" x2="2" y2="22"	suggestedScalingFactorTo_mm="123" />
-		<Icon x1="1" y1="11" x2="2" y2="22" />
-		<Terminal name="name" defaultConnectionColor="1 2 3" x1="1"	y1="11" x2="2" y2="22" iconBaseName="bbb">
-			<VendorAnnotations>
-				<Tool name="tool1">
-				</Tool>
-			</VendorAnnotations>
-		</Terminal>
-		<Terminal name="name2" x1="1" y1="11" x2="2" y2="22" iconBaseName="ccc" />
-	</GraphicalRepresentation>
 	<ModelVariables>
 		<Float64 name="a" valueReference="1" start="INF NaN -INF">
 			<Dimension valueReference="3" />
