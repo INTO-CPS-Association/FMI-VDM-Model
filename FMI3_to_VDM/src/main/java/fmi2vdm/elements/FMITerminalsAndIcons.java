@@ -29,29 +29,31 @@
 
 package fmi2vdm.elements;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class GraphicalRepresentation extends Element
+public class FMITerminalsAndIcons extends Element
 {
-	private CoordinateSystem coordinateSystem;
-	private Icon icon;
+	private GraphicalRepresentation graphicalRepresentation;
+	private Terminals terminals;
 	private VendorAnnotations annotations;
 
-	public GraphicalRepresentation(Locator locator)
+	public FMITerminalsAndIcons(Attributes attributes, Locator locator)
 	{
 		super(locator);
+		setAttributes(attributes);
 	}
-
+	
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof CoordinateSystem)
+		if (element instanceof GraphicalRepresentation)
 		{
-			coordinateSystem = (CoordinateSystem) element;
+			graphicalRepresentation = (GraphicalRepresentation)element;
 		}
-		else if (element instanceof Icon)
+		else if (element instanceof Terminals)
 		{
-			icon = (Icon) element;
+			terminals = (Terminals)element;
 		}
 		else if (element instanceof VendorAnnotations)
 		{
@@ -66,12 +68,11 @@ public class GraphicalRepresentation extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_GraphicalRepresentation");
+		System.out.println(indent + "mk_FMITerminalsAndIcons");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-
-		printOptional(indent + "\t", coordinateSystem, ",\n");
-		printOptional(indent + "\t", icon, ",\n");
+		printOptional(indent + "\t", graphicalRepresentation, "\n");
+		printOptional(indent + "\t", terminals, "\n");
 		printOptional(indent + "\t", annotations, "\n");
 		System.out.print(indent + ")");
 	}

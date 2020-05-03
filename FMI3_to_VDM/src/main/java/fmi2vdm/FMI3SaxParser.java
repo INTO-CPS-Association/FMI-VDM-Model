@@ -45,7 +45,7 @@ import javax.xml.validation.Validator;
 
 import org.xml.sax.SAXException;
 
-import fmi2vdm.elements.FMIModelDescription;
+import fmi2vdm.elements.Element;
 
 public class FMI3SaxParser
 {
@@ -69,7 +69,7 @@ public class FMI3SaxParser
 		FMI3SaxHandler handler = new FMI3SaxHandler(args[0], args[1]);
 		saxParser.parse(args[0], handler);
 		
-		FMIModelDescription model = handler.getFMIModelDescription();
+		Element model = handler.getRootElement();
 		
 		if (errors == 0)
 		{

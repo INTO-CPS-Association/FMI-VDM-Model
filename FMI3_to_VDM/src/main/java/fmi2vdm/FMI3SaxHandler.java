@@ -54,6 +54,9 @@ import fmi2vdm.elements.DisplayUnit;
 import fmi2vdm.elements.EnumerationType;
 import fmi2vdm.elements.EnumerationVariable;
 import fmi2vdm.elements.FMIModelDescription;
+import fmi2vdm.elements.FMITerminalsAndIcons;
+import fmi2vdm.elements.GraphicalRepresentation;
+import fmi2vdm.elements.TerminalGraphicalRepresentation;
 import fmi2vdm.elements.HybridCoSimulation;
 import fmi2vdm.elements.Icon;
 import fmi2vdm.elements.IncludeDirectory;
@@ -68,6 +71,7 @@ import fmi2vdm.elements.ModelStructure;
 import fmi2vdm.elements.ModelVariables;
 import fmi2vdm.elements.Element;
 import fmi2vdm.elements.EventIndicator;
+import fmi2vdm.elements.FMIBuildDescription;
 import fmi2vdm.elements.Option;
 import fmi2vdm.elements.PreprocessorDefinition;
 import fmi2vdm.elements.SourceFile;
@@ -79,6 +83,10 @@ import fmi2vdm.elements.SourceFiles;
 import fmi2vdm.elements.Start;
 import fmi2vdm.elements.StringType;
 import fmi2vdm.elements.StringVariable;
+import fmi2vdm.elements.Terminal;
+import fmi2vdm.elements.TerminalMemberVariable;
+import fmi2vdm.elements.TerminalStreamMemberVariable;
+import fmi2vdm.elements.Terminals;
 import fmi2vdm.elements.Tool;
 import fmi2vdm.elements.TypeDefinitions;
 import fmi2vdm.elements.Unit;
@@ -92,8 +100,11 @@ public class FMI3SaxHandler extends DefaultHandler
 	private final String varname;
 
 	private Locator locator = null;
-	private FMIModelDescription fmiModelDescription = null;
 	private Stack<Element> stack = new Stack<Element>();
+
+	private FMIModelDescription fmiModelDescription = null;
+	private FMITerminalsAndIcons fmiTerminalsAndIcons = null;
+	private FMIBuildDescription fmiBuildDescription = null;
 
 	public FMI3SaxHandler(String xmlfile, String name)
 	{
@@ -101,9 +112,20 @@ public class FMI3SaxHandler extends DefaultHandler
 		this.varname = name;
 	}
 
-	public FMIModelDescription getFMIModelDescription()
+	public Element getRootElement()
 	{
-		return fmiModelDescription;
+		if (fmiModelDescription != null)
+		{
+			return fmiModelDescription;
+		}
+		else if (fmiTerminalsAndIcons != null)
+		{
+			return fmiTerminalsAndIcons;
+		}
+		else
+		{
+			return fmiBuildDescription;
+		}
 	}
 
 	@Override
@@ -117,10 +139,25 @@ public class FMI3SaxHandler extends DefaultHandler
 	{
 		switch (qName)
 		{
+			/**
+			 * Top level cases first, for the modelDescription.xml, terminalsAndIcons.xml and
+			 * buildConfiguration.xml files.
+			 */
 			case "fmiModelDescription":
 				stack.push(new FMIModelDescription(xmlfile, varname, new ModelAttributes(attributes, locator), locator));
 				break;
 
+			case "fmiTerminalsAndIcons":
+				stack.push(new FMITerminalsAndIcons(attributes, locator));
+				break;
+				
+			case "fmiBuildDescription":
+				stack.push(new FMIBuildDescription(attributes, locator));
+				break;
+			
+			/**
+			 * Remaining elements are subelements of the three above.
+			 */
 			case "ModelExchange":
 				stack.push(new ModelExchange(attributes, locator));
 				break;
@@ -310,6 +347,33 @@ public class FMI3SaxHandler extends DefaultHandler
 				stack.push(new DefaultExperiment(attributes, locator));
 				break;
 
+			case "Terminals":
+				stack.push(new Terminals(locator));
+				break;
+
+			case "Terminal":
+				stack.push(new Terminal(attributes, locator)); // Terminals
+				break;
+
+			case "TerminalMemberVariable":
+				stack.push(new TerminalMemberVariable(attributes, locator));
+				break;
+
+			case "TerminalStreamMemberVariable":
+				stack.push(new TerminalStreamMemberVariable(attributes, locator));
+				break;
+
+			case "GraphicalRepresentation":
+				if (stack.peek() instanceof FMITerminalsAndIcons)
+				{
+					stack.push(new GraphicalRepresentation(locator));
+				}
+				else
+				{
+					stack.push(new TerminalGraphicalRepresentation(attributes, locator));
+				}
+				break;
+
 			case "CoordinateSystem":
 				stack.push(new CoordinateSystem(attributes, locator));
 				break;
@@ -378,10 +442,17 @@ public class FMI3SaxHandler extends DefaultHandler
 			// Add completed element to parent element
 			stack.peek().add(element);
 		}
-		else
+		else if (element instanceof FMIModelDescription)
 		{
-			// Else we're finished, so set the root variable
 			fmiModelDescription = (FMIModelDescription) element;
+		}
+		else if (element instanceof FMITerminalsAndIcons)
+		{
+			fmiTerminalsAndIcons = (FMITerminalsAndIcons) element;
+		}
+		else if (element instanceof FMIBuildDescription)
+		{
+			fmiBuildDescription  = (FMIBuildDescription) element;
 		}
 	}
 }

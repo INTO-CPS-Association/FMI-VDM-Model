@@ -29,24 +29,15 @@
 
 package fmi2vdm.elements;
 
-import java.math.BigInteger;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class GraphicalTerminal extends Element
+public class FMIBuildDescription extends Element
 {
-	private String name;
-	private BigInteger[] defaultConnectionColor;
-	private Double defaultConnectionStrokeSize;
-	private Double x1;
-	private Double y1;
-	private Double x2;
-	private Double y2;
-	private String iconBaseName;
-	private VendorAnnotations annotations;
-
-	public GraphicalTerminal(Attributes attributes, Locator locator)
+	private ElementList<BuildConfiguration> buildConfiguration;
+	private String fmiVersion;
+	
+	public FMIBuildDescription(Attributes attributes, Locator locator)
 	{
 		super(locator);
 		setAttributes(attributes);
@@ -55,9 +46,14 @@ public class GraphicalTerminal extends Element
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof VendorAnnotations)
+		if (element instanceof BuildConfiguration)
 		{
-			annotations = (VendorAnnotations) element;
+			if (buildConfiguration == null)
+			{
+				buildConfiguration = new ElementList<BuildConfiguration>();
+			}
+			
+			buildConfiguration.add(element);
 		}
 		else
 		{
@@ -68,18 +64,11 @@ public class GraphicalTerminal extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_GraphicalTerminal");
+		System.out.println(indent + "mk_FMIBuildDescription");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, ",\n");
-		printSequence(indent + "\t", defaultConnectionColor, ",\n");
-		printRawAttribute(indent + "\t", defaultConnectionStrokeSize, ",\n");
-		printRawAttribute(indent + "\t", x1, ",\n");
-		printRawAttribute(indent + "\t", y1, ",\n");
-		printRawAttribute(indent + "\t", x2, ",\n");
-		printRawAttribute(indent + "\t", y2, ",\n");
-		printStringAttribute(indent + "\t", iconBaseName, ",\n");
-		printOptional(indent + "\t", annotations, "\n");
+		printOptional(indent + "\t", buildConfiguration, ",\n");
+		printStringAttribute(indent + "\t", fmiVersion, "\n");
 		System.out.print(indent + ")");
 	}
 }
