@@ -39,7 +39,9 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Random;
+import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -89,28 +91,33 @@ public class VDMCheck
 		}
 		else
 		{
-			System.exit(run(filename, xmlIN, vdmOUT, xsdIN));
+			List<File> checkList = getCheckList(filename, xmlIN);
+			boolean failed = (checkList == null);
+			
+			if (!failed)
+			{
+				for (File tempXML: checkList)
+				{
+					failed = failed || run(filename, tempXML, xsdIN, vdmOUT);
+				}
+			}
+			
+			System.exit(failed ? 1 : 0);
 		}
 	}
 	
-	private static int run(String filename, String xmlIN, String vdmOUT, String xsdIN)
+	private static List<File> getCheckList(String filename, String xmlIN)
 	{
-		File fmuFile = filename == null ? null : new File(filename);
+		List<File> results = new Vector<File>();
 		
-		File tempXML = null;
-		File tempVDM = null;
-		File tempOUT = null;
-
 		try
 		{
-			tempXML = File.createTempFile("modelDescription", "tmp");
-			tempVDM = File.createTempFile("vdm", "tmp");
-			ZipFile zip = null;
-			
+			File fmuFile = filename == null ? null : new File(filename);
+
 			if (fmuFile != null && !fmuFile.exists())
 			{
 				System.err.printf("File %s not found\n", filename);
-				return 1;
+				return null;
 			}
 			
 			if (xmlIN != null)
@@ -124,14 +131,19 @@ public class VDMCheck
 				catch (SAXException e)
 				{
 					System.err.println("XML errors found");
-					return 1;
+					return null;
 				}
 				
 				// Write XML into tempXML
+				File tempXML = File.createTempFile("modelDescription", "tmp");
+				tempXML.deleteOnExit();
 				copy(new ByteArrayInputStream(xmlIN.getBytes()), tempXML);
+				results.add(tempXML);
 			}
 			else
 			{
+				ZipFile zip = null;
+
 				try
 				{
 					zip = new ZipFile(fmuFile);
@@ -140,12 +152,35 @@ public class VDMCheck
 					if (entry == null)
 					{
 						System.err.printf("Cannot locate modelDescription.xml in %s\n", filename);
-						return 1;
+						return null;
 					}
 					
+					File tempXML = File.createTempFile("modelDescription", "tmp");
+					tempXML.deleteOnExit();
 					copy(zip.getInputStream(entry), tempXML);
+					results.add(tempXML);
+					
+					entry = zip.getEntry("icon/terminalsAndIcons.xml");
+					
+					if (entry != null)
+					{
+						File tempXML2 = File.createTempFile("terminalsAndIcons", "tmp");
+						tempXML2.deleteOnExit();
+						copy(zip.getInputStream(entry), tempXML2);
+						results.add(tempXML2);
+					}
+					
+					entry = zip.getEntry("sources/buildDescription.xml");
+					
+					if (entry != null)
+					{
+						File tempXML3 = File.createTempFile("buildDescription", "tmp");
+						tempXML3.deleteOnExit();
+						copy(zip.getInputStream(entry), tempXML3);
+						results.add(tempXML3);
+					}
 				}
-				catch (ZipException e)	// Not a zip file
+				catch (ZipException e)	// Not a zip file, assume raw XML
 				{
 					try
 					{
@@ -157,25 +192,43 @@ public class VDMCheck
 					{
 						System.err.printf("Exception: %s\n", e1.getMessage());
 						System.err.printf("Input %s is neither a ZIP nor an XML file?\n", filename);
-						return 1;
+						return null;
 					}
 					catch (Exception e1)
 					{
 						System.err.printf("Input %s is neither a ZIP nor an XML file?\n", filename);
-						return 1;
+						return null;
 					}
-					
+
+					File tempXML = File.createTempFile("XML", "tmp");
+					tempXML.deleteOnExit();
 					copy(new FileInputStream(fmuFile), tempXML);
+					results.add(tempXML);
 				}
 				finally
 				{
 					if (zip != null) zip.close();
 				}
 			}
-			
+		}
+		catch (Exception e)
+		{
+			System.err.printf("Error: %s\n", e.getMessage());
+			results.clear();
+		}
+		
+		return results;
+	}
+
+	private static boolean run(String filename, File tempXML, String xsdIN, String vdmOUT)
+	{
+		try
+		{
 			// Execute VDMJ to first convert tempXML to VDM-SL, then validate the VDM.
 			
 			File jarLocation = getJarLocation();
+			System.err.println(jarLocation.toString());
+			
 			String varName = "model" + (new Random().nextInt(9999));
 			String[] args = null;
 			
@@ -187,7 +240,10 @@ public class VDMCheck
 			{
 				args = new String[] { tempXML.getCanonicalPath(), varName, xsdIN };
 			}
-
+		
+			File tempVDM = File.createTempFile("vdm", "tmp");
+			tempVDM.deleteOnExit();
+			
 			PrintStream savedIO = System.out;
 			PrintStream vdmsl = new PrintStream(tempVDM);
 			System.setOut(vdmsl);
@@ -195,19 +251,20 @@ public class VDMCheck
 			vdmsl.close();
 			System.setOut(savedIO);
 			
-			tempOUT = File.createTempFile("out", "tmp");
+			File tempOUT = File.createTempFile("out", "tmp");
+			tempOUT.deleteOnExit();
 			
-			String[] dependencies = {"vdmj-4.3.0.jar", "annotations-1.0.0.jar", "annotations2-1.0.0.jar"};
-
+			String[] dependencies = {"vdmj-4.3.0-P.jar", "annotations-1.0.0.jar", "annotations2-1.0.0.jar"};
+	
 			int exit = runCommand(jarLocation, tempOUT,
 					"java", "-Xmx1g", "-cp", String.join(File.pathSeparator, dependencies), 
 					"com.fujitsu.vdmj.VDMJ", "-vdmsl", "-q", "-annotations",
-					"-e", "isValidFMIModelDescription(" + varName + ")", "model", tempVDM.getCanonicalPath());
-
+					"-e", "isValidFMIConfiguration(" + varName + ")", "model", tempVDM.getCanonicalPath());
+	
 			sed(tempOUT, System.out,
 					"^true$", "No errors found.",
 					"^false$", "Errors found.");
-
+	
 			if (vdmOUT != null)
 			{
 				if (filename == null) filename = "XML";
@@ -216,21 +273,13 @@ public class VDMCheck
 					"generated from " + tempXML, "generated from " + filename);
 			}
 			
-			return exit;
+			return exit == 0;
 		}
 		catch (Exception e)
 		{
 			System.err.printf("Error: %s\n", e.getMessage());
-			System.exit(1);
+			return false;
 		}
-		finally
-		{
-			if (tempXML != null) tempXML.delete();
-			if (tempVDM != null) tempVDM.delete();
-			if (tempOUT != null) tempOUT.delete();
-		}
-		
-		return 0;
 	}
 	
 	private static void copy(InputStream in, File outfile) throws IOException
