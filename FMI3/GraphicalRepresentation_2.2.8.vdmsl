@@ -28,14 +28,14 @@
  */
 
 /**
- * 2.2.7 Definition of Terminals
+ * 2.2.6.1 Definition of GraphicalRepresentation
  */
 types
 	GraphicalRepresentation ::
 		location					: Location
 		coordinateSystem			: [CoordinateSystem]
 		icon						: [Icon]
-		terminals					: [seq1 of GraphicalTerminal];
+		vendorAnnotations			: [fmi3Annotation];
 
 	CoordinateSystem ::
 		location					: Location
@@ -52,26 +52,13 @@ types
 		x2							: real
 		y2							: real;
 
-	GraphicalTerminal ::
-		location					: Location
-		name						: NormalizedString
-		defaultConnectionColor		: [seq of nat]
-		defaultConnectionStrokeSize	: [real]
-		x1							: real
-		y1							: real
-		x2							: real
-		y2							: real
-		iconBase					: [NormalizedString]
-		vendorAnnotations			: [fmi3Annotation];
-
 functions
 	isValidGraphicalRepresentation: [GraphicalRepresentation] +> bool
 	isValidGraphicalRepresentation(gr) ==
 		gr <> nil =>
 		{
 			isValidCoordinateSystem(gr.coordinateSystem),
-			isValidIcon(gr.icon),
-			isValidGraphicalTerminal(gr.terminals)
+			isValidIcon(gr.icon)
 		} = {true};
 
 	isValidCoordinateSystem: [CoordinateSystem] +> bool
@@ -90,27 +77,3 @@ functions
 		icon <> nil =>
 			-- @OnFail("2.2.8 Icon area is not bottom left to top right at line %s", icon.location)
 			( icon.x1 < icon.x2 and icon.y1 < icon.y2 );
-
-	isValidGraphicalTerminal: [seq1 of GraphicalTerminal] +> bool
-	isValidGraphicalTerminal(gterms) ==
-		dunion
-		{
-			{
-				-- @OnFail("2.2.8 Terminal area is not bottom left to top right at line %s", gt.location)
-				( gt.x1 < gt.x2 and gt.y1 < gt.y2 ),
-
-				-- @OnFail("2.2.8 Colour attributes must be octets (<=255) at line %s", gt.location)
-				( gt.defaultConnectionColor <> nil =>
-					forall c in seq gt.defaultConnectionColor & c <= 255 ),
-
-				-- @OnFail("2.2.8 defaultConnectionStrokeSize must be >0 at line %s", gt.location)
-				( gt.defaultConnectionStrokeSize <> nil =>
-					gt.defaultConnectionStrokeSize > 0 ),
-
-				-- @OnFail("2.2.8 Terminal vendor annotations invalid at line %s", gt.location)
-				( isValidVendorAnnotation(gt.vendorAnnotations) )
-			}
-
-			| gt in seq gterms
-		}
-		= {true};

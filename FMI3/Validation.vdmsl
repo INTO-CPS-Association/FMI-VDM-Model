@@ -28,28 +28,18 @@
  */
 
 /**
- * 2.2.5 Default Experiment
+ * Functions to support the validation of FMU configuration files.
  */
-types
-	DefaultExperiment ::
-		location		: Location
-		startTime		: [real]
-		stopTime		: [real]
-		tolerance		: [real]
-		stepSize		: [real];
-
 functions
-	isValidDefaultExperiment: [DefaultExperiment] +> bool
-	isValidDefaultExperiment(e) ==
-		e <> nil =>
-			{
-				-- @OnFail("2.2.6 DefalutExperiment tolerance must be >= 0 at line %s", e.location)
-				( e.tolerance <> nil => e.tolerance >= 0),
+	isValidFMIConfiguration: FMIModelDescription | FMIBuildDescription | FMITerminalsAndIcons +> bool
+	isValidFMIConfiguration(conf) ==
+		if is_(conf, FMIModelDescription)
+		then isValidFMIModelDescription(conf)
 
-				-- @OnFail("2.2.6 DefaultExperiment stop time must be later than start time at line %s", e.location)
-				( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime ),
+		elseif is_(conf, FMIBuildDescription)
+		then isValidFMIBuildDescription(conf)
 
-				-- @OnFail("2.2.6 DefaultExperiment stepSize must be less than start-stop interval at line %s", e.location)
-				( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
-					e.stopTime - e.startTime > e.stepSize )
-			} = {true};
+		else if is_(conf, FMITerminalsAndIcons)
+		then isValidFMITerminalsAndIcons(conf)
+
+		else undefined;		-- Undefined top level type

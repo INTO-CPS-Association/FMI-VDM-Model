@@ -28,7 +28,7 @@
  */
 
 /**
- * 2.2.11 Definition of the Model Structure (ModelStructure)
+ * 2.2.9 Definition of the Model Structure (ModelStructure)
  */
 types
 	DependencyKind	=

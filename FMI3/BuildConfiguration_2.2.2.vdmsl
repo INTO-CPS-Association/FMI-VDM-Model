@@ -31,6 +31,11 @@
  * 2.2.2 Build Configuration
  */
 types
+	FMIBuildDescription ::
+		location				: Location
+		buildConfigurations		: seq1 of BuildConfiguration
+		fmiVersion				: NormalizedString;
+
 	BuildConfiguration ::
 		location				: Location
 		modelIdentifier			: NormalizedString
@@ -77,6 +82,13 @@ types
 		description				: [AnyString];
 
 functions
+	isValidFMIBuildDescription: FMIBuildDescription +> bool
+	isValidFMIBuildDescription(desc) ==
+	{
+		-- @OnFail("2.2.2 Invalid BuildConfiguration at line %s", bc.location)
+		( isValidBuildConfiguration(bc) ) | bc in seq desc.buildConfigurations
+	} = {true};
+
 	isValidBuildConfiguration: [BuildConfiguration] +> bool
 	isValidBuildConfiguration(bc) ==
 		bc <> nil and bc.sourceFileSets <> nil =>

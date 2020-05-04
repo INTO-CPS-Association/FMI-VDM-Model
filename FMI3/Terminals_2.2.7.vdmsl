@@ -28,33 +28,60 @@
  */
 
 /**
- * 2.2.7 Definition of Terminals
+ * 2.2.6.2 Definition of Terminals
  */
 types
+	FMITerminalsAndIcons ::
+		location					: Location
+		graphicalRepresentation		: GraphicalRepresentation
+		terminals					: [seq1 of Terminal]
+		fmiVersion					: NormalizedString;
+
 	Terminal ::
-		location				: Location
-		name					: NormalizedString
-		matchingRule			: NormalizedString
-		terminalKind			: [NormalizedString]
-		description				: [AnyString]
-		variables				: [seq1 of TerminalMemberVariable]
-		streams					: [seq1 of TerminalStreamMemberVariable]
-		subTerminals			: [seq1 of Terminal];
+		location					: Location
+		name						: NormalizedString
+		matchingRule				: NormalizedString
+		terminalKind				: [NormalizedString]
+		description					: [AnyString]
+		graphicalRepresentation		: [TerminalGraphicalRepresentation]
+		variables					: [seq1 of TerminalMemberVariable]
+		streams						: [seq1 of TerminalStreamMemberVariable]
+		subTerminals				: [seq1 of Terminal];
+
+	TerminalGraphicalRepresentation ::
+		location					: Location
+		name						: NormalizedString
+		defaultConnectionColor		: [seq of nat]
+		defaultConnectionStrokeSize	: [real]
+		x1							: real
+		y1							: real
+		x2							: real
+		y2							: real
+		iconBase					: [NormalizedString]
+		vendorAnnotations			: [fmi3Annotation];
 
 	TerminalMemberVariable ::
-		location				: Location
-		variableKind			: NormalizedString
-		memberName				: NormalizedString
-		variableName			: NormalizedString;
+		location					: Location
+		variableKind				: NormalizedString
+		memberName					: NormalizedString
+		variableName				: NormalizedString;
 
 	TerminalStreamMemberVariable ::
-		location				: Location
-		inStreamMemberName		: NormalizedString
-		outStreamMemberName		: NormalizedString
-		inStreamVariableName	: NormalizedString
-		outStreamVariableName	: NormalizedString;
+		location					: Location
+		inStreamMemberName			: NormalizedString
+		outStreamMemberName			: NormalizedString
+		inStreamVariableName		: NormalizedString
+		outStreamVariableName		: NormalizedString;
 
 functions
+	isValidFMITerminalsAndIcons: FMITerminalsAndIcons +> bool
+	isValidFMITerminalsAndIcons(tandi) ==
+	{
+		isValidGraphicalRepresentation(tandi.graphicalRepresentation),
+		isValidTerminals(tandi.terminals)
+	}
+	= {true};
+
 	isValidTerminals: [seq1 of Terminal] +> bool
 	isValidTerminals(terminals) ==
 		terminals <> nil => dunion
@@ -63,7 +90,8 @@ functions
 				-- @OnFail("Terminal invalid at line %s", t.location)
 				( isValidTerminal(t) ),
 
-				isValidTerminals(t.subTerminals)
+				isValidTerminals(t.subTerminals),
+				isValidTerminalGraphicalRepresentation(t.graphicalRepresentation)
 			}
 
 			| t in seq terminals
@@ -76,3 +104,24 @@ functions
 		term.variables <> nil =>
 			-- @OnFail("Terminal member variables not unique at line %s", term.location)
 			( card { v | v in seq term.variables } = len term.variables );
+
+
+	isValidTerminalGraphicalRepresentation: [TerminalGraphicalRepresentation] +> bool
+	isValidTerminalGraphicalRepresentation(gt) ==
+		gt <> nil =>
+			{
+				-- @OnFail("2.2.8 Terminal area is not bottom left to top right at line %s", gt.location)
+				( gt.x1 < gt.x2 and gt.y1 < gt.y2 ),
+
+				-- @OnFail("2.2.8 Colour attributes must be octets (<=255) at line %s", gt.location)
+				( gt.defaultConnectionColor <> nil =>
+					forall c in seq gt.defaultConnectionColor & c <= 255 ),
+
+				-- @OnFail("2.2.8 defaultConnectionStrokeSize must be >0 at line %s", gt.location)
+				( gt.defaultConnectionStrokeSize <> nil =>
+					gt.defaultConnectionStrokeSize > 0 ),
+
+				-- @OnFail("2.2.8 Terminal vendor annotations invalid at line %s", gt.location)
+				( isValidVendorAnnotation(gt.vendorAnnotations) )
+			}
+			= {true};

@@ -28,7 +28,7 @@
  */
 
 /**
- * 2.2.10 Definition of Model Variables (ModelVariables)
+ * 2.2.8 Definition of Model Variables (ModelVariables)
  */
 values
 	-- TODO These catch INF and NAN Double values from the XML

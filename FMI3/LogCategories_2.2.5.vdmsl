@@ -28,7 +28,7 @@
  */
 
 /**
- * 2.2.5 Log Categories
+ * 2.2.4 Log Categories
  */
 types
 	Category ::

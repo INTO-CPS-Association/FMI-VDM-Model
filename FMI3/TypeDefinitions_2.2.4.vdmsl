@@ -28,7 +28,7 @@
  */
 
 /**
- * 2.2.4 Definition of Types (TypeDefinitions)
+ * 2.2.3 Definition of Types (TypeDefinitions)
  */
 types
 	fmi3TypeDefinitionBase ::
