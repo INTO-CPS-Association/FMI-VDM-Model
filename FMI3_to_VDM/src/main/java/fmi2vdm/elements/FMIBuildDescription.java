@@ -34,8 +34,8 @@ import org.xml.sax.Locator;
 
 public class FMIBuildDescription extends Element
 {
-	private ElementList<BuildConfiguration> buildConfiguration;
 	private String fmiVersion;
+	private ElementList<BuildConfiguration> buildConfiguration;
 	
 	public FMIBuildDescription(Attributes attributes, Locator locator)
 	{
@@ -67,8 +67,8 @@ public class FMIBuildDescription extends Element
 		System.out.println(indent + "mk_FMIBuildDescription");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printOptional(indent + "\t", buildConfiguration, ",\n");
-		printStringAttribute(indent + "\t", fmiVersion, "\n");
+		printStringAttribute(indent + "\t", fmiVersion, ",\n");
+		printOptional(indent + "\t", buildConfiguration, "\n");
 		System.out.print(indent + ")");
 	}
 }

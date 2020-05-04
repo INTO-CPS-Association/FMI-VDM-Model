@@ -67,7 +67,7 @@ public class TerminalGraphicalRepresentation extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_GraphicalTerminal");
+		System.out.println(indent + "mk_TerminalGraphicalRepresentation");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printSequence(indent + "\t", defaultConnectionColor, ",\n");

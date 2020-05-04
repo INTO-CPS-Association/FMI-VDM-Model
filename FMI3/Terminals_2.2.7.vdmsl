@@ -33,9 +33,10 @@
 types
 	FMITerminalsAndIcons ::
 		location					: Location
+		fmiVersion					: NormalizedString
 		graphicalRepresentation		: GraphicalRepresentation
 		terminals					: [seq1 of Terminal]
-		fmiVersion					: NormalizedString;
+		vendorAnnotations			: [fmi3Annotation];
 
 	Terminal ::
 		location					: Location
@@ -50,7 +51,6 @@ types
 
 	TerminalGraphicalRepresentation ::
 		location					: Location
-		name						: NormalizedString
 		defaultConnectionColor		: [seq of nat]
 		defaultConnectionStrokeSize	: [real]
 		x1							: real

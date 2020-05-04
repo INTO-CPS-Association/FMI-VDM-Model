@@ -29,16 +29,15 @@ import fmi2vdm.FMI3SaxParser;
 
 public class TestVDMCheck
 {
-	@Test
-	public void testMinimal()
+	private void check(String file)
 	{
 		try
 		{
 			String[] args = new String[]
 			{
-				"src/test/resources/minimal.xml",
+				"src/test/resources/" + file,
 				"var",
-				"src/main/resources/schema/fmi3ModelDescription.xsd"
+				"src/main/resources/schema/fmi3.xsd"
 			};
 			
 			FMI3SaxParser.main(args);
@@ -48,24 +47,28 @@ public class TestVDMCheck
 			fail(e.getMessage());
 		}
 	}
-	
+
 	@Test
-	public void testNewFMI3Types()
+	public void testMinimal()
 	{
-		try
-		{
-			String[] args = new String[]
-			{
-				"src/test/resources/test.xml",
-				"var",
-				"src/main/resources/schema/fmi3ModelDescription.xsd"
-			};
-			
-			FMI3SaxParser.main(args);
-		}
-		catch (Exception e)
-		{
-			fail(e.getMessage());
-		}
+		check("minimal.xml");
+	}
+
+	@Test
+	public void testBuildDescription()
+	{
+		check("builddescription.xml");
+	}
+
+	@Test
+	public void testTerminalsAndIcons()
+	{
+		check("terminalsandicons.xml");
+	}
+
+	@Test
+	public void testTypes()
+	{
+		check("test.xml");
 	}
 }

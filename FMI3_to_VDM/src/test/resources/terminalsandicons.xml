@@ -18,6 +18,12 @@
 				inStreamVariableName="isvname" outStreamVariableName="osvname" />
 			<Terminal name="subterm1" matchingRule="rule2" terminalKind="kind2" />
 			<Terminal name="subterm2" matchingRule="rule3" terminalKind="kind3" />
+			<GraphicalRepresentation x1="1" y1="11" x2="2" y2="22" iconBaseName="icons">
+				<VendorAnnotations>
+					<Tool name="tool1">
+					</Tool>
+				</VendorAnnotations>
+			</GraphicalRepresentation>
 		</Terminal>
 	</Terminals>
 </fmiTerminalsAndIcons>

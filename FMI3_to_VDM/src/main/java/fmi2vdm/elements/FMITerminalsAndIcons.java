@@ -34,6 +34,7 @@ import org.xml.sax.Locator;
 
 public class FMITerminalsAndIcons extends Element
 {
+	private String fmiVersion;
 	private GraphicalRepresentation graphicalRepresentation;
 	private Terminals terminals;
 	private VendorAnnotations annotations;
@@ -71,8 +72,9 @@ public class FMITerminalsAndIcons extends Element
 		System.out.println(indent + "mk_FMITerminalsAndIcons");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printOptional(indent + "\t", graphicalRepresentation, "\n");
-		printOptional(indent + "\t", terminals, "\n");
+		printStringAttribute(indent + "\t", fmiVersion, ",\n");
+		printOptional(indent + "\t", graphicalRepresentation, ",\n");
+		printOptional(indent + "\t", terminals, ",\n");
 		printOptional(indent + "\t", annotations, "\n");
 		System.out.print(indent + ")");
 	}
