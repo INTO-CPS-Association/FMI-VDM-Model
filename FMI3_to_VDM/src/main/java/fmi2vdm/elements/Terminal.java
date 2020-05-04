@@ -38,6 +38,7 @@ public class Terminal extends Element
 	private String matchingRule;
 	private String terminalKind;
 	private String description;
+	private TerminalGraphicalRepresentation graphicalRepresentation;
 	private ElementList<TerminalMemberVariable> variables;
 	private ElementList<TerminalStreamMemberVariable> streams;
 	private ElementList<Terminal> subTerminals;
@@ -51,7 +52,11 @@ public class Terminal extends Element
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof TerminalMemberVariable)
+		if (element instanceof TerminalGraphicalRepresentation)
+		{
+			graphicalRepresentation = (TerminalGraphicalRepresentation)element;
+		}
+		else if (element instanceof TerminalMemberVariable)
 		{
 			if (variables == null)
 			{
@@ -95,6 +100,7 @@ public class Terminal extends Element
 		printStringAttribute(indent + "\t", terminalKind, ",\n");
 		printStringAttribute(indent + "\t", description, ",\n");
 
+		printOptional(indent + "\t", graphicalRepresentation, ",\n");
 		printOptional(indent + "\t", variables, ",\n");
 		printOptional(indent + "\t", streams, ",\n");
 		printOptional(indent + "\t", subTerminals, "\n");
