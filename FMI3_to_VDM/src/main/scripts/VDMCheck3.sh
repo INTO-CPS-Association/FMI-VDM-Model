@@ -78,6 +78,11 @@ then
 	echo "$INXML" >$FILE
 fi
 
+if [ "$INXSD" ]
+then
+	INXSD=$(readlink -f "$INXSD")
+fi 
+
 XML_MD=/tmp/modelDescription$$.xml
 XML_BD=/tmp/buildDescription$$.xml
 XML_TI=/tmp/terminalsAndIcons$$.xml
@@ -139,6 +144,8 @@ function check()	# $1 = the XML file to check
 		return
 	fi
 	
+	echo "Checking $(basename $2)"
+	
 	# Subshell cd, so we can set the classpath
 	(
 		path=$(which "$SCRIPT")
@@ -146,16 +153,18 @@ function check()	# $1 = the XML file to check
 		cd "$dir"
 		VAR=model$$
 		
+		if [ ! "$INXSD" ]
+		then
+			INXSD="schema/fmi3.xsd"
+		fi
+	
 		if ! type java 2>/dev/null 1>&2
 		then
 			echo "java is not installed?"
 			exit 2
 		fi
 		
-		if [ -z "$INXSD" ]
-		then java -cp fmi2vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$1" "$VAR" >$VDM
-		else java -cp fmi2vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$1" "$VAR" "$INXSD" >$VDM
-		fi
+		java -cp fmi2vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$1" "$VAR" "$INXSD" >$VDM
 		
 		if [ $? -ne 0 ]
 		then
@@ -183,8 +192,8 @@ then
 	rm -f "$SAVE"
 fi
 
-check "$XML_MD"
-check "$XML_BD"
-check "$XML_TI"
+check "$XML_MD" modelDescription.xml
+check "$XML_BD" source/buildDescription.xml
+check "$XML_TI" icon/terminalsAndIcons.xml
 
 exit 0

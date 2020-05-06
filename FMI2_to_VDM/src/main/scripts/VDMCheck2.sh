@@ -33,9 +33,6 @@
 
 USAGE="Usage: VDMCheck2.sh [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml"
 
-# Default schema, overridable with -s
-INXSD="schema/fmi2ModelDescription.xsd"
-
 while getopts ":v:x:s:" OPT
 do
     case "$OPT" in
@@ -81,6 +78,11 @@ then
 	echo "$INXML" >$FILE
 fi
 
+if [ "$INXSD" ]
+then
+	INXSD=$(readlink -f "$INXSD")
+fi 
+
 XML=/tmp/modelDescription$$.xml
 VDM=/tmp/vdm$$.vdmsl
 
@@ -117,6 +119,11 @@ esac
 	dir=$(dirname "$path")
 	cd "$dir"
 	VAR=model$$
+	
+	if [ ! "$INXSD" ]
+	then
+		INXSD="schema/fmi2ModelDescription.xsd"
+	fi
 	
 	if ! type java 2>/dev/null 1>&2
 	then
