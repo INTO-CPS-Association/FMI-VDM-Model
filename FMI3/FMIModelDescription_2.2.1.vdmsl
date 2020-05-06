@@ -296,10 +296,10 @@ functions
 			(
 				md.modelStructure.eventIndicators <> nil =>
 				{
-					exists sv in seq eModelVariables &
-						/* @OnFail("2.2.8 EventIndicator valueReference %s invalid at line %s",
-							ei.valueReference, ei.location)	 */
-						( sv.base.valueReference = ei.valueReference )
+					/* @OnFail("2.2.8 EventIndicator valueReference %s invalid at line %s",
+						ei.valueReference, ei.location)	 */
+					( exists sv in seq eModelVariables &
+						sv.base.valueReference = ei.valueReference )
 
 					| ei in seq md.modelStructure.eventIndicators
 				}
