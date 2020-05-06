@@ -48,7 +48,7 @@
 		<Int64 name="Int64" valueReference="9" start="-9223372036854775807 9223372036854775807 333">
 			<Dimension start="2" />
 		</Int64>
-		<UInt64 name="Int64" valueReference="20" start="18446744073709551">
+		<UInt64 name="UInt64" valueReference="20" start="18446744073709551">
 			<Dimension start="2" />
 		</UInt64>
 		<Boolean name="c" valueReference="3" />

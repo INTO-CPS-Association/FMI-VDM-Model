@@ -29,18 +29,25 @@
 
 package fmi2vdm.elements;
 
+import java.util.Date;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class FMIBuildDescription extends Element
 {
+	private final String xmlfile;
+	private final String varname;
+
 	private String fmiVersion;
 	private ElementList<BuildConfiguration> buildConfiguration;
 	
-	public FMIBuildDescription(Attributes attributes, Locator locator)
+	public FMIBuildDescription(String xmlfile, String varname, Attributes attributes, Locator locator)
 	{
 		super(locator);
 		setAttributes(attributes);
+		this.xmlfile = xmlfile;
+		this.varname = varname;
 	}
 
 	@Override
@@ -64,11 +71,16 @@ public class FMIBuildDescription extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_FMIBuildDescription");
+		System.out.println("/**");
+		System.out.println(" * VDM Model generated from " + xmlfile + " on " + new Date());
+		System.out.println(" */");
+		System.out.println("values");
+
+		System.out.println(indent + varname + " = mk_FMIBuildDescription");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", fmiVersion, ",\n");
 		printOptional(indent + "\t", buildConfiguration, "\n");
-		System.out.print(indent + ")");
+		System.out.println(indent + ");");
 	}
 }

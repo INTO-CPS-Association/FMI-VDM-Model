@@ -29,20 +29,27 @@
 
 package fmi2vdm.elements;
 
+import java.util.Date;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 public class FMITerminalsAndIcons extends Element
 {
+	private final String xmlfile;
+	private final String varname;
+
 	private String fmiVersion;
 	private GraphicalRepresentation graphicalRepresentation;
 	private Terminals terminals;
 	private VendorAnnotations annotations;
 
-	public FMITerminalsAndIcons(Attributes attributes, Locator locator)
+	public FMITerminalsAndIcons(String xmlfile, String varname, Attributes attributes, Locator locator)
 	{
 		super(locator);
 		setAttributes(attributes);
+		this.xmlfile = xmlfile;
+		this.varname = varname;
 	}
 	
 	@Override
@@ -69,13 +76,18 @@ public class FMITerminalsAndIcons extends Element
 	@Override
 	public void toVDM(String indent)
 	{
-		System.out.println(indent + "mk_FMITerminalsAndIcons");
+		System.out.println("/**");
+		System.out.println(" * VDM Model generated from " + xmlfile + " on " + new Date());
+		System.out.println(" */");
+		System.out.println("values");
+
+		System.out.println(indent + varname + " = mk_FMITerminalsAndIcons");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
 		printStringAttribute(indent + "\t", fmiVersion, ",\n");
 		printOptional(indent + "\t", graphicalRepresentation, ",\n");
 		printOptional(indent + "\t", terminals, ",\n");
 		printOptional(indent + "\t", annotations, "\n");
-		System.out.print(indent + ")");
+		System.out.println(indent + ")");
 	}
 }

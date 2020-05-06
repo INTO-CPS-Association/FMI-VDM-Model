@@ -148,11 +148,11 @@ public class FMI3SaxHandler extends DefaultHandler
 				break;
 
 			case "fmiTerminalsAndIcons":
-				stack.push(new FMITerminalsAndIcons(attributes, locator));
+				stack.push(new FMITerminalsAndIcons(xmlfile, varname, attributes, locator));
 				break;
 				
 			case "fmiBuildDescription":
-				stack.push(new FMIBuildDescription(attributes, locator));
+				stack.push(new FMIBuildDescription(xmlfile, varname, attributes, locator));
 				break;
 			
 			/**

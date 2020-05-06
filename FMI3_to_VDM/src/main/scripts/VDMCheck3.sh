@@ -78,10 +78,12 @@ then
 	echo "$INXML" >$FILE
 fi
 
-XML=/tmp/modelDescription$$.xml
+XML_MD=/tmp/modelDescription$$.xml
+XML_BD=/tmp/buildDescription$$.xml
+XML_TI=/tmp/terminalsAndIcons$$.xml
 VDM=/tmp/vdm$$.vdmsl
 
-trap "rm -f $XML $VDM $TMPX" EXIT
+trap "rm -f $XML_MD $XML_BD $XML_TI $VDM $TMPX" EXIT
 
 case $(file -b --mime-type $FILE) in
 	application/zip)
@@ -91,15 +93,35 @@ case $(file -b --mime-type $FILE) in
 			exit 2
 		fi
 		
-		if ! unzip -p "$FILE" modelDescription.xml >$XML
+		if ! unzip -p "$FILE" modelDescription.xml >$XML_MD
 		then
-			echo "Problem with unzip of $FILE?"
+			echo "Problem with unzip of modelDescription.xml?"
 			exit 2
 		fi
+		
+		TMPX=/tmp/xml$$.xml
+		
+		if unzip -p "$FILE" source/buildDescription.xml >$TMPX 2>/dev/null
+		then
+			cp $TMPX $XML_BD
+		else
+			rm -f $XML_BD
+		fi
+		
+		if unzip -p "$FILE" icon/terminalsAndIcons.xml >$TMPX 2>/dev/null
+		then
+			cp $TMPX $XML_TI
+		else
+			rm -f $XML_TI
+		fi
+		
+		rm -f $TMPX
 	;;
 		
 	application/xml|text/xml)
-		cp $FILE $XML
+		cp $FILE $XML_MD
+		rm -f $XML_BD
+		rm -f $XML_TI
 	;;
 		
 	*)
@@ -108,40 +130,61 @@ case $(file -b --mime-type $FILE) in
 	;;
 esac
 
-# Subshell cd, so we can set the classpath
-(
-	path=$(which "$0")
-	dir=$(dirname "$path")
-	cd "$dir"
-	VAR=model$$
-	
-	if ! type java 2>/dev/null 1>&2
+SCRIPT=$0
+
+function check()	# $1 = the XML file to check
+{
+	if [ ! -e "$1" ]
 	then
-		echo "java is not installed?"
-		exit 2
+		return
 	fi
 	
-	if [ -z "$INXSD" ]
-	then java -cp fmi2vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$XML" "$VAR" >$VDM
-	else java -cp fmi2vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$XML" "$VAR" "$INXSD" >$VDM
-	fi
+	# Subshell cd, so we can set the classpath
+	(
+		path=$(which "$SCRIPT")
+		dir=$(dirname "$path")
+		cd "$dir"
+		VAR=model$$
+		
+		if ! type java 2>/dev/null 1>&2
+		then
+			echo "java is not installed?"
+			exit 2
+		fi
+		
+		if [ -z "$INXSD" ]
+		then java -cp fmi2vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$1" "$VAR" >$VDM
+		else java -cp fmi2vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$1" "$VAR" "$INXSD" >$VDM
+		fi
+		
+		if [ $? -ne 0 ]
+		then
+			echo "Problem converting $1 to VDM-SL?"
+			echo "This might be caused by a spelling mistake."
+			exit 2
+		fi
+		
+		java -Xmx1g -cp vdmj-4.3.0-P.jar:annotations-1.0.0.jar:annotations2-1.0.0.jar \
+			com.fujitsu.vdmj.VDMJ \
+			-vdmsl -q -annotations -e "isValidFMIConfiguration($VAR)" \
+			model $VDM | sed -e "s/^true$/No errors found./; s/^false$/Errors found./"
+	)
 	
-	if [ $? -ne 0 ]
+	if [ "$SAVE" ]
 	then
-		echo "Problem converting modelDescription.xml to VDM-SL?"
-		echo "This might be caused by a spelling mistake."
-		exit 2
+		if [ "$FILE" = "" ]; then FILE="XML"; fi
+		sed -e "s+generated from $1+generated from $FILE+" $VDM >> "$SAVE"
+		echo "VDM source written to $SAVE"
 	fi
-	
-	java -Xmx1g -cp vdmj-4.3.0-P.jar:annotations-1.0.0.jar:annotations2-1.0.0.jar \
-		com.fujitsu.vdmj.VDMJ \
-		-vdmsl -q -annotations -e "isValidFMIModelDescription($VAR)" \
-		model $VDM | sed -e "s/^true$/No errors found./; s/^false$/Errors found./"
-)
+}
 
 if [ "$SAVE" ]
 then
-	if [ $FILE="" ]; then FILE="XML"; fi
-	sed -e "s+generated from $XML+generated from $FILE+" $VDM > "$SAVE"
-	echo "VDM source written to $SAVE"
+	rm -f "$SAVE"
 fi
+
+check "$XML_MD"
+check "$XML_BD"
+check "$XML_TI"
+
+exit 0
