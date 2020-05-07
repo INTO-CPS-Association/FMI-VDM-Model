@@ -89,19 +89,18 @@ functions
 		( isValidBuildConfiguration(bc) ) | bc in seq desc.buildConfigurations
 	} = {true};
 
-	isValidBuildConfiguration: [BuildConfiguration] +> bool
+	isValidBuildConfiguration: BuildConfiguration +> bool
 	isValidBuildConfiguration(bc) ==
-		bc <> nil and bc.sourceFileSets <> nil =>
-		{
-			-- @OnFail("2.2.2 Invalid SourceFileSet at line %s", sfs.location)
-			( isValidSourceFileSet(sfs) ) | sfs in seq bc.sourceFileSets
-		}
-		union
-		{
-			-- @OnFail("2.2.2 Invalid Library at line %s", lib.location)
-			( isValidLibrary(lib) ) | lib in seq bc.libraries
-		}
-		= {true};
+	{
+		-- @OnFail("2.2.2 Invalid SourceFileSet at line %s", sfs.location)
+		( isValidSourceFileSet(sfs) ) | sfs in seq nilSeq[SourceFileSet](bc.sourceFileSets)
+	}
+	union
+	{
+		-- @OnFail("2.2.2 Invalid Library at line %s", lib.location)
+		( isValidLibrary(lib) ) | lib in seq nilSeq[Library](bc.libraries)
+	}
+	= {true};
 
 	isValidSourceFileSet: SourceFileSet +> bool
 	isValidSourceFileSet(sfs) ==
