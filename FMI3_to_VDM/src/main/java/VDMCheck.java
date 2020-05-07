@@ -91,14 +91,20 @@ public class VDMCheck
 		}
 		else
 		{
-			List<File> checkList = getCheckList(filename, xmlIN);
+			if (vdmOUT != null)
+			{
+				new File(vdmOUT).delete();
+			}
+			
+			List<XMLFile> checkList = getCheckList(filename, xmlIN);
 			boolean failed = (checkList == null);
 			
 			if (!failed)
 			{
-				for (File tempXML: checkList)
+				for (XMLFile tempXML: checkList)
 				{
-					failed = failed || run(filename, tempXML, xsdIN, vdmOUT);
+					boolean ok = run(filename, tempXML, xsdIN, vdmOUT);
+					failed = failed || !ok;
 				}
 			}
 			
@@ -106,9 +112,21 @@ public class VDMCheck
 		}
 	}
 	
-	private static List<File> getCheckList(String filename, String xmlIN)
+	private static class XMLFile
 	{
-		List<File> results = new Vector<File>();
+		public final String name;	// Sensible name
+		public final File file;		// temp file path
+		
+		public XMLFile(String name, File file)
+		{
+			this.name = name;
+			this.file = file;
+		}
+	}
+	
+	private static List<XMLFile> getCheckList(String filename, String xmlIN)
+	{
+		List<XMLFile> results = new Vector<XMLFile>();
 		
 		try
 		{
@@ -135,15 +153,14 @@ public class VDMCheck
 				}
 				
 				// Write XML into tempXML
-				File tempXML = File.createTempFile("modelDescription", "tmp");
+				File tempXML = File.createTempFile("XML", "tmp");
 				tempXML.deleteOnExit();
 				copy(new ByteArrayInputStream(xmlIN.getBytes()), tempXML);
-				results.add(tempXML);
+				results.add(new XMLFile("XML", tempXML));
 			}
 			else
 			{
 				ZipFile zip = null;
-
 				try
 				{
 					zip = new ZipFile(fmuFile);
@@ -158,7 +175,7 @@ public class VDMCheck
 					File tempXML = File.createTempFile("modelDescription", "tmp");
 					tempXML.deleteOnExit();
 					copy(zip.getInputStream(entry), tempXML);
-					results.add(tempXML);
+					results.add(new XMLFile("modelDescription.xml", tempXML));
 					
 					entry = zip.getEntry("icon/terminalsAndIcons.xml");
 					
@@ -167,17 +184,25 @@ public class VDMCheck
 						File tempXML2 = File.createTempFile("terminalsAndIcons", "tmp");
 						tempXML2.deleteOnExit();
 						copy(zip.getInputStream(entry), tempXML2);
-						results.add(tempXML2);
+						results.add(new XMLFile("icon/terminalsAndIcons.xml", tempXML2));
+					}
+					else
+					{
+						System.out.println("FMU has no icon/terminalsAndIcons.xml");
 					}
 					
-					entry = zip.getEntry("sources/buildDescription.xml");
+					entry = zip.getEntry("source/buildDescription.xml");
 					
 					if (entry != null)
 					{
 						File tempXML3 = File.createTempFile("buildDescription", "tmp");
 						tempXML3.deleteOnExit();
 						copy(zip.getInputStream(entry), tempXML3);
-						results.add(tempXML3);
+						results.add(new XMLFile("source/buildDescription.xml", tempXML3));
+					}
+					else
+					{
+						System.out.println("FMU has no source/buildDescription.xml");
 					}
 				}
 				catch (ZipException e)	// Not a zip file, assume raw XML
@@ -203,7 +228,7 @@ public class VDMCheck
 					File tempXML = File.createTempFile("XML", "tmp");
 					tempXML.deleteOnExit();
 					copy(new FileInputStream(fmuFile), tempXML);
-					results.add(tempXML);
+					results.add(new XMLFile("XML", tempXML));
 				}
 				finally
 				{
@@ -220,25 +245,24 @@ public class VDMCheck
 		return results;
 	}
 
-	private static boolean run(String filename, File tempXML, String xsdIN, String vdmOUT)
+	private static boolean run(String filename, XMLFile tempXML, String xsdIN, String vdmOUT)
 	{
 		try
 		{
 			// Execute VDMJ to first convert tempXML to VDM-SL, then validate the VDM.
-			
+			System.out.println("Checking " + tempXML.name);
 			File jarLocation = getJarLocation();
-			System.err.println(jarLocation.toString());
 			
 			String varName = "model" + (new Random().nextInt(9999));
 			String[] args = null;
 			
 			if (xsdIN == null)
 			{
-				args = new String[] { tempXML.getCanonicalPath(), varName };
+				args = new String[] { tempXML.file.getCanonicalPath(), varName };
 			}
 			else
 			{
-				args = new String[] { tempXML.getCanonicalPath(), varName, xsdIN };
+				args = new String[] { tempXML.file.getCanonicalPath(), varName, xsdIN };
 			}
 		
 			File tempVDM = File.createTempFile("vdm", "tmp");
@@ -269,8 +293,10 @@ public class VDMCheck
 			{
 				if (filename == null) filename = "XML";
 				
-				sed(tempVDM, new PrintStream(new FileOutputStream(vdmOUT)),
-					"generated from " + tempXML, "generated from " + filename);
+				sed(tempVDM, new PrintStream(new FileOutputStream(vdmOUT, true)),
+					"generated from " + tempXML.file, "generated from " + tempXML.name);
+				
+				System.out.println("VDM source written to " + vdmOUT);
 			}
 			
 			return exit == 0;

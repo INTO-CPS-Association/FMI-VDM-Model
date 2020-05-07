@@ -73,9 +73,9 @@ fi
 
 if [ "$INXML" ]
 then
-	FILE=/tmp/xml$$.xml
-	TMPX=$FILE
+	FILE=/tmp/input$$.xml
 	echo "$INXML" >$FILE
+	INXML=$FILE
 fi
 
 if [ "$INXSD" ]
@@ -86,9 +86,10 @@ fi
 XML_MD=/tmp/modelDescription$$.xml
 XML_BD=/tmp/buildDescription$$.xml
 XML_TI=/tmp/terminalsAndIcons$$.xml
+XML_XM=/tmp/xml$$.xml
 VDM=/tmp/vdm$$.vdmsl
 
-trap "rm -f $XML_MD $XML_BD $XML_TI $VDM $TMPX" EXIT
+trap "rm -f $XML_MD $XML_BD $XML_TI $XML_XM $INXML $VDM" EXIT
 
 case $(file -b --mime-type $FILE) in
 	application/zip)
@@ -104,7 +105,7 @@ case $(file -b --mime-type $FILE) in
 			exit 2
 		fi
 		
-		TMPX=/tmp/xml$$.xml
+		TMPX=/tmp/temp$$.xml
 		
 		if unzip -p "$FILE" source/buildDescription.xml >$TMPX 2>/dev/null
 		then
@@ -120,11 +121,12 @@ case $(file -b --mime-type $FILE) in
 			rm -f $XML_TI
 		fi
 		
-		rm -f $TMPX
+		rm -f $TMPX $XML_XM
 	;;
 		
 	application/xml|text/xml)
-		cp $FILE $XML_MD
+		cp $FILE $XML_XM
+		rm -f $XML_MD
 		rm -f $XML_BD
 		rm -f $XML_TI
 	;;
@@ -137,14 +139,14 @@ esac
 
 SCRIPT=$0
 
-function check()	# $1 = the XML file to check
+function check()	# $1 = the XML temp file to check, $2 = name of the file 
 {
 	if [ ! -e "$1" ]
 	then
 		return
 	fi
 	
-	echo "Checking $(basename $2)"
+	echo "Checking $2"
 	
 	# Subshell cd, so we can set the classpath
 	(
@@ -182,7 +184,7 @@ function check()	# $1 = the XML file to check
 	if [ "$SAVE" ]
 	then
 		if [ "$FILE" = "" ]; then FILE="XML"; fi
-		sed -e "s+generated from $1+generated from $FILE+" $VDM >> "$SAVE"
+		sed -e "s+generated from $1+generated from $2+" $VDM >> "$SAVE"
 		echo "VDM source written to $SAVE"
 	fi
 }
@@ -192,6 +194,7 @@ then
 	rm -f "$SAVE"
 fi
 
+check "$XML_XM" XML
 check "$XML_MD" modelDescription.xml
 check "$XML_BD" source/buildDescription.xml
 check "$XML_TI" icon/terminalsAndIcons.xml
