@@ -103,14 +103,27 @@ types
 		intermediateStepFinished		: fmi3Boolean
 		canReturnEarly					: fmi3Boolean;
 
-	fmi3CallbackFunctions ::
-		instanceEnvironment		: fmi3InstanceEnvironment
-		logMessage				: fmi3Instance * fmi3String * fmi3Status * fmi3String * fmi3String -> <VOID>
-		allocateMemory			: fmi3InstanceEnvironment * nat * nat -> token
-		freeMemory				: fmi3InstanceEnvironment * token -> <VOID>
-		intermediateUpdate		: fmi3InstanceEnvironment * fmi3IntermediateUpdateInfo -> <VOID>
-		lockPreemption			: () -> <VOID>
-		unlockPreemption		: () -> <VOID>;
+	fmi3CallbackLogMessage =
+		fmi3InstanceEnvironment *	-- instanceEnvironment
+		fmi3String *				-- instanceName
+		fmi3Status *				-- status
+		fmi3String *				-- category
+		fmi3String					-- message
+		-> <VOID>;
+
+	fmi3CallbackIntermediateUpdate =
+		fmi3InstanceEnvironment *	-- instanceEnvironment,
+		fmi3Float *					-- intermediateUpdateTime,
+		fmi3Boolean *				-- eventOccurred,
+		fmi3Boolean * 				-- clocksTicked,
+		fmi3Boolean *				-- intermediateVariableSetAllowed,
+		fmi3Boolean *				-- intermediateVariableGetAllowed,
+		fmi3Boolean *				-- intermediateStepFinished,
+		fmi3Boolean					-- canReturnEarly
+		-> fmi3Status;
+
+    fmi3CallbackLockPreemption		= () -> <VOID>;
+    fmi3CallbackUnlockPreemption	= () -> <VOID>;
 
 values
 	fmi3True			: fmi3Boolean = true;

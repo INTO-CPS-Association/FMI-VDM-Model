@@ -62,7 +62,7 @@ functions
 	 */
 	logAPIError: fmi3Instance * fmi3String +> <VOID>
 	logAPIError(c, message) ==
-		c.callbacks.logMessage(c, c.instanceName, <fmi3Error>, "logAll", message);
+		c.logMessage(c.instanceEnvironment, c.instanceName, <fmi3Error>, "logAll", message);
 
 
 	/**

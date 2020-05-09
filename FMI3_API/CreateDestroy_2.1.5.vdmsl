@@ -34,11 +34,16 @@ functions
 	/**
 	 * Implementation of fmi3Instantiate. See API method below.
 	 */
-	fmi3Instantiate_Impl: fmi3String * fmi3FMUKind * fmi3String * fmi3String *
-					 fmi3CallbackFunctions * fmi3Boolean * fmi3Boolean * [fmi3CoSimulationConfiguration] +> fmi3Instance
-	fmi3Instantiate_Impl(instanceName, fmuKind, fmuInstantiationToken, -/*fmuResourceLocation*/,
-					funcs, -/*visible*/, loggingOn, fmuCoSimulationConfiguration) ==
-		let xmlModel = funcs.instanceEnvironment.xmlModel,
+	fmi3InstantiateModelExchange_Impl(
+		instanceName		: fmi3String,
+		instantiationToken	: fmi3String,
+		resourceLocation	: fmi3String,
+		visible				: fmi3Boolean,
+		loggingOn			: fmi3Boolean,
+		instanceEnvironment	: fmi3InstanceEnvironment,
+		logMessage			: fmi3CallbackLogMessage) result : fmi3Instance
+	==
+		let xmlModel = instanceEnvironment.xmlModel,
 			eModelVariables = effectiveScalarVariables(xmlModel),
 			aliasVars = getAliasRefMap(eModelVariables)
 		in
@@ -48,15 +53,15 @@ functions
 				instanceName,
 
 				-- The FMU type
-				fmuKind,
+				<ModelExchange>,
 
 				-- The initial state
 				<INSTANTIATED>,
 
 				-- The callbacks and environment passed
-				funcs,
-				funcs.instanceEnvironment,
-				fmuCoSimulationConfiguration,
+				logMessage,
+				instanceEnvironment,
+				nil,
 
 				-- The XML model
 				xmlModel,
@@ -71,7 +76,7 @@ functions
 				{ u.valueReference | u in seq xmlModel.modelStructure.unknowns & u.kind = <InitialUnknown> },
 
 				-- The solver derivative references
-				[ sd | sd in seq funcs.instanceEnvironment.solverData.derivatives ],
+				[ sd | sd in seq instanceEnvironment.solverData.derivatives ],
 
 				-- The initial setting of log categories (nil means debugging is disabled)
 				if loggingOn and xmlModel.logCategories <> nil
@@ -86,7 +91,7 @@ functions
 				getStartValues(aliasVars, eModelVariables),
 
 				-- The solver data vector, addressed by SolverData's vref
-				[ 0.0 | - in seq funcs.instanceEnvironment.solverData.derivatives ],
+				[ 0.0 | - in seq instanceEnvironment.solverData.derivatives ],
 
 				-- The eventIndicators
 				[ 0.0 | - in set {1, ..., nilNat(xmlModel.attributes.numberOfEventIndicators)} ],
@@ -121,48 +126,103 @@ functions
 			)
 	pre
 		instanceName <> ""
-		and (fmuCoSimulationConfiguration <> nil => is_(fmuKind, CoSimulationKind))
-		and let xmlModel = funcs.instanceEnvironment.xmlModel in
-			fmuInstantiationToken = xmlModel.attributes.instantiationToken
-			and (is_(fmuKind, CoSimulationKind)  => xmlModel.coSimulation <> nil)
-			and (is_(fmuKind, ModelExchangeKind) => xmlModel.modelExchange <> nil)
+		and (instanceEnvironment.xmlModel.modelExchange = nil)
+		and (instantiationToken = instanceEnvironment.xmlModel.attributes.instantiationToken)
 	post
-		RESULT.fmuState = <INSTANTIATED>
-		and RESULT.fmuKind = fmuKind;
+		result.fmuState = <INSTANTIATED>
+		and result.fmuKind = <ModelExchange>
+		and result.coSimulationConfiguration = nil;
 
 
 	/**
-	 * The fmi3Instantiate API. This performs sufficient checks to pass the precondition on the
+	 * The fmi3InstantiateModelExchange API. This performs sufficient checks to pass the precondition on the
 	 * implementation function, returning nil if any checks fail.
 	 */
-	fmi3Instantiate: fmi3String * fmi3FMUKind * fmi3String * fmi3String *
-					 fmi3CallbackFunctions * fmi3Boolean * fmi3Boolean * [fmi3CoSimulationConfiguration] +> [fmi3Instance]
-	fmi3Instantiate(instanceName, fmuKind, fmuInstantiationToken, fmuResourceLocation,
-					funcs, visible, loggingOn, fmuCoSimulationConfiguration) ==
-		let ienv = funcs.instanceEnvironment,
-			xmlModel = ienv.xmlModel
-		in
-			if instanceName = ""
-			then let - = logInst(ienv, instanceName, "fmi3Instantiate instanceName cannot be empty") in
-				nil
-			elseif fmuCoSimulationConfiguration <> nil and not is_(fmuKind, CoSimulationKind)
-			then let - = logInst(ienv, instanceName, "fmi3Instantiate fmuCoSimulationConfiguration implies CoSimulation fmuType") in
-				nil
-			elseif fmuInstantiationToken <> xmlModel.attributes.instantiationToken
-			then let - = logInst(ienv, instanceName, "fmi3Instantiate fmuInstantiationToken does not match XML configuration") in
-				nil
-			elseif is_(fmuKind, CoSimulationKind) and xmlModel.coSimulation = nil
-			then let - = logInst(ienv, instanceName, "CoSimulation FMU must define CoSimulation XML configuration") in
-				nil
-			elseif is_(fmuKind, ModelExchangeKind) and xmlModel.modelExchange = nil
-			then let - = logInst(ienv, instanceName, "ModelExchange FMU must define ModelExchange XML configuration") in
-				nil
-			else
-				fmi3Instantiate_Impl(instanceName, fmuKind, fmuInstantiationToken, fmuResourceLocation,
-									 funcs, visible, loggingOn, fmuCoSimulationConfiguration);
+	fmi3InstantiateModelExchange(
+		instanceName		: fmi3String,
+		instantiationToken	: fmi3String,
+		resourceLocation	: fmi3String,
+		visible				: fmi3Boolean,
+		loggingOn			: fmi3Boolean,
+		instanceEnvironment	: fmi3InstanceEnvironment,
+		logMessage			: fmi3CallbackLogMessage) result : [fmi3Instance]
+	==
+		if instanceName = ""
+		then let - = logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateModelExchange instanceName cannot be empty") in nil
+		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
+		then let - = logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateModelExchange instantiationToken does not match XML configuration") in nil
+		elseif instanceEnvironment.xmlModel.modelExchange = nil
+		then let - = logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateModelExchange must define ModelExchange XML configuration") in nil
+		else
+			fmi3InstantiateModelExchange_Impl(instanceName, instantiationToken,
+				resourceLocation, visible, loggingOn, instanceEnvironment, logMessage);
+
 
 	/**
-	 * Helper to log fmi3Instantiate errors. These cannot use the callback logger because the
+	 * The fmi3InstantiateModelExchange API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning nil if any checks fail.
+	 */
+	fmi3InstantiateBasicCoSimulation(
+		instanceName							: fmi3String,
+		instantiationToken						: fmi3String,
+		resourceLocation						: fmi3String,
+		visible									: fmi3Boolean,
+		loggingOn								: fmi3Boolean,
+		intermediateVariableGetRequired			: fmi3Boolean,
+		intermediateInternalVariableGetRequired	: fmi3Boolean,
+		intermediateVariableSetRequired			: fmi3Boolean,
+		instanceEnvironment						: fmi3InstanceEnvironment,
+		logMessage								: fmi3CallbackLogMessage,
+		intermediateUpdate						: fmi3CallbackIntermediateUpdate) result : [fmi3Instance]
+	==
+		is not yet specified;
+
+	/**
+	 * The fmi3InstantiateModelExchange API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning nil if any checks fail.
+	 */
+	fmi3InstantiateHybridCoSimulation(
+		instanceName								: fmi3String,
+		instantiationToken							: fmi3String,
+		resourceLocation							: fmi3String,
+		visible										: fmi3Boolean,
+		loggingOn									: fmi3Boolean,
+		intermediateVariableGetRequired				: fmi3Boolean,
+		intermediateInternalVariableGetRequired		: fmi3Boolean,
+		intermediateVariableSetRequired				: fmi3Boolean,
+		instanceEnvironment							: fmi3InstanceEnvironment,
+		logMessage									: fmi3CallbackLogMessage,
+		intermediateUpdate							: fmi3CallbackIntermediateUpdate) result : [fmi3Instance]
+	==
+		is not yet specified;
+
+	/**
+	 * The fmi3InstantiateModelExchange API. This performs sufficient checks to pass the precondition on the
+	 * implementation function, returning nil if any checks fail.
+	 */
+	fmi3InstantiateScheduledCoSimulation(
+		instanceName							: fmi3String,
+		instantiationToken						: fmi3String,
+		resourceLocation						: fmi3String,
+		visible									: fmi3Boolean,
+		loggingOn								: fmi3Boolean,
+		intermediateVariableGetRequired			: fmi3Boolean,
+		intermediateInternalVariableGetRequired	: fmi3Boolean,
+		intermediateVariableSetRequired			: fmi3Boolean,
+		instanceEnvironment						: fmi3InstanceEnvironment,
+		logMessage								: fmi3CallbackLogMessage,
+		intermediateUpdate						: fmi3CallbackIntermediateUpdate,
+		lockPreemption							: fmi3CallbackLockPreemption,
+		unlockPreemption						: fmi3CallbackUnlockPreemption) result : [fmi3Instance]
+	==
+		is not yet specified;
+
+
+	/**
+	 * Helper to log fmi3Instantiate* errors. These cannot use the callback logger because the
 	 * fmi3Instance that defines the enabled categories has not yet been created. It implicitly
 	 * uses the raw implementation - ie. it is guaranteed to log.
 	 */

@@ -66,9 +66,9 @@ types
 		instanceName				: fmi3String
 		fmuKind						: fmi3FMUKind
 		fmuState					: fmi3State
-		callbacks					: fmi3CallbackFunctions
+		logMessage					: fmi3CallbackLogMessage
 		instanceEnvironment			: fmi3InstanceEnvironment
-		coSimulationConfiguration	: fmi3CoSimulationConfiguration 
+		coSimulationConfiguration	: [fmi3CoSimulationConfiguration] 
 
 		-- convenience read-only fields, copied from instanceEnvironment
 		xmlModel				: FMIModelDescription
