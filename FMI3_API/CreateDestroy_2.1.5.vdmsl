@@ -162,7 +162,7 @@ functions
 
 
 	/**
-	 * The fmi3InstantiateModelExchange API. This performs sufficient checks to pass the precondition on the
+	 * The fmi3InstantiateBasicCoSimulation API. This performs sufficient checks to pass the precondition on the
 	 * implementation function, returning nil if any checks fail.
 	 */
 	fmi3InstantiateBasicCoSimulation(
@@ -181,7 +181,7 @@ functions
 		is not yet specified;
 
 	/**
-	 * The fmi3InstantiateModelExchange API. This performs sufficient checks to pass the precondition on the
+	 * The fmi3InstantiateHybridCoSimulation API. This performs sufficient checks to pass the precondition on the
 	 * implementation function, returning nil if any checks fail.
 	 */
 	fmi3InstantiateHybridCoSimulation(
@@ -200,7 +200,7 @@ functions
 		is not yet specified;
 
 	/**
-	 * The fmi3InstantiateModelExchange API. This performs sufficient checks to pass the precondition on the
+	 * The fmi3InstantiateScheduledCoSimulation API. This performs sufficient checks to pass the precondition on the
 	 * implementation function, returning nil if any checks fail.
 	 */
 	fmi3InstantiateScheduledCoSimulation(
