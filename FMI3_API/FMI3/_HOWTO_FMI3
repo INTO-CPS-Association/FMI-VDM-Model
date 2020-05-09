@@ -1,5 +1,5 @@
-How to populate this folder
-===========================
+How to populate this folder in Overture
+=======================================
 
 1. Right click the folder and "Import", "File System" and locate the FMI3 project
 2. Select all of the top-level *.vdmsl files, but not the subfolders or .project/.ignore files etc.
@@ -7,3 +7,13 @@ How to populate this folder
 
 This will then populate the folder with links to the FMI3 project files, which are hence automatically up to date if
 those files change in the other project.
+
+
+How to populoate this folder in VSCode
+======================================
+
+1. In a bash shell, navigate to the FMI3_API/FMI3 folder
+2. Run the command: ln -s ../../FMI3/*.vdmsl .
+3. These should appear after a refresh (F5) in Overture
+
+The process is similar in Windows, but using Symlinks via the File Explorer.
