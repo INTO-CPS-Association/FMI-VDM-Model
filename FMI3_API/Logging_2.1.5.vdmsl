@@ -50,11 +50,11 @@ functions
 	 * categories are enabled. This replaces the fmi3InstanceEnvironment (for access to the model)
 	 * which is available via the fmi3Instance.
 	 */
-	fmi3Logger: fmi3Instance * fmi3String * fmi3Status * fmi3String * fmi3String -> <VOID>
-	fmi3Logger(c, instanceName, status, category, message) ==
-		if c.logCategories = nil or not category in set c.logCategories
+	fmi3Logger: fmi3InstanceEnvironment * fmi3String * fmi3Status * fmi3String * fmi3String -> <VOID>
+	fmi3Logger(instanceEnvironment, instanceName, status, category, message) ==
+		if instanceEnvironment.logCategories = nil or not category in set instanceEnvironment.logCategories
 		then <VOID>		-- logging disabled or category not enabled
-		else fmi3Logger_Impl(c.instanceEnvironment, instanceName, status, category, message);
+		else fmi3Logger_Impl(instanceEnvironment, instanceName, status, category, message);
 
 
 	/**

@@ -43,6 +43,7 @@ types
 	fmi3InstanceEnvironment ::
 		xmlModel						: FMIModelDescription
 		solverData						: SolverData
+		logCategories					: [set1 of fmi3String]	-- nil means logging off
 	inv ienv ==
 		-- The FMI model is valid
 		isValidFMIModelDescription(ienv.xmlModel)
@@ -59,7 +60,13 @@ types
 		and (ienv.xmlModel.coSimulation <> nil =>
 			let max = ienv.xmlModel.coSimulation.maxOutputDerivativeOrder in
 				max <> nil => forall sd in seq ienv.solverData.derivatives &
-					sd.type = <output> => sd.order <= max);
+					sd.type = <output> => sd.order <= max)
+					
+		-- And any log categories are defined in the XML file
+		and (ienv.logCategories <> nil =>
+				ienv.xmlModel.logCategories <> nil 
+				and forall cat in set ienv.logCategories &
+					exists lc in seq ienv.xmlModel.logCategories & lc.name = cat);
 
 	-- The opaque instance data for the model, passed to and from API functions
 	fmi3Instance ::
@@ -78,7 +85,6 @@ types
 		solverDerivatives		: seq of SolverDerivative
 
 		-- state, events and settings
-		logCategories			: [set1 of fmi3String]				-- nil means logging off
 		aliasVars				: map fmi3ValueReference to set of Variable		-- map vref to Variables
 		variables				: map fmi3ValueReference to seq1 of fmi3Value	-- Raw SV data values (scalar and array)
 		derivatives				: seq of fmi3Float					-- Solver derivative data

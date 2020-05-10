@@ -84,7 +84,7 @@ types
 	fmi3FMUKind = CoSimulationKind | ModelExchangeKind;
 
 	fmi3CoSimulationMode =
-	    <fmi3ModeCoSimulation> |
+	    <fmi3ModeBasicCoSimulation> |
 	    <fmi3ModeHybridCoSimulation> |
 	    <fmi3ModeScheduledExecutionSimulation>;
 
@@ -92,16 +92,17 @@ types
 	    intermediateVariableGetRequired			: fmi3Boolean
 	    intermediateInternalVariableGetRequired	: fmi3Boolean
 	    intermediateVariableSetRequired			: fmi3Boolean
-	    coSimulationMode						: fmi3CoSimulationMode;
-
-	fmi3IntermediateUpdateInfo ::
-		intermediateUpdateTime			: fmi3Float
-		eventOccurred					: fmi3Boolean
-		clocksTicked					: fmi3Boolean
-		intermediateVariableSetAllowed	: fmi3Boolean
-		intermediateVariableGetAllowed	: fmi3Boolean
-		intermediateStepFinished		: fmi3Boolean
-		canReturnEarly					: fmi3Boolean;
+	    coSimulationMode						: fmi3CoSimulationMode
+		intermediateUpdate						: [fmi3CallbackIntermediateUpdate]
+		lockPreemption							: [fmi3CallbackLockPreemption]
+		unlockPreemption						: [fmi3CallbackUnlockPreemption]
+	inv
+		conf ==
+			( conf.intermediateVariableGetRequired
+			  or conf.intermediateInternalVariableGetRequired
+			  or conf.intermediateVariableSetRequired => conf.intermediateUpdate <> nil )
+			and
+			( conf.lockPreemption <> nil <=> conf.unlockPreemption <> nil );
 
 	fmi3CallbackLogMessage =
 		fmi3InstanceEnvironment *	-- instanceEnvironment
