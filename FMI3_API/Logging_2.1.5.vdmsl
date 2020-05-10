@@ -44,11 +44,6 @@ functions
 	 * The Logger interface includes a check of whether a category is enabled. Note that
 	 * log calls can be made with unknown Categories, but if the category is not in the
 	 * list of enabled Categories, it will not appear.
-	 *
-	 * Note that the interface is slightly different to the logger function in the FMI Standard.
-	 * This is because the function needs access to the fmi3Instance data to see which log
-	 * categories are enabled. This replaces the fmi3InstanceEnvironment (for access to the model)
-	 * which is available via the fmi3Instance.
 	 */
 	fmi3Logger: fmi3InstanceEnvironment * fmi3String * fmi3Status * fmi3String * fmi3String -> <VOID>
 	fmi3Logger(instanceEnvironment, instanceName, status, category, message) ==

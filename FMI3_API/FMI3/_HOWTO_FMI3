@@ -9,8 +9,8 @@ This will then populate the folder with links to the FMI3 project files, which a
 those files change in the other project.
 
 
-How to populoate this folder in VSCode
-======================================
+How to populate this folder in VSCode
+=====================================
 
 1. In a bash shell, navigate to the FMI3_API/FMI3 folder
 2. Run the command: ln -s ../../FMI3/*.vdmsl .
