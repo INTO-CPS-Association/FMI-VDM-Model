@@ -307,16 +307,17 @@ functions
 			),
 
 			(
-				md.modelStructure.unknowns <> nil => dunion
+				md.modelStructure.unknowns <> nil =>
 				{
+					unk.dependencies <> nil =>
 					{
 						-- @OnFail("2.2.8 Unknown dependency %s invalid at line %s", vr, unk.location)
 						( exists sv in seq eModelVariables & sv.base.valueReference = vr )
 
-						| vr in seq nilSeq[fmi3ValueReference](unk.dependencies)
-					}
+						| vr in seq unk.dependencies
+					} = {true}
 
-					| unk in seq nilSeq[Unknown](md.modelStructure.unknowns)
+					| unk in seq md.modelStructure.unknowns
 				}
 				= {true}
 			)
