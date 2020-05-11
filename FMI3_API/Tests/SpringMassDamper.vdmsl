@@ -183,6 +183,13 @@ values
 				"kg.m2",
 				mk_BaseUnit(1, 2, nil, nil, nil, nil, nil, nil, nil, nil),
 				nil
+			),
+			mk_Unit
+			(
+				22,  -- Line
+				"N.m",
+				mk_BaseUnit(1, 2, -2, nil, nil, nil, nil, nil, nil, nil),
+				nil
 			)
 		],
 
@@ -349,28 +356,32 @@ values
 					<Output>,
 					805306368,
 					nil,
-					nil				),
+					nil
+				),
 				mk_Unknown
 				(
 					49,  -- Line
 					<Output>,
 					805306369,
 					nil,
-					nil				),
+					nil
+				),
 				mk_Unknown
 				(
 					50,  -- Line
 					<InitialUnknown>,
 					805306368,
 					nil,
-					nil				),
+					nil
+				),
 				mk_Unknown
 				(
 					51,  -- Line
 					<InitialUnknown>,
 					805306369,
 					nil,
-					nil				)
+					nil
+				)
 			],
 			nil
 		)
