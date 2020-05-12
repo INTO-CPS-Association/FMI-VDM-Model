@@ -31,8 +31,8 @@ functions
     /**
      * Test the basic operation of the fmi3 instantiate functions.
      */
-     testInstantiate: () -> bool
-     testInstantiate() ==
+     testInstantiateModelExchange: () -> bool
+     testInstantiateModelExchange() ==
         let me = fmi3InstantiateModelExchange(
             "ME instance",
             "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
@@ -44,12 +44,30 @@ functions
         in
             me <> nil;
 
+     testInstantiateBasicCoSimulation: () -> bool
+     testInstantiateBasicCoSimulation() ==
+        let me = fmi3InstantiateBasicCoSimulation(
+            "Basic instance",
+            "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
+            "",
+            false,
+            true,
+            false,
+            false,
+            false,
+            mk_fmi3InstanceEnvironment(springMassDamper, mk_SolverData([]), nil),
+            fmi3Logger,
+            nil)
+        in
+            me <> nil;
+
     /**
      * Run all tests.
      */
     tests: () -> seq of bool
     tests() ==
     [
-        isValidFMIModelDescription(springMassDamper),
-        testInstantiate()
-    ];
+        testInstantiateModelExchange(),
+        testInstantiateBasicCoSimulation()
+    ]
+    ;-- post elems RESULT = {true};
