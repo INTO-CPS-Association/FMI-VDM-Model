@@ -126,7 +126,7 @@ functions
 	post
 		result.fmuState = <INSTANTIATED>
 		and result.fmuKind = fmuKind
-		and result.coSimulationConfiguration = nil;
+		and result.coSimulationConfiguration = coSimConfig;
 
 
 	/**
@@ -370,7 +370,9 @@ functions
 					if loggingOn
 					then
 						if nCategories = 0
-						then [ cat.name | cat in seq c.xmlModel.logCategories ]
+						then if c.xmlModel.logCategories <> nil
+							then [ cat.name | cat in seq c.xmlModel.logCategories ]
+							else nil
 						else elems categories
 					else nil)))
 	pre
@@ -387,7 +389,9 @@ functions
 		RESULT.#2.instanceEnvironment.logCategories =
 			if loggingOn
 			then if nCategories = 0
-				then [ cat.name | cat in seq c.xmlModel.logCategories ]
+				then if c.xmlModel.logCategories <> nil
+					then [ cat.name | cat in seq c.xmlModel.logCategories ]
+					else nil
 				else elems categories
 			else nil;
 
@@ -404,7 +408,7 @@ functions
 		then let - = logAPIError(c, "nCategories does not match categories length") in
 			mk_(<fmi3Error>, nil)
 		else let logcats = c.xmlModel.logCategories in
-			if logcats = nil
+			if logcats = nil and nCategories > 0
 			then let - = logAPIError(c, "No log categories defined in XML configuration") in
 				mk_(<fmi3Error>, nil)
 			elseif exists cname in seq categories & not exists lc in seq logcats & lc.name = cname

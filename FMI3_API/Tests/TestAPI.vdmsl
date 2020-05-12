@@ -46,7 +46,7 @@ functions
 
      testInstantiateBasicCoSimulation: () -> bool
      testInstantiateBasicCoSimulation() ==
-        let me = fmi3InstantiateBasicCoSimulation(
+        let basic = fmi3InstantiateBasicCoSimulation(
             "Basic instance",
             "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
             "",
@@ -59,7 +59,24 @@ functions
             fmi3Logger,
             nil)
         in
-            me <> nil;
+            basic <> nil;
+
+     testInstantiateHybridCoSimulation: () -> bool
+     testInstantiateHybridCoSimulation() ==
+        let hybrid = fmi3InstantiateHybridCoSimulation(
+            "Hybrid instance",
+            "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
+            "",
+            false,
+            true,
+            false,
+            false,
+            false,
+            mk_fmi3InstanceEnvironment(springMassDamper, mk_SolverData([]), nil),
+            fmi3Logger,
+            nil)
+        in
+            hybrid <> nil;
 
     /**
      * Run all tests.
@@ -68,6 +85,7 @@ functions
     tests() ==
     [
         testInstantiateModelExchange(),
-        testInstantiateBasicCoSimulation()
+        testInstantiateBasicCoSimulation(),
+        testInstantiateHybridCoSimulation()
     ]
     ;-- post elems RESULT = {true};
