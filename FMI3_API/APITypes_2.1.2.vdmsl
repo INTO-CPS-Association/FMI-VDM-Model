@@ -40,11 +40,11 @@ types
 	fmi3Char			= char;
 	fmi3String			= seq of fmi3Char;
 	fmi3Clock			= int;
-	-- fmi3Binary		= ?;
-	-- fmi3Byte			= ?;
+	fmi3Binary			= seq of fmi3Byte;
+	fmi3Byte			= nat inv b == b < 256;
 
 	-- Possible values for a Variable
-	fmi3Value			= fmi3Float | fmi3Integer | fmi3Boolean | fmi3String;
+	fmi3Value			= fmi3Float | fmi3Integer | fmi3Boolean | fmi3String | fmi3Binary;
 
 	fmi3Status =
 		<fmi3OK> |

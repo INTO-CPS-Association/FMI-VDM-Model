@@ -326,7 +326,9 @@ functions
 						else if is_Integer(sv) then 0
 						else if is_Boolean(sv) then false
 						else if is_String(sv) then ""
+						else if is_Binary(sv) then []
 						else if is_Enumeration(sv) then 0
+						else if is_Clock(sv) then false
 						else undefined
 					in
 						[defValue | - in set {1, ..., dimensionsProduct(eModelVariables, sv.base.dimensions)}]

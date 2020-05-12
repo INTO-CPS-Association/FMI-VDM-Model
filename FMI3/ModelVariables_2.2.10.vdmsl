@@ -231,21 +231,24 @@ functions
 					a <> b and svs(a).base.name = svs(b).base.name } ) */
 			( card { sv.base.name | sv in seq svs } = len svs ),
 
+			/* @OnFail("2.2.10 Clock variables must all be the same type") */
+			( card { sv.clockAtts.clockType | sv in seq svs & is_(sv, Clock) } <= 1 ),
+
 			isValidVariableDimensions(svs)
 		}
 		union
 		{
 			-- @OnFail("2.2.10 Variable %s invalid at line %s", sv.base.name, sv.base.location)
-			( isValidScalarVariable(sv) )
+			( isValidVariableAttributes(sv) )
 
 			| sv in seq svs
 		} = {true};
 
 	/**
-	 * Raw Variable invariant. Rules defined in 2.2.10.
+	 * Variable attribute rules, defined in 2.2.10.
 	 */
-	isValidScalarVariable: Variable +> bool
-	isValidScalarVariable(sv) ==
+	isValidVariableAttributes: Variable +> bool
+	isValidVariableAttributes(sv) ==
 		let eCausality   = effectiveCausality(sv.base.causality),
 			eVariability = effectiveVariability(sv),
 			eInitial     = effectiveInitial(sv.base.initial, eCausality, eVariability)
