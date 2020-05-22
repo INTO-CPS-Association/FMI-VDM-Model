@@ -58,7 +58,7 @@ functions
 	isValidUnitDefinitions: [seq1 of Unit] +> bool
 	isValidUnitDefinitions(units) ==
 		units <> nil =>
-			/* @OnFail("2.2.3 UnitDefinitions names are not unique: %s",
+			/* @OnFail("2.2.2 UnitDefinitions names are not unique: %s",
 				{ units(a).name | a, b in set inds units &
 					a <> b and units(a).name = units(b).name }) */
 			( card { unit.name | unit in seq units } = len units );

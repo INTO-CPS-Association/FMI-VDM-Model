@@ -28,7 +28,7 @@
  */
 
 /**
- * 2.2.2 Build Configuration
+ * 2.5 Build Configuration
  */
 types
 	FMIBuildDescription ::
@@ -85,19 +85,19 @@ functions
 	isValidFMIBuildDescription: FMIBuildDescription +> bool
 	isValidFMIBuildDescription(desc) ==
 	{
-		-- @OnFail("2.2.2 Invalid BuildConfiguration at line %s", bc.location)
+		-- @OnFail("2.5 Invalid BuildConfiguration at line %s", bc.location)
 		( isValidBuildConfiguration(bc) ) | bc in seq desc.buildConfigurations
 	} = {true};
 
 	isValidBuildConfiguration: BuildConfiguration +> bool
 	isValidBuildConfiguration(bc) ==
 	{
-		-- @OnFail("2.2.2 Invalid SourceFileSet at line %s", sfs.location)
+		-- @OnFail("2.5 Invalid SourceFileSet at line %s", sfs.location)
 		( isValidSourceFileSet(sfs) ) | sfs in seq nilSeq[SourceFileSet](bc.sourceFileSets)
 	}
 	union
 	{
-		-- @OnFail("2.2.2 Invalid Library at line %s", lib.location)
+		-- @OnFail("2.5 Invalid Library at line %s", lib.location)
 		( isValidLibrary(lib) ) | lib in seq nilSeq[Library](bc.libraries)
 	}
 	= {true};
@@ -105,20 +105,20 @@ functions
 	isValidSourceFileSet: SourceFileSet +> bool
 	isValidSourceFileSet(sfs) ==
 	{
-		-- @OnFail("2.2.2 Compiler options set without compiler at line %s", sfs.location)
+		-- @OnFail("2.5 Compiler options set without compiler at line %s", sfs.location)
 		( sfs.compilerOptions <> nil => sfs.compiler <> nil ),
-		-- @OnFail("2.2.2 Invalid SourceFiles at line %s", sfs.location)
+		-- @OnFail("2.5 Invalid SourceFiles at line %s", sfs.location)
 		( isValidSourceFiles(sfs.sourceFiles) ),
-		-- @OnFail("2.2.2 Invalid PreprocessorDefinitions at line %s", sfs.location)
+		-- @OnFail("2.5 Invalid PreprocessorDefinitions at line %s", sfs.location)
 		( isValidPreprocessorDefinitions(sfs.preprocessorDefinitions) ),
-		-- @OnFail("2.2.2 Invalid IncludeDirectories at line %s", sfs.location)
+		-- @OnFail("2.5 Invalid IncludeDirectories at line %s", sfs.location)
 		( isValidIncludeDirectories(sfs.includeDirectories) )
 	} = {true};
 
 	isValidSourceFiles: seq1 of SourceFile +> bool
 	isValidSourceFiles(files) ==
 		let names = [ sf.name | sf in seq files ] in
-			/* @OnFail("2.2.2 SourceFileSet has duplicate names: %s",
+			/* @OnFail("2.5 SourceFileSet has duplicate names: %s",
 				{ files(a) | a, b in set inds names & a <> b and files(a) = files(b) })
 			 */
 			( card elems names = len names );
@@ -127,7 +127,7 @@ functions
 	isValidPreprocessorDefinitions(defs) ==
 		defs <> nil =>
 			let names = [ d.name | d in seq defs ] in
-				/* @OnFail("2.2.2 PreprocessorDefinitions has duplicate names: %s",
+				/* @OnFail("2.5 PreprocessorDefinitions has duplicate names: %s",
 					{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
 				 */
 				( card elems names = len names );
@@ -136,7 +136,7 @@ functions
 	isValidIncludeDirectories(incs) ==
 		incs <> nil =>
 			let names = [ d.name | d in seq incs ] in
-				/* @OnFail("2.2.2 IncludeDirectories has duplicate names: %s",
+				/* @OnFail("2.5 IncludeDirectories has duplicate names: %s",
 					{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
 				 */
 				( card elems names = len names );

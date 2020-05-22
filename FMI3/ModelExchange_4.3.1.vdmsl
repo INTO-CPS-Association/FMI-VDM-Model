@@ -46,10 +46,10 @@ functions
 	isValidModelExchange(me) ==
 		me <> nil =>
 		{
-			-- @OnFail("3.3.1 ModelExchange annotations invalid at line %s", me.base.location)
+			-- @OnFail("4.3.1 ModelExchange annotations invalid at line %s", me.base.location)
 			( isValidVendorAnnotation(me.base.annotations) ),
 
-			/* @OnFail("3.3.1 ModelExchange modelIdentifer %s not valid C variable name at line %s",
+			/* @OnFail("4.3.1 ModelExchange modelIdentifer %s not valid C variable name at line %s",
 						 me.base.modelIdentifier, me.base.location) */
 			( me.base.modelIdentifier <> ""
 			  and me.base.modelIdentifier(1) in set elems NONDIGITS )

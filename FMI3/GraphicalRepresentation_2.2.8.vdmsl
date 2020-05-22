@@ -65,15 +65,15 @@ functions
 	isValidCoordinateSystem(cs) ==
 		cs <> nil =>
 		{
-			-- @OnFail("2.2.8 Coordinate area is not bottom left to top right at line %s", cs.location)
+			-- @OnFail("2.2.6.1 Coordinate area is not bottom left to top right at line %s", cs.location)
 			( cs.x1 < cs.x2 and cs.y1 < cs.y2 ),
 
-			-- @OnFail("2.2.8 suggestedScalingFactorTo_mm must be >0 at line %s", cs.location)
+			-- @OnFail("2.2.6.1 suggestedScalingFactorTo_mm must be >0 at line %s", cs.location)
 			( cs.suggestedScalingFactorTo_mm > 0 )
 		} = {true};
 
 	isValidIcon: [Icon] +> bool
 	isValidIcon(icon) ==
 		icon <> nil =>
-			-- @OnFail("2.2.8 Icon area is not bottom left to top right at line %s", icon.location)
+			-- @OnFail("2.2.6.1 Icon area is not bottom left to top right at line %s", icon.location)
 			( icon.x1 < icon.x2 and icon.y1 < icon.y2 );

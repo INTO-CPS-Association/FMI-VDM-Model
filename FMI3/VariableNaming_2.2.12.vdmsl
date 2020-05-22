@@ -48,7 +48,7 @@ functions
 	 * remaining string after the symbol was parsed. If the parse fails, the
 	 * remaining string is the same as the original input (see post exp).
 	 *
-	 * This follows the EBNF grammar in section 2.2.12, p64.
+	 * This follows the EBNF grammar in section 2.2.10.
 	 */
 
 	-- name = identifier | "der(" identifier ["," unsignedInteger ] ")"

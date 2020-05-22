@@ -28,7 +28,7 @@
  */
 
 /**
- * 4.2.1 Definition of a CoSimulation section of an FMU.
+ * 4.3.1 Definition of a CoSimulation section of an FMU.
  */
 types
 	fmi3InterfaceType ::

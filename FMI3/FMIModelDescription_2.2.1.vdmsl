@@ -141,10 +141,10 @@ functions
 					dunion
 					{
 						{
-							-- @OnFail("2.2.9 Structured name %s invalid at line %s", sv.base.name, sv.base.location)
+							-- @OnFail("2.2.10 Structured name %s invalid at line %s", sv.base.name, sv.base.location)
 							( isValidStructuredName(sv.base.name) ),
 
-							-- @OnFail("2.2.9 Name %s is not Real at line %s", sv.base.name, sv.base.location)
+							-- @OnFail("2.2.10 Name %s is not Real at line %s", sv.base.name, sv.base.location)
 							( sv.base.name(1, ..., 4) = "der(" => is_Real(sv) )
 						}
 
@@ -177,7 +177,7 @@ functions
 			(
 				{
 					sv.base.canHandleMultipleSetPerTimeInstant <> nil =>
-						/* @OnFail("2.2.7 Variable %s, canHandleMultipleSetPerTimeInstant invalid at line %s",
+						/* @OnFail("2.2.8 Variable %s, canHandleMultipleSetPerTimeInstant invalid at line %s",
 							sv.base.name, sv.base.location) */
 						( md.modelExchange <> nil and sv.base.causality = <input> )
 
@@ -189,12 +189,12 @@ functions
 				{
 					is_Real(sv) =>
 					{
-						/* @OnFail("2.2.7 Variable %s, Real unit must be defined for displayUnit %s at line %s",
+						/* @OnFail("2.2.8 Variable %s, Real unit must be defined for displayUnit %s at line %s",
 							sv.base.name, sv.realAtts.displayUnit, sv.base.location) */
 						( sv.realAtts.displayUnit <> nil => sv.realAtts.unit <> nil ),
 
 						sv.realAtts.unit <> nil =>
-							/* @OnFail("2.2.7 Variable %s, Real unit %s not defined in UnitDefinitions at line %s",
+							/* @OnFail("2.2.8 Variable %s, Real unit %s not defined in UnitDefinitions at line %s",
 								sv.base.name, sv.realAtts.unit, sv.base.location) */
 							( md.unitDefinitions <> nil
 							  and exists u in seq md.unitDefinitions & u.name = sv.realAtts.unit )
@@ -209,7 +209,7 @@ functions
 				{
 					let sv = eModelVariables(svi) in
 						is_Real(sv) and sv.varAtts.reinit <> nil =>
-						/* @OnFail("2.2.7 Variable %s, Real reinit for model exchange continuous time only at line %s",
+						/* @OnFail("2.2.8 Variable %s, Real reinit for model exchange continuous time only at line %s",
 								sv.base.name, sv.base.location) */
 						( isContinuousTimeState(svi, eModelVariables) and md.modelExchange <> nil )
 
@@ -226,16 +226,16 @@ functions
 				in
 					if outputRefs <> {}
 					then
-						/* @OnFail("2.2.8 Output variables but no outputs declared at line %s",
+						/* @OnFail("2.2.9 Output variables but no outputs declared at line %s",
 							md.modelStructure.location) */
 						( structRefs <> {} )
 
 						and
-						/* @OnFail("2.2.8 Outputs section does not match output variables at line %s",
+						/* @OnFail("2.2.9 Outputs section does not match output variables at line %s",
 							md.modelStructure.location) */
 						( structRefs = outputRefs )
 					else
-						/* @OnFail("2.2.8 Outputs should be omitted at line %s", md.modelStructure.location) */
+						/* @OnFail("2.2.9 Outputs should be omitted at line %s", md.modelStructure.location) */
 						( structRefs = {} )
 			),
 
@@ -249,16 +249,16 @@ functions
 					in
 						if derivativeRefs <> {}
 						then
-							/* @OnFail("2.2.8 Real/derivative variables but no Derivatives declared at line %s",
+							/* @OnFail("2.2.9 Real/derivative variables but no Derivatives declared at line %s",
 								md.modelStructure.location) */
 							( structRefs <> {} )
 
 							and
-							/* @OnFail("2.2.8 Derivatives do not match Real/derivative variables at line %s",
+							/* @OnFail("2.2.9 Derivatives do not match Real/derivative variables at line %s",
 								md.modelStructure.location) */
 							( structRefs = derivativeRefs )
 						else
-							/* @OnFail("2.2.8 Derivatives declared, but no Real/derivative variables at line %s",
+							/* @OnFail("2.2.9 Derivatives declared, but no Real/derivative variables at line %s",
 								md.modelStructure.location) */
 							( structRefs = {} )
 			),
@@ -285,10 +285,10 @@ functions
 							iu in seq nilSeq[Unknown](md.modelStructure.unknowns) &
 							iu.kind = <InitialUnknown> ] in
 						{
-							-- @OnFail("2.2.8 InitialUnknowns must include refs: %s", initRefs)
+							-- @OnFail("2.2.9 InitialUnknowns must include refs: %s", initRefs)
 							( ius <> [] ),
 
-							-- @OnFail("2.2.8 InitialUnknowns must include refs: %s", initRefs)
+							-- @OnFail("2.2.9 InitialUnknowns must include refs: %s", initRefs)
 							( { u.valueReference | u in seq ius } subset initRefs )
 						} = {true}
 			),
@@ -296,7 +296,7 @@ functions
 			(
 				md.modelStructure.eventIndicators <> nil =>
 				{
-					/* @OnFail("2.2.8 EventIndicator valueReference %s invalid at line %s",
+					/* @OnFail("2.2.9 EventIndicator valueReference %s invalid at line %s",
 						ei.valueReference, ei.location)	 */
 					( exists sv in seq eModelVariables &
 						sv.base.valueReference = ei.valueReference )
@@ -311,7 +311,7 @@ functions
 				{
 					unk.dependencies <> nil =>
 					{
-						-- @OnFail("2.2.8 Unknown dependency %s invalid at line %s", vr, unk.location)
+						-- @OnFail("2.2.9 Unknown dependency %s invalid at line %s", vr, unk.location)
 						( exists sv in seq eModelVariables & sv.base.valueReference = vr )
 
 						| vr in seq unk.dependencies
@@ -347,14 +347,14 @@ functions
 					card matchingTypes = 1 => let { simpleType } = matchingTypes in
 						cases simpleType:
 							mk_RealType(-, -, -, mk_fmi3FloatXXAttributes(min, max, -)) ->
-								/* @OnFail("2.2.7 Variable %s min/max exceeds RealType %s at line %s",
+								/* @OnFail("2.2.8 Variable %s min/max exceeds RealType %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
 									and
 								  (max <> nil and sv.floatAtts.max <> nil => max >= sv.floatAtts.max) ),
 
 							mk_IntegerType(-, -, -, mk_fmi3IntXXAttributes(min, max)) ->
-								/* @OnFail("2.2.7 Variable %s min/max exceeds IntegerType %s at line %s",
+								/* @OnFail("2.2.8 Variable %s min/max exceeds IntegerType %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
 									and
@@ -367,37 +367,37 @@ functions
 					card matchingTypes = 1 => let { simpleType } = matchingTypes in
 						cases simpleType:
 							mk_RealType(-, -, -, -) ->
-								/* @OnFail("2.2.7 Variable %s, RealType not referenced by Real variable %s at line %s",
+								/* @OnFail("2.2.8 Variable %s, RealType not referenced by Real variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Real(sv) ),
 
 							mk_IntegerType(-, -, -, -) ->
-								/* @OnFail("2.2.7 Variable %s, IntegerType not referenced by Integer variable %s at line %s",
+								/* @OnFail("2.2.8 Variable %s, IntegerType not referenced by Integer variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Integer(sv) ),
 
 							mk_BooleanType(-, -) ->
-								/* @OnFail("2.2.7 Variable %s, BooleanType not referenced by Boolean variable %s at line %s",
+								/* @OnFail("2.2.8 Variable %s, BooleanType not referenced by Boolean variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Boolean(sv) ),
 
 							mk_StringType(-, -) ->
-								/* @OnFail("2.2.7 Variable %s, StringType not referenced by String variable %s at line %s",
+								/* @OnFail("2.2.8 Variable %s, StringType not referenced by String variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_String(sv) ),
 
 							mk_BinaryType(-,-, -, -) ->
-								/* @OnFail("2.2.7 Variable %s, BinaryType not referenced by Binary variable %s at line %s",
+								/* @OnFail("2.2.8 Variable %s, BinaryType not referenced by Binary variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Binary(sv) ),
 
 							mk_EnumerationType(-, -, -, -) ->
-								/* @OnFail("2.2.7 Variable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
+								/* @OnFail("2.2.8 Variable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Enumeration(sv) ),
 
 							mk_ClockType(-, -, -) ->
-								/* @OnFail("2.2.7 Variable %s, StringType not referenced by String variable %s at line %s",
+								/* @OnFail("2.2.8 Variable %s, StringType not referenced by String variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Clock(sv) )
 						end
