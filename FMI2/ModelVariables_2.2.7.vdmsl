@@ -202,9 +202,7 @@ functions
 					<independent> ->
 						eVariability = <continuous>
 						and eInitial = nil		-- (D)
-						and sv.variable.start = nil
-						-- @OnFail("2.2.7 Independent variable must be Real at line %s", sv.location)
-						and (is_Real(sv.variable)),
+						and sv.variable.start = nil,
 
 					<output> ->
 						cases eVariability:
@@ -232,6 +230,11 @@ functions
 								eInitial in set { <exact>, <approx>, <calculated> } -- (C)
 						end
 				end
+			),
+
+			-- @OnFail("2.2.7 Independent variable must be Real at line %s", sv.location)
+			(
+				eCausality = <independent> => is_Real(sv.variable)
 			),
 
 			-- Table on p46 defining variability, and p49 defining combinations
