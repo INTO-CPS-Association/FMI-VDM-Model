@@ -44,7 +44,7 @@ public class ClockVariable extends Variable
 	private BigInteger shiftCounter;
 	private BigInteger resolution;
 
-	private Boolean start;
+	private Boolean[] start;
 
 	public ClockVariable(Attributes attributes, Locator locator)
 	{
@@ -70,7 +70,7 @@ public class ClockVariable extends Variable
 		printRawAttribute("", resolution, "");
 		System.out.print("),\n");
 
-		printRawAttribute(indent + "\t", start, "\n");
+		printSequence(indent + "\t", start, "\n");
 		System.out.print(indent + ")");
 	}
 }

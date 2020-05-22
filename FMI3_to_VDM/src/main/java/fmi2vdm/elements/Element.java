@@ -489,7 +489,7 @@ abstract public class Element
 	{
 		if (items == null)
 		{
-			System.out.print(indent + "nil");
+			System.out.print(indent + "nil" + tail);
 		}
 		else
 		{
@@ -510,7 +510,7 @@ abstract public class Element
 	{
 		if (items == null)
 		{
-			System.out.print(indent + "nil");
+			System.out.print(indent + "nil" + tail);
 		}
 		else
 		{
