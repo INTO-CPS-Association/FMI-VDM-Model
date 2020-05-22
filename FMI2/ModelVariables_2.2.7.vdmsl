@@ -250,9 +250,12 @@ functions
 
 					<continuous> ->
 						eCausality in set {<input>, <output>, <local>, <independent>}
-						-- @OnFail("2.2.7 Continuous variable must be Real at line %s", sv.location)
-						and (is_Real(sv.variable))
 				end
+			),
+
+			-- @OnFail("2.2.7 Continuous variable must be Real at line %s", sv.location)
+			(
+				eVariability = <continuous> => is_Real(sv.variable)
 			),
 
 			-- Table on p47 defining initial
