@@ -46,7 +46,7 @@ types
 	Unknown ::
 		location				: Location
 		kind					: UnknownKind
-		valueReference			: nat
+		valueReference			: fmi3ValueReference
 		dependencies			: [seq of fmi3ValueReference]
 		dependenciesKind		: [seq of DependencyKind];
 
