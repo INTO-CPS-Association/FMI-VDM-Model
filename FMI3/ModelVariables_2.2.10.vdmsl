@@ -432,7 +432,7 @@ functions
 
 				mk_Binary(-, -, -, -, start) ->
 					-- @OnFail("2.2.8 Binary %s start is not hex-binary at line %s", sv.base.name, sv.base.location)
-					( start <> nil and forall s in seq start &
+					( start = nil or forall s in seq start &
 						forall c in seq s &
 							c in set elems "ABCDEFabcdef0123456789" ),
 
@@ -558,13 +558,14 @@ functions
 			<input> ->
 				cases eVariability:
 					<discrete>, <continuous> -> nil,
+					<clock> -> <exact>,
 					others -> nil
 				end,
 
 			<output> ->
 				cases eVariability:
 					<constant> -> <exact>,
-					<discrete>, <continuous> -> <calculated>,
+					<discrete>, <continuous>, <clock> -> <calculated>,
 					others -> nil
 				end,
 
@@ -761,7 +762,7 @@ functions
 		is_Real(svs(i))
 		and svs(i).base.variability = <continuous> 
 		and exists j in seq svs &
-			is_Real(j) and j.varAtts.derivative = i;
+			is_Real(j) and j.varAtts.derivative = svs(i).base.valueReference;
 
 	/**
 	 * Return the Variables from a list which are state derivatives, defined to be
