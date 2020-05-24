@@ -196,7 +196,7 @@ public class VDMCheck
 			
 			tempOUT = File.createTempFile("out", "tmp");
 			
-			String[] dependencies = {"vdmj-4.3.0.jar", "annotations-1.0.0.jar", "annotations2-1.0.0.jar"};
+			String[] dependencies = {"vdmj-4.3.0.jar", "annotations-1.0.0.jar"};
 
 			int exit = runCommand(jarLocation, tempOUT,
 					"java", "-Xmx1g", "-cp", String.join(File.pathSeparator, dependencies), 

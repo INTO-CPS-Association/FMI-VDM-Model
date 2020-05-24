@@ -134,12 +134,10 @@ esac
 	if ! java -cp fmi2vdm-${project.version}.jar fmi2vdm.FMI2SaxParser "$XML" "$VAR" "$INXSD" >$VDM
 	then
 		echo "Problem converting modelDescription.xml to VDM-SL?"
-		echo "This might be caused by a spelling mistake."
 		exit 2
 	fi
 	
-	java -Xmx1g -cp vdmj-4.3.0.jar:annotations-1.0.0.jar:annotations2-1.0.0.jar \
-		com.fujitsu.vdmj.VDMJ \
+	java -Xmx1g -cp vdmj-4.3.0.jar:annotations-1.0.0.jar com.fujitsu.vdmj.VDMJ \
 		-vdmsl -q -annotations -e "isValidFMIModelDescription($VAR)" \
 		model $VDM | sed -e "s/^true$/No errors found./; s/^false$/Errors found./"
 )
