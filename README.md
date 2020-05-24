@@ -40,13 +40,14 @@ No errors found.
 
 ## Building and Exporting the Tool
 
+Prebuilt packages are provided in the Releases area, but you can build the tool locally if required. To do this, it is easiest to import the Maven dependencies from the "lib" folder (step 2 below). Alternatively, you can build the [VDMJ](https://github.com/nickbattle/vdmj) project, which will install its Maven artifacts.
+
 1. Install maven.
 
 2. At the root of the repo, run the following commands, to install the dependencies in the local maven repository:
 ```
 mvn install:install-file -Dfile=".\lib\vdmj-4.3.0.jar" -DgroupId="com.fujitsu" -DartifactId="vdmj" -Dversion="4.3.0" -Dpackaging="jar"
 mvn install:install-file -Dfile=".\lib\annotations-1.0.0.jar" -DgroupId="com.fujitsu" -DartifactId="annotations" -Dversion="1.0.0" -Dpackaging="jar"
-mvn install:install-file -Dfile=".\lib\annotations2-1.0.0.jar" -DgroupId="com.fujitsu" -DartifactId="annotations2" -Dversion="1.0.0" -Dpackaging="jar"
 ```
 
 3. Run maven package:
@@ -61,5 +62,7 @@ mvn package
 To install the package, unzip the distribution ZIP somewhere and run:
 ```
 java -jar fmi2vdm-<version>.jar
+or
+VDMCheck2.sh
 ```
 This will print the usage.
