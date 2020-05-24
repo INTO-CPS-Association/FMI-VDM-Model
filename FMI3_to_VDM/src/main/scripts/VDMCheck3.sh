@@ -171,12 +171,10 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 		if [ $? -ne 0 ]
 		then
 			echo "Problem converting $1 to VDM-SL?"
-			echo "This might be caused by a spelling mistake."
 			exit 2
 		fi
 		
-		java -Xmx1g -cp vdmj-4.3.0-P.jar:annotations-1.0.0.jar:annotations2-1.0.0.jar \
-			com.fujitsu.vdmj.VDMJ \
+		java -Xmx1g -cp vdmj-4.3.0-P.jar:annotations-1.0.0.jar com.fujitsu.vdmj.VDMJ \
 			-vdmsl -q -annotations -e "isValidFMIConfiguration($VAR)" \
 			model $VDM | sed -e "s/^true$/No errors found./; s/^false$/Errors found./"
 	)
