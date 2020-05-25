@@ -90,11 +90,11 @@ types
 		derivatives				: seq of fmi3Float					-- Solver derivative data
 		eventIndicators			: seq of fmi3Float					-- ME events
 		dirty					: bool								-- True if SVs updated but not recalculated
-		tolerance				: [fmi3Float]						-- From DefaultExperiment or fmi3SetupExperiment
 		isNewEventIteration		: bool								-- Used in ME
 		eventInfo				: fmi3EventInfo						-- Used in ME and CS?
 
 		-- time values
+		tolerance				: [fmi3Float]
 		startTime				: [fmi3Float]
 		stopTime				: [fmi3Float]
 		currentTime				: [fmi3Float]	-- TODO should be independent SV?

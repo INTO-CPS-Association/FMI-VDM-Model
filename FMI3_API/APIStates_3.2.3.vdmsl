@@ -28,37 +28,36 @@
  */
 
 /**
- * 3.2.3 State machine (and API tables)
- * 4.1.6 fmi3ModeCoSimulation,
- * 4.1.8 fmi3ModeHybridCoSimulation,
- * 4.1.9 fmi3ModeHybridCoSimulation,
- * 4.1.10 fmi3ModeScheduledExecutionSimulation
+ * 3.2.3 State Machine for Model Exchange
+ * 4.2.3 State Machine for Basic Co-Simulation
+ * 5.2.4 State Machine for Hybrid Co-Simulation
+ * 6.2.3 State Machine for Scheduled Co-Simulation
  */
 types
 	States = set of fmi3State;
 
 values
---------------------------------------------------------------------------------
--- Function calls for both Model-exchange and Co-simulation
---------------------------------------------------------------------------------
-STATES_fmi3GetVersion : States               = { <START>, <END>, <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <CONFIGURATION_MODE>, <RECONFIGURATION_MODE>, <STEP_MODE>, <STEP_DISCARDED>, <TERMINATED>, <ERROR> };
-STATES_fmi3SetDebugLogging : States          = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <CONFIGURATION_MODE>, <RECONFIGURATION_MODE>, <STEP_MODE>, <STEP_DISCARDED>, <TERMINATED>, <ERROR> };
-STATES_fmi3Instantiate : States              = { <START>, <END> };
-STATES_fmi3FreeInstance : States             = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <CONFIGURATION_MODE>, <RECONFIGURATION_MODE>, <STEP_MODE>, <STEP_DISCARDED>, <TERMINATED>, <ERROR> };
-STATES_fmi3SetupExperiment : States          = { <INSTANTIATED> };
-STATES_fmi3EnterInitializationMode : States  = { <INSTANTIATED> };
-STATES_fmi3ExitInitializationMode : States   = { <INITIALIZATION> };
-STATES_fmi3EnterConfigurationMode : States   = { <INSTANTIATED>, <EVENT_MODE> };
-STATES_fmi3ExitConfigurationMode : States    = { <CONFIGURATION_MODE>, <RECONFIGURATION_MODE> };
-STATES_fmi3Terminate : States                = { <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE> };
-STATES_fmi3Reset : States                    = STATES_fmi3FreeInstance;
+	ANY_STATE = { s | s : fmi3State };
 
-STATES_fmi3GetReal : States                  = { <INITIALIZATION>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <STEP_DISCARDED>, <TERMINATED>, <ERROR> };
+--------------------------------------------------------------------------------
+-- Function calls for all simulation modes
+--------------------------------------------------------------------------------
+STATES_fmi3GetVersion : States               = ANY_STATE;
+STATES_fmi3SetDebugLogging : States          = { <INSTANTIATED>, <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <CONFIGURATION_MODE>, <RECONFIGURATION_MODE>, <STEP_MODE>, <TERMINATED>, <ERROR> };
+STATES_fmi3EnterConfigurationMode : States   = { <INSTANTIATED>, <EVENT_MODE>, <STEP_MODE>, <CLOCK_ACTIVATION_MODE> };
+STATES_fmi3ExitConfigurationMode : States    = { <CONFIGURATION_MODE>, <RECONFIGURATION_MODE> };
+STATES_fmi3EnterInitializationMode : States  = { <INSTANTIATED> };
+STATES_fmi3ExitInitializationMode : States   = { <INITIALIZATION_MODE> };
+STATES_fmi3Terminate : States                = { <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <CLOCK_ACTIVATION_MODE> };
+STATES_fmi3Reset : States                    = ANY_STATE;
+STATES_fmi3FreeInstance : States             = ANY_STATE;
+
+STATES_fmi3GetReal : States                  = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> };
 STATES_fmi3GetInteger : States               = STATES_fmi3GetReal;
 STATES_fmi3GetBoolean : States               = STATES_fmi3GetReal;
 STATES_fmi3GetString : States                = STATES_fmi3GetReal;
-STATES_fmi3SetReal : States                  = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE> };
-STATES_fmi3SetInteger : States               = { <INSTANTIATED>, <INITIALIZATION>, <EVENT_MODE>, <STEP_MODE> };
+STATES_fmi3SetReal : States                  = { <INSTANTIATED>, <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE> };
+STATES_fmi3SetInteger : States               = { <INSTANTIATED>, <INITIALIZATION_MODE>, <EVENT_MODE>, <STEP_MODE> };
 STATES_fmi3SetBoolean : States               = STATES_fmi3SetInteger;
 STATES_fmi3SetString : States                = STATES_fmi3SetInteger;
 STATES_fmi3GetFMUstate : States              = STATES_fmi3FreeInstance;
@@ -67,7 +66,7 @@ STATES_fmi3FreeFMUstate : States             = STATES_fmi3FreeInstance;
 STATES_fmi3SerializedFMUstateSize : States   = STATES_fmi3FreeInstance;
 STATES_fmi3SerializeFMUstate : States        = STATES_fmi3FreeInstance;
 STATES_fmi3DeSerializeFMUstate : States      = STATES_fmi3FreeInstance;
-STATES_fmi3GetDirectionalDerivative : States = { <INITIALIZATION>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <STEP_DISCARDED>, <TERMINATED>, <ERROR> }; 
+STATES_fmi3GetDirectionalDerivative : States = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> }; 
 
 ------------------------------------------------------------------------------
 -- Function calls for Model-exchange
@@ -78,16 +77,16 @@ STATES_fmi3EnterContinuousTimeMode : States  = { <EVENT_MODE> };
 STATES_fmi3CompletedIntegratorStep : States  = { <CONTINUOUS_TIME_MODE> };
 STATES_fmi3SetTime : States                  = { <EVENT_MODE>, <CONTINUOUS_TIME_MODE> };
 STATES_fmi3SetContinuousStates : States      = { <CONTINUOUS_TIME_MODE> };
-STATES_fmi3GetEventIndicators : States       = { <INITIALIZATION>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <TERMINATED>, <ERROR> };
+STATES_fmi3GetEventIndicators : States       = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <TERMINATED>, <ERROR> };
 STATES_fmi3GetContinuousStates : States      = STATES_fmi3GetEventIndicators;
-STATES_fmi3GetDerivatives : States           = { <INITIALIZATION>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <TERMINATED>, <ERROR> };
+STATES_fmi3GetDerivatives : States           = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <TERMINATED>, <ERROR> };
 STATES_fmi3GetNominalsOfContinuousStates : States = {  <INSTANTIATED>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <TERMINATED>, <ERROR> };
 
 ------------------------------------------------------------------------------
 -- Function calls for Co-simulation
 ------------------------------------------------------------------------------
-STATES_fmi3SetRealInputDerivatives : States  = { <INSTANTIATED>, <INITIALIZATION>, <STEP_MODE> };
-STATES_fmi3GetRealOutputDerivatives : States = { <STEP_MODE>, <RECONFIGURATION_MODE>, <STEP_DISCARDED>, <TERMINATED>, <ERROR> };
+STATES_fmi3SetRealInputDerivatives : States  = { <INSTANTIATED>, <INITIALIZATION_MODE>, <STEP_MODE> };
+STATES_fmi3GetRealOutputDerivatives : States = { <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> };
 STATES_fmi3DoStep : States                   = { <STEP_MODE> };
 STATES_fmi3CancelStep : States               = { <STEP_MODE> };
 STATES_fmi3GetStatus : States                = { <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED> };

@@ -32,7 +32,7 @@
  * 2.1.3 Status Returned by Functions
  */
 types
-	-- fmi3ValueReference	= nat1;		-- Defined in FMI3 model
+	-- fmi3ValueReference	= nat;		-- Defined in FMI3 model
 
 	fmi3Float			= real;
 	fmi3Integer			= int;
@@ -53,19 +53,51 @@ types
 		<fmi3Error> |
 		<fmi3Fatal>;
 
-	fmi3State =
-		<START> |
+	-- States for the various state machines
+
+	fmi3ModelExchangeState =
 		<INSTANTIATED> |
-		<INITIALIZATION> |
 		<CONFIGURATION_MODE> |
+		<INITIALIZATION_MODE> |
 		<EVENT_MODE> |
-		<CLOCK_ACTIVATION_MODE> |
 		<CONTINUOUS_TIME_MODE> |
+		<RECONFIGURATION_MODE> |
+		<TERMINATED>;
+
+	fmi3BasicCoSimulationState =
+		<INSTANTIATED> |
+		<CONFIGURATION_MODE> |
+		<INITIALIZATION_MODE> |
 		<STEP_MODE> |
 		<RECONFIGURATION_MODE> |
 		<INTERMEDIATE_UPDATE_MODE> |
-		<STEP_DISCARDED> |
-		<TERMINATED> |
+		<TERMINATED>;
+
+	fmi3HybridCoSimulationState =
+		<INSTANTIATED> |
+		<CONFIGURATION_MODE> |
+		<INITIALIZATION_MODE> |
+		<STEP_MODE> |
+		<RECONFIGURATION_MODE> |
+		<INTERMEDIATE_UPDATE_MODE> |
+		<TERMINATED>;
+
+	fmi3ScheduledCoSimulationState =
+		<INSTANTIATED> |
+		<CONFIGURATION_MODE> |
+		<INITIALIZATION_MODE> |
+		<CLOCK_ACTIVATION_MODE> |
+		<RECONFIGURATION_MODE> |
+		<INTERMEDIATE_UPDATE_MODE> |
+		<TERMINATED>;
+
+	-- The collection of all states, for convenience
+	fmi3State =
+		<START> |
+		fmi3ModelExchangeState |
+		fmi3BasicCoSimulationState |
+		fmi3HybridCoSimulationState |
+		fmi3ScheduledCoSimulationState |
 		<ERROR> |
 		<FATAL> |
 		<END>;

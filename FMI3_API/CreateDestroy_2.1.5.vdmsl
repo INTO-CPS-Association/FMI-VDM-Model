@@ -28,7 +28,7 @@
  */
 
 /**
- * 2.1.5 Creation, Destruction and Logging of FMU Instances.
+ * 2.1.5 Creation, Destruction and Logging of FMU Instances
  */
 functions
 	/**
@@ -85,16 +85,13 @@ functions
 				getStartValues(aliasVars, eModelVariables),
 
 				-- The solver data vector, addressed by SolverData's vref
-				[ 0.0 | - in seq instanceEnvironment.solverData.derivatives ],
+				getSolverValues(instanceEnvironment),
 
 				-- The eventIndicators
-				[ 0.0 | - in set {1, ..., nilNat(xmlModel.attributes.numberOfEventIndicators)} ],
+				getEventIndicatorValues(xmlModel),
 
 				-- Initially dirty, because "start" values above need a calculate call
 				true,
-
-				-- tolerance, set by fmi3SetupExperiment (defaults to xmlModel DefaultExperiment)
-				nil,
 
 				-- IsNewEventIteration, used in ME only
 				false,
@@ -109,20 +106,29 @@ functions
 					false	-- nextEventTimeDefined
 				),
 
-				-- start time, set by fmi3SetupExperiment
-				nil,
+				-- tolerance
+				if xmlModel.defaultExperiment <> nil
+				then nilReal(xmlModel.defaultExperiment.tolerance)
+				else nil,
 
-				-- stop time, optionally set by fmi3SetupExperiment
-				nil,
+				-- start time
+				if xmlModel.defaultExperiment <> nil
+				then nilReal(xmlModel.defaultExperiment.startTime)
+				else nil,
 
-				-- current time, set by fmi3SetupExperiment
+				-- stop time
+				if xmlModel.defaultExperiment <> nil
+				then nilReal(xmlModel.defaultExperiment.stopTime)
+				else nil,
+
+				-- current time, set by fmi3EnterInitializationMode
 				nil
 			)
-				
+
 	pre
 		instanceName <> ""
-		and (instanceEnvironment.xmlModel.modelExchange = nil)
-		and (instantiationToken = instanceEnvironment.xmlModel.attributes.instantiationToken)
+		and instanceEnvironment.xmlModel.modelExchange = nil
+		and instantiationToken = instanceEnvironment.xmlModel.attributes.instantiationToken
 	post
 		result.fmuState = <INSTANTIATED>
 		and result.fmuKind = fmuKind
@@ -335,6 +341,22 @@ functions
 
 		| vref in set dom aliasVars
 	};
+
+	/**
+	 * Calculate the initial solver values, given the solver configuration data.
+	 * Called by fmi3Instantiate and fmi3Reset.
+	 */
+	getSolverValues: fmi3InstanceEnvironment +> seq of fmi3Float
+	getSolverValues(instanceEnvironment) ==
+		[ 0.0 | - in seq instanceEnvironment.solverData.derivatives ];
+
+	/**
+	 * Calculate the initial event indicator values, given the FMU configuration data.
+	 * Called by fmi3Instantiate and fmi3Reset.
+	 */
+	getEventIndicatorValues: FMIModelDescription +> seq of fmi3Float
+	getEventIndicatorValues(xmlModel) ==
+		[ 0.0 | - in set {1, ..., nilNat(xmlModel.attributes.numberOfEventIndicators)} ];
 
 	/**
 	 * Implementation of fmi3FreeInstance. See API method below.

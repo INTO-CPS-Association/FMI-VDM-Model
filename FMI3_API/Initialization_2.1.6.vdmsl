@@ -28,46 +28,9 @@
  */
 
 /**
- * 2.1.6  Initialization, Termination, and Resetting an FMU
+ * 2.1.6 Configuration, Initialization, Termination, and Resetting an FMU
  */
 functions
-	/**
-	 * Implementation and API for fmi3SetupExperiment.
-	 */
-	fmi3SetupExperiment_Impl: fmi3Instance * fmi3Boolean * fmi3Float * fmi3Float * fmi3Boolean * fmi3Float +> fmi3Status * fmi3Instance
-	fmi3SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
-		mk_(<fmi3OK>, mu(c,
-			tolerance	|-> if toleranceDefined then tolerance
-							elseif c.xmlModel.defaultExperiment <> nil
-							then c.xmlModel.defaultExperiment.tolerance
-							else nil,
-			startTime	|-> startTime,
-			stopTime	|-> if stopTimeDefined then stopTime else nil,
-			currentTime	|-> startTime))		-- TODO should set independent variable?
-	pre
-		c.fmuState in set STATES_fmi3SetupExperiment
-		and (stopTimeDefined => stopTime > startTime)
-		and (toleranceDefined => tolerance >= 0)
-	post
-		RESULT.#2.fmuState = <INSTANTIATED>;
-
-	fmi3SetupExperiment: fmi3Instance * fmi3Boolean * fmi3Float * fmi3Float * fmi3Boolean * fmi3Float +> fmi3Status * [fmi3Instance]
-	fmi3SetupExperiment(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime) ==
-		if c.fmuState not in set STATES_fmi3SetupExperiment
-		then let - = logAPIError(c, "Cannot call fmi3SetupExperiment in this state") in
-			mk_(<fmi3Error>, nil)
-		elseif stopTimeDefined and stopTime <= startTime
-		then let - = logAPIError(c, "stopTime is not > startTime") in
-			mk_(<fmi3Error>, nil)
-		elseif toleranceDefined and tolerance < 0
-		then let - = logAPIError(c, "Tolerance must be >= 0") in
-			mk_(<fmi3Error>, nil)
-		else
-			fmi3SetupExperiment_Impl(c, toleranceDefined, tolerance, startTime, stopTimeDefined, stopTime)
-	 post
-	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
-
-
 	/**
 	 * Implementation and API for fmi3EnterConfigurationMode.
 	 */
@@ -75,13 +38,14 @@ functions
 	fmi3EnterConfigurationMode_Impl(c) ==
 		mk_(<fmi3OK>, mu(c,
 			fmuState |->
-				if c.fmuState = <INITIALIZATION>
+				if c.fmuState = <INITIALIZATION_MODE>
 				then <CONFIGURATION_MODE>
 				else <RECONFIGURATION_MODE>))
 	pre
 		c.fmuState in set STATES_fmi3EnterConfigurationMode
 		and c.startTime <> nil
-		and exists sv in seq c.eModelVariables & sv.base.causality = <structuralParameter>
+		and exists sv in seq c.eModelVariables &
+			sv.base.causality = <structuralParameter> and sv.base.variability = <tunable>
 	post
 		RESULT.#2.fmuState in set {<CONFIGURATION_MODE>, <RECONFIGURATION_MODE>};
 
@@ -90,8 +54,9 @@ functions
 		if c.fmuState not in set STATES_fmi3EnterConfigurationMode
 		then let - = logAPIError(c, "Cannot call fmi3EnterConfigurationMode in this state") in
 			mk_(<fmi3Error>, nil)
-		elseif not exists sv in seq c.eModelVariables & sv.base.causality = <structuralParameter>
-		then let - = logAPIError(c, "Cannot call fmi3EnterConfigurationMode with no structural parameters defined") in
+		elseif not exists sv in seq c.eModelVariables &
+			sv.base.causality = <structuralParameter> and sv.base.variability = <tunable>
+		then let - = logAPIError(c, "Cannot call fmi3EnterConfigurationMode with no tunable structural parameters defined") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3EnterConfigurationMode_Impl(c)
@@ -107,23 +72,30 @@ functions
 		mk_(<fmi3OK>, mu(c,
 			fmuState |->
 				if c.fmuState = <CONFIGURATION_MODE>
-				then <INITIALIZATION>
-				else <EVENT_MODE>))
-
+				then <INSTANTIATED>
+				else
+					cases c.fmuKind:
+						<ModelExchange>			-> <EVENT_MODE>,
+						<BasicCoSimulation>		-> <STEP_MODE>,
+						<HybridCoSimulation>	-> <EVENT_MODE>,
+						<ScheduledCoSimulation>	-> <CLOCK_ACTIVATION_MODE>
+					end))
 	pre
 		c.fmuState in set STATES_fmi3ExitConfigurationMode
 		and c.startTime <> nil
-		and exists sv in seq c.eModelVariables & sv.base.causality = <structuralParameter>
+		and exists sv in seq c.eModelVariables &
+			sv.base.causality = <structuralParameter> and sv.base.variability = <tunable>
 	post
-		RESULT.#2.fmuState in set {<INITIALIZATION>, <EVENT_MODE>};
+		RESULT.#2.fmuState in set STATES_fmi3EnterConfigurationMode;	-- ie. could call Enter again
 
 	fmi3ExitConfigurationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3ExitConfigurationMode(c) ==
 		if c.fmuState not in set STATES_fmi3ExitConfigurationMode
 		then let - = logAPIError(c, "Cannot call fmi3ExitConfigurationMode in this state") in 
 			mk_(<fmi3Error>, nil)
-		elseif not exists sv in seq c.eModelVariables & sv.base.causality = <structuralParameter>
-		then let - = logAPIError(c, "Cannot call fmi3ExitConfigurationMode with no structural parameters defined") in
+		elseif not exists sv in seq c.eModelVariables &
+			sv.base.causality = <structuralParameter> and sv.base.variability = <tunable>
+		then let - = logAPIError(c, "Cannot call fmi3ExitConfigurationMode with no tunable structural parameters defined") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3ExitConfigurationMode_Impl(c)
@@ -134,27 +106,40 @@ functions
 	/**
 	 * Implementation and API for fmi3EnterInitializationMode.
 	 */
-	fmi3EnterInitializationMode_Impl: fmi3Instance +> fmi3Status * fmi3Instance
-	fmi3EnterInitializationMode_Impl(c) ==
-		mk_(<fmi3OK>, mu(c, fmuState |-> <INITIALIZATION>))
+	fmi3EnterInitializationMode_Impl: fmi3Instance * [fmi3Float] * fmi3Float * [fmi3Float] +> fmi3Status * fmi3Instance
+	fmi3EnterInitializationMode_Impl(c, tolerance, startTime, stopTime) ==
+		mk_(<fmi3OK>, mu(c,
+			fmuState	|-> <INITIALIZATION_MODE>,
+			tolerance	|-> tolerance,
+			startTime	|-> startTime,
+			stopTime	|-> stopTime,
+			currentTime	|-> startTime))		-- (Re)start experiment
 	pre
 		c.fmuState in set STATES_fmi3EnterInitializationMode
-		and c.startTime <> nil
 	post
-		RESULT.#2.fmuState = <INITIALIZATION>;
+		RESULT.#2.fmuState = <INITIALIZATION_MODE>;
 
-	fmi3EnterInitializationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
-	fmi3EnterInitializationMode(c) ==
+	fmi3EnterInitializationMode(
+		c					: fmi3Instance,
+		toleranceDefined	: fmi3Boolean,
+		tolerance			: [fmi3Float],
+		startTime			: fmi3Float,
+		stopTimeDefined		: fmi3Boolean,
+		stopTime			: [fmi3Float]) result : fmi3Status * [fmi3Instance]
+	==
 		if c.fmuState not in set STATES_fmi3EnterInitializationMode
 		then let - = logAPIError(c, "Cannot call fmi3EnterInitializationMode in this state") in
 			mk_(<fmi3Error>, nil)
-		elseif c.startTime = nil
-		then let - = logAPIError(c, "fmi3SetupExperiment has not been called (startTime is nil)?") in
+		elseif toleranceDefined and tolerance = nil
+		then let - = logAPIError(c, "tolerance must be defined if toleranceDefined") in
+			mk_(<fmi3Error>, nil)
+		elseif stopTimeDefined and stopTime = nil
+		then let - = logAPIError(c, "stopTime must be defined if stopTimeDefined") in
 			mk_(<fmi3Error>, nil)
 		else
-			fmi3EnterInitializationMode_Impl(c)
+			fmi3EnterInitializationMode_Impl(c, tolerance, startTime, stopTime)
 	 post
-	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
+	 	result.#1 <> <fmi3OK> <=> result.#2 = nil;
 
 
 	/**
@@ -167,9 +152,13 @@ functions
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, mu(c2,
 				fmuState |->
-					if is_(c.fmuKind, CoSimulationKind)
-					then <EVENT_MODE>
-					else <STEP_MODE>))
+					cases c.fmuKind:
+						<ModelExchange>			-> <EVENT_MODE>,
+						<BasicCoSimulation>		-> <STEP_MODE>,
+						<HybridCoSimulation>	-> <EVENT_MODE>,
+						<ScheduledCoSimulation>	-> <CLOCK_ACTIVATION_MODE>
+					end))
+
 	pre
 		c.fmuState in set STATES_fmi3ExitInitializationMode
 	post
@@ -214,9 +203,11 @@ functions
 	fmi3Reset_Impl: fmi3Instance +> fmi3Status * fmi3Instance
 	fmi3Reset_Impl(c) ==
 		mk_(<fmi3OK>, mu(c,
-			variables	|-> getStartValues(c.aliasVars, c.eModelVariables),
-			dirty		|-> true,
-			fmuState	|-> <INSTANTIATED>))
+			variables		|-> getStartValues(c.aliasVars, c.eModelVariables),
+			derivatives		|-> getSolverValues(c.instanceEnvironment),
+			eventIndicators	|-> getEventIndicatorValues(c.xmlModel),
+			dirty			|-> true,
+			fmuState		|-> <INSTANTIATED>))
 	pre
 		c.fmuState in set STATES_fmi3Reset
 	post

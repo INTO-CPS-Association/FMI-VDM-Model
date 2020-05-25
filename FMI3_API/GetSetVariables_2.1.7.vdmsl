@@ -38,14 +38,13 @@ functions
 	generalGetPrecondition(c, vrs) ==
 		cases c.fmuState:
 			<INSTANTIATED>				-> false,
-			<INITIALIZATION>			-> varsINIT(c, vrs),
+			<INITIALIZATION_MODE>		-> varsINIT(c, vrs),
 			<CONFIGURATION_MODE>		-> true,
 			<EVENT_MODE>				-> true,
 			<CONTINUOUS_TIME_MODE>		-> true,
 			<RECONFIGURATION_MODE>		-> true,
 			<STEP_MODE>					-> true,
 			<INTERMEDIATE_UPDATE_MODE>	-> false,
-			<STEP_DISCARDED>			-> true,
 			<TERMINATED>				-> true,
 			<ERROR>						-> true,
 
@@ -58,7 +57,7 @@ functions
 		then
 			cases c.fmuState:
 				<INSTANTIATED>			-> varsSEA(c, vrs),
-				<INITIALIZATION>		-> varsSE(c, vrs),
+				<INITIALIZATION_MODE>	-> varsSE(c, vrs),
 				<EVENT_MODE>			-> varsIN(c, vrs) or varsINC(c, vrs),
 				<CONTINUOUS_TIME_MODE>	-> varsINC(c, vrs),
 				<TERMINATED>			-> false,
@@ -69,10 +68,9 @@ functions
 		else	-- fmi3CoSimulation
 			cases c.fmuState:
 				<INSTANTIATED>				-> varsINI(c, vrs),
-				<INITIALIZATION>			-> varsIN(c, vrs) or varsINI(c, vrs),
+				<INITIALIZATION_MODE>		-> varsIN(c, vrs) or varsINI(c, vrs),
 				<STEP_MODE>					-> varsIN(c, vrs),
 				<INTERMEDIATE_UPDATE_MODE>	-> false,
-				<STEP_DISCARDED>			-> false,
 				<TERMINATED>				-> false,
 				<ERROR>						-> false,
 
