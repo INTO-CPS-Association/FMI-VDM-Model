@@ -31,58 +31,58 @@ functions
     /**
      * Test the basic operation of the fmi3 instantiate functions.
      */
-     testInstantiateModelExchange: () -> [fmi3Instance]
-     testInstantiateModelExchange() ==
+     testInstantiateModelExchange: fmi3String * fmi3String -> [fmi3Instance]
+     testInstantiateModelExchange(name, id) ==
         fmi3InstantiateModelExchange(
-            "ME instance",
-            "{111-222-333-444}",
+            name,
+            id,
             "",
             false,
             true,
             mk_fmi3InstanceEnvironment(modelExchangeFMU, mk_SolverData([]), nil),
             fmi3Logger);
 
-     testInstantiateBasicCoSimulation: () -> [fmi3Instance]
-     testInstantiateBasicCoSimulation() ==
+     testInstantiateBasicCoSimulation: fmi3Boolean -> [fmi3Instance]
+     testInstantiateBasicCoSimulation(intermediateReq) ==
         fmi3InstantiateBasicCoSimulation(
             "Basic instance",
             "{111-222-333-444}",
             "",
             false,
             true,
-            false,
-            false,
-            false,
+            intermediateReq,
+            intermediateReq,
+            intermediateReq,
             mk_fmi3InstanceEnvironment(basicCosimulationFMU, mk_SolverData([]), nil),
             fmi3Logger,
             nil);
 
-     testInstantiateHybridCoSimulation: () -> [fmi3Instance]
-     testInstantiateHybridCoSimulation() ==
+     testInstantiateHybridCoSimulation: fmi3Boolean -> [fmi3Instance]
+     testInstantiateHybridCoSimulation(intermediateReq) ==
         fmi3InstantiateHybridCoSimulation(
             "Hybrid instance",
             "{111-222-333-444}",
             "",
             false,
             true,
-            false,
-            false,
-            false,
+            intermediateReq,
+            intermediateReq,
+            intermediateReq,
             mk_fmi3InstanceEnvironment(hybridCosimulationFMU, mk_SolverData([]), nil),
             fmi3Logger,
             nil);
 
-     testInstantiateScheduledCoSimulation: () -> [fmi3Instance]
-     testInstantiateScheduledCoSimulation() ==
+     testInstantiateScheduledCoSimulation: fmi3Boolean -> [fmi3Instance]
+     testInstantiateScheduledCoSimulation(intermediateReq) ==
         fmi3InstantiateScheduledCoSimulation(
             "Scheduled instance",
             "{111-222-333-444}",
             "",
             false,
             true,
-            false,
-            false,
-            false,
+            intermediateReq,
+            intermediateReq,
+            intermediateReq,
             mk_fmi3InstanceEnvironment(scheduledCosimulationFMU, mk_SolverData([]), nil),
             fmi3Logger,
             nil,
@@ -92,32 +92,44 @@ functions
 	preemptionVoid: () -> <VOID>
 	preemptionVoid() == <VOID>;
 
-	testSetDebugLogging: () -> bool
-	testSetDebugLogging() ==
-		let mk_(s, -) = fmi3SetDebugLogging(testInstantiateModelExchange(), true, 2, ["Full", "Terse"]) in
+	testSetDebugLogging: seq of fmi3String -> bool
+	testSetDebugLogging(cats) ==
+		let mk_(s, -) = fmi3SetDebugLogging(testInstantiateModelExchange("name", "{111-222-333-444}"), true, len cats, cats) in
 			s = <fmi3OK>;
 
 	testFreeInstance: () -> bool
 	testFreeInstance() ==
-		fmi3FreeInstance(testInstantiateModelExchange()) = <VOID> and
+		fmi3FreeInstance(testInstantiateModelExchange("name", "{111-222-333-444}")) = <VOID> and
 		fmi3FreeInstance(nil) = <VOID>;
 
 	testGetVersion: () -> bool
 	testGetVersion() ==
 		fmi3GetVersion() = "3.0";
 
-    /**
-     * Run all tests.
-     */
-    tests: () -> seq of bool
-    tests() ==
-    [
-        testInstantiateModelExchange() <> nil,
-        testInstantiateBasicCoSimulation() <> nil,
-        testInstantiateHybridCoSimulation() <> nil,
-        testInstantiateScheduledCoSimulation() <> nil,
-        testSetDebugLogging(),
-        testFreeInstance(),
-        testGetVersion()
-    ]
-    post elems RESULT = {true};
+
+	/**
+	 * Run all tests.
+	 */
+	tests: () -> seq of bool
+	tests() ==
+	[
+		testInstantiateModelExchange("ME", "{111-222-333-444}") <> nil,
+		testInstantiateModelExchange("", "{111-222-333-444}") = nil,
+		testInstantiateModelExchange("ME", "wrong") = nil,
+
+		testInstantiateBasicCoSimulation(false) <> nil,
+		testInstantiateBasicCoSimulation(true) = nil,
+
+		testInstantiateHybridCoSimulation(false) <> nil,
+		testInstantiateHybridCoSimulation(true) = nil,
+
+		testInstantiateScheduledCoSimulation(false) <> nil,
+		testInstantiateScheduledCoSimulation(true) = nil,
+
+		testSetDebugLogging(["Full", "Terse"]),
+		testSetDebugLogging(["Wrong"]) = false,
+
+		testFreeInstance(),
+		testGetVersion()
+	]
+	post elems RESULT = {true};

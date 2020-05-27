@@ -160,7 +160,7 @@ functions
 	pre
 		c.fmuState in set STATES_fmi3ExitInitializationMode
 	post
-		RESULT.#2.fmuState in set {<EVENT_MODE>, <STEP_MODE>};
+		RESULT.#2.fmuState in set {<EVENT_MODE>, <STEP_MODE>, <CLOCK_ACTIVATION_MODE>};
 
 	fmi3ExitInitializationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3ExitInitializationMode(c) ==

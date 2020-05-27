@@ -34,7 +34,7 @@ operations
 	testModelExchangePaths: () ==> bool
 	testModelExchangePaths() ==
 	(
-		dcl c : [fmi3Instance] := testInstantiateModelExchange();
+		dcl c : [fmi3Instance] := testInstantiateModelExchange("ME", "{111-222-333-444}");
 		if c = nil then return false;
 
 		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
@@ -66,19 +66,113 @@ operations
 
 	testBasicCoSimulationPaths: () ==> bool
 	testBasicCoSimulationPaths() ==
-		is not yet specified;
+	(
+		dcl c : [fmi3Instance] := testInstantiateBasicCoSimulation(false);
+		if c = nil then return false;
+
+		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3ExitConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3EnterInitializationMode(c, false, nil, 0, false, nil) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3ExitInitializationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3ExitConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		return c.fmuState = <STEP_MODE>
+	);
 
 	testHybridCoSimulationPaths: () ==> bool
 	testHybridCoSimulationPaths() ==
-		is not yet specified;
+	(
+		dcl c : [fmi3Instance] := testInstantiateHybridCoSimulation(false);
+		if c = nil then return false;
+
+		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3ExitConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3EnterInitializationMode(c, false, nil, 0, false, nil) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3ExitInitializationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3ExitConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		return c.fmuState = <EVENT_MODE>
+	);
 
 	testScheduledCoSimulationPaths: () ==> bool
 	testScheduledCoSimulationPaths() ==
-		is not yet specified;
+	(
+		dcl c : [fmi3Instance] := testInstantiateScheduledCoSimulation(false);
+		if c = nil then return false;
 
+		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3ExitConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3EnterInitializationMode(c, false, nil, 0, false, nil) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3ExitInitializationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3ExitConfigurationMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		return c.fmuState = <CLOCK_ACTIVATION_MODE>
+	);
+
+
+	/**
+	 * Run all tests.
+	 */
 	testPaths: () ==> seq of bool
 	testPaths() == return
 	[
-		testModelExchangePaths()
+		testModelExchangePaths(),
+		testBasicCoSimulationPaths(),
+		testHybridCoSimulationPaths(),
+		testScheduledCoSimulationPaths()
 	]
 	post elems RESULT = {true};
