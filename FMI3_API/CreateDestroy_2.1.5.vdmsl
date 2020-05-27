@@ -69,10 +69,10 @@ functions
 				eModelVariables,
 
 				-- The continuous time state references
-				[ u.valueReference | u in seq xmlModel.modelStructure.unknowns & u.kind = <Derivative> ],
+				[ u.valueReference | u in seq nilSeq[Unknown](xmlModel.modelStructure.unknowns) & u.kind = <Derivative> ],
 
 				-- The initial unknown references, which may be an empty set
-				{ u.valueReference | u in seq xmlModel.modelStructure.unknowns & u.kind = <InitialUnknown> },
+				{ u.valueReference | u in seq nilSeq[Unknown](xmlModel.modelStructure.unknowns) & u.kind = <InitialUnknown> },
 
 				-- The solver derivative references
 				[ sd | sd in seq instanceEnvironment.solverData.derivatives ],
@@ -127,7 +127,6 @@ functions
 
 	pre
 		instanceName <> ""
-		and instanceEnvironment.xmlModel.modelExchange = nil
 		and instantiationToken = instanceEnvironment.xmlModel.attributes.instantiationToken
 	post
 		result.fmuState = <INSTANTIATED>
@@ -363,7 +362,7 @@ functions
 	 */
 	fmi3FreeInstance_Impl: fmi3Instance +> <VOID>
 	fmi3FreeInstance_Impl(c) ==
-		<VOID>	-- Logically calls c.xmlModel.funcs.freeMemory()
+		<VOID>
 	pre
 		c.fmuState in set STATES_fmi3FreeInstance;
 
@@ -393,9 +392,9 @@ functions
 				mu(c.instanceEnvironment, logCategories |->
 					if loggingOn
 					then
-						if nCategories = 0
+						if nCategories = 0	-- Enable everything in XML
 						then if c.xmlModel.logCategories <> nil
-							then [ cat.name | cat in seq c.xmlModel.logCategories ]
+							then { cat.name | cat in seq c.xmlModel.logCategories }
 							else nil
 						else elems categories
 					else nil)))
@@ -414,14 +413,14 @@ functions
 			if loggingOn
 			then if nCategories = 0
 				then if c.xmlModel.logCategories <> nil
-					then [ cat.name | cat in seq c.xmlModel.logCategories ]
+					then { cat.name | cat in seq c.xmlModel.logCategories }
 					else nil
 				else elems categories
 			else nil;
 
 	/**
 	 * The fmi3FreeInstance API. This performs sufficient checks to pass the precondition on the
-	 * implementation function, returning <VOID> if any checks fail.
+	 * implementation function, returning <fmi3Error> if any checks fail.
 	 */
 	fmi3SetDebugLogging: fmi3Instance * fmi3Boolean * nat * seq of fmi3String +> fmi3Status * [fmi3Instance]
 	fmi3SetDebugLogging(c, loggingOn, nCategories, categories) ==

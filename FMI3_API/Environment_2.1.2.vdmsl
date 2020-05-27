@@ -61,7 +61,7 @@ types
 			let max = ienv.xmlModel.coSimulation.maxOutputDerivativeOrder in
 				max <> nil => forall sd in seq ienv.solverData.derivatives &
 					sd.type = <output> => sd.order <= max)
-					
+
 		-- And any log categories are defined in the XML file
 		and (ienv.logCategories <> nil =>
 				ienv.xmlModel.logCategories <> nil 
@@ -101,7 +101,7 @@ types
 
 	inv c ==
 		card dom c.variables = card rng c.aliasVars
-		and (len c.continuousTimeStates = len [u | u in seq c.xmlModel.modelStructure.unknowns & u.kind = <Derivative>])
+		and (len c.continuousTimeStates = len [u | u in seq nilSeq[Unknown](c.xmlModel.modelStructure.unknowns) & u.kind = <Derivative>])
 		and (len c.derivatives = len c.solverDerivatives)
 		and (len c.eventIndicators = nilNat(c.xmlModel.attributes.numberOfEventIndicators))
 		and (c.isNewEventIteration => is_(c.fmuKind, ModelExchangeKind))

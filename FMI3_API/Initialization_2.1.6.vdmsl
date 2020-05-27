@@ -38,12 +38,11 @@ functions
 	fmi3EnterConfigurationMode_Impl(c) ==
 		mk_(<fmi3OK>, mu(c,
 			fmuState |->
-				if c.fmuState = <INITIALIZATION_MODE>
+				if c.fmuState = <INSTANTIATED>
 				then <CONFIGURATION_MODE>
 				else <RECONFIGURATION_MODE>))
 	pre
 		c.fmuState in set STATES_fmi3EnterConfigurationMode
-		and c.startTime <> nil
 		and exists sv in seq c.eModelVariables &
 			sv.base.causality = <structuralParameter> and sv.base.variability = <tunable>
 	post
@@ -82,7 +81,6 @@ functions
 					end))
 	pre
 		c.fmuState in set STATES_fmi3ExitConfigurationMode
-		and c.startTime <> nil
 		and exists sv in seq c.eModelVariables &
 			sv.base.causality = <structuralParameter> and sv.base.variability = <tunable>
 	post

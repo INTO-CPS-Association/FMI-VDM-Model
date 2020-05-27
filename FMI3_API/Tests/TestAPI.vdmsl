@@ -31,52 +31,80 @@ functions
     /**
      * Test the basic operation of the fmi3 instantiate functions.
      */
-     testInstantiateModelExchange: () -> bool
+     testInstantiateModelExchange: () -> [fmi3Instance]
      testInstantiateModelExchange() ==
-        let me = fmi3InstantiateModelExchange(
+        fmi3InstantiateModelExchange(
             "ME instance",
-            "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
+            "{111-222-333-444}",
             "",
             false,
             true,
-            mk_fmi3InstanceEnvironment(springMassDamper, mk_SolverData([]), nil),
-            fmi3Logger)
-        in
-            me <> nil;
+            mk_fmi3InstanceEnvironment(modelExchangeFMU, mk_SolverData([]), nil),
+            fmi3Logger);
 
-     testInstantiateBasicCoSimulation: () -> bool
+     testInstantiateBasicCoSimulation: () -> [fmi3Instance]
      testInstantiateBasicCoSimulation() ==
-        let basic = fmi3InstantiateBasicCoSimulation(
+        fmi3InstantiateBasicCoSimulation(
             "Basic instance",
-            "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
+            "{111-222-333-444}",
             "",
             false,
             true,
             false,
             false,
             false,
-            mk_fmi3InstanceEnvironment(springMassDamper, mk_SolverData([]), nil),
+            mk_fmi3InstanceEnvironment(basicCosimulationFMU, mk_SolverData([]), nil),
             fmi3Logger,
-            nil)
-        in
-            basic <> nil;
+            nil);
 
-     testInstantiateHybridCoSimulation: () -> bool
+     testInstantiateHybridCoSimulation: () -> [fmi3Instance]
      testInstantiateHybridCoSimulation() ==
-        let hybrid = fmi3InstantiateHybridCoSimulation(
+        fmi3InstantiateHybridCoSimulation(
             "Hybrid instance",
-            "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
+            "{111-222-333-444}",
             "",
             false,
             true,
             false,
             false,
             false,
-            mk_fmi3InstanceEnvironment(springMassDamper, mk_SolverData([]), nil),
+            mk_fmi3InstanceEnvironment(hybridCosimulationFMU, mk_SolverData([]), nil),
             fmi3Logger,
-            nil)
-        in
-            hybrid <> nil;
+            nil);
+
+     testInstantiateScheduledCoSimulation: () -> [fmi3Instance]
+     testInstantiateScheduledCoSimulation() ==
+        fmi3InstantiateScheduledCoSimulation(
+            "Scheduled instance",
+            "{111-222-333-444}",
+            "",
+            false,
+            true,
+            false,
+            false,
+            false,
+            mk_fmi3InstanceEnvironment(scheduledCosimulationFMU, mk_SolverData([]), nil),
+            fmi3Logger,
+            nil,
+            preemptionVoid,
+            preemptionVoid);
+
+	preemptionVoid: () -> <VOID>
+	preemptionVoid() == <VOID>;
+
+	testSetDebugLogging: () -> bool
+	testSetDebugLogging() ==
+		let mk_(s, -) = fmi3SetDebugLogging(testInstantiateModelExchange(), true, 2, ["Full", "Terse"]) in
+			s = <fmi3OK>;
+
+	testFreeInstance: () -> bool
+	testFreeInstance() ==
+		fmi3FreeInstance(testInstantiateModelExchange()) = <VOID> and
+		fmi3FreeInstance(nil) = <VOID>;
+
+	testGetVersion: () -> bool
+	testGetVersion() ==
+		fmi3GetVersion() = "3.0";
 
     /**
      * Run all tests.
@@ -84,8 +112,12 @@ functions
     tests: () -> seq of bool
     tests() ==
     [
-        testInstantiateModelExchange(),
-        testInstantiateBasicCoSimulation(),
-        testInstantiateHybridCoSimulation()
+        testInstantiateModelExchange() <> nil,
+        testInstantiateBasicCoSimulation() <> nil,
+        testInstantiateHybridCoSimulation() <> nil,
+        testInstantiateScheduledCoSimulation() <> nil,
+        testSetDebugLogging(),
+        testFreeInstance(),
+        testGetVersion()
     ]
-    ;-- post elems RESULT = {true};
+    post elems RESULT = {true};

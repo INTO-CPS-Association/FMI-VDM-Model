@@ -52,6 +52,8 @@ STATES_fmi3Terminate : States                = { <EVENT_MODE>, <CONTINUOUS_TIME_
 STATES_fmi3Reset : States                    = ANY_STATE;
 STATES_fmi3FreeInstance : States             = ANY_STATE;
 
+--- Above done, below yet to be done!
+
 STATES_fmi3GetReal : States                  = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> };
 STATES_fmi3GetInteger : States               = STATES_fmi3GetReal;
 STATES_fmi3GetBoolean : States               = STATES_fmi3GetReal;
