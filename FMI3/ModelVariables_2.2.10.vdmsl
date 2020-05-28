@@ -392,14 +392,19 @@ functions
 						dim.valueReference <> nil =>
 							dim.valueReference <> v.base.valueReference ),
 
-				-- @OnFail("2.2.8 Dimensions of %s, valueReference is not constant or structuralParameter", v.base.name)
+				-- @OnFail("2.2.8 Dimensions of %s, valueReference is not Integer, constant or structuralParameter, with start", v.base.name)
 				( v.base.dimensions <> nil =>
 					forall dim in seq v.base.dimensions &
 						dim.valueReference <> nil =>
 							exists r in seq vars &
 								is_Integer(r) and
-								r.base.valueReference = dim.valueReference and
-								r.base.variability in set { <constant>, <structuralParameter> } )
+								r.base.valueReference = dim.valueReference
+								and ( r.base.causality = <structuralParameter> or r.base.variability = <constant> )
+								and r.start <> nil and len r.start = 1 and r.start(0) >= 0 ),
+
+				-- @OnFail("2.2.8 Structural parameter %s cannot have Dimensions", v.base.name)
+				( v.base.dimensions <> nil =>
+					v.base.causality <> <structuralParameter> )
 			}
 
 			| v in seq vars
