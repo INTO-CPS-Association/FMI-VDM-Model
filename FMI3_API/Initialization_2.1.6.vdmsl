@@ -44,7 +44,8 @@ functions
 	pre
 		c.fmuState in set STATES_fmi3EnterConfigurationMode
 		and exists sv in seq c.eModelVariables &
-			sv.base.causality = <structuralParameter> and sv.base.variability = <tunable>
+			sv.base.causality = <structuralParameter> and
+			(c.fmuState = <RECONFIGURATION_MODE> => sv.base.variability = <tunable>)
 	post
 		RESULT.#2.fmuState in set {<CONFIGURATION_MODE>, <RECONFIGURATION_MODE>};
 
@@ -54,8 +55,9 @@ functions
 		then let - = logAPIError(c, "Cannot call fmi3EnterConfigurationMode in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif not exists sv in seq c.eModelVariables &
-			sv.base.causality = <structuralParameter> and sv.base.variability = <tunable>
-		then let - = logAPIError(c, "Cannot call fmi3EnterConfigurationMode with no tunable structural parameters defined") in
+			sv.base.causality = <structuralParameter> and
+			(c.fmuState = <RECONFIGURATION_MODE> => sv.base.variability = <tunable>)
+		then let - = logAPIError(c, "Cannot call fmi3EnterConfigurationMode with structural parameters defined") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3EnterConfigurationMode_Impl(c)
@@ -81,8 +83,6 @@ functions
 					end))
 	pre
 		c.fmuState in set STATES_fmi3ExitConfigurationMode
-		and exists sv in seq c.eModelVariables &
-			sv.base.causality = <structuralParameter> and sv.base.variability = <tunable>
 	post
 		RESULT.#2.fmuState in set STATES_fmi3EnterConfigurationMode;	-- ie. could call Enter again
 
@@ -90,10 +90,6 @@ functions
 	fmi3ExitConfigurationMode(c) ==
 		if c.fmuState not in set STATES_fmi3ExitConfigurationMode
 		then let - = logAPIError(c, "Cannot call fmi3ExitConfigurationMode in this state") in 
-			mk_(<fmi3Error>, nil)
-		elseif not exists sv in seq c.eModelVariables &
-			sv.base.causality = <structuralParameter> and sv.base.variability = <tunable>
-		then let - = logAPIError(c, "Cannot call fmi3ExitConfigurationMode with no tunable structural parameters defined") in
 			mk_(<fmi3Error>, nil)
 		else
 			fmi3ExitConfigurationMode_Impl(c)

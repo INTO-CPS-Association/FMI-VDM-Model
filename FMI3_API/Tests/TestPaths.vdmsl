@@ -61,7 +61,17 @@ operations
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		return c.fmuState = <EVENT_MODE>
+		assert(c.fmuState = <EVENT_MODE>);
+
+		let mk_(s, c2) = fmi3Reset(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3Terminate(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		return (fmi3FreeInstance(c) = <VOID>);
 	);
 
 	testBasicCoSimulationPaths: () ==> bool
@@ -94,7 +104,17 @@ operations
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		return c.fmuState = <STEP_MODE>
+		assert(c.fmuState = <STEP_MODE>);
+
+		let mk_(s, c2) = fmi3Reset(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3Terminate(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		return (fmi3FreeInstance(c) = <VOID>);
 	);
 
 	testHybridCoSimulationPaths: () ==> bool
@@ -127,7 +147,17 @@ operations
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		return c.fmuState = <EVENT_MODE>
+		assert(c.fmuState = <EVENT_MODE>);
+
+		let mk_(s, c2) = fmi3Reset(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3Terminate(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		return (fmi3FreeInstance(c) = <VOID>);
 	);
 
 	testScheduledCoSimulationPaths: () ==> bool
@@ -160,9 +190,22 @@ operations
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		return c.fmuState = <CLOCK_ACTIVATION_MODE>
+		assert(c.fmuState = <CLOCK_ACTIVATION_MODE>);
+
+		let mk_(s, c2) = fmi3Reset(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3Terminate(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		return (fmi3FreeInstance(c) = <VOID>);
 	);
 
+	assert: bool ==> ()
+	assert(b) ==
+		if b then skip else error;
 
 	/**
 	 * Run all tests.

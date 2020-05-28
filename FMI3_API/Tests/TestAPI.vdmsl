@@ -94,7 +94,16 @@ functions
 
 	testSetDebugLogging: seq of fmi3String -> bool
 	testSetDebugLogging(cats) ==
-		let mk_(s, -) = fmi3SetDebugLogging(testInstantiateModelExchange("name", "{111-222-333-444}"), true, len cats, cats) in
+		let instance = testInstantiateModelExchange("name", "{111-222-333-444}"),
+			mk_(s, -) = fmi3SetDebugLogging(instance, true, len cats, cats)
+		in
+			s = <fmi3OK>;
+
+	testReset: () -> bool
+	testReset() ==
+		let instance = testInstantiateModelExchange("name", "{111-222-333-444}"),
+			mk_(s, -) = fmi3Reset(instance)
+		in
 			s = <fmi3OK>;
 
 	testFreeInstance: () -> bool
@@ -129,6 +138,7 @@ functions
 		testSetDebugLogging(["Full", "Terse"]),
 		testSetDebugLogging(["Wrong"]) = false,
 
+		testReset(),
 		testFreeInstance(),
 		testGetVersion()
 	]
