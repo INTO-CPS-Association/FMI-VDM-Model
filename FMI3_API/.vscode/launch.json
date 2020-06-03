@@ -8,6 +8,15 @@
             "stopOnEntry": true,
             "noDebug": false,
             "defaultName": null
+        },
+        {
+            "type": "vdm",
+            "request": "launch",
+            "name": "Launch VDM Debug Tests()",
+            "stopOnEntry": true,
+            "noDebug": false,
+            "defaultName": null,
+            "command": "print tests()"
         }
     ]
 }
