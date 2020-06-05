@@ -400,7 +400,7 @@ functions
 								is_Integer(r) and
 								r.base.valueReference = dim.valueReference
 								and ( r.base.causality = <structuralParameter> or r.base.variability = <constant> )
-								and r.start <> nil and len r.start = 1 and r.start(0) >= 0 ),
+								and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
 
 				-- @OnFail("2.2.8 Structural parameter %s cannot have Dimensions", v.base.name)
 				( v.base.dimensions <> nil =>
