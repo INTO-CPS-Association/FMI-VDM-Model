@@ -16,7 +16,7 @@
             "stopOnEntry": true,
             "noDebug": false,
             "defaultName": null,
-            "command": "print tests()"
+            "command": "print testPaths()"
         }
     ]
 }
