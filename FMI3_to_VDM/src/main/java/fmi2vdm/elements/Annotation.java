@@ -32,12 +32,12 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class Tool extends Element
+public class Annotation extends Element
 {
-	private String name;
+	private String type;
 	private Any annotation;
 
-	public Tool(Attributes attributes, Locator locator)
+	public Annotation(Attributes attributes, Locator locator)
 	{
 		super(locator);
 		setAttributes(attributes);
@@ -62,7 +62,7 @@ public class Tool extends Element
 		System.out.println(indent + "mk_Tool");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, ",\n");
+		printStringAttribute(indent + "\t", type, ",\n");
 		printOptional(indent + "\t", annotation, "\n");
 		System.out.print(indent + ")");
 	}

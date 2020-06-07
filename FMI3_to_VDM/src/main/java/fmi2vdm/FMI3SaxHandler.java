@@ -87,7 +87,7 @@ import fmi2vdm.elements.Terminal;
 import fmi2vdm.elements.TerminalMemberVariable;
 import fmi2vdm.elements.TerminalStreamMemberVariable;
 import fmi2vdm.elements.Terminals;
-import fmi2vdm.elements.Tool;
+import fmi2vdm.elements.Annotation;
 import fmi2vdm.elements.TypeDefinitions;
 import fmi2vdm.elements.Unit;
 import fmi2vdm.elements.UnitDefinitions;
@@ -202,16 +202,14 @@ public class FMI3SaxHandler extends DefaultHandler
 				stack.push(new TypeDefinitions(locator));
 				break;
 
+			case "Float64Type":
+			case "Float32Type":
+				stack.push(new RealType(qName, attributes, locator));
+				break;
+				
 			case "Float64":
 			case "Float32":
-				if (stack.peek() instanceof TypeDefinitions)
-				{
-					stack.push(new RealType(qName, attributes, locator));
-				}
-				else
-				{
-					stack.push(new RealVariable(qName, attributes, locator));
-				}
+				stack.push(new RealVariable(qName, attributes, locator));
 				break;
 				
 			case "Dimension":
@@ -222,6 +220,17 @@ public class FMI3SaxHandler extends DefaultHandler
 				stack.push(new Alias(attributes, locator));
 				break;
 
+			case "Int64Type":
+			case "Int32Type":
+			case "Int16Type":
+			case "Int8Type":
+			case "UInt64Type":
+			case "UInt32Type":
+			case "UInt16Type":
+			case "UInt8Type":
+				stack.push(new IntegerType(qName, attributes, locator));
+				break;
+
 			case "Int64":
 			case "Int32":
 			case "Int16":
@@ -230,58 +239,47 @@ public class FMI3SaxHandler extends DefaultHandler
 			case "UInt32":
 			case "UInt16":
 			case "UInt8":
-				if (stack.peek() instanceof TypeDefinitions)
-				{
-					stack.push(new IntegerType(qName, attributes, locator));
-				}
-				else
-				{
-					stack.push(new IntegerVariable(qName, attributes, locator));
-				}
+				stack.push(new IntegerVariable(qName, attributes, locator));
 				break;
 
+			case "BooleanType":
+				stack.push(new BooleanType(attributes, locator));
+				break;
+				
 			case "Boolean":
-				if (stack.peek() instanceof TypeDefinitions)
-				{
-					stack.push(new BooleanType(attributes, locator));
-				}
-				else
-				{
-					stack.push(new BooleanVariable(attributes, locator));
-				}
+				stack.push(new BooleanVariable(attributes, locator));
 				break;
 
+			case "StringType":
+				stack.push(new StringType(attributes, locator));
+				break;
+				
 			case "String":
-				if (stack.peek() instanceof TypeDefinitions)
-				{
-					stack.push(new StringType(attributes, locator));
-				}
-				else
-				{
-					stack.push(new StringVariable(attributes, locator));
-				}
+				stack.push(new StringVariable(attributes, locator));
+				break;
+
+			case "BinaryType":
+				stack.push(new BinaryType(attributes, locator));
 				break;
 
 			case "Binary":
-				if (stack.peek() instanceof TypeDefinitions)
-				{
-					stack.push(new BinaryType(attributes, locator));
-				}
-				else
-				{
-					stack.push(new BinaryVariable(attributes, locator));
-				}
+				stack.push(new BinaryVariable(attributes, locator));
+				break;
+
+			case "EnumerationType":
+				stack.push(new EnumerationType(attributes, locator));
 				break;
 
 			case "Enumeration":
-				if (stack.peek() instanceof TypeDefinitions)
-				{
-					stack.push(new EnumerationType(attributes, locator));
-				}
-				else
-				{
-					stack.push(new EnumerationVariable(attributes, locator));
-				}
+				stack.push(new EnumerationVariable(attributes, locator));
+				break;
+
+			case "ClockType":
+				stack.push(new ClockType(attributes, locator));
+				break;
+				
+			case "Clock":
+				stack.push(new ClockVariable(attributes, locator));
 				break;
 
 			case "Item":
@@ -290,17 +288,6 @@ public class FMI3SaxHandler extends DefaultHandler
 				
 			case "Start":
 				stack.push(new Start(attributes, locator));
-				break;
-
-			case "Clock":
-				if (stack.peek() instanceof TypeDefinitions)
-				{
-					stack.push(new ClockType(attributes, locator));
-				}
-				else
-				{
-					stack.push(new ClockVariable(attributes, locator));
-				}
 				break;
 
 			case "LogCategories":
@@ -364,14 +351,11 @@ public class FMI3SaxHandler extends DefaultHandler
 				break;
 
 			case "GraphicalRepresentation":
-				if (stack.peek() instanceof FMITerminalsAndIcons)
-				{
-					stack.push(new GraphicalRepresentation(locator));
-				}
-				else
-				{
-					stack.push(new TerminalGraphicalRepresentation(attributes, locator));
-				}
+				stack.push(new GraphicalRepresentation(locator));
+				break;
+
+			case "TerminalGraphicalRepresentation":
+				stack.push(new TerminalGraphicalRepresentation(attributes, locator));
 				break;
 
 			case "CoordinateSystem":
@@ -382,13 +366,12 @@ public class FMI3SaxHandler extends DefaultHandler
 				stack.push(new Icon(attributes, locator));
 				break;
 
-			case "VendorAnnotations":
 			case "Annotations":
 				stack.push(new VendorAnnotations(locator));
 				break;
 
-			case "Tool":
-				stack.push(new Tool(attributes, locator));
+			case "Annotation":
+				stack.push(new Annotation(attributes, locator));
 				break;
 
 			case "ModelStructure":
@@ -406,24 +389,24 @@ public class FMI3SaxHandler extends DefaultHandler
 				break;
 				
 			default:
-				if (!withinTool())
+				if (!withinAnnotation())
 				{
 					System.err.println("Unknown element " + qName);
 					System.exit(1);
 				}
 				else
 				{
-					// Unknown "any" type in Tools - popped in endElement
+					// Unknown "any" type in Annotations - popped in endElement
 					stack.push(new Any(qName, attributes, locator));
 				}
 		}
 	}
 
-	private boolean withinTool()
+	private boolean withinAnnotation()
 	{
 		for (Element e : stack)
 		{
-			if (e instanceof Tool)
+			if (e instanceof Annotation)
 			{
 				return true;
 			}

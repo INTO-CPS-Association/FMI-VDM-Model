@@ -51,4 +51,17 @@ abstract public class Type extends Element
 		printStringAttribute("", name, ", ");
 		printStringAttribute("", description, ")");
 	}
+	
+	protected String fixKind(String kind)
+	{
+		if (kind.endsWith("Type"))
+		{
+			return kind.substring(0, kind.lastIndexOf("Type"));
+		}
+		else
+		{
+			System.err.printf("Illegal kind: %s", kind);
+			return null;
+		}
+	}
 }

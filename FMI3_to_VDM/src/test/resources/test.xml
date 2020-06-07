@@ -2,45 +2,45 @@
 <fmiModelDescription fmiVersion="3.0-alpha"
 	modelName="" instantiationToken="{111-222-333-444}">
 	<ModelExchange modelIdentifier="Test FMU">
-		<VendorAnnotations>
-			<Tool name="two">
+		<Annotations>
+			<Annotation type="two">
 				<more></more>
-			</Tool>
-		</VendorAnnotations>
+			</Annotation>
+		</Annotations>
 	</ModelExchange>
 	<BasicCoSimulation modelIdentifier="Test FMU">
-		<VendorAnnotations>
-			<Tool name="one">
+		<Annotations>
+			<Annotation type="one">
 				<stuff></stuff>
-			</Tool>
-			<Tool name="zzz">
+			</Annotation>
+			<Annotation type="two">
 				<zzzstuff></zzzstuff>
-			</Tool>
-		</VendorAnnotations>
+			</Annotation>
+		</Annotations>
 	</BasicCoSimulation>
 	<TypeDefinitions>
-		<Float64 name="a" />
-		<Int64 name="b" />
-	 	<Boolean name="c" />
- 		<String name="d" />
-		<Binary name="e" />
-		<Enumeration name="f">
+		<Float64Type name="a" />
+		<Int64Type name="b" />
+	 	<BooleanType name="c" />
+ 		<StringType name="d" />
+		<BinaryType name="e" />
+		<EnumerationType name="f">
 			<Item name="a" value="1" />
 			<Item name="b" value="2" />
 			<Item name="c" value="3" />
-		</Enumeration>
-		<Clock name="g" clockType="synchronousTime" priority="1" />
+		</EnumerationType>
+		<ClockType name="g" clockType="synchronousTime" priority="1" />
 	</TypeDefinitions>
 	<ModelVariables>
 		<Float64 name="a" valueReference="1" start="INF NaN -INF">
 			<Dimension valueReference="3" />
 			<Annotations>
-				<Tool name="one">
+				<Annotation type="one">
 					<stuff></stuff>
-				</Tool>
-				<Tool name="two">
-					<more></more>
-				</Tool>
+				</Annotation>
+				<Annotation type="two">
+					<zzzstuff></zzzstuff>
+				</Annotation>
 			</Annotations>
 			<Alias name="alias1" />
 		</Float64>

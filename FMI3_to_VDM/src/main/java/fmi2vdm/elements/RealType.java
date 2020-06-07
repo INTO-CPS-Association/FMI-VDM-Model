@@ -50,7 +50,7 @@ public class RealType extends Type
 	{
 		super(attributes, locator);
 		setAttributes(attributes);
-		this.kind = kind;
+		this.kind = fixKind(kind);
 	}
 
 	@Override
