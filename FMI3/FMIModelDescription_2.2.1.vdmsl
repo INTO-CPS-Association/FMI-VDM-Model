@@ -288,7 +288,7 @@ functions
 							-- @OnFail("2.2.9 InitialUnknowns must include refs: %s", initRefs)
 							( ius <> [] ),
 
-							-- @OnFail("2.2.9 InitialUnknowns must include refs: %s", initRefs)
+							-- @OnFail("2.2.9 InitialUnknowns must only include refs: %s", initRefs)
 							( { u.valueReference | u in seq ius } subset initRefs )
 						} = {true}
 			),
