@@ -80,7 +80,8 @@ types
 		-- convenience read-only fields, copied from instanceEnvironment
 		xmlModel				: FMIModelDescription
 		eModelVariables			: seq1 of Variable
-		continuousTimeStates	: seq of fmi3ValueReference
+		continuousTimeStates	: set of fmi3ValueReference
+		stateDerivatives		: set of fmi3ValueReference
 		initialUnknowns			: set of fmi3ValueReference
 		solverDerivatives		: seq of SolverDerivative
 
@@ -101,7 +102,6 @@ types
 
 	inv c ==
 		card dom c.variables = card rng c.aliasVars
-		and (len c.continuousTimeStates = len [u | u in seq nilSeq[Unknown](c.xmlModel.modelStructure.unknowns) & u.kind = <Derivative>])
 		and (len c.derivatives = len c.solverDerivatives)
 		and (len c.eventIndicators = nilNat(c.xmlModel.attributes.numberOfEventIndicators))
 		and (c.isNewEventIteration => is_(c.fmuKind, ModelExchangeKind))

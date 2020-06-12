@@ -69,10 +69,17 @@ functions
 				eModelVariables,
 
 				-- The continuous time state references
-				[ u.valueReference | u in seq nilSeq[Unknown](xmlModel.modelStructure.unknowns) & u.kind = <Derivative> ],
+				{ v.base.valueReference |
+					v in set continuousTimeStates(eModelVariables) },
+
+				-- The state derivative references
+				{ v.base.valueReference |
+					v in set stateDerivatives(eModelVariables) },
 
 				-- The initial unknown references, which may be an empty set
-				{ u.valueReference | u in seq nilSeq[Unknown](xmlModel.modelStructure.unknowns) & u.kind = <InitialUnknown> },
+				{ u.valueReference |
+					u in seq nilSeq[Unknown](xmlModel.modelStructure.unknowns) &
+					u.kind = <InitialUnknown> },
 
 				-- The solver derivative references
 				[ sd | sd in seq instanceEnvironment.solverData.derivatives ],

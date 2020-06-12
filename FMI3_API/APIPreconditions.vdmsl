@@ -140,14 +140,11 @@ functions
 	-- states or state derivatives.
 	note12: fmi3Instance * seq of fmi3ValueReference +> bool
 	note12(c, vrs) ==
-		let ctVars = continuousTimeStates(c.eModelVariables),
-			sdVars = stateDerivatives(c.eModelVariables)
-		in
-			forall vr in seq vrs &
-				let v = c.eModelVariables(vr) in
-					v.base.causality = <output>
-					or v in set ctVars
-					or v in set sdVars;
+		forall vr in seq vrs &
+			let v = c.eModelVariables(vr) in
+				v.base.causality = <output>
+				or vr in set c.continuousTimeStates
+				or vr in set c.stateDerivatives;
 
 
 	-- Note 13: 6.2.3.5 - Also intermediate variable access is allowed as defined
