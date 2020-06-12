@@ -28,91 +28,138 @@
  */
 
 /**
- * 3.2.3 State Machine of Calling Sequence (Model Exchange)
- * 4.2.4 State Machine of Calling Sequence (Co-simulation)
+ * 3.2.3 State Machine for Model Exchange
+ * 4.2.3 State Machine for Basic Co-Simulation
+ * 5.2.4 State Machine for Hybrid Co-Simulation
+ * 6.2.3 State Machine for Scheduled Co-Simulation
  */
 functions
-	-- State transition validation functions, where XXX in the Standard is a
-	-- pair of predicates called varsXXX and isXXX.
-
-	varsSEA: fmi3Instance * seq of fmi3ValueReference +> bool
-	varsSEA(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isSEA(c, vr);
-
-	isSEA: fmi3Instance * fmi3ValueReference +> bool
-	isSEA(c, vr) ==
-		c.eModelVariables(vr).base.variability <> <constant>
-		and c.eModelVariables(vr).base.initial in set { <exact>, <approx> };
+	-- Note 1: 3.2.3.3 - The variables that can be retrieved by fmi3Get{VariableType}
+	-- calls are (1) defined in the XML file as elements <ModelStructure><InitialUnknown> and
+	-- (2) variables with causality = output
+	note1: fmi3Instance * seq of fmi3ValueReference +> bool
+	note1(c, vrs) ==
+		forall vr in seq vrs &
+			c.eModelVariables(vr).base.causality = <output>
+			or vr in set c.initialUnknowns;
 
 
-	varsSE: fmi3Instance * seq of fmi3ValueReference +> bool
-	varsSE(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isSE(c, vr);
-
-	isSE: fmi3Instance * fmi3ValueReference +> bool
-	isSE(c, vr) ==
-		c.eModelVariables(vr).base.variability <> <constant>
-		and (c.eModelVariables(vr).base.causality = <input>
-			 or c.eModelVariables(vr).base.initial = <exact>);
+	-- Note 2: 3.2.3.7 - output variables can be retrieved with fmi3Get{VariableType}
+	-- interchangeably according to the model structure defined under element
+	-- <ModelStructure> in the XML file
+	note2: fmi3Instance * seq of fmi3ValueReference +> bool
+	note2(c, vrs) ==
+		forall vr in seq vrs &
+			c.eModelVariables(vr).base.causality = <output>;
 
 
-	varsINC: fmi3Instance * seq of fmi3ValueReference +> bool
-	varsINC(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isINC(c, vr);
-
-	isINC: fmi3Instance * fmi3ValueReference +> bool
-	isINC(c, vr) ==
-		is_Real(c.eModelVariables(vr))
-		and c.eModelVariables(vr).base.causality = <input>
-		and c.eModelVariables(vr).base.variability = <continuous>;
-
-
-	varsINI: fmi3Instance * seq of fmi3ValueReference +> bool
-	varsINI(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isINI(c, vr);
-
-	isINI: fmi3Instance * fmi3ValueReference +> bool
-	isINI(c, vr) ==
-		-- is_Real ??
-		(c.eModelVariables(vr).base.causality = <input>
-			and c.eModelVariables(vr).varAtts.derivative <> nil)
-		or (c.eModelVariables(vr).base.variability <> <constant>
-			and c.eModelVariables(vr).base.initial in set { <exact>, <approx> });
+	-- Note 3: 3.2.3.3 - Variables with initial = exact and variability ≠ constant, as well as
+	-- variables with causality = input can be set, or causality = parameter and variability = tunable.
+	note3: fmi3Instance * seq of fmi3ValueReference +> bool
+	note3(c, vrs) ==
+		forall vr in seq vrs &
+			let v = c.eModelVariables(vr) in
+				(v.base.initial = <exact> and v.base.variability <> <constant>)
+				or v.base.causality = <input>
+			 	or (v.base.causality = <parameter> and v.base.variability = <tunable>);
 
 
-	varsIN: fmi3Instance * seq of fmi3ValueReference +> bool
-	varsIN(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isIN(c, vr);
-
-	isIN: fmi3Instance * fmi3ValueReference +> bool
-	isIN(c, vr) ==
-		if is_(c.fmuKind, ModelExchangeKind)
-		then
-			(c.eModelVariables(vr).base.variability = <discrete>
-				and c.eModelVariables(vr).base.causality = <input>)
-			or c.eModelVariables(vr).base.variability = <tunable>
-		else
-			vr in set c.initialUnknowns
-			or (c.eModelVariables(vr).base.causality = <input>
-			 	 or (c.eModelVariables(vr).base.causality = <parameter>
-					 and c.eModelVariables(vr).base.variability = <tunable>));
+	-- Note 4: 3.2.3.1 - start and guess values (= variables that have initial = exact or
+	-- approx) set and variability ≠ constant can be set
+	note4: fmi3Instance * seq of fmi3ValueReference +> bool
+	note4(c, vrs) ==
+		forall vr in seq vrs &
+			let v = c.eModelVariables(vr) in
+				(v.base.initial = <exact> or v.base.initial = <approx>)
+				or v.base.variability <> <constant>;
 
 
-	varsINIT: fmi3Instance * seq of fmi3ValueReference +> bool
-	varsINIT(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isINIT(c, vr);
+	-- Note 5: 3.2.3.2 - structural parameters with variability = fixed or
+	-- variability = tunable can be changed
+	note5: fmi3Instance * seq of fmi3ValueReference +> bool
+	note5(c, vrs) ==
+		forall vr in seq vrs &
+			let v = c.eModelVariables(vr) in
+				v.base.causality = <structuralParameter>
+				and (v.base.variability = <fixed> or v.base.variability = <tunable>);
 
-	isINIT: fmi3Instance * fmi3ValueReference +> bool
-	isINIT(c, vr) ==
-		c.eModelVariables(vr).base.causality = <output>
-		or vr in set c.initialUnknowns;
+
+	-- Note 6: 3.2.3.6 - structural parameters with variability = tunable can be changed
+	note6: fmi3Instance * seq of fmi3ValueReference +> bool
+	note6(c, vrs) ==
+		forall vr in seq vrs &
+			let v = c.eModelVariables(vr) in
+				v.base.causality = <structuralParameter>
+				and v.base.variability = <tunable>;
 
 
-	varsINIE: fmi3Instance * seq of fmi3ValueReference +> bool
-	varsINIE(c, vrs) ==
-		forall vr in seq vrs & vr <= len c.eModelVariables and isINIE(c, vr);
+	-- Note 7: 4.2.3.4 - For variables with variability ≠ constant and for which
+	-- initial = exact or approx.
+	note7: fmi3Instance * seq of fmi3ValueReference +> bool
+	note7(c, vrs) ==
+		forall vr in seq vrs &
+			let v = c.eModelVariables(vr) in
+				v.base.variability <> <constant>
+				and (v.base.initial = <exact> or v.base.initial = <approx>);
 
-	isINIE: fmi3Instance * fmi3ValueReference +> bool
-	isINIE(c, vr) ==
-		c.eModelVariables(vr).base.variability <> <constant>
-		and c.eModelVariables(vr).base.initial = <exact>;
+
+	-- Note 8: 4.2.3.5 - For variables with: variability ≠ constant that have
+	-- initial = exact, or causality = input, or causality = parameter and variability = tunable
+	note8: fmi3Instance * seq of fmi3ValueReference +> bool
+	note8(c, vrs) ==
+		note3(c, vrs);	-- Same note?
+
+
+	-- Note 9: 4.2.3.6 - For variables with: causality = input, or causality = parameter
+	-- and variability = tunable
+	note9: fmi3Instance * seq of fmi3ValueReference +> bool
+	note9(c, vrs) ==
+		forall vr in seq vrs &
+			let v = c.eModelVariables(vr) in
+				v.base.causality = <input>
+				or (v.base.causality = <parameter> or v.base.variability = <tunable>);
+
+
+	-- Note 10: 4.2.3.7 - If intermediateVariableSetAllowed == fmi3True, the value of intermediate
+	-- variables can be set. If intermediateVariableGetAllowed == fmi3True, the value of
+	-- intermediate variables can be retrieved.
+	note10: fmi3Instance * seq of fmi3ValueReference +> bool
+	note10(c, vrs) ==
+		forall vr in seq vrs &
+			c.eModelVariables(vr).base.intermediateAccess;
+
+
+	-- Note 11: 4.2.3.10 - Only for variables with causality = structuralParameter
+	-- and variability = tunable.
+	note11: fmi3Instance * seq of fmi3ValueReference +> bool
+	note11(c, vrs) ==
+		note6(c, vrs);	-- Same note?
+
+
+	-- Note 12: 4.2.3.5 - For variables with causality = output or continuous-time
+	-- states or state derivatives.
+	note12: fmi3Instance * seq of fmi3ValueReference +> bool
+	note12(c, vrs) ==
+		let ctVars = continuousTimeStates(c.eModelVariables),
+			sdVars = stateDerivatives(c.eModelVariables)
+		in
+			forall vr in seq vrs &
+				let v = c.eModelVariables(vr) in
+					v.base.causality = <output>
+					or v in set ctVars
+					or v in set sdVars;
+
+
+	-- Note 13: 6.2.3.5 - Also intermediate variable access is allowed as defined
+	-- in Section 4.2.3.7
+	note13: fmi3Instance * seq of fmi3ValueReference +> bool
+	note13(c, vrs) ==
+		note10(c, vrs);
+
+
+	-- Note 14: 6.2.3.6 - Only for variables with causality = structuralParameter and
+	-- variability = tunable.
+	note14: fmi3Instance * seq of fmi3ValueReference +> bool
+	note14(c, vrs) ==
+		note6(c, vrs);
+
