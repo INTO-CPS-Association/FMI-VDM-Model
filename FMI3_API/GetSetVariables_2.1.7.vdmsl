@@ -177,7 +177,9 @@ functions
 			exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = kind)
 		and nval = totalValues(c, vrs)
 	post
-		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
+		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval
+			and let mk_(min, max) = minMaxKind(kind) in
+				forall f in seq RESULT.#2 & min <= f and f <= max;
 
 	fmi3GetReal: fmi3Instance * FloatKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetReal(c, kind, vrs, nvr, nval) ==
@@ -205,20 +207,11 @@ functions
 
 	fmi3GetFloat64: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetFloat64(c, vrs, nvr, nval) ==
-		fmi3GetReal(c, <Float64>, vrs, nvr, nval)
-	post
-		RESULT.#1 = <fmi3OK> =>
-			let mk_(min, max) = minMaxKind(<Float64>) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+		fmi3GetReal(c, <Float64>, vrs, nvr, nval);
 
 	fmi3GetFloat32: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetFloat32(c, vrs, nvr, nval) ==
-		fmi3GetReal(c, <Float32>, vrs, nvr, nval)
-	post
-		RESULT.#1 = <fmi3OK> =>
-			let mk_(min, max) = minMaxKind(<Float32>) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
-
+		fmi3GetReal(c, <Float32>, vrs, nvr, nval);
 
 
 	/**
@@ -237,7 +230,9 @@ functions
 			exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = kind)
 		and nval = totalValues(c, vrs)
 	post
-		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
+		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval
+	 		and let mk_(min, max) = minMaxKind(kind) in
+				forall f in seq RESULT.#2 & min <= f and f <= max;
 
 	fmi3GetInteger: fmi3Instance * IntegerKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetInteger(c, kind, vrs, nvr, nval) ==
@@ -265,64 +260,32 @@ functions
 
 	fmi3GetInt64: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetInt64(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <Int64>, vrs, nvr, nval)
-	post
-		RESULT.#1 = <fmi3OK> =>
-			let mk_(min, max) = minMaxKind(<Int64>) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+		fmi3GetInteger(c, <Int64>, vrs, nvr, nval);
 
 	fmi3GetInt32: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetInt32(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <Int32>, vrs, nvr, nval)
-	post
-		RESULT.#1 = <fmi3OK> =>
-			let mk_(min, max) = minMaxKind(<Int32>) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+		fmi3GetInteger(c, <Int32>, vrs, nvr, nval);
 
 	fmi3GetInt16: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetInt16(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <Int16>, vrs, nvr, nval)
-	post
-		RESULT.#1 = <fmi3OK> =>
-			let mk_(min, max) = minMaxKind(<Int16>) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+		fmi3GetInteger(c, <Int16>, vrs, nvr, nval);
 
 	fmi3GetInt8: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetInt8(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <Int8>, vrs, nvr, nval)
-	post
-		RESULT.#1 = <fmi3OK> =>
-			let mk_(min, max) = minMaxKind(<Int8>) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+		fmi3GetInteger(c, <Int8>, vrs, nvr, nval);
 
 	fmi3GetUInt64: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetUInt64(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <UInt64>, vrs, nvr, nval)
-	post
-		RESULT.#1 = <fmi3OK> =>
-			let mk_(min, max) = minMaxKind(<UInt64>) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+		fmi3GetInteger(c, <UInt64>, vrs, nvr, nval);
 
 	fmi3GetUInt32: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetUInt32(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <UInt32>, vrs, nvr, nval)
-	post
-		RESULT.#1 = <fmi3OK> =>
-			let mk_(min, max) = minMaxKind(<UInt32>) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+		fmi3GetInteger(c, <UInt32>, vrs, nvr, nval);
 
 	fmi3GetUInt16: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetUInt16(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <UInt16>, vrs, nvr, nval)
-	post
-		RESULT.#1 = <fmi3OK> =>
-			let mk_(min, max) = minMaxKind(<UInt16>) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+		fmi3GetInteger(c, <UInt16>, vrs, nvr, nval);
 
 	fmi3GetUInt8: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetUInt8(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <UInt8>, vrs, nvr, nval)
-	post
-		RESULT.#1 = <fmi3OK> =>
-			let mk_(min, max) = minMaxKind(<UInt8>) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+		fmi3GetInteger(c, <UInt8>, vrs, nvr, nval);
