@@ -452,3 +452,419 @@ values
 			nil
 		)
 	);
+
+/**
+ * VDM Model generated from XML on Fri Jun 12 16:36:49 BST 2020
+ */
+	variableTypesFMU = mk_FMIModelDescription
+	(
+		mk_ModelAttributes
+		(
+			2,  -- Line
+			"3.0-alpha",
+			"VariableTypes",
+			"",
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil
+		),
+
+		-- ModelExchange
+		nil,
+
+		-- CoSimulation
+		mk_CoSimulation
+		(
+			mk_fmi3InterfaceType
+			(
+				4,  -- Line
+				nil,
+				"VariableTypes",
+				nil,
+				nil,
+				nil,
+				nil,
+				nil,
+				nil,
+				nil,
+				nil
+			),
+			<BasicCoSimulation>,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil,
+			nil
+		),
+
+		-- UnitDefinitions
+		nil,
+
+		-- TypeDefinitions
+		nil,
+
+		-- LogCategories
+		nil,
+
+		-- DefaultExperiment
+		nil,
+
+		-- VendorAnnotations
+		nil,
+
+		-- ModelVariables
+		[
+			mk_Real
+			(
+				mk_fmi3VariableBase
+				(
+					7,
+					"Float32",
+					1,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(7, nil)
+					],
+					nil,
+					nil
+				),
+				<Float32>,
+				mk_fmi3RealVariableAttributes(nil, nil),
+				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
+				mk_fmi3FloatXXAttributes(nil, nil, nil),
+				[-Infinity, -3.402823E38, -1.175494E-38, NaN, 1.175494E-38, 3.402823E38, Infinity]
+			),
+			mk_Real
+			(
+				mk_fmi3VariableBase
+				(
+					10,
+					"Float64",
+					2,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(7, nil)
+					],
+					nil,
+					nil
+				),
+				<Float64>,
+				mk_fmi3RealVariableAttributes(nil, nil),
+				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
+				mk_fmi3FloatXXAttributes(nil, nil, nil),
+				[-Infinity, -1.79769E308, -2.22507E-308, NaN, 2.22507E-308, 1.79769E308, Infinity]
+			),
+			mk_Integer
+			(
+				mk_fmi3VariableBase
+				(
+					13,
+					"Int8",
+					3,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<Int8>,
+				mk_fmi3IntegerAttributes(nil),
+				mk_fmi3IntXXAttributes(nil, nil),
+				[-128, 127]
+			),
+			mk_Integer
+			(
+				mk_fmi3VariableBase
+				(
+					16,
+					"UInt8",
+					4,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<UInt8>,
+				mk_fmi3IntegerAttributes(nil),
+				mk_fmi3IntXXAttributes(nil, nil),
+				[0, 255]
+			),
+			mk_Integer
+			(
+				mk_fmi3VariableBase
+				(
+					19,
+					"Int16",
+					5,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<Int16>,
+				mk_fmi3IntegerAttributes(nil),
+				mk_fmi3IntXXAttributes(nil, nil),
+				[-32768, 32767]
+			),
+			mk_Integer
+			(
+				mk_fmi3VariableBase
+				(
+					22,
+					"UInt16",
+					6,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<UInt16>,
+				mk_fmi3IntegerAttributes(nil),
+				mk_fmi3IntXXAttributes(nil, nil),
+				[0, 65535]
+			),
+			mk_Integer
+			(
+				mk_fmi3VariableBase
+				(
+					25,
+					"Int32",
+					7,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<Int32>,
+				mk_fmi3IntegerAttributes(nil),
+				mk_fmi3IntXXAttributes(nil, nil),
+				[-2147483648, 2147483647]
+			),
+			mk_Integer
+			(
+				mk_fmi3VariableBase
+				(
+					28,
+					"UInt32",
+					8,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<UInt32>,
+				mk_fmi3IntegerAttributes(nil),
+				mk_fmi3IntXXAttributes(nil, nil),
+				[0, 4294967295]
+			),
+			mk_Integer
+			(
+				mk_fmi3VariableBase
+				(
+					31,
+					"Int64",
+					9,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<Int64>,
+				mk_fmi3IntegerAttributes(nil),
+				mk_fmi3IntXXAttributes(nil, nil),
+				[-922337203685477580, 922337203685477580]	-- TRIMMED for Overture!
+			),
+			mk_Integer
+			(
+				mk_fmi3VariableBase
+				(
+					34,
+					"UInt64",
+					10,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<UInt64>,
+				mk_fmi3IntegerAttributes(nil),
+				mk_fmi3IntXXAttributes(nil, nil),
+				[0, 1844674407370955161]	-- TRIMMED for Overture!
+			),
+			mk_Boolean
+			(
+				mk_fmi3VariableBase
+				(
+					37,
+					"Boolean",
+					11,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil),
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<BooleanKind>,
+				[true, false, true, false]
+			),
+			mk_String
+			(
+				mk_fmi3VariableBase
+				(
+					41,
+					"String",
+					12,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<StringKind>,
+				["foo", "bar"]
+			),
+			mk_Binary
+			(
+				mk_fmi3VariableBase
+				(
+					46,
+					"Binary",
+					13,
+					nil,
+					nil,
+					nil,
+					<exact>,
+					nil,
+					nil,
+					nil,
+					nil,
+					[
+						mk_Dimension(2, nil)
+					],
+					nil,
+					nil
+				),
+				<BinaryKind>,
+				nil,
+				28,
+				["3c3f", "686572"]
+			)
+		],
+
+		-- ModelStructure
+		mk_ModelStructure
+		(
+			51,  -- Line
+			nil,
+			nil
+		)
+	);

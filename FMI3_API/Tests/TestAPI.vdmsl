@@ -115,6 +115,31 @@ functions
 	testGetVersion() ==
 		fmi3GetVersion() = "3.0";
 
+	testGetAPI: () -> bool
+	testGetAPI() ==
+        let instance = fmi3InstantiateBasicCoSimulation(
+            "VariableTypes", "", "", false, true, false, false, false,
+            mk_fmi3InstanceEnvironment(variableTypesFMU, mk_SolverData([]), nil),
+            fmi3Logger, nil)
+		in
+			( let f64 = fmi3GetFloat64(instance, [2], 1, 7) in
+				f64 = mk_(<fmi3OK>,
+					[-Infinity, -1.79769E308, -2.22507E-308, NaN, 2.22507E-308, 1.79769E308, Infinity]))
+			and
+			( let f32 = fmi3GetFloat32(instance, [1], 1, 7) in
+				f32.#1 = <fmi3OK> and
+				f32.#2(1) = -Infinity and
+				f32.#2(2) = -3.402823e+38 and
+				f32.#2(3) = -1.175494e-38 and
+				f32.#2(4) = NaN and
+				f32.#2(5) = 1.175494e-38 and
+				f32.#2(6) = 3.402823e+38 and
+				f32.#2(7) = Infinity )
+			and
+			( let i64 = fmi3GetInt64(instance, [9], 1, 2) in
+				i64 = mk_(<fmi3OK>, [-922337203685477580, 922337203685477580]) );
+			-- TODO all the others!
+
 
 	/**
 	 * Run all tests.
@@ -140,6 +165,8 @@ functions
 
 		testReset(),
 		testFreeInstance(),
-		testGetVersion()
+		testGetVersion(),
+
+		testGetAPI()
 	]
 	post elems RESULT = {true};
