@@ -120,26 +120,39 @@ functions
         let instance = fmi3InstantiateBasicCoSimulation(
             "VariableTypes", "", "", false, true, false, false, false,
             mk_fmi3InstanceEnvironment(variableTypesFMU, mk_SolverData([]), nil),
-            fmi3Logger, nil)
+            fmi3Logger, nil),
+            F64 = 2, F32 = 1, I8 = 3, UI8 = 4, I16 = 5, UI16 = 6, I32 = 7, UI32 = 8, I64 = 9, UI64 = 10,
+            BOOL = 11, STRING = 12, BINARY = 13
 		in
-			( let f64 = fmi3GetFloat64(instance, [2], 1, 7) in
-				f64 = mk_(<fmi3OK>,
-					[-Infinity, -1.79769E308, -2.22507E-308, NaN, 2.22507E-308, 1.79769E308, Infinity]))
+			( let f64 = fmi3GetFloat64(instance, [F64], 1, 7) in
+				f64 = mk_(<fmi3OK>, [-Infinity, -1.79769E308, -2.22507E-308, NaN, 2.22507E-308, 1.79769E308, Infinity]))
 			and
-			( let f32 = fmi3GetFloat32(instance, [1], 1, 7) in
-				f32.#1 = <fmi3OK> and
-				f32.#2(1) = -Infinity and
-				f32.#2(2) = -3.402823e+38 and
-				f32.#2(3) = -1.175494e-38 and
-				f32.#2(4) = NaN and
-				f32.#2(5) = 1.175494e-38 and
-				f32.#2(6) = 3.402823e+38 and
-				f32.#2(7) = Infinity )
+			( let f32 = fmi3GetFloat32(instance, [F32], 1, 7) in
+				f32 = mk_(<fmi3OK>, [-Infinity, -1.23E38, -1.23E-38, NaN, 1.23E-38, 1.23E38, Infinity]))
 			and
-			( let i64 = fmi3GetInt64(instance, [9], 1, 2) in
-				i64 = mk_(<fmi3OK>, [-922337203685477580, 922337203685477580]) );
-			-- TODO all the others!
-
+			( let i64 = fmi3GetInt64(instance, [I64], 1, 2) in
+				i64 = mk_(<fmi3OK>, [-922337203685477580, 922337203685477580]) )	-- Note: <2**64
+			and
+			( let i32 = fmi3GetInt32(instance, [I32], 1, 2) in
+				i32 = mk_(<fmi3OK>, [-2147483648, 2147483647]) )
+			and
+			( let i16 = fmi3GetInt16(instance, [I16], 1, 2) in
+				i16 = mk_(<fmi3OK>, [-32768, 32767]) )
+			and
+			( let i8 = fmi3GetInt8(instance, [I8], 1, 2) in
+				i8 = mk_(<fmi3OK>, [-128, 127]) )
+			and
+			( let ui64 = fmi3GetUInt64(instance, [UI64], 1, 2) in
+				ui64 = mk_(<fmi3OK>, [0, 1844674407370955161]) )
+			and
+			( let ui32 = fmi3GetUInt32(instance, [UI32], 1, 2) in
+				ui32 = mk_(<fmi3OK>, [0, 4294967295]) )
+			and
+			( let ui16 = fmi3GetUInt16(instance, [UI16], 1, 2) in
+				ui16 = mk_(<fmi3OK>, [0, 65535]) )
+			and
+			( let ui8 = fmi3GetUInt8(instance, [UI8], 1, 2) in
+				ui8 = mk_(<fmi3OK>, [0, 255]) );
 
 	/**
 	 * Run all tests.

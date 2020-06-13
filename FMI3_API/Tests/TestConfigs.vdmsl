@@ -546,7 +546,7 @@ values
 				mk_fmi3RealVariableAttributes(nil, nil),
 				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
 				mk_fmi3FloatXXAttributes(nil, nil, nil),
-				[-Infinity, -3.402823E38, -1.175494E-38, NaN, 1.175494E-38, 3.402823E38, Infinity]
+				[-Infinity, -1.23E38, -1.23E-38, NaN, 1.23E-38, 1.23E38, Infinity]
 			),
 			mk_Real
 			(
