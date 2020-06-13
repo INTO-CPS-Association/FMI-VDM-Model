@@ -146,6 +146,7 @@ types
 
 	Clock ::
 		base				: fmi3VariableBase
+		kind				: <ClockKind>
 		clockAtts			: fmi3ClockAttributes
 		start				: [seq1 of bool];
 
