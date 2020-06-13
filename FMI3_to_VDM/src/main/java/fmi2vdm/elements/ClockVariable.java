@@ -58,7 +58,7 @@ public class ClockVariable extends Variable
 		System.out.println(indent + "mk_Clock");
 		System.out.println(indent + "(");
 		super.toVDM(indent + "\t");	// base
-		System.out.println(",");
+		printQuoteAttribute(",\n" + indent + "\t", "ClockKind", ",\n");
 
 		System.out.print(indent + "\tmk_fmi3ClockAttributes(");
 		printQuoteAttribute("", clockType, ", ");
