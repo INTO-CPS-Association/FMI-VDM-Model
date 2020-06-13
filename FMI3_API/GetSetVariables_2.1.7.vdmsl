@@ -179,7 +179,7 @@ functions
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval
 			and let mk_(min, max) = minMaxKind(kind) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+				forall v in seq RESULT.#2 & min <= v and v <= max;
 
 	fmi3GetReal: fmi3Instance * FloatKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetReal(c, kind, vrs, nvr, nval) ==
@@ -232,7 +232,7 @@ functions
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval
 	 		and let mk_(min, max) = minMaxKind(kind) in
-				forall f in seq RESULT.#2 & min <= f and f <= max;
+				forall v in seq RESULT.#2 & min <= v and v <= max;
 
 	fmi3GetInteger: fmi3Instance * IntegerKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetInteger(c, kind, vrs, nvr, nval) ==
@@ -258,34 +258,203 @@ functions
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
-	fmi3GetInt64: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
+	fmi3GetInt64: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetInt64(c, vrs, nvr, nval) ==
 		fmi3GetInteger(c, <Int64>, vrs, nvr, nval);
 
-	fmi3GetInt32: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
+	fmi3GetInt32: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetInt32(c, vrs, nvr, nval) ==
 		fmi3GetInteger(c, <Int32>, vrs, nvr, nval);
 
-	fmi3GetInt16: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
+	fmi3GetInt16: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetInt16(c, vrs, nvr, nval) ==
 		fmi3GetInteger(c, <Int16>, vrs, nvr, nval);
 
-	fmi3GetInt8: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
+	fmi3GetInt8: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetInt8(c, vrs, nvr, nval) ==
 		fmi3GetInteger(c, <Int8>, vrs, nvr, nval);
 
-	fmi3GetUInt64: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
+	fmi3GetUInt64: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetUInt64(c, vrs, nvr, nval) ==
 		fmi3GetInteger(c, <UInt64>, vrs, nvr, nval);
 
-	fmi3GetUInt32: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
+	fmi3GetUInt32: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetUInt32(c, vrs, nvr, nval) ==
 		fmi3GetInteger(c, <UInt32>, vrs, nvr, nval);
 
-	fmi3GetUInt16: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
+	fmi3GetUInt16: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetUInt16(c, vrs, nvr, nval) ==
 		fmi3GetInteger(c, <UInt16>, vrs, nvr, nval);
 
-	fmi3GetUInt8: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
+	fmi3GetUInt8: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetUInt8(c, vrs, nvr, nval) ==
 		fmi3GetInteger(c, <UInt8>, vrs, nvr, nval);
+
+	/**
+	 * Implementation and API for fmi3GetBoolean.
+	 */
+	fmi3GetBoolean_Impl: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Boolean]
+	fmi3GetBoolean_Impl(c, vrs, nvr, nval) ==
+		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
+			if s <> <fmi3OK>
+			then mk_(s, nil)
+			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
+	pre
+		len vrs = nvr
+		and generalGetPrecondition(c, vrs)
+		and (forall vr in seq vrs &
+			exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = <BooleanKind>)
+		and nval = totalValues(c, vrs)
+	post
+		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
+
+	fmi3GetBoolean: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Boolean]
+	fmi3GetBoolean(c, vrs, nvr, nval) ==
+		if len vrs <> nvr
+		then let - = logAPIError(c, "vrs and nvr do not match") in
+			mk_(<fmi3Error>, nil)
+
+		elseif not generalGetPrecondition(c, vrs)
+		then let - = logAPIError(c, "Get preconditions failed") in
+			mk_(<fmi3Error>, nil)
+
+		elseif exists vr in seq vrs &
+			(not exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = <BooleanKind>)
+		then let - = logAPIError(c, "Value references are not all defined and boolean") in
+			mk_(<fmi3Error>, nil)
+
+		elseif nval <> totalValues(c, vrs)
+		then let - = logAPIError(c, "nValues does not match total valueReference dimensions") in
+			mk_(<fmi3Error>, nil)
+
+		else
+			fmi3GetBoolean_Impl(c, vrs, nvr, nval)
+	post
+	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
+
+
+	/**
+	 * Implementation and API for fmi3GetString.
+	 */
+	fmi3GetString_Impl: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3String]
+	fmi3GetString_Impl(c, vrs, nvr, nval) ==
+		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
+			if s <> <fmi3OK>
+			then mk_(s, nil)
+			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
+	pre
+		len vrs = nvr
+		and generalGetPrecondition(c, vrs)
+		and (forall vr in seq vrs &
+			exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = <StringKind>)
+		and nval = totalValues(c, vrs)
+	post
+		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
+
+	fmi3GetString: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3String]
+	fmi3GetString(c, vrs, nvr, nval) ==
+		if len vrs <> nvr
+		then let - = logAPIError(c, "vrs and nvr do not match") in
+			mk_(<fmi3Error>, nil)
+
+		elseif not generalGetPrecondition(c, vrs)
+		then let - = logAPIError(c, "Get preconditions failed") in
+			mk_(<fmi3Error>, nil)
+
+		elseif exists vr in seq vrs &
+			(not exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = <StringKind>)
+		then let - = logAPIError(c, "Value references are not all defined and String") in
+			mk_(<fmi3Error>, nil)
+
+		elseif nval <> totalValues(c, vrs)
+		then let - = logAPIError(c, "nValues does not match total valueReference dimensions") in
+			mk_(<fmi3Error>, nil)
+
+		else
+			fmi3GetString_Impl(c, vrs, nvr, nval)
+	post
+	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
+
+	/**
+	 * Implementation and API for fmi3GetBinary.
+	 */
+	fmi3GetBinary_Impl: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Binary]
+	fmi3GetBinary_Impl(c, vrs, nvr, nval) ==
+		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
+			if s <> <fmi3OK>
+			then mk_(s, nil)
+			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
+	pre
+		len vrs = nvr
+		and generalGetPrecondition(c, vrs)
+		and (forall vr in seq vrs &
+			exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = <BinaryKind>)
+		and nval = totalValues(c, vrs)
+	post
+		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
+
+	fmi3GetBinary: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Binary]
+	fmi3GetBinary(c, vrs, nvr, nval) ==
+		if len vrs <> nvr
+		then let - = logAPIError(c, "vrs and nvr do not match") in
+			mk_(<fmi3Error>, nil)
+
+		elseif not generalGetPrecondition(c, vrs)
+		then let - = logAPIError(c, "Get preconditions failed") in
+			mk_(<fmi3Error>, nil)
+
+		elseif exists vr in seq vrs &
+			(not exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = <BinaryKind>)
+		then let - = logAPIError(c, "Value references are not all defined and Binary") in
+			mk_(<fmi3Error>, nil)
+
+		elseif nval <> totalValues(c, vrs)
+		then let - = logAPIError(c, "nValues does not match total valueReference dimensions") in
+			mk_(<fmi3Error>, nil)
+
+		else
+			fmi3GetBinary_Impl(c, vrs, nvr, nval)
+	post
+	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
+
+	/**
+	 * Implementation and API for fmi3GetClock.
+	 */
+	fmi3GetClock_Impl: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Clock]
+	fmi3GetClock_Impl(c, vrs, nvr, nval) ==
+		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
+			if s <> <fmi3OK>
+			then mk_(s, nil)
+			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
+	pre
+		len vrs = nvr
+		and generalGetPrecondition(c, vrs)
+		and (forall vr in seq vrs &
+			exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = <ClockKind>)
+		and nval = totalValues(c, vrs)
+	post
+		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
+
+	fmi3GetClock: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Clock]
+	fmi3GetClock(c, vrs, nvr, nval) ==
+		if len vrs <> nvr
+		then let - = logAPIError(c, "vrs and nvr do not match") in
+			mk_(<fmi3Error>, nil)
+
+		elseif not generalGetPrecondition(c, vrs)
+		then let - = logAPIError(c, "Get preconditions failed") in
+			mk_(<fmi3Error>, nil)
+
+		elseif exists vr in seq vrs &
+			(not exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = <ClockKind>)
+		then let - = logAPIError(c, "Value references are not all defined and Clock") in
+			mk_(<fmi3Error>, nil)
+
+		elseif nval <> totalValues(c, vrs)
+		then let - = logAPIError(c, "nValues does not match total valueReference dimensions") in
+			mk_(<fmi3Error>, nil)
+
+		else
+			fmi3GetClock_Impl(c, vrs, nvr, nval)
+	post
+	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
