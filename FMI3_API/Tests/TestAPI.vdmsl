@@ -152,7 +152,16 @@ functions
 				ui16 = mk_(<fmi3OK>, [0, 65535]) )
 			and
 			( let ui8 = fmi3GetUInt8(instance, [UI8], 1, 2) in
-				ui8 = mk_(<fmi3OK>, [0, 255]) );
+				ui8 = mk_(<fmi3OK>, [0, 255]) )
+			and
+			( let b = fmi3GetBoolean(instance, [BOOL], 1, 4) in
+				b = mk_(<fmi3OK>, [true, false, true, false]) )
+			and
+			( let str = fmi3GetString(instance, [STRING], 1, 2) in
+				str = mk_(<fmi3OK>, ["foo", "bar"]) )
+			and
+			( let bin = fmi3GetBinary(instance, [BINARY], 1, 2) in
+				bin = mk_(<fmi3OK>, [[0x3c, 0x3f], [0x68, 0x65, 0x72]]) );
 
 	/**
 	 * Run all tests.

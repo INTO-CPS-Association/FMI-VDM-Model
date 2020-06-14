@@ -320,7 +320,6 @@ functions
 	logInst(ienv, instanceName, message) ==
 		fmi3Logger_Impl(ienv, instanceName, <fmi3Error>, "logAll", message);
 
-
 	/**
 	 * Calculate the initial map of SV values, given their "start" attributes.
 	 * Called by fmi3Instantiate and fmi3Reset.
@@ -330,8 +329,11 @@ functions
 	{
 		vref |->
 			let sv in set aliasVars(vref) in	-- Choose any alias from the set
-				if sv.start <> nil
-				then sv.start		-- All aliases have the same start
+				if sv.start <> nil				-- All aliases have the same start
+				then
+					if is_Binary(sv)
+					then [ hex2bin(h) | h in seq sv.start ]
+					else sv.start
 				else
 					let defValue =	-- Set default scalar value for variable type
 						if is_Real(sv) then 0.0
