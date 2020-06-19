@@ -32,7 +32,7 @@
  */
 functions
 	/**
-	 * The general contracts for calling fmi3GetXXX and fmi3SetXXX functions in a given state.
+	 * The general contracts for calling fmi3GetXXX functions in a given state.
 	 */
 	generalGetPrecondition: fmi3Instance * seq of fmi3ValueReference +> bool
 	generalGetPrecondition(c, vrs) ==
@@ -85,66 +85,6 @@ functions
 					<CLOCK_ACTIVATION_MODE>		-> true,
 					<RECONFIGURATION_MODE>		-> false,
 					<INTERMEDIATE_UPDATE_MODE>	-> note13(c, vrs),
-					<TERMINATED>				-> true,
-
-					others -> undefined
-				end,
-
-			others -> undefined
-		end;
-
-	generalSetPrecondition: fmi3Instance * seq of fmi3ValueReference +> bool
-	generalSetPrecondition(c, vrs) ==
-		cases c.fmuKind:
-			<ModelExchange> ->
-				cases c.fmuState:
-					<INSTANTIATED>				-> note4(c, vrs),
-					<CONFIGURATION_MODE>		-> note5(c, vrs),
-					<INITIALIZATION_MODE>		-> note3(c, vrs),
-					<EVENT_MODE>				-> true,
-					<CONTINUOUS_TIME_MODE>		-> true,
-					<RECONFIGURATION_MODE>		-> note6(c, vrs),
-					<TERMINATED>				-> true,
-					<ERROR>						-> true,
-
-					others -> undefined
-				end,
-
-			<BasicCoSimulation>	->
-				cases c.fmuState:
-					<INSTANTIATED>				-> note7(c, vrs),
-					<CONFIGURATION_MODE>		-> note11(c, vrs),
-					<INITIALIZATION_MODE>		-> note8(c, vrs),
-					<STEP_MODE>					-> note9(c, vrs),
-					<RECONFIGURATION_MODE>		-> note10(c, vrs),
-					<INTERMEDIATE_UPDATE_MODE>	-> true,
-					<TERMINATED>				-> true,
-
-					others -> undefined
-				end,
-
-			<HybridCoSimulation> ->
-				cases c.fmuState:
-					<INSTANTIATED>				-> note7(c, vrs),
-					<CONFIGURATION_MODE>		-> note11(c, vrs),
-					<INITIALIZATION_MODE>		-> note8(c, vrs),
-					<STEP_MODE>					-> note9(c, vrs),
-					<EVENT_MODE>				-> note10(c, vrs),
-					<INTERMEDIATE_UPDATE_MODE>	-> false,
-					<RECONFIGURATION_MODE>		-> note10(c, vrs),
-					<TERMINATED>				-> true,
-
-					others -> undefined
-				end,
-
-			<ScheduledCoSimulation> ->
-				cases c.fmuState:
-					<INSTANTIATED>				-> true,
-					<CONFIGURATION_MODE>		-> true,
-					<INITIALIZATION_MODE>		-> true,
-					<CLOCK_ACTIVATION_MODE>		-> true,
-					<RECONFIGURATION_MODE>		-> note13(c, vrs),
-					<INTERMEDIATE_UPDATE_MODE>	-> note14(c, vrs),
 					<TERMINATED>				-> true,
 
 					others -> undefined
