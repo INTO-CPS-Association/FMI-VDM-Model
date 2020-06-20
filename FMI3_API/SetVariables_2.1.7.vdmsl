@@ -101,7 +101,7 @@ functions
 	valueRange: fmi3Instance * seq1 of fmi3ValueReference * nat1 +> nat1 * nat1
 	valueRange(c, vrs, i) ==
 		let start = sum([ len c.variables(vr) | vr in seq vrs(1, ..., i - 1) ]) in
-			mk_(start, start + len c.variables(vrs(i)) - 1);
+			mk_(start + 1, start + len c.variables(vrs(i)) - 1);
 
 
 	/**
@@ -113,7 +113,7 @@ functions
 		if len vrs <> nvr
 		then let - = logAPIError(c, "vrs and nvr do not match") in false
 
-		elseif len vrs <> len value
+		elseif len value <> totalValues(c, vrs)
 		then let - = logAPIError(c, "vrs and value do not match") in false
 
 		elseif not generalSetPrecondition(c, vrs)
@@ -121,11 +121,14 @@ functions
 
 		else forall vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr) in
-				if sv= nil
-				then let - = logAPIError(c, "Value references are not all Real variables") in false
+				if sv = nil
+				then let - = logAPIError(c, "Value references are not all valid") in false
 
 				elseif sv.base.causality = <independent>
 				then let - = logAPIError(c, "Cannot set value of independent variable") in false
+
+				elseif sv.base.variability = <constant>
+				then let - = logAPIError(c, "Cannot set value of constant variable") in false
 
 				elseif sv.kind <> kind
 				then let - = logAPIError(c, "Variables not of the correct kind") in false

@@ -163,6 +163,55 @@ functions
 			( let bin = fmi3GetBinary(instance, [BINARY], 1, 2) in
 				bin = mk_(<fmi3OK>, [[0x3c, 0x3f], [0x68, 0x65, 0x72]]) );
 
+
+	testSetAPI: () -> bool
+	testSetAPI() ==
+        let instance = fmi3InstantiateBasicCoSimulation(
+            "VariableTypes", "", "", false, true, false, false, false,
+            mk_fmi3InstanceEnvironment(variableTypesFMU, mk_SolverData([]), nil),
+            fmi3Logger, nil),
+            F64 = 2, F32 = 1, I8 = 3, UI8 = 4, I16 = 5, UI16 = 6, I32 = 7, UI32 = 8, I64 = 9, UI64 = 10,
+            BOOL = 11, STRING = 12, BINARY = 13
+		in
+			( let mk_(s, c) = fmi3SetFloat64(instance, [F64], 1, [1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetFloat32(instance, [F32], 1, [1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetInt64(instance, [I64], 1, [12345, -12345]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetInt32(instance, [I32], 1, [12345, -12345]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetInt16(instance, [I16], 1, [1234, -1234]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetInt8(instance, [I8], 1, [127, -128]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetUInt64(instance, [UI64], 1, [12345, 54321]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetUInt32(instance, [UI32], 1, [12345, 54321]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetUInt16(instance, [UI16], 1, [1234, 43321]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetUInt8(instance, [UI8], 1, [255, 255]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetBoolean(instance, [BOOL], 1, [true, false, true, false]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetString(instance, [STRING], 1, ["Hello", "World"]) in
+				s = <fmi3OK> and c <> nil )
+			and
+			( let mk_(s, c) = fmi3SetBinary(instance, [BINARY], 1, [[0xff, 0xfe], [0x12, 0x34]]) in
+				s = <fmi3OK> and c <> nil );
+
 	/**
 	 * Run all tests.
 	 */
@@ -189,6 +238,7 @@ functions
 		testFreeInstance(),
 		testGetVersion(),
 
-		testGetAPI()
+		testGetAPI(),
+		testSetAPI()
 	]
 	post elems RESULT = {true};
