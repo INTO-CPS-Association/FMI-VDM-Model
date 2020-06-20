@@ -101,7 +101,11 @@ functions
 	valueRange: fmi3Instance * seq1 of fmi3ValueReference * nat1 +> nat1 * nat1
 	valueRange(c, vrs, i) ==
 		let start = sum([ len c.variables(vr) | vr in seq vrs(1, ..., i - 1) ]) in
-			mk_(start + 1, start + len c.variables(vrs(i)) - 1);
+			mk_(start + 1, start + len c.variables(vrs(i)) - 1)
+	pre
+		i <= len vrs
+	post
+		RESULT.#1 <= RESULT.#2;
 
 
 	/**

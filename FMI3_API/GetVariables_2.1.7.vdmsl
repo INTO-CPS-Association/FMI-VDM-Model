@@ -112,14 +112,14 @@ functions
 		elseif not generalGetPrecondition(c, vrs)
 		then let - = logAPIError(c, "Get preconditions failed") in false
 
-		elseif exists vr in seq vrs &
-			(not exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = kind)
-		then let - = logAPIError(c, "Value references are not all defined for kind") in false
-
 		elseif nval <> totalValues(c, vrs)
 		then let - = logAPIError(c, "nValues does not match total valueReference dimensions") in false
 
-		else true;
+		else forall vr in seq vrs &
+			let sv = lookup(c.eModelVariables, vr) in
+				if sv = nil or sv.kind <> kind
+				then let - = logAPIError(c, "Value references are not all defined for kind") in false
+				else true;
 
 	/**
 	 * Preconditions for the fmi3GetXXX_Impl functions. This is the "pre" complement to the above.
@@ -128,9 +128,11 @@ functions
 	getterPreconditions(c, kind, vrs, nvr, nval) ==
 		len vrs = nvr
 		and generalGetPrecondition(c, vrs)
-		and (forall vr in seq vrs &
-			exists v in seq c.eModelVariables & v.base.valueReference = vr and v.kind = kind)
-		and nval = totalValues(c, vrs);
+		and nval = totalValues(c, vrs)
+		and forall vr in seq vrs &
+			let sv = lookup(c.eModelVariables, vr) in
+				sv <> nil
+				and sv.kind = kind;
 
 
 	/**
