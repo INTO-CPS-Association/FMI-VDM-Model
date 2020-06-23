@@ -40,8 +40,9 @@ functions
 	note1: fmi3Instance * seq of fmi3ValueReference +> bool
 	note1(c, vrs) ==
 		forall vr in seq vrs &
-			c.eModelVariables(vr).base.causality = <output>
-			or vr in set c.initialUnknowns;
+			vr in set c.initialUnknowns
+			or let v = lookup(c.eModelVariables, vr) in
+				v.base.causality = <output>;
 
 
 	-- Note 2: 3.2.3.7 - output variables can be retrieved with fmi3Get{VariableType}
@@ -50,7 +51,8 @@ functions
 	note2: fmi3Instance * seq of fmi3ValueReference +> bool
 	note2(c, vrs) ==
 		forall vr in seq vrs &
-			c.eModelVariables(vr).base.causality = <output>;
+			let v = lookup(c.eModelVariables, vr) in
+				v.base.causality = <output>;
 
 
 	-- Note 3: 3.2.3.3 - Variables with initial = exact and variability ≠ constant, as well as
@@ -58,7 +60,7 @@ functions
 	note3: fmi3Instance * seq of fmi3ValueReference +> bool
 	note3(c, vrs) ==
 		forall vr in seq vrs &
-			let v = c.eModelVariables(vr) in
+			let v = lookup(c.eModelVariables, vr) in
 				(v.base.initial = <exact> and v.base.variability <> <constant>)
 				or v.base.causality = <input>
 			 	or (v.base.causality = <parameter> and v.base.variability = <tunable>);
@@ -69,8 +71,8 @@ functions
 	note4: fmi3Instance * seq of fmi3ValueReference +> bool
 	note4(c, vrs) ==
 		forall vr in seq vrs &
-			let v = c.eModelVariables(vr) in
-				(v.base.initial = <exact> or v.base.initial = <approx>)
+			let v = lookup(c.eModelVariables, vr) in
+				v.base.initial = <exact> or v.base.initial = <approx>
 				or v.base.variability <> <constant>;
 
 
@@ -79,7 +81,7 @@ functions
 	note5: fmi3Instance * seq of fmi3ValueReference +> bool
 	note5(c, vrs) ==
 		forall vr in seq vrs &
-			let v = c.eModelVariables(vr) in
+			let v = lookup(c.eModelVariables, vr) in
 				v.base.causality = <structuralParameter>
 				and (v.base.variability = <fixed> or v.base.variability = <tunable>);
 
@@ -88,7 +90,8 @@ functions
 	note6: fmi3Instance * seq of fmi3ValueReference +> bool
 	note6(c, vrs) ==
 		forall vr in seq vrs &
-			let v = c.eModelVariables(vr) in
+			let v = lookup(c.eModelVariables, vr) in
+				v <> nil and
 				v.base.causality = <structuralParameter>
 				and v.base.variability = <tunable>;
 
@@ -98,7 +101,7 @@ functions
 	note7: fmi3Instance * seq of fmi3ValueReference +> bool
 	note7(c, vrs) ==
 		forall vr in seq vrs &
-			let v = c.eModelVariables(vr) in
+			let v = lookup(c.eModelVariables, vr) in
 				v.base.variability <> <constant>
 				and (v.base.initial = <exact> or v.base.initial = <approx>);
 
@@ -115,7 +118,7 @@ functions
 	note9: fmi3Instance * seq of fmi3ValueReference +> bool
 	note9(c, vrs) ==
 		forall vr in seq vrs &
-			let v = c.eModelVariables(vr) in
+			let v = lookup(c.eModelVariables, vr) in
 				v.base.causality = <input>
 				or (v.base.causality = <parameter> or v.base.variability = <tunable>);
 
@@ -123,10 +126,17 @@ functions
 	-- Note 10: 4.2.3.7 - If intermediateVariableSetAllowed == fmi3True, the value of intermediate
 	-- variables can be set. If intermediateVariableGetAllowed == fmi3True, the value of
 	-- intermediate variables can be retrieved.
-	note10: fmi3Instance * seq of fmi3ValueReference +> bool
-	note10(c, vrs) ==
+	note10g: fmi3Instance * seq of fmi3ValueReference +> bool
+	note10g(c, vrs) ==
 		forall vr in seq vrs &
-			c.eModelVariables(vr).base.intermediateAccess;
+			let v = lookup(c.eModelVariables, vr) in
+				nilBool(v.base.intermediateAccess) => c.intermediateAccessGetAllowed;
+
+	note10s: fmi3Instance * seq of fmi3ValueReference +> bool
+	note10s(c, vrs) ==
+		forall vr in seq vrs &
+			let v = lookup(c.eModelVariables, vr) in
+				nilBool(v.base.intermediateAccess) => c.intermediateAccessSetAllowed;
 
 
 	-- Note 11: 4.2.3.10 - Only for variables with causality = structuralParameter
@@ -141,7 +151,7 @@ functions
 	note12: fmi3Instance * seq of fmi3ValueReference +> bool
 	note12(c, vrs) ==
 		forall vr in seq vrs &
-			let v = c.eModelVariables(vr) in
+			let v = lookup(c.eModelVariables, vr) in
 				v.base.causality = <output>
 				or vr in set c.continuousTimeStates
 				or vr in set c.stateDerivatives;
@@ -149,9 +159,13 @@ functions
 
 	-- Note 13: 6.2.3.5 - Also intermediate variable access is allowed as defined
 	-- in Section 4.2.3.7
-	note13: fmi3Instance * seq of fmi3ValueReference +> bool
-	note13(c, vrs) ==
-		note10(c, vrs);
+	note13g: fmi3Instance * seq of fmi3ValueReference +> bool
+	note13g(c, vrs) ==
+		note10g(c, vrs);
+
+	note13s: fmi3Instance * seq of fmi3ValueReference +> bool
+	note13s(c, vrs) ==
+		note10s(c, vrs);
 
 
 	-- Note 14: 6.2.3.6 - Only for variables with causality = structuralParameter and

@@ -57,7 +57,7 @@ functions
 					<CONFIGURATION_MODE>		-> note11(c, vrs),
 					<INITIALIZATION_MODE>		-> note8(c, vrs),
 					<STEP_MODE>					-> note9(c, vrs),
-					<RECONFIGURATION_MODE>		-> note10(c, vrs),
+					<RECONFIGURATION_MODE>		-> note10s(c, vrs),
 					<INTERMEDIATE_UPDATE_MODE>	-> true,
 					<TERMINATED>				-> true,
 
@@ -70,9 +70,9 @@ functions
 					<CONFIGURATION_MODE>		-> note11(c, vrs),
 					<INITIALIZATION_MODE>		-> note8(c, vrs),
 					<STEP_MODE>					-> note9(c, vrs),
-					<EVENT_MODE>				-> note10(c, vrs),
+					<EVENT_MODE>				-> note10s(c, vrs),
 					<INTERMEDIATE_UPDATE_MODE>	-> false,
-					<RECONFIGURATION_MODE>		-> note10(c, vrs),
+					<RECONFIGURATION_MODE>		-> note10s(c, vrs),
 					<TERMINATED>				-> true,
 
 					others -> undefined
@@ -84,7 +84,7 @@ functions
 					<CONFIGURATION_MODE>		-> true,
 					<INITIALIZATION_MODE>		-> true,
 					<CLOCK_ACTIVATION_MODE>		-> true,
-					<RECONFIGURATION_MODE>		-> note13(c, vrs),
+					<RECONFIGURATION_MODE>		-> note13s(c, vrs),
 					<INTERMEDIATE_UPDATE_MODE>	-> note14(c, vrs),
 					<TERMINATED>				-> true,
 
@@ -101,7 +101,7 @@ functions
 	valueRange: fmi3Instance * seq1 of fmi3ValueReference * nat1 +> nat1 * nat1
 	valueRange(c, vrs, i) ==
 		let start = sum([ len c.variables(vr) | vr in seq vrs(1, ..., i - 1) ]) in
-			mk_(start + 1, start + len c.variables(vrs(i)) - 1)
+			mk_(start + 1, start + len c.variables(vrs(i)))
 	pre
 		i <= len vrs
 	post
@@ -117,6 +117,9 @@ functions
 		if len vrs <> nvr
 		then let - = logAPIError(c, "vrs and nvr do not match") in false
 
+		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr) = nil
+		then let - = logAPIError(c, "Value references are not all valid") in false
+
 		elseif len value <> totalValues(c, vrs)
 		then let - = logAPIError(c, "vrs and value do not match") in false
 
@@ -125,10 +128,7 @@ functions
 
 		else forall vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr) in
-				if sv = nil
-				then let - = logAPIError(c, "Value references are not all valid") in false
-
-				elseif sv.base.causality = <independent>
+				if sv.base.causality = <independent>
 				then let - = logAPIError(c, "Cannot set value of independent variable") in false
 
 				elseif sv.base.variability = <constant>
@@ -169,13 +169,13 @@ functions
 	setterArgPreconditions: fmi3Instance * Kind * seq1 of fmi3ValueReference * nat1 * seq1 of ? +> bool
 	setterArgPreconditions(c, kind, vrs, nvr, value) ==
 		len vrs = nvr
+		and ( forall vr in seq vrs &
+			    let sv = lookup(c.eModelVariables, vr) in
+				   sv <> nil
+				   and sv.base.causality <> <independent>
+				   and sv.kind = kind )
 		and len value = totalValues(c, vrs)
-		and generalSetPrecondition(c, vrs)
-		and forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil
-				and sv.base.causality <> <independent>
-				and sv.kind = kind;
+		and generalSetPrecondition(c, vrs);
 
 	setterMinMaxPreconditions: fmi3Instance * Kind * seq of fmi3ValueReference * seq1 of fmi3Float +> bool
 	setterMinMaxPreconditions(c, kind, vrs, value) ==

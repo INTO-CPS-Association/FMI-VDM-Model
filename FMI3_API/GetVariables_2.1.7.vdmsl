@@ -42,7 +42,7 @@ functions
 					<INSTANTIATED>				-> false,
 					<CONFIGURATION_MODE>		-> false,
 					<INITIALIZATION_MODE>		-> note1(c, vrs),
-					<EVENT_MODE>				-> note2(c, vrs),
+					<EVENT_MODE>				-> true,
 					<CONTINUOUS_TIME_MODE>		-> note2(c, vrs),
 					<RECONFIGURATION_MODE>		-> false,
 					<TERMINATED>				-> true,
@@ -58,7 +58,7 @@ functions
 					<INITIALIZATION_MODE>		-> note12(c, vrs),
 					<STEP_MODE>					-> true,
 					<RECONFIGURATION_MODE>		-> false,
-					<INTERMEDIATE_UPDATE_MODE>	-> note10(c, vrs),
+					<INTERMEDIATE_UPDATE_MODE>	-> note10g(c, vrs),
 					<TERMINATED>				-> true,
 
 					others -> undefined
@@ -70,6 +70,7 @@ functions
 					<CONFIGURATION_MODE>		-> true,
 					<INITIALIZATION_MODE>		-> true,
 					<STEP_MODE>					-> true,
+					<EVENT_MODE>				-> true,
 					<RECONFIGURATION_MODE>		-> true,
 					<INTERMEDIATE_UPDATE_MODE>	-> false,
 					<TERMINATED>				-> true,
@@ -84,7 +85,7 @@ functions
 					<INITIALIZATION_MODE>		-> true,
 					<CLOCK_ACTIVATION_MODE>		-> true,
 					<RECONFIGURATION_MODE>		-> false,
-					<INTERMEDIATE_UPDATE_MODE>	-> note13(c, vrs),
+					<INTERMEDIATE_UPDATE_MODE>	-> note13g(c, vrs),
 					<TERMINATED>				-> true,
 
 					others -> undefined
@@ -109,17 +110,17 @@ functions
 		if len vrs <> nvr
 		then let - = logAPIError(c, "vrs and nvr do not match") in false
 
+		elseif exists vr in seq vrs &
+			let sv = lookup(c.eModelVariables, vr) in sv = nil or sv.kind <> kind
+		then let - = logAPIError(c, "Value references are not all defined for kind") in false
+
 		elseif not generalGetPrecondition(c, vrs)
 		then let - = logAPIError(c, "Get preconditions failed") in false
 
 		elseif nval <> totalValues(c, vrs)
 		then let - = logAPIError(c, "nValues does not match total valueReference dimensions") in false
 
-		else forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				if sv = nil or sv.kind <> kind
-				then let - = logAPIError(c, "Value references are not all defined for kind") in false
-				else true;
+		else true;
 
 	/**
 	 * Preconditions for the fmi3GetXXX_Impl functions. This is the "pre" complement to the above.
@@ -127,12 +128,11 @@ functions
 	getterPreconditions: fmi3Instance * Kind * seq of fmi3ValueReference * nat * nat +> bool
 	getterPreconditions(c, kind, vrs, nvr, nval) ==
 		len vrs = nvr
+		and ( forall vr in seq vrs &
+			    let sv = lookup(c.eModelVariables, vr) in
+				  sv <> nil and sv.kind = kind )
 		and generalGetPrecondition(c, vrs)
-		and nval = totalValues(c, vrs)
-		and forall vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil
-				and sv.kind = kind;
+		and nval = totalValues(c, vrs);
 
 
 	/**

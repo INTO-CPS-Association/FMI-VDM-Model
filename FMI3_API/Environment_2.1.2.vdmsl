@@ -94,6 +94,9 @@ types
 		isNewEventIteration		: bool								-- Used in ME
 		eventInfo				: fmi3EventInfo						-- Used in ME and CS?
 
+		intermediateAccessGetAllowed	: bool
+		intermediateAccessSetAllowed	: bool
+
 		-- time values
 		tolerance				: [fmi3Float]
 		startTime				: [fmi3Float]

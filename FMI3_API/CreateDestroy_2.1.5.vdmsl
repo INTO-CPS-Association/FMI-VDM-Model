@@ -113,6 +113,10 @@ functions
 					false	-- nextEventTimeDefined
 				),
 
+				-- Intermediate access allowed - initially false
+				false,		-- intermediateAccessGetAllowed
+				false,		-- intermediateAccessSetAllowed
+
 				-- tolerance
 				if xmlModel.defaultExperiment <> nil
 				then nilReal(xmlModel.defaultExperiment.tolerance)

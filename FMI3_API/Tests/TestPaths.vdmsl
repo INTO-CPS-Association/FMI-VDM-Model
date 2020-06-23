@@ -63,6 +63,22 @@ operations
 
 		assert(c.fmuState = <EVENT_MODE>);
 
+		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+			if s <> <fmi3OK> then return false
+			else assert(v = [123]);
+
+		let mk_(s, c2) = fmi3SetInt64(c, [0], 1, [12345]) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+			if s <> <fmi3OK> then return false
+			else assert(v = [12345]);
+
+		let mk_(s, c2) = fmi3Reset(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false
 			else c := c2;
@@ -105,6 +121,18 @@ operations
 			else c := c2;
 
 		assert(c.fmuState = <STEP_MODE>);
+
+		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+			if s <> <fmi3OK> then return false
+			else assert(v = [123]);
+
+		let mk_(s, c2) = fmi3SetInt64(c, [0], 1, [12345]) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+			if s <> <fmi3OK> then return false
+			else assert(v = [12345]);
 
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false
@@ -149,6 +177,18 @@ operations
 
 		assert(c.fmuState = <EVENT_MODE>);
 
+		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+			if s <> <fmi3OK> then return false
+			else assert(v = [123]);
+
+		let mk_(s, c2) = fmi3SetInt64(c, [0], 1, [12345]) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+			if s <> <fmi3OK> then return false
+			else assert(v = [12345]);
+
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false
 			else c := c2;
@@ -191,6 +231,18 @@ operations
 			else c := c2;
 
 		assert(c.fmuState = <CLOCK_ACTIVATION_MODE>);
+
+		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+			if s <> <fmi3OK> then return false
+			else assert(v = [123]);
+
+		let mk_(s, c2) = fmi3SetInt64(c, [0], 1, [12345]) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+			if s <> <fmi3OK> then return false
+			else assert(v = [12345]);
 
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false
