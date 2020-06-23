@@ -32,6 +32,10 @@
  * 4.2.3 State Machine for Basic Co-Simulation
  * 5.2.4 State Machine for Hybrid Co-Simulation
  * 6.2.3 State Machine for Scheduled Co-Simulation
+ *
+ * These functions implement the "notes" in the API matrix that lists which API functions
+ * can be called in which states in which modes. The functions all assume that the basic
+ * argument validation has been performed and that the valueReferences passed do exist.
  */
 functions
 	-- Note 1: 3.2.3.3 - The variables that can be retrieved by fmi3Get{VariableType}
@@ -130,13 +134,13 @@ functions
 	note10g(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				nilBool(v.base.intermediateAccess) => c.intermediateAccessGetAllowed;
+				nilBool(v.base.intermediateAccess) => c.intermediateAccessGetAllowed;	-- Getters
 
 	note10s: fmi3Instance * seq of fmi3ValueReference +> bool
 	note10s(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				nilBool(v.base.intermediateAccess) => c.intermediateAccessSetAllowed;
+				nilBool(v.base.intermediateAccess) => c.intermediateAccessSetAllowed;	-- Setters
 
 
 	-- Note 11: 4.2.3.10 - Only for variables with causality = structuralParameter
