@@ -143,7 +143,7 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 {
 	if [ ! -e "$1" ]
 	then
-		return
+		return 0
 	fi
 	
 	echo "Checking $2"
@@ -176,8 +176,10 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 		
 		java -Xmx1g -cp vdmj-4.3.0-P.jar:annotations-1.0.0.jar com.fujitsu.vdmj.VDMJ \
 			-vdmsl -q -annotations -e "isValidFMIConfiguration($VAR)" \
-			model $VDM | sed -e "s/^true$/No errors found./; s/^false$/Errors found./"
+			model $VDM | sed -e "/^true$/{ s/^true$/No errors found./; q0}; /^false$/{ s/^false$/Errors found./; q1 }"
 	)
+	
+	RET=$?		# From subshell above
 	
 	if [ "$SAVE" ]
 	then
@@ -185,6 +187,8 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 		sed -e "s+generated from $1+generated from $2+" $VDM >> "$SAVE"
 		echo "VDM source written to $SAVE"
 	fi
+	
+	return $RET
 }
 
 if [ "$SAVE" ]
@@ -192,9 +196,22 @@ then
 	rm -f "$SAVE"
 fi
 
-check "$XML_XM" XML
-check "$XML_MD" modelDescription.xml
-check "$XML_BD" source/buildDescription.xml
-check "$XML_TI" icon/terminalsAndIcons.xml
+EXIT=0
 
-exit 0
+if ! check "$XML_XM" XML
+then EXIT=1
+fi
+
+if ! check "$XML_MD" modelDescription.xml
+then EXIT=1
+fi
+
+if ! check "$XML_BD" source/buildDescription.xml
+then EXIT=1
+fi
+
+if ! check "$XML_TI" icon/terminalsAndIcons.xml
+then EXIT=1
+fi
+
+exit $EXIT
