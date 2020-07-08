@@ -95,8 +95,9 @@ functions
 		end;
 
 	/**
-	 * Return the start/end from a list of values for the ith valueReference.
-	 * This accounts for multi-dimensional values.
+	 * Return the start/end (incl.) from a list of values for the ith valueReference.
+	 * This accounts for multi-dimensional values. So a single valued variable might
+	 * return mk_(3, 3) and a 2x2 array might be mk_(1, 4).
 	 */
 	valueRange: fmi3Instance * seq1 of fmi3ValueReference * nat1 +> nat1 * nat1
 	valueRange(c, vrs, i) ==

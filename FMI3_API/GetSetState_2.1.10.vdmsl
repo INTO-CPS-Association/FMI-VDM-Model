@@ -1,0 +1,166 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.10. Getting and Setting the Complete FMU State
+ */
+types
+	fmi3FMUState = fmi3Instance;
+	SerializedState = fmi3FMUState * nat;		-- state and size of serialized state
+
+functions
+	canDoGetSetState: fmi3Instance * set of fmi3State +> bool
+	canDoGetSetState(c, states) ==
+		c.fmuState in set states
+		and if is_(c.fmuKind, CoSimulationKind)
+		then nilBool(c.xmlModel.coSimulation.base.canGetAndSetFMUState)
+		else nilBool(c.xmlModel.modelExchange.base.canGetAndSetFMUState);
+
+	/**
+	 * Implementation and API for fmi3GetFMUState.
+	 */
+	fmi3GetFMUState_Impl: fmi3Instance +> fmi3Status * fmi3FMUState
+	fmi3GetFMUState_Impl(c) ==
+		mk_(<fmi3OK>, c)
+	pre
+		canDoGetSetState(c, STATES_fmi3GetFMUState);
+
+	fmi3GetFMUState: fmi3Instance +> fmi3Status * [fmi3FMUState]
+	fmi3GetFMUState(c) ==
+		if not canDoGetSetState(c, STATES_fmi3GetFMUState)
+		then let - = logAPIError(c, "Can't call fmi3GetFMUState") in
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3GetFMUState_Impl(c)
+	 post
+	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
+
+
+	/**
+	 * Implementation and API for fmi3SetFMUState.
+	 */
+	fmi3SetFMUState_Impl: fmi3Instance * fmi3FMUState +> fmi3Status * fmi3Instance
+	fmi3SetFMUState_Impl(c, FMUstate) ==
+		mk_(<fmi3OK>, FMUstate)
+	pre
+		canDoGetSetState(c, STATES_fmi3SetFMUState);
+
+	fmi3SetFMUState: fmi3Instance * fmi3FMUState +> fmi3Status * [fmi3Instance]
+	fmi3SetFMUState(c, FMUstate) ==
+		if not canDoGetSetState(c, STATES_fmi3SetFMUState)
+		then let - = logAPIError(c, "Can't call fmi3SetFMUState") in
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3SetFMUState_Impl(c, FMUstate)
+	 post
+	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
+
+
+	/**
+	 * Implementation and API for fmi3FreeFMUstate.
+	 */
+	fmi3FreeFMUstate_Impl: fmi3Instance * fmi3FMUState +> fmi3Status
+	fmi3FreeFMUstate_Impl(c, -) ==
+		<fmi3OK>
+	pre
+		canDoGetSetState(c, STATES_fmi3FreeFMUState);
+
+	fmi3FreeFMUstate: fmi3Instance * fmi3FMUState +> fmi3Status
+	fmi3FreeFMUstate(c, FMUstate) ==
+		if not canDoGetSetState(c, STATES_fmi3FreeFMUState)
+		then let - = logAPIError(c, "Can't call fmi3FreeFMUstate") in
+			<fmi3Error>
+		else
+			fmi3FreeFMUstate_Impl(c, FMUstate);
+
+
+	/**
+	 * Implementation and API for fmi3SerializedFMUstateSize.
+	 */
+	fmi3SerializedFMUStateSize_Impl: fmi3Instance * fmi3FMUState +> fmi3Status * nat
+	fmi3SerializedFMUStateSize_Impl(c, -) ==
+		mk_(<fmi3OK>, 0)	-- Size is abstract in the VDM model
+	pre
+		canDoGetSetState(c, STATES_fmi3SerializedFMUStateSize);
+
+	fmi3SerializedFMUStateSize: fmi3Instance * fmi3FMUState +> fmi3Status * [nat]
+	fmi3SerializedFMUStateSize(c, FMUState) ==
+		if not canDoGetSetState(c, STATES_fmi3SerializedFMUStateSize)
+		then let - = logAPIError(c, "Can't call fmi3SerializedFMUStateSize") in
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3SerializedFMUStateSize_Impl(c, FMUState)
+	 post
+	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
+
+
+	/**
+	 * Implementation and API for fmi3SerializeFMUState.
+	 */
+	fmi3SerializeFMUState_Impl: fmi3Instance * fmi3FMUState * nat +> fmi3Status * SerializedState
+	fmi3SerializeFMUState_Impl(c, FMUState, size) ==
+		mk_(<fmi3OK>, mk_(FMUState, size))
+	pre
+		canDoGetSetState(c, STATES_fmi3SerializeFMUState);
+
+	fmi3SerializeFMUState: fmi3Instance * fmi3FMUState * nat +> fmi3Status * [SerializedState]
+	fmi3SerializeFMUState(c, FMUState, size) ==
+		if not canDoGetSetState(c, STATES_fmi3SerializeFMUState)
+		then let - = logAPIError(c, "Can't call fmi3SerializeFMUState") in
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3SerializeFMUState_Impl(c, FMUState, size)
+	 post
+	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
+
+
+	/**
+	 * Implementation and API for fmi3DeSerializeFMUState.
+	 */
+	fmi3DeSerializeFMUState_Impl: fmi3Instance * SerializedState * nat +> fmi3Status * fmi3FMUState
+	fmi3DeSerializeFMUState_Impl(c, serializedState, size) ==
+		mk_(<fmi3OK>, serializedState.#1)
+	pre
+		serializedState.#2 = size
+		and canDoGetSetState(c, STATES_fmi3DeSerializeFMUState);
+
+	fmi3DeSerializeFMUState: fmi3Instance * SerializedState * nat +> fmi3Status * [fmi3FMUState]
+	fmi3DeSerializeFMUState(c, serializedState, size) ==
+		if serializedState.#2 <> size
+		then let - = logAPIError(c, "Size does not match serialised state") in
+			mk_(<fmi3Error>, nil)
+		elseif not canDoGetSetState(c, STATES_fmi3DeSerializeFMUState)
+		then let - = logAPIError(c, "Can't call fmi3DeSerializeFMUState") in
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3DeSerializeFMUState_Impl(c, serializedState, size)
+	 post
+	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
+
+	
