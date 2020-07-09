@@ -28,7 +28,7 @@
  */
 
 /**
- * Test the basic call paths for each FMU type.
+ * Test the basic successful call paths for each FMU type.
  */
 operations
 	testModelExchangePaths: () ==> bool
@@ -74,6 +74,10 @@ operations
 			else c := c2;
 
 		assert(c.fmuState = <EVENT_MODE>);
+
+		let mk_(s, c2) = fmi3SetTime(c, 99999) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
 
 		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
 			if s <> <fmi3OK> then return false

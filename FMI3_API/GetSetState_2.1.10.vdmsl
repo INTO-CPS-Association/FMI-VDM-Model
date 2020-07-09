@@ -1,7 +1,7 @@
 /**
  * This file is part of the INTO-CPS toolchain.
  *
- * Copyright (c) 2017-2019, INTO-CPS Association,
+ * Copyright (c) 2017-2020, INTO-CPS Association,
  * c/o Professor Peter Gorm Larsen, Department of Engineering
  * Finlandsgade 22, 8200 Aarhus N.
  *
@@ -87,7 +87,7 @@ functions
 	 */
 	fmi3FreeFMUstate_Impl: fmi3Instance * fmi3FMUState +> fmi3Status
 	fmi3FreeFMUstate_Impl(c, -) ==
-		<fmi3OK>
+		<fmi3OK>	-- Free operations are abstract in the VDM model
 	pre
 		canDoGetSetState(c, STATES_fmi3FreeFMUState);
 
