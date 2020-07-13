@@ -69,7 +69,7 @@ operations
 
 		assert(c.fmuState = <CONTINUOUS_TIME_MODE>);
 
-		let mk_(s, c2) = fmi3EnterEventMode(c, false, false, [], false) in
+		let mk_(s, c2) = fmi3EnterEventMode(c, false, false, [], 0, false) in
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
@@ -225,7 +225,7 @@ operations
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		let mk_(s, c2) = fmi3EnterEventMode(c, false, false, [], false) in
+		let mk_(s, c2) = fmi3EnterEventMode(c, false, false, [], 0, false) in
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
