@@ -81,6 +81,9 @@ STATES_fmi3GetEventIndicators : States       = { <INITIALIZATION_MODE>, <EVENT_M
 STATES_fmi3GetContinuousStates : States      = STATES_fmi3GetEventIndicators;
 STATES_fmi3GetDerivatives : States           = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <TERMINATED>, <ERROR> };
 STATES_fmi3GetNominalsOfContinuousStates : States = {  <INSTANTIATED>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <TERMINATED>, <ERROR> };
+STATES_fmi3GetNumberOfEventIndicators        = ANY_STATE;
+STATES_fmi3GetNumberOfContinuousStates       = ANY_STATE;
+STATES_fmi3GetNumberOfVariableDependencies   = ANY_STATE;
 
 ------------------------------------------------------------------------------
 -- Function calls for Co-simulation
@@ -94,4 +97,4 @@ STATES_fmi3GetRealStatus : States            = STATES_fmi3GetStatus;
 STATES_fmi3GetIntegerStatus : States         = STATES_fmi3GetStatus;
 STATES_fmi3GetBooleanStatus : States         = STATES_fmi3GetStatus;
 STATES_fmi3GetStringStatus : States          = STATES_fmi3GetStatus;
-
+STATES_fmi3ActivateModelPartition : States   = ANY_STATE;

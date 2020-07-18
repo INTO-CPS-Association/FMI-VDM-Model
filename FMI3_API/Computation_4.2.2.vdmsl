@@ -29,6 +29,7 @@
 
 /**
  * 4.2.2 Computation in Co-Simulation Interface Types
+ * 6.2.2 Computation in Scheduled Co-Simulation
  */
 functions
 	/**
@@ -72,4 +73,37 @@ functions
 			fmi3DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
+
+	/**
+	 * Implementation of fmi3ActivateModelPartition. See API method below.
+	 */
+	fmi3ActivateModelPartition_Impl(
+		c					: fmi3Instance,
+		clockReference		: fmi3ValueReference,
+		clockElementIndex	: nat1,
+		activationTime		: fmi3Float) result : fmi3Status
+	==
+		undefined;	-- TODO
+
+	fmi3ActivateModelPartition(
+		c					: fmi3Instance,
+		clockReference		: fmi3ValueReference,
+		clockElementIndex	: nat1,
+		activationTime		: fmi3Float) result : fmi3Status
+	==
+		if c.fmuKind <> <ScheduledCoSimulation>
+		then let - = logAPIError(c, "Can only call fmi3ActivateModelPartition for scheduled co-simulation") in
+			<fmi3Error>
+		elseif c.fmuState not in set STATES_fmi3ActivateModelPartition
+		then let - = logAPIError(c, "Cannot call fmi3ActivateModelPartition in this state") in
+			<fmi3Error>
+		else let clock = lookup(c.eModelVariables, clockReference) in
+			if clock = nil
+			then let - = logAPIError(c, "ValueReference not found") in
+				<fmi3Error>
+			elseif not is_(clock, Clock)
+			then let - = logAPIError(c, "ValueReference is not a clock") in
+				<fmi3Error>
+			else
+				fmi3ActivateModelPartition_Impl(c, clockReference, clockElementIndex, activationTime);
 

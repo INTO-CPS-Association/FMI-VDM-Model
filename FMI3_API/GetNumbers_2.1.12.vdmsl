@@ -1,0 +1,100 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2020, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.12. Getting Number of Event Indicators
+ * 2.1.13. Getting Number of States
+ * 2.1.14. Getting Number of Variable Dependencies and Variable Dependencies
+ */
+functions
+	/**
+	 * Implementation and API for fmi3GetNumberOfEventIndicators.
+	 */
+	fmi3GetNumberOfEventIndicators_Impl: fmi3Instance -> fmi3Status * [nat]
+	fmi3GetNumberOfEventIndicators_Impl(c) ==
+		mk_(<fmi3OK>, nil)	-- TODO!
+	pre
+		c.fmuState in set STATES_fmi3GetNumberOfEventIndicators
+	post
+		RESULT.#1 = <fmi3OK> => RESULT.#2 <> nil;
+
+	fmi3GetNumberOfEventIndicators: fmi3Instance -> fmi3Status * [nat]
+	fmi3GetNumberOfEventIndicators(c) ==
+		if c.fmuState not in set STATES_fmi3GetNumberOfEventIndicators
+		then let - = logAPIError(c, "Cannot call fmi3GetNumberOfEventIndicators in this state") in
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3GetNumberOfEventIndicators_Impl(c)
+	 post
+	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
+
+
+	/**
+	 * Implementation and API for fmi3GetNumberOfContinuousStates.
+	 */
+	fmi3GetNumberOfContinuousStates_Impl: fmi3Instance -> fmi3Status * [nat]
+	fmi3GetNumberOfContinuousStates_Impl(c) ==
+		mk_(<fmi3OK>, nil)	-- TODO!
+	pre
+		c.fmuState in set STATES_fmi3GetNumberOfContinuousStates
+	post
+		RESULT.#1 = <fmi3OK> => RESULT.#2 <> nil;
+
+	fmi3GetNumberOfContinuousStates: fmi3Instance -> fmi3Status * [nat]
+	fmi3GetNumberOfContinuousStates(c) ==
+		if c.fmuState not in set STATES_fmi3GetNumberOfEventIndicators
+		then let - = logAPIError(c, "Cannot call fmi3GetNumberOfContinuousStates in this state") in
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3GetNumberOfEventIndicators_Impl(c)
+	 post
+	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
+
+
+	/**
+	 * Implementation and API for fmi3GetNumberOfVariableDependencies.
+	 */
+	fmi3GetNumberOfVariableDependencies_Impl: fmi3Instance * fmi3ValueReference -> fmi3Status * [nat]
+	fmi3GetNumberOfVariableDependencies_Impl(c, valueReference) ==
+		mk_(<fmi3OK>, nil)	-- TODO!
+	pre
+		c.fmuState in set STATES_fmi3GetNumberOfContinuousStates
+	post
+		RESULT.#1 = <fmi3OK> => RESULT.#2 <> nil;
+
+	fmi3GetNumberOfVariableDependencies: fmi3Instance * fmi3ValueReference -> fmi3Status * [nat]
+	fmi3GetNumberOfVariableDependencies(c, valueReference) ==
+		if c.fmuState not in set STATES_fmi3GetNumberOfVariableDependencies
+		then let - = logAPIError(c, "Cannot call fmi3GetNumberOfVariableDependencies in this state") in
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3GetNumberOfVariableDependencies_Impl(c, valueReference)
+	 post
+	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
+
