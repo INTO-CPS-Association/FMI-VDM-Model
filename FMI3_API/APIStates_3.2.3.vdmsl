@@ -52,31 +52,28 @@ STATES_fmi3Terminate : States                = ANY_STATE \ {<TERMINATED>};
 STATES_fmi3Reset : States                    = ANY_STATE;
 STATES_fmi3FreeInstance : States             = ANY_STATE;
 
+STATES_fmi3EnterEventModeME : States         = { <CONTINUOUS_TIME_MODE> };
+STATES_fmi3EnterEventModeHCS : States        = { <STEP_MODE> };
+STATES_fmi3EnterContinuousTimeMode : States  = { <EVENT_MODE> };
+STATES_fmi3EnterStepModeBCS : States         = { <RECONFIGURATION_MODE> };
+STATES_fmi3EnterStepModeHCS : States         = { <EVENT_MODE> };
+
+STATES_fmi3GetFMUState : States              = STATES_fmi3FreeInstance;
+STATES_fmi3SetFMUState : States              = STATES_fmi3FreeInstance;
+
 --- Above checked, below yet to be done!
 
-STATES_fmi3GetReal : States                  = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> };
-STATES_fmi3GetInteger : States               = STATES_fmi3GetReal;
-STATES_fmi3GetBoolean : States               = STATES_fmi3GetReal;
-STATES_fmi3GetString : States                = STATES_fmi3GetReal;
-STATES_fmi3SetReal : States                  = { <INSTANTIATED>, <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE> };
-STATES_fmi3SetInteger : States               = { <INSTANTIATED>, <INITIALIZATION_MODE>, <EVENT_MODE>, <STEP_MODE> };
-STATES_fmi3SetBoolean : States               = STATES_fmi3SetInteger;
-STATES_fmi3SetString : States                = STATES_fmi3SetInteger;
-STATES_fmi3GetFMUstate : States              = STATES_fmi3FreeInstance;
-STATES_fmi3SetFMUstate : States              = STATES_fmi3FreeInstance;
-STATES_fmi3FreeFMUstate : States             = STATES_fmi3FreeInstance;
-STATES_fmi3SerializedFMUstateSize : States   = STATES_fmi3FreeInstance;
-STATES_fmi3SerializeFMUstate : States        = STATES_fmi3FreeInstance;
-STATES_fmi3DeSerializeFMUstate : States      = STATES_fmi3FreeInstance;
+STATES_fmi3FreeFMUState : States             = STATES_fmi3FreeInstance;
+STATES_fmi3SerializedFMUStateSize : States   = STATES_fmi3FreeInstance;
+STATES_fmi3SerializeFMUState : States        = STATES_fmi3FreeInstance;
+STATES_fmi3DeSerializeFMUState : States      = STATES_fmi3FreeInstance;
 STATES_fmi3GetDirectionalDerivative : States = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> }; 
 STATES_fmi3GetAdjointDerivative : States     = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> }; 
 
 ------------------------------------------------------------------------------
 -- Function calls for Model-exchange
 ------------------------------------------------------------------------------
-STATES_fmi3EnterEventMode : States           = { <EVENT_MODE>, <CONTINUOUS_TIME_MODE> };
 STATES_fmi3NewDiscreteStates : States        = { <EVENT_MODE> };
-STATES_fmi3EnterContinuousTimeMode : States  = { <EVENT_MODE> };
 STATES_fmi3CompletedIntegratorStep : States  = { <CONTINUOUS_TIME_MODE> };
 STATES_fmi3SetTime : States                  = { <EVENT_MODE>, <CONTINUOUS_TIME_MODE> };
 STATES_fmi3SetContinuousStates : States      = { <CONTINUOUS_TIME_MODE> };

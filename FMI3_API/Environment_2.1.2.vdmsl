@@ -80,7 +80,7 @@ types
 		-- convenience read-only fields, copied from instanceEnvironment
 		xmlModel				: FMIModelDescription
 		eModelVariables			: seq1 of Variable
-		continuousTimeStates	: set of fmi3ValueReference
+		continuousTimeStates	: seq of fmi3ValueReference			-- In ModelStructure/Derivatives order
 		stateDerivatives		: set of fmi3ValueReference
 		initialUnknowns			: set of fmi3ValueReference
 		solverDerivatives		: seq of SolverDerivative

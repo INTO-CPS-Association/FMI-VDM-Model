@@ -35,7 +35,7 @@ types
 	-- fmi3ValueReference	= nat;		-- Defined in FMI3 model
 
 	fmi3Float			= real;
-	fmi3Integer			= int;
+	fmi3Integer			= int;			-- Enumerations are also Integers
 	fmi3Boolean			= bool;
 	fmi3Char			= char;
 	fmi3String			= seq of fmi3Char;
@@ -44,7 +44,7 @@ types
 	fmi3Byte			= nat inv b == b < 256;
 
 	-- Possible values for a Variable
-	fmi3Value			= fmi3Float | fmi3Integer | fmi3Boolean | fmi3String | fmi3Binary;
+	fmi3Value			= fmi3Float | fmi3Integer | fmi3Boolean | fmi3String | fmi3Clock | fmi3Binary;
 
 	fmi3Status =
 		<fmi3OK> |

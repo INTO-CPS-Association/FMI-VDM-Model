@@ -28,7 +28,7 @@
  */
 
 /**
- * Test the basic call paths for each FMU type.
+ * Test the basic successful call paths for each FMU type.
  */
 operations
 	testModelExchangePaths: () ==> bool
@@ -63,6 +63,22 @@ operations
 
 		assert(c.fmuState = <EVENT_MODE>);
 
+		let mk_(s, c2) = fmi3EnterContinuousTimeMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		assert(c.fmuState = <CONTINUOUS_TIME_MODE>);
+
+		let mk_(s, c2) = fmi3EnterEventMode(c, false, false, [], 0, false) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		assert(c.fmuState = <EVENT_MODE>);
+
+		let mk_(s, c2) = fmi3SetTime(c, 99999) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
 		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [123]);
@@ -74,6 +90,20 @@ operations
 		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [12345]);
+
+
+		let mk_(s, fmustate) = fmi3GetFMUState(c) in
+			if s <> <fmi3OK> then return false
+			else let mk_(s2, size) = fmi3SerializedFMUStateSize(c, fmustate) in
+				if s2 <> <fmi3OK> then return false
+				else let mk_(s3, serialized) = fmi3SerializeFMUState(c, fmustate, size) in
+					if s3 <> <fmi3OK> then return false
+					else let mk_(s4, fmustate2) = fmi3DeSerializeFMUState(c, serialized, size) in
+						if s4 <> <fmi3OK> then return false
+						else let mk_(s5, c2) = fmi3SetFMUState(c, fmustate2) in
+							if s5 <> <fmi3OK> then return false
+							else c := c2;
+
 
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false
@@ -134,6 +164,20 @@ operations
 			if s <> <fmi3OK> then return false
 			else assert(v = [12345]);
 
+
+		let mk_(s, fmustate) = fmi3GetFMUState(c) in
+			if s <> <fmi3OK> then return false
+			else let mk_(s2, size) = fmi3SerializedFMUStateSize(c, fmustate) in
+				if s2 <> <fmi3OK> then return false
+				else let mk_(s3, serialized) = fmi3SerializeFMUState(c, fmustate, size) in
+					if s3 <> <fmi3OK> then return false
+					else let mk_(s4, fmustate2) = fmi3DeSerializeFMUState(c, serialized, size) in
+						if s4 <> <fmi3OK> then return false
+						else let mk_(s5, c2) = fmi3SetFMUState(c, fmustate2) in
+							if s5 <> <fmi3OK> then return false
+							else c := c2;
+
+
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false
 			else c := c2;
@@ -177,6 +221,16 @@ operations
 
 		assert(c.fmuState = <EVENT_MODE>);
 
+		let mk_(s, c2) = fmi3EnterStepMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		let mk_(s, c2) = fmi3EnterEventMode(c, false, false, [], 0, false) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
+
+		assert(c.fmuState = <EVENT_MODE>);
+
 		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [123]);
@@ -188,6 +242,20 @@ operations
 		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [12345]);
+
+
+		let mk_(s, fmustate) = fmi3GetFMUState(c) in
+			if s <> <fmi3OK> then return false
+			else let mk_(s2, size) = fmi3SerializedFMUStateSize(c, fmustate) in
+				if s2 <> <fmi3OK> then return false
+				else let mk_(s3, serialized) = fmi3SerializeFMUState(c, fmustate, size) in
+					if s3 <> <fmi3OK> then return false
+					else let mk_(s4, fmustate2) = fmi3DeSerializeFMUState(c, serialized, size) in
+						if s4 <> <fmi3OK> then return false
+						else let mk_(s5, c2) = fmi3SetFMUState(c, fmustate2) in
+							if s5 <> <fmi3OK> then return false
+							else c := c2;
+
 
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false
@@ -243,6 +311,20 @@ operations
 		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [12345]);
+
+
+		let mk_(s, fmustate) = fmi3GetFMUState(c) in
+			if s <> <fmi3OK> then return false
+			else let mk_(s2, size) = fmi3SerializedFMUStateSize(c, fmustate) in
+				if s2 <> <fmi3OK> then return false
+				else let mk_(s3, serialized) = fmi3SerializeFMUState(c, fmustate, size) in
+					if s3 <> <fmi3OK> then return false
+					else let mk_(s4, fmustate2) = fmi3DeSerializeFMUState(c, serialized, size) in
+						if s4 <> <fmi3OK> then return false
+						else let mk_(s5, c2) = fmi3SetFMUState(c, fmustate2) in
+							if s5 <> <fmi3OK> then return false
+							else c := c2;
+
 
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false

@@ -157,7 +157,7 @@ functions
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
 				v.base.causality = <output>
-				or vr in set c.continuousTimeStates
+				or vr in set elems c.continuousTimeStates
 				or vr in set c.stateDerivatives;
 
 
