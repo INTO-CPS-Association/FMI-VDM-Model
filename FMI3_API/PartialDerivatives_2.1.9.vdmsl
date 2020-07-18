@@ -1,0 +1,104 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2020, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.11 Getting Partial Derivatives
+ */
+functions
+	/**
+	 * Implementation and API for fmi3GetDirectionalDerivative.
+	 */
+	fmi3GetDirectionalDerivative_Impl(
+		c			: fmi3Instance ,
+		unknowns	: seq1 of fmi3ValueReference,
+		nUnknowns	: nat1,
+		knowns		: seq1 of fmi3ValueReference,
+		nKnowns		: nat1) result : fmi3Status * [seq1 of fmi3Float] * [nat1]
+	==
+		mk_(<fmi3OK>, nil, nil)	-- TODO!
+	pre
+		c.fmuState in set STATES_fmi3GetDirectionalDerivative
+		and nUnknowns = len unknowns
+		and nKnowns = len knowns
+	post
+		result.#1 = <fmi3OK> => len result.#2 = result.#3;
+
+	fmi3GetDirectionalDerivative(
+		c			: fmi3Instance ,
+		unknowns	: seq1 of fmi3ValueReference,
+		nUnknowns	: nat1,
+		knowns		: seq1 of fmi3ValueReference,
+		nKnowns		: nat1) result : fmi3Status * [seq1 of fmi3Float] * [nat1]
+	==
+		if c.fmuState not in set STATES_fmi3GetDirectionalDerivative
+		then let - = logAPIError(c, "Cannot call fmi3GetDirectionalDerivative in this state") in
+			mk_(<fmi3Error>, nil, nil)
+		elseif nUnknowns <> len unknowns or nKnowns <> len knowns
+		then let - = logAPIError(c, "Array length mismatch") in
+			mk_(<fmi3Error>, nil, nil)
+		else
+			fmi3GetDirectionalDerivative_Impl(c, unknowns, nUnknowns, knowns, nKnowns)
+	 post
+	 	result.#1 <> <fmi3OK> <=> result.#2 = nil and result.#3 = nil;
+
+	/**
+	 * Implementation and API for fmi3GetAdjointDerivative.
+	 */
+	fmi3GetAdjointDerivative_Impl(
+		c			: fmi3Instance ,
+		unknowns	: seq1 of fmi3ValueReference,
+		nUnknowns	: nat1,
+		knowns		: seq1 of fmi3ValueReference,
+		nKnowns		: nat1) result : fmi3Status * [seq1 of fmi3Float] * [nat1]
+	==
+		mk_(<fmi3OK>, nil, nil)	-- TODO!
+	pre
+		c.fmuState in set STATES_fmi3GetDirectionalDerivative
+		and nUnknowns = len unknowns
+		and nKnowns = len knowns
+	post
+		result.#1 = <fmi3OK> => len result.#2 = result.#3;
+
+	fmi3GetAdjointDerivative(
+		c			: fmi3Instance ,
+		unknowns	: seq1 of fmi3ValueReference,
+		nUnknowns	: nat1,
+		knowns		: seq1 of fmi3ValueReference,
+		nKnowns		: nat1) result : fmi3Status * [seq1 of fmi3Float] * [nat1]
+	==
+		if c.fmuState not in set STATES_fmi3GetAdjointDerivative
+		then let - = logAPIError(c, "Cannot call fmi3GetAdjointDerivative in this state") in
+			mk_(<fmi3Error>, nil, nil)
+		elseif nUnknowns <> len unknowns or nKnowns <> len knowns
+		then let - = logAPIError(c, "Array length mismatch") in
+			mk_(<fmi3Error>, nil, nil)
+		else
+			fmi3GetAdjointDerivative_Impl(c, unknowns, nUnknowns, knowns, nKnowns)
+	 post
+	 	result.#1 <> <fmi3OK> <=> result.#2 = nil and result.#3 = nil;

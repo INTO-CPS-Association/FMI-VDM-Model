@@ -69,6 +69,7 @@ STATES_fmi3SerializedFMUstateSize : States   = STATES_fmi3FreeInstance;
 STATES_fmi3SerializeFMUstate : States        = STATES_fmi3FreeInstance;
 STATES_fmi3DeSerializeFMUstate : States      = STATES_fmi3FreeInstance;
 STATES_fmi3GetDirectionalDerivative : States = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> }; 
+STATES_fmi3GetAdjointDerivative : States     = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> }; 
 
 ------------------------------------------------------------------------------
 -- Function calls for Model-exchange

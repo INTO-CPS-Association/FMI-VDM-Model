@@ -1,0 +1,90 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 3.2.1 Providing Independent Variables and Re-initialization of Caching
+ */
+functions
+	/**
+	 * Implementation and API for fmi3SetTime.
+	 */
+	fmi3SetTime_Impl: fmi3Instance * fmi3Float +> fmi3Status * fmi3Instance
+	fmi3SetTime_Impl(c, time) ==
+		mk_(<fmi3OK>, mu(c,
+			currentTime |-> time))
+	pre
+		c.fmuKind = <ModelExchange>
+		and c.fmuState in set STATES_fmi3SetTime;
+
+	fmi3SetTime: fmi3Instance * fmi3Float +> fmi3Status * [fmi3Instance]
+	fmi3SetTime(c, time) ==
+		if c.fmuKind <> <ModelExchange>
+		then let - = logAPIError(c, "Cannot call fmi3SetTime for fmi3CoSimulation") in
+			mk_(<fmi3Error>, nil)
+		elseif c.fmuState not in set STATES_fmi3SetTime
+		then let - = logAPIError(c, "Cannot call fmi3SetTime in this state") in
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3SetTime_Impl(c, time)
+	 post
+	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
+
+
+	/**
+	 * Implementation and API for fmi3SetContinuousStates.
+	 */
+	fmi3SetContinuousStates_Impl: fmi3Instance * seq of fmi3Float * nat +> fmi3Status * fmi3Instance
+	fmi3SetContinuousStates_Impl(c, x, nx) ==
+		let modifiers = { c.eModelVariables(c.continuousTimeStates(i)) |-> x(i) | i in set inds x } in 
+			mk_(<fmi3OK>, mu(c,
+				variables |-> c.variables ++ modifiers))
+	pre
+		c.fmuKind = <ModelExchange>
+		and c.fmuState in set STATES_fmi3SetContinuousStates
+		and nx = len x
+		and nx = card c.continuousTimeStates;
+
+	fmi3SetContinuousStates: fmi3Instance * seq of fmi3Float * nat +> fmi3Status * [fmi3Instance]
+	fmi3SetContinuousStates(c, x, nx) ==
+		if c.fmuKind <> <ModelExchange>
+		then let - = logAPIError(c, "Cannot call fmi3SetContinuousStates for fmi3CoSimulation") in
+			mk_(<fmi3Error>, nil)
+		elseif c.fmuState not in set STATES_fmi3SetContinuousStates
+		then let - = logAPIError(c, "Cannot call fmi3SetContinuousStates in this state") in
+			mk_(<fmi3Error>, nil)
+		elseif nx <> len x
+		then let - = logAPIError(c, "nx and x are not consistent") in
+			mk_(<fmi3Error>, nil)
+		elseif nx <> card c.continuousTimeStates
+		then let - = logAPIError(c, "Wrong number of continuous state values") in
+			mk_(<fmi3Error>, nil)
+		else
+			fmi3SetContinuousStates_Impl(c, x, nx)
+	 post
+	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
