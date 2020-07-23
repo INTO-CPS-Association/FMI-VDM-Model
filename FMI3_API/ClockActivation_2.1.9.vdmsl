@@ -82,7 +82,7 @@ functions
 
 
 	/**
-	 * Implementation and API for fmi3SetIntervalDecimal.
+	 * Implementation and API for fmi3GetIntervalDecimal.
 	 */
 	fmi3GetIntervalDecimal_Impl(
 		c					: fmi3Instance,
@@ -110,7 +110,7 @@ functions
 
 
 	/**
-	 * Implementation and API for fmi3SetIntervalDecimal.
+	 * Implementation and API for fmi3GetIntervalFraction.
 	 */
 	fmi3GetIntervalFraction_Impl(
 		c					: fmi3Instance,

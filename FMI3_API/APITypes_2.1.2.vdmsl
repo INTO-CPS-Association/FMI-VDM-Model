@@ -159,6 +159,13 @@ types
     fmi3CallbackLockPreemption		= () -> <VOID>;
     fmi3CallbackUnlockPreemption	= () -> <VOID>;
 
+	fmi3DependencyKind =			-- See fmi3GetVariableDependencies
+		<Constant>	|	-- = 1,
+    	<Fixed>		|	-- = 2,
+    	<Tunable>	|	-- = 3,
+    	<Discrete>	|	-- = 4,
+    	<Dependent>;	-- = 5
+
 values
 	fmi3True			: fmi3Boolean = true;
 	fmi3False			: fmi3Boolean = false;
