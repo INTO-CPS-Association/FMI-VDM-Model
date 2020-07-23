@@ -82,7 +82,7 @@ functions
 	 */
 	fmi3GetNumberOfVariableDependencies_Impl: fmi3Instance * fmi3ValueReference -> fmi3Status * [nat]
 	fmi3GetNumberOfVariableDependencies_Impl(c, valueReference) ==
-		mk_(<fmi3OK>, nil)	-- TODO!
+		is not yet specified
 	pre
 		c.fmuState in set STATES_fmi3GetNumberOfContinuousStates
 	post

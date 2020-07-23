@@ -83,7 +83,7 @@ functions
 		clockElementIndex	: nat1,
 		activationTime		: fmi3Float) result : fmi3Status
 	==
-		undefined;	-- TODO
+		is not yet specified;
 
 	fmi3ActivateModelPartition(
 		c					: fmi3Instance,

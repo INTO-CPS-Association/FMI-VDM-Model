@@ -1,0 +1,202 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.1.9 FMI Application Programming Interface for Setting/Getting Clock Activation State
+ */
+functions
+
+	/**
+	 * Implementation and API for fmi3GetClock.
+	 */
+	fmi3GetClock_Impl: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Clock]
+	fmi3GetClock_Impl(c, vrs, nvr, nval) ==
+		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
+			if s <> <fmi3OK>
+			then mk_(s, nil)
+			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
+	pre
+		getterPreconditions(c, <ClockKind>, vrs, nvr, nval)
+	post
+		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
+
+	fmi3GetClock: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Clock]
+	fmi3GetClock(c, vrs, nvr, nval) ==
+		if getterArgChecks(c, <ClockKind>, vrs, nvr, nval)
+		then fmi3GetClock_Impl(c, vrs, nvr, nval)
+		else mk_(<fmi3Error>, nil)
+	post
+	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
+
+
+	/**
+	 * Implementation and API for fmi3SetClock.
+	 */
+	fmi3SetClock_Impl: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Clock +> fmi3Status * fmi3Instance
+	fmi3SetClock_Impl(c, vrs, nvr, value) ==
+		let updates = merge
+		{
+			let mk_(first, last) = valueRange(c, vrs, i) in { vrs(i) |-> value(first, ..., last) }
+			| i in set inds vrs
+		}
+		in
+			mk_(<fmi3OK>, mu(c,
+				variables |-> c.variables ++ updates,
+				dirty     |-> true))
+	pre
+		setterArgPreconditions(c, <ClockKind>, vrs, nvr, value);
+
+	fmi3SetClock: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Clock +> fmi3Status * [fmi3Instance]
+	fmi3SetClock(c, vrs, nvr, value) ==
+		if setterArgChecks(c, <ClockKind>, vrs, nvr, value)
+		then fmi3SetClock_Impl(c, vrs, nvr, value)
+		else mk_(<fmi3Error>, nil)
+	post
+	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
+
+
+	/**
+	 * Implementation and API for fmi3SetIntervalDecimal.
+	 */
+	fmi3GetIntervalDecimal_Impl(
+		c					: fmi3Instance,
+		valueReferences		: seq1 of fmi3ValueReference,
+		nValueReferences	: nat1,
+		interval			: seq1 of fmi3Float,
+		nValues				: nat1) result : fmi3Status
+	==
+		is not yet specified
+	pre
+		nValueReferences = len valueReferences
+		and ( forall vr in seq valueReferences &
+		    let sv = lookup(c.eModelVariables, vr) in
+			  sv <> nil and sv.kind = <ClockKind> )
+		and nValues = totalValues(c, valueReferences);
+
+	fmi3GetIntervalDecimal(
+		c					: fmi3Instance,
+		valueReferences		: seq1 of fmi3ValueReference,
+		nValueReferences	: nat1,
+		interval			: seq1 of fmi3Float,
+		nValues				: nat1) result : fmi3Status
+	==
+		is not yet specified;
+
+
+	/**
+	 * Implementation and API for fmi3SetIntervalDecimal.
+	 */
+	fmi3GetIntervalFraction_Impl(
+		c					: fmi3Instance,
+		valueReferences		: seq1 of fmi3ValueReference,
+		nValueReferences	: nat1,
+		intervalCounter		: seq1 of fmi3Integer,
+		resolution			: seq1 of fmi3Integer,
+		nValues				: nat1) result : fmi3Status
+	==
+		is not yet specified
+	pre
+		nValues = len intervalCounter
+		and nValues = len resolution
+		and (forall i in seq intervalCounter & i >= 0)
+		and (forall r in seq resolution & r >= 0)
+		and (forall vr in seq valueReferences &
+		    let sv = lookup(c.eModelVariables, vr) in
+			  sv <> nil and sv.kind = <ClockKind> )
+		and nValues = totalValues(c, valueReferences);
+
+	fmi3GetIntervalFraction(
+		c					: fmi3Instance,
+		valueReferences		: seq1 of fmi3ValueReference,
+		nValueReferences	: nat1,
+		intervalCounter		: seq1 of fmi3Integer,
+		resolution			: seq1 of fmi3Integer,
+		nValues				: nat1) result : fmi3Status
+	==
+		is not yet specified;
+
+
+	/**
+	 * Implementation and API for fmi3SetIntervalDecimal.
+	 */
+	fmi3SetIntervalDecimal_Impl(
+	 	c					: fmi3Instance,
+		valueReferences		: seq1 of fmi3ValueReference,
+		nValueReferences	: nat1,
+		interval			: seq1 of fmi3Float,
+		nValues				: nat1) result : fmi3Status
+	==
+		is not yet specified
+	pre
+		(forall vr in seq valueReferences &
+		    let sv = lookup(c.eModelVariables, vr) in
+			  sv <> nil and sv.kind = <ClockKind> )
+		and nValues = totalValues(c, valueReferences);
+
+	fmi3SetIntervalDecimal(
+	 	c					: fmi3Instance,
+		valueReferences		: seq1 of fmi3ValueReference,
+		nValueReferences	: nat1,
+		interval			: seq1 of fmi3Float,
+		nValues				: nat1) result : fmi3Status
+	==
+		is not yet specified;
+
+
+	/**
+	 * Implementation and API for fmi3SetIntervalFraction.
+	 */
+	fmi3SetIntervalFraction_Impl(
+		c					: fmi3Instance,
+		valueReferences		: seq1 of fmi3ValueReference,
+		nValueReferences	: nat1,
+		intervalCounter		: seq1 of fmi3Integer,
+		resolution			: seq1 of fmi3Integer,
+		nValues				: nat1) result : fmi3Status
+	==
+		is not yet specified
+	pre
+		nValues = len intervalCounter
+		and nValues = len resolution
+		and (forall i in seq intervalCounter & i >= 0)
+		and (forall r in seq resolution & r >= 0)
+		and (forall vr in seq valueReferences &
+		    let sv = lookup(c.eModelVariables, vr) in
+			  sv <> nil and sv.kind = <ClockKind> )
+		and nValues = totalValues(c, valueReferences);
+
+	fmi3SetIntervalFraction(
+		c					: fmi3Instance,
+		valueReferences		: seq1 of fmi3ValueReference,
+		nValueReferences	: nat1,
+		intervalCounter		: seq1 of fmi3Integer,
+		resolution			: seq1 of fmi3Integer,
+		nValues				: nat1) result : fmi3Status
+	==
+		is not yet specified;
