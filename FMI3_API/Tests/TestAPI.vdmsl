@@ -42,9 +42,9 @@ functions
             mk_fmi3InstanceEnvironment(modelExchangeFMU, mk_SolverData([]), nil),
             fmi3Logger);
 
-     testInstantiateBasicCoSimulation: seq of fmi3ValueReference * fmi3Boolean -> [fmi3Instance]
-     testInstantiateBasicCoSimulation(requiredIntermediateVariables, eventModeRequired) ==
-        fmi3InstantiateBasicCoSimulation(
+     testInstantiateCoSimulation: seq of fmi3ValueReference * fmi3Boolean -> [fmi3Instance]
+     testInstantiateCoSimulation(requiredIntermediateVariables, eventModeRequired) ==
+        fmi3InstantiateCoSimulation(
             "Basic instance",
             "{111-222-333-444}",
             "",
@@ -57,9 +57,9 @@ functions
             fmi3Logger,
             nil);
 
-     testInstantiateScheduledCoSimulation: seq of fmi3ValueReference -> [fmi3Instance]
-     testInstantiateScheduledCoSimulation(requiredIntermediateVariables) ==
-        fmi3InstantiateScheduledCoSimulation(
+     testInstantiateScheduledExecution: seq of fmi3ValueReference -> [fmi3Instance]
+     testInstantiateScheduledExecution(requiredIntermediateVariables) ==
+        fmi3InstantiateScheduledExecution(
             "Scheduled instance",
             "{111-222-333-444}",
             "",
@@ -101,7 +101,7 @@ functions
 
 	testGetAPI: () -> bool
 	testGetAPI() ==
-        let instance = fmi3InstantiateBasicCoSimulation(
+        let instance = fmi3InstantiateCoSimulation(
             "VariableTypes", "", "", false, true, false, [], 0,
             mk_fmi3InstanceEnvironment(variableTypesFMU, mk_SolverData([]), nil),
             fmi3Logger, nil),
@@ -150,7 +150,7 @@ functions
 
 	testSetAPI: () -> bool
 	testSetAPI() ==
-        let instance = fmi3InstantiateBasicCoSimulation(
+        let instance = fmi3InstantiateCoSimulation(
             "VariableTypes", "", "", false, true, false, [], 0,
             mk_fmi3InstanceEnvironment(variableTypesFMU, mk_SolverData([]), nil),
             fmi3Logger, nil),
@@ -206,11 +206,11 @@ functions
 		testInstantiateModelExchange("", "{111-222-333-444}") = nil,
 		testInstantiateModelExchange("ME", "wrong") = nil,
 
-		testInstantiateBasicCoSimulation([], false) <> nil,
-		testInstantiateBasicCoSimulation([999], false) = nil,
+		testInstantiateCoSimulation([], false) <> nil,
+		testInstantiateCoSimulation([999], false) = nil,
 
-		testInstantiateScheduledCoSimulation([]) <> nil,
-		testInstantiateScheduledCoSimulation([999]) = nil,
+		testInstantiateScheduledExecution([]) <> nil,
+		testInstantiateScheduledExecution([999]) = nil,
 
 		testSetDebugLogging(["Full", "Terse"]),
 		testSetDebugLogging(["Wrong"]) = false,

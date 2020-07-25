@@ -39,8 +39,7 @@ functions
 		mk_(<fmi3OK>, mu(c,
 			fmuState |-> <EVENT_MODE>))
 	pre
-		c.fmuKind = <ModelExchange> and c.fmuState in set STATES_fmi3EnterEventModeME
-		or c.fmuKind = <BasicCoSimulation> and c.fmuState in set STATES_fmi3EnterEventModeHCS
+		c.fmuState in set STATES_fmi3EnterEventMode
 	post
 		RESULT.#2.fmuState = <EVENT_MODE>;
 
@@ -55,8 +54,7 @@ functions
 		if c.fmuKind not in set {<ModelExchange>, <BasicCoSimulation>}
 		then let - = logAPIError(c, "Cannot call fmi3EnterEventMode in this mode") in
 			mk_(<fmi3Error>, nil)
-		elseif c.fmuKind = <ModelExchange> and c.fmuState not in set STATES_fmi3EnterEventModeME
-			or c.fmuKind = <BasicCoSimulation> and c.fmuState not in set STATES_fmi3EnterEventModeHCS
+		elseif c.fmuState not in set STATES_fmi3EnterEventMode
 		then let - = logAPIError(c, "Cannot call fmi3EnterEventMode in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif nEventIndicators <> len rootsFound

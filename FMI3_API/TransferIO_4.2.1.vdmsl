@@ -60,7 +60,7 @@ functions
 			mk_(<fmi3OK>, reals)
 	pre
 		is_(c.fmuKind, CoSimulation)
-		and c.fmuState in set STATES_fmi3GetRealOutputDerivatives
+		and c.fmuState in set STATES_fmi3GetOutputDerivatives
 		and nvr = len vrs
 		and nvr = len order
 		and (forall o in seq order & o > 0)
@@ -81,14 +81,14 @@ functions
 		RESULT.#1 = <fmi3OK> => nvr = len RESULT.#2;
 
 
-	fmi3GetRealOutputDerivatives: fmi3Instance * seq of fmi3ValueReference * nat *
+	fmi3GetOutputDerivatives: fmi3Instance * seq of fmi3ValueReference * nat *
 								  seq of fmi3Integer +> fmi3Status * [seq of fmi3Float]
-	fmi3GetRealOutputDerivatives(c, vrs, nvr, orders) ==
+	fmi3GetOutputDerivatives(c, vrs, nvr, orders) ==
 		if not is_(c.fmuKind, CoSimulation)
-		then let - = logAPIError(c, "Cannot call fmi3GetRealOutputDerivatives for fmi3ModelExchange") in
+		then let - = logAPIError(c, "Cannot call fmi3GetOutputDerivatives for fmi3ModelExchange") in
 			mk_(<fmi3Error>, nil)
-		elseif c.fmuState not in set STATES_fmi3GetRealOutputDerivatives
-		then let - = logAPIError(c, "Cannot call fmi3GetRealOutputDerivatives in this state") in
+		elseif c.fmuState not in set STATES_fmi3GetOutputDerivatives
+		then let - = logAPIError(c, "Cannot call fmi3GetOutputDerivatives in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif nvr <> len vrs or nvr <> len orders
 		then let - = logAPIError(c, "nvr, vr and order are not consistent") in

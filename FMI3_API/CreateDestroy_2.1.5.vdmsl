@@ -174,10 +174,10 @@ functions
 				result;
 
 	/**
-	 * The fmi3InstantiateBasicCoSimulation API. This performs sufficient checks to pass the precondition on the
+	 * The fmi3InstantiateCoSimulation API. This performs sufficient checks to pass the precondition on the
 	 * implementation function, returning nil if any checks fail.
 	 */
-	fmi3InstantiateBasicCoSimulation(
+	fmi3InstantiateCoSimulation(
 		instanceName							: fmi3String,
 		instantiationToken						: fmi3String,
 		-										: fmi3String,	-- resourceLocation not modelled
@@ -226,10 +226,10 @@ functions
 					result;
 
 	/**
-	 * The fmi3InstantiateScheduledCoSimulation API. This performs sufficient checks to pass the precondition on the
+	 * The fmi3InstantiateScheduledExecution API. This performs sufficient checks to pass the precondition on the
 	 * implementation function, returning nil if any checks fail.
 	 */
-	fmi3InstantiateScheduledCoSimulation(
+	fmi3InstantiateScheduledExecution(
 		instanceName							: fmi3String,
 		instantiationToken						: fmi3String,
 		-										: fmi3String,	-- resourceLocation not modelled

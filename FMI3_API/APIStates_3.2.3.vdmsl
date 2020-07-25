@@ -30,70 +30,694 @@
 /**
  * 3.2.3 State Machine for Model Exchange
  * 4.2.3 State Machine for Basic Co-Simulation
- * 5.2.4 State Machine for Hybrid Co-Simulation
  * 6.2.3 State Machine for Scheduled Co-Simulation
  */
 types
 	States = set of fmi3State;
 
+/**
+ * Values are generated from the FMI3_API_Matrix spreadsheet, using csv2vdm.awk.
+ * DO NOT EDIT DIRECTLY!
+ */
 values
-	ANY_STATE = { s | s : fmi3State };
+STATES_fmi3GetVersion: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <END>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <START>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
 
---------------------------------------------------------------------------------
--- Function calls for all simulation modes
---------------------------------------------------------------------------------
-STATES_fmi3GetVersion : States               = ANY_STATE;
-STATES_fmi3SetDebugLogging : States          = { <INSTANTIATED>, <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <CONFIGURATION_MODE>, <RECONFIGURATION_MODE>, <STEP_MODE>, <TERMINATED>, <ERROR> };
-STATES_fmi3EnterConfigurationMode : States   = { <INSTANTIATED>, <EVENT_MODE>, <STEP_MODE>, <CLOCK_ACTIVATION_MODE> };
-STATES_fmi3ExitConfigurationMode : States    = { <CONFIGURATION_MODE>, <RECONFIGURATION_MODE> };
-STATES_fmi3EnterInitializationMode : States  = { <INSTANTIATED> };
-STATES_fmi3ExitInitializationMode : States   = { <INITIALIZATION_MODE> };
-STATES_fmi3Terminate : States                = ANY_STATE \ {<TERMINATED>};
-STATES_fmi3Reset : States                    = ANY_STATE;
-STATES_fmi3FreeInstance : States             = ANY_STATE;
+STATES_fmi3InstantiateCoSimulation: States = {
+    <START>
+};
 
-STATES_fmi3EnterEventModeME : States         = { <CONTINUOUS_TIME_MODE> };
-STATES_fmi3EnterEventModeHCS : States        = { <STEP_MODE> };
-STATES_fmi3EnterContinuousTimeMode : States  = { <EVENT_MODE> };
-STATES_fmi3EnterStepMode : States            = { <RECONFIGURATION_MODE>, <EVENT_MODE> };
+STATES_fmi3InstantiateModelExchange: States = {
+    <START>
+};
 
-STATES_fmi3GetFMUState : States              = STATES_fmi3FreeInstance;
-STATES_fmi3SetFMUState : States              = STATES_fmi3FreeInstance;
+STATES_fmi3InstantiateScheduledExecution: States = {
+    <START>
+};
 
---- Above checked, below yet to be done!
+STATES_fmi3ActivateModelPartition: States = {
+    <CLOCK_ACTIVATION_MODE>
+};
 
-STATES_fmi3FreeFMUState : States             = STATES_fmi3FreeInstance;
-STATES_fmi3SerializedFMUStateSize : States   = STATES_fmi3FreeInstance;
-STATES_fmi3SerializeFMUState : States        = STATES_fmi3FreeInstance;
-STATES_fmi3DeSerializeFMUState : States      = STATES_fmi3FreeInstance;
-STATES_fmi3GetDirectionalDerivative : States = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> }; 
-STATES_fmi3GetAdjointDerivative : States     = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> }; 
+STATES_fmi3CallbackIntermediateUpdate: States = {
+    <EVENT_MODE>,
+    <STEP_MODE>
+};
 
-------------------------------------------------------------------------------
--- Function calls for Model-exchange
-------------------------------------------------------------------------------
-STATES_fmi3NewDiscreteStates : States        = { <EVENT_MODE> };
-STATES_fmi3CompletedIntegratorStep : States  = { <CONTINUOUS_TIME_MODE> };
-STATES_fmi3SetTime : States                  = { <EVENT_MODE>, <CONTINUOUS_TIME_MODE> };
-STATES_fmi3SetContinuousStates : States      = { <CONTINUOUS_TIME_MODE> };
-STATES_fmi3GetEventIndicators : States       = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <TERMINATED>, <ERROR> };
-STATES_fmi3GetContinuousStates : States      = STATES_fmi3GetEventIndicators;
-STATES_fmi3GetDerivatives : States           = { <INITIALIZATION_MODE>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <TERMINATED>, <ERROR> };
-STATES_fmi3GetNominalsOfContinuousStates : States = {  <INSTANTIATED>, <EVENT_MODE>, <CONTINUOUS_TIME_MODE>, <TERMINATED>, <ERROR> };
-STATES_fmi3GetNumberOfEventIndicators        = ANY_STATE;
-STATES_fmi3GetNumberOfContinuousStates       = ANY_STATE;
-STATES_fmi3GetNumberOfVariableDependencies   = ANY_STATE;
+STATES_fmi3CompletedIntegratorStep: States = {
+    <CONTINUOUS_TIME_MODE>
+};
 
-------------------------------------------------------------------------------
--- Function calls for Co-simulation
-------------------------------------------------------------------------------
-STATES_fmi3SetRealInputDerivatives : States  = { <INSTANTIATED>, <INITIALIZATION_MODE>, <STEP_MODE> };
-STATES_fmi3GetRealOutputDerivatives : States = { <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED>, <ERROR> };
-STATES_fmi3DoStep : States                   = { <STEP_MODE> };
-STATES_fmi3CancelStep : States               = { <STEP_MODE> };
-STATES_fmi3GetStatus : States                = { <STEP_MODE>, <RECONFIGURATION_MODE>, <TERMINATED> };
-STATES_fmi3GetRealStatus : States            = STATES_fmi3GetStatus;
-STATES_fmi3GetIntegerStatus : States         = STATES_fmi3GetStatus;
-STATES_fmi3GetBooleanStatus : States         = STATES_fmi3GetStatus;
-STATES_fmi3GetStringStatus : States          = STATES_fmi3GetStatus;
-STATES_fmi3ActivateModelPartition : States   = ANY_STATE;
+STATES_fmi3DeSerializeFMUState: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3DoStep: States = {
+    <EVENT_MODE>,
+    <STEP_MODE>
+};
+
+STATES_fmi3EnterConfigurationMode: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <EVENT_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>
+};
+
+STATES_fmi3EnterContinuousTimeMode: States = {
+    <EVENT_MODE>
+};
+
+STATES_fmi3EnterEventMode: States = {
+    <CONTINUOUS_TIME_MODE>,
+    <STEP_MODE>
+};
+
+STATES_fmi3EnterInitializationMode: States = {
+    <INSTANTIATED>
+};
+
+STATES_fmi3EnterStepMode: States = {
+    <EVENT_MODE>,
+    <RECONFIGURATION_MODE>
+};
+
+STATES_fmi3ExitConfigurationMode: States = {
+    <CONFIGURATION_MODE>,
+    <RECONFIGURATION_MODE>
+};
+
+STATES_fmi3ExitInitializationMode: States = {
+    <INITIALIZATION_MODE>
+};
+
+STATES_fmi3FreeFMUState: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3FreeInstance: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <END>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetAdjointDerivative: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetBinary: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetBoolean: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetClock: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetContinuousStates: States = {
+
+};
+
+STATES_fmi3GetDerivatives: States = {
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetDirectionalDerivative: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetEventIndicators: States = {
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>
+};
+
+STATES_fmi3GetFloat32: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetFloat64: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetFMUState: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetInt16: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetInt32: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetInt64: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetInt8: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetIntervalDecimal: States = {
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetIntervalFraction: States = {
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetNominalsOfContinuousStates: States = {
+    <EVENT_MODE>
+};
+
+STATES_fmi3GetNumberOfContinuousStates: States = {
+
+};
+
+STATES_fmi3GetNumberOfEventIndicators: States = {
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>
+};
+
+STATES_fmi3GetNumberOfVariableDependencies: States = {
+
+};
+
+STATES_fmi3GetOutputDerivatives: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <EVENT_MODE>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetString: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetUInt16: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetUInt32: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetUInt64: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetUInt8: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3GetVariableDependencies: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3NewDiscreteStates: States = {
+    <EVENT_MODE>
+};
+
+STATES_fmi3Reset: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SerializedFMUStateSize: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SerializeFMUState: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetBinary: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetBoolean: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetClock: States = {
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetContinuousStates: States = {
+
+};
+
+STATES_fmi3SetDebugLogging: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetFloat32: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetFloat64: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetFMUState: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetInt16: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetInt32: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetInt64: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetInt8: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetIntervalDecimal: States = {
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetIntervalFraction: States = {
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetString: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetTime: States = {
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetUInt16: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetUInt32: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetUInt64: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3SetUInt8: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <INTERMEDIATE_UPDATE_MODE>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+
+STATES_fmi3Terminate: States = {
+    <CLOCK_ACTIVATION_MODE>,
+    <CONFIGURATION_MODE>,
+    <CONTINUOUS_TIME_MODE>,
+    <EVENT_MODE>,
+    <INITIALIZATION_MODE>,
+    <INSTANTIATED>,
+    <RECONFIGURATION_MODE>,
+    <STEP_MODE>,
+    <TERMINATED>
+};
+

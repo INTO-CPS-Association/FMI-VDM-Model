@@ -123,7 +123,7 @@ operations
 	testBasicCoSimulationPaths: () ==> bool
 	testBasicCoSimulationPaths() ==
 	(
-		dcl c : [fmi3Instance] := testInstantiateBasicCoSimulation([], false);
+		dcl c : [fmi3Instance] := testInstantiateCoSimulation([], false);
 		if c = nil then return false;
 
 		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
@@ -192,7 +192,7 @@ operations
 	testHybridCoSimulationPaths: () ==> bool
 	testHybridCoSimulationPaths() ==
 	(
-		dcl c : [fmi3Instance] := testInstantiateBasicCoSimulation([], true);	-- eventModeRequired!
+		dcl c : [fmi3Instance] := testInstantiateCoSimulation([], true);	-- eventModeRequired!
 		if c = nil then return false;
 
 		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
@@ -268,10 +268,10 @@ operations
 		return (fmi3FreeInstance(c) = <VOID>);
 	);
 
-	testScheduledCoSimulationPaths: () ==> bool
-	testScheduledCoSimulationPaths() ==
+	testScheduledExecutionPaths: () ==> bool
+	testScheduledExecutionPaths() ==
 	(
-		dcl c : [fmi3Instance] := testInstantiateScheduledCoSimulation([]);
+		dcl c : [fmi3Instance] := testInstantiateScheduledExecution([]);
 		if c = nil then return false;
 
 		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
@@ -350,6 +350,6 @@ operations
 		testModelExchangePaths(),
 		testBasicCoSimulationPaths(),
 		testHybridCoSimulationPaths(),
-		testScheduledCoSimulationPaths()
+		testScheduledExecutionPaths()
 	]
 	post elems RESULT = {true};
