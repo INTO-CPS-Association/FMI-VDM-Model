@@ -44,7 +44,7 @@ types
 		providesAdjointDerivative				: [bool]
 		providesPerElementDependencies			: [bool];
 
-	CoSimulationKind = <BasicCoSimulation> | <HybridCoSimulation> | <ScheduledCoSimulation>;
+	CoSimulationKind = <BasicCoSimulation> | <ScheduledCoSimulation>;
 
 	CoSimulation ::
 		base									: fmi3InterfaceType
@@ -54,7 +54,8 @@ types
 		maxOutputDerivativeOrder				: [nat]
 		providesIntermediateVariableAccess		: [bool]
 		canReturnEarlyAfterIntermediateUpdate	: [bool]
-		fixedInternalStepSize					: [real];
+		fixedInternalStepSize					: [real]
+		hasEventMode							: [bool];
 
 functions
 
