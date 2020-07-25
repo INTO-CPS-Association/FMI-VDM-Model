@@ -40,7 +40,7 @@ functions
 			fmuState |-> <EVENT_MODE>))
 	pre
 		c.fmuKind = <ModelExchange> and c.fmuState in set STATES_fmi3EnterEventModeME
-		or c.fmuKind = <HybridCoSimulation> and c.fmuState in set STATES_fmi3EnterEventModeHCS
+		or c.fmuKind = <BasicCoSimulation> and c.fmuState in set STATES_fmi3EnterEventModeHCS
 	post
 		RESULT.#2.fmuState = <EVENT_MODE>;
 
@@ -52,11 +52,11 @@ functions
          nEventIndicators	: nat,
          -					: fmi3Boolean) result: fmi3Status * [fmi3Instance]
 	==
-		if c.fmuKind not in set {<ModelExchange>, <HybridCoSimulation>}
+		if c.fmuKind not in set {<ModelExchange>, <BasicCoSimulation>}
 		then let - = logAPIError(c, "Cannot call fmi3EnterEventMode in this mode") in
 			mk_(<fmi3Error>, nil)
 		elseif c.fmuKind = <ModelExchange> and c.fmuState not in set STATES_fmi3EnterEventModeME
-			or c.fmuKind = <HybridCoSimulation> and c.fmuState not in set STATES_fmi3EnterEventModeHCS
+			or c.fmuKind = <BasicCoSimulation> and c.fmuState not in set STATES_fmi3EnterEventModeHCS
 		then let - = logAPIError(c, "Cannot call fmi3EnterEventMode in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif nEventIndicators <> len rootsFound
@@ -126,8 +126,7 @@ functions
 		mk_(<fmi3OK>, mu(c,
 			fmuState |-> <STEP_MODE>))
 	pre
-		c.fmuKind = <BasicCoSimulation> and c.fmuState in set STATES_fmi3EnterStepModeBCS
-		or c.fmuKind = <HybridCoSimulation> and c.fmuState in set STATES_fmi3EnterStepModeHCS
+		c.fmuState in set STATES_fmi3EnterStepMode
 	post
 		RESULT.#2.fmuState = <STEP_MODE>;
 
@@ -136,8 +135,7 @@ functions
 		if c.fmuKind not in set {<BasicCoSimulation>, <HybridCoSimulation>}
 		then let - = logAPIError(c, "Cannot call fmi3EnterStepMode in this mode") in
 			mk_(<fmi3Error>, nil)
-		elseif c.fmuKind = <BasicCoSimulation> and c.fmuState not in set STATES_fmi3EnterStepModeBCS
-			or c.fmuKind = <HybridCoSimulation> and c.fmuState not in set STATES_fmi3EnterStepModeHCS
+		elseif c.fmuState not in set STATES_fmi3EnterStepMode
 		then let - = logAPIError(c, "Cannot call fmi3EnterStepMode in this state") in
 			mk_(<fmi3Error>, nil)
 		else

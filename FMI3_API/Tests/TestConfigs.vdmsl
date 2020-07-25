@@ -184,111 +184,6 @@ values
 			nil,
 			nil,
 			nil,
-			nil
-		),
-
-		-- UnitDefinitions
-		nil,
-
-		-- TypeDefinitions
-		nil,
-
-		-- LogCategories
-		nil,
-
-		-- DefaultExperiment
-		nil,
-
-		-- VendorAnnotations
-		nil,
-
-		-- ModelVariables
-		[
-			mk_Integer
-			(
-				mk_fmi3VariableBase
-				(
-					6,
-					"varname",
-					0,
-					nil,
-					<structuralParameter>,
-					<tunable>,
-					nil,
-					nil,
-					nil,
-					nil,
-					nil,
-					nil,
-					nil,
-					[
-						mk_Alias("alias", "desc", nil)
-					]
-				),
-				<Int64>,
-				mk_fmi3IntegerAttributes(nil),
-				mk_fmi3IntXXAttributes(nil, nil),
-				[123]
-			)
-		],
-
-		-- ModelStructure
-		mk_ModelStructure
-		(
-			10,  -- Line
-			nil,
-			nil
-		)
-	);
-
-
-/**
- * Hybrid co-simulation.
- */
-	hybridCosimulationFMU = mk_FMIModelDescription
-	(
-		mk_ModelAttributes
-		(
-			3,  -- Line
-			"3.0-alpha",
-			"Hybrid cosimulation example",
-			"{111-222-333-444}",
-			nil,
-			nil,
-			nil,
-			nil,
-			nil,
-			nil,
-			nil,
-			<flat>,
-			nil
-		),
-
-		-- ModelExchange
-		nil,
-
-		-- CoSimulation
-		mk_CoSimulation
-		(
-			mk_fmi3InterfaceType
-			(
-				4,  -- Line
-				nil,
-				"Test FMU",
-				nil,
-				nil,
-				nil,
-				true,
-				nil,
-				nil,
-				nil,
-				nil
-			),
-			<HybridCoSimulation>,
-			nil,
-			nil,
-			nil,
-			nil,
 			nil,
 			nil
 		),
@@ -396,6 +291,7 @@ values
 			nil,
 			nil,
 			nil,
+			nil,
 			nil
 		),
 
@@ -496,6 +392,7 @@ values
 				nil
 			),
 			<BasicCoSimulation>,
+			nil,
 			nil,
 			nil,
 			nil,

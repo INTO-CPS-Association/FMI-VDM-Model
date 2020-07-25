@@ -183,9 +183,9 @@ functions
 		-										: fmi3String,	-- resourceLocation not modelled
 		-										: fmi3Boolean,	-- visible not modelled
 		loggingOn								: fmi3Boolean,
-		intermediateVariableGetRequired			: fmi3Boolean,
-		intermediateInternalVariableGetRequired	: fmi3Boolean,
-		intermediateVariableSetRequired			: fmi3Boolean,
+		eventModeRequired						: fmi3Boolean,
+		requiredIntermediateVariables			: seq of fmi3ValueReference,
+		nRequiredIntermediateVariables			: nat,
 		instanceEnvironment						: fmi3InstanceEnvironment,
 		logMessage								: fmi3CallbackLogMessage,
 		intermediateUpdate						: [fmi3CallbackIntermediateUpdate]) result : [fmi3Instance]
@@ -200,15 +200,21 @@ functions
 				or instanceEnvironment.xmlModel.coSimulation.kind <> <BasicCoSimulation>
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateBasicCoSimulation must define BasicCoSimulation XML configuration") in nil
-		elseif (intermediateVariableGetRequired or intermediateInternalVariableGetRequired
-				or intermediateVariableSetRequired) and intermediateUpdate = nil
+		elseif len requiredIntermediateVariables <> nRequiredIntermediateVariables
+		then let - = logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateBasicCoSimulation requiredIntermediateVariables length mismatch") in nil
+		elseif nRequiredIntermediateVariables > 0 and intermediateUpdate = nil
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateBasicCoSimulation must provide intermediateUpdate") in nil
+		elseif exists vr in seq requiredIntermediateVariables &
+			 let v = lookup(instanceEnvironment.xmlModel.modelVariables, vr) in
+			 	v = nil or not v.base.intermediateAccess
+		then let - = logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateBasicCoSimulation variables are not all intermediateAccess") in nil
 		else
 			let coSimConfig = mk_fmi3CoSimulationConfiguration(
-				intermediateVariableGetRequired,
-				intermediateInternalVariableGetRequired,
-				intermediateVariableSetRequired,
+				eventModeRequired,
+				requiredIntermediateVariables,
 				<fmi3ModeBasicCoSimulation>,
 				intermediateUpdate,
 				nil,
@@ -216,53 +222,6 @@ functions
 			in
 				let instance = fmi3Instantiate_Impl(instanceName, instantiationToken,
 					<BasicCoSimulation>, coSimConfig, instanceEnvironment, logMessage) in
-				let mk_(-, result) = fmi3SetDebugLogging(instance, loggingOn, 0, []) in
-					result;
-
-
-	/**
-	 * The fmi3InstantiateHybridCoSimulation API. This performs sufficient checks to pass the precondition on the
-	 * implementation function, returning nil if any checks fail.
-	 */
-	fmi3InstantiateHybridCoSimulation(
-		instanceName							: fmi3String,
-		instantiationToken						: fmi3String,
-		-										: fmi3String,	-- resourceLocation not modelled
-		-										: fmi3Boolean,	-- visible not modelled
-		loggingOn								: fmi3Boolean,
-		intermediateVariableGetRequired			: fmi3Boolean,
-		intermediateInternalVariableGetRequired	: fmi3Boolean,
-		intermediateVariableSetRequired			: fmi3Boolean,
-		instanceEnvironment						: fmi3InstanceEnvironment,
-		logMessage								: fmi3CallbackLogMessage,
-		intermediateUpdate						: [fmi3CallbackIntermediateUpdate]) result : [fmi3Instance]
-	==
-		if instanceName = ""
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateHybridCoSimulation instanceName cannot be empty") in nil
-		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateHybridCoSimulation instantiationToken does not match XML configuration") in nil
-		elseif instanceEnvironment.xmlModel.coSimulation = nil
-				or instanceEnvironment.xmlModel.coSimulation.kind <> <HybridCoSimulation>
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateHybridCoSimulation must define HybridCoSimulation XML configuration") in nil
-		elseif (intermediateVariableGetRequired or intermediateInternalVariableGetRequired
-				or intermediateVariableSetRequired) and intermediateUpdate = nil
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateHybridCoSimulation must provide intermediateUpdate") in nil
-		else
-			let coSimConfig = mk_fmi3CoSimulationConfiguration(
-				intermediateVariableGetRequired,
-				intermediateInternalVariableGetRequired,
-				intermediateVariableSetRequired,
-				<fmi3ModeHybridCoSimulation>,
-				intermediateUpdate,
-				nil,
-				nil)
-			in
-				let instance = fmi3Instantiate_Impl(instanceName, instantiationToken,
-					<HybridCoSimulation>, coSimConfig, instanceEnvironment, logMessage) in
 				let mk_(-, result) = fmi3SetDebugLogging(instance, loggingOn, 0, []) in
 					result;
 
@@ -276,9 +235,8 @@ functions
 		-										: fmi3String,	-- resourceLocation not modelled
 		-										: fmi3Boolean,	-- visible not modelled
 		loggingOn								: fmi3Boolean,
-		intermediateVariableGetRequired			: fmi3Boolean,
-		intermediateInternalVariableGetRequired	: fmi3Boolean,
-		intermediateVariableSetRequired			: fmi3Boolean,
+		requiredIntermediateVariables			: seq of fmi3ValueReference,
+		nRequiredIntermediateVariables			: nat,
 		instanceEnvironment						: fmi3InstanceEnvironment,
 		logMessage								: fmi3CallbackLogMessage,
 		intermediateUpdate						: [fmi3CallbackIntermediateUpdate],
@@ -295,15 +253,21 @@ functions
 				or instanceEnvironment.xmlModel.coSimulation.kind <> <ScheduledCoSimulation>
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateScheduledCoSimulation must define ScheduledCoSimulation XML configuration") in nil
-		elseif (intermediateVariableGetRequired or intermediateInternalVariableGetRequired
-				or intermediateVariableSetRequired) and intermediateUpdate = nil
+		elseif len requiredIntermediateVariables <> nRequiredIntermediateVariables
 		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateScheduledCoSimulation must provide intermediateUpdate") in nil
+				"fmi3InstantiateBasicCoSimulation requiredIntermediateVariables length mismatch") in nil
+		elseif nRequiredIntermediateVariables > 0 and intermediateUpdate = nil
+		then let - = logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateBasicCoSimulation must provide intermediateUpdate") in nil
+		elseif exists vr in seq requiredIntermediateVariables &
+			 let v = lookup(instanceEnvironment.xmlModel.modelVariables, vr) in
+			 	v = nil or not v.base.intermediateAccess
+		then let - = logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateBasicCoSimulation variables are not all intermediateAccess") in nil
 		else
 			let coSimConfig = mk_fmi3CoSimulationConfiguration(
-				intermediateVariableGetRequired,
-				intermediateInternalVariableGetRequired,
-				intermediateVariableSetRequired,
+				false,
+				requiredIntermediateVariables,
 				<fmi3ModeScheduledExecutionSimulation>,
 				intermediateUpdate,
 				lockPreemption,

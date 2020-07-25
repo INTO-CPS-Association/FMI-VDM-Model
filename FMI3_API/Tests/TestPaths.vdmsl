@@ -123,7 +123,7 @@ operations
 	testBasicCoSimulationPaths: () ==> bool
 	testBasicCoSimulationPaths() ==
 	(
-		dcl c : [fmi3Instance] := testInstantiateBasicCoSimulation(false);
+		dcl c : [fmi3Instance] := testInstantiateBasicCoSimulation([], false);
 		if c = nil then return false;
 
 		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
@@ -192,7 +192,7 @@ operations
 	testHybridCoSimulationPaths: () ==> bool
 	testHybridCoSimulationPaths() ==
 	(
-		dcl c : [fmi3Instance] := testInstantiateHybridCoSimulation(false);
+		dcl c : [fmi3Instance] := testInstantiateBasicCoSimulation([], true);	-- eventModeRequired!
 		if c = nil then return false;
 
 		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in
@@ -219,17 +219,17 @@ operations
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		assert(c.fmuState = <EVENT_MODE>);
-
-		let mk_(s, c2) = fmi3EnterStepMode(c) in
-			if s <> <fmi3OK> then return false
-			else c := c2;
+		assert(c.fmuState = <STEP_MODE>);
 
 		let mk_(s, c2) = fmi3EnterEventMode(c, false, false, [], 0, false) in
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
 		assert(c.fmuState = <EVENT_MODE>);
+
+		let mk_(s, c2) = fmi3EnterStepMode(c) in
+			if s <> <fmi3OK> then return false
+			else c := c2;
 
 		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
 			if s <> <fmi3OK> then return false
@@ -271,7 +271,7 @@ operations
 	testScheduledCoSimulationPaths: () ==> bool
 	testScheduledCoSimulationPaths() ==
 	(
-		dcl c : [fmi3Instance] := testInstantiateScheduledCoSimulation(false);
+		dcl c : [fmi3Instance] := testInstantiateScheduledCoSimulation([]);
 		if c = nil then return false;
 
 		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in

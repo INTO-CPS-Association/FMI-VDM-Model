@@ -64,20 +64,6 @@ functions
 					others -> undefined
 				end,
 
-			<HybridCoSimulation> ->
-				cases c.fmuState:
-					<INSTANTIATED>				-> true,
-					<CONFIGURATION_MODE>		-> true,
-					<INITIALIZATION_MODE>		-> true,
-					<STEP_MODE>					-> true,
-					<EVENT_MODE>				-> true,
-					<RECONFIGURATION_MODE>		-> true,
-					<INTERMEDIATE_UPDATE_MODE>	-> false,
-					<TERMINATED>				-> true,
-
-					others -> undefined
-				end,
-
 			<ScheduledCoSimulation> ->
 				cases c.fmuState:
 					<INSTANTIATED>				-> true,

@@ -78,7 +78,6 @@ functions
 					cases c.fmuKind:
 						<ModelExchange>			-> <EVENT_MODE>,
 						<BasicCoSimulation>		-> <STEP_MODE>,
-						<HybridCoSimulation>	-> <EVENT_MODE>,
 						<ScheduledCoSimulation>	-> <CLOCK_ACTIVATION_MODE>
 					end))
 	pre
@@ -149,7 +148,6 @@ functions
 					cases c.fmuKind:
 						<ModelExchange>			-> <EVENT_MODE>,
 						<BasicCoSimulation>		-> <STEP_MODE>,
-						<HybridCoSimulation>	-> <EVENT_MODE>,
 						<ScheduledCoSimulation>	-> <CLOCK_ACTIVATION_MODE>
 					end))
 

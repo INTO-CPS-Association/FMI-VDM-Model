@@ -55,8 +55,7 @@ STATES_fmi3FreeInstance : States             = ANY_STATE;
 STATES_fmi3EnterEventModeME : States         = { <CONTINUOUS_TIME_MODE> };
 STATES_fmi3EnterEventModeHCS : States        = { <STEP_MODE> };
 STATES_fmi3EnterContinuousTimeMode : States  = { <EVENT_MODE> };
-STATES_fmi3EnterStepModeBCS : States         = { <RECONFIGURATION_MODE> };
-STATES_fmi3EnterStepModeHCS : States         = { <EVENT_MODE> };
+STATES_fmi3EnterStepMode : States            = { <RECONFIGURATION_MODE>, <EVENT_MODE> };
 
 STATES_fmi3GetFMUState : States              = STATES_fmi3FreeInstance;
 STATES_fmi3SetFMUState : States              = STATES_fmi3FreeInstance;

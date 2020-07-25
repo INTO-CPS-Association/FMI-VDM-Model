@@ -42,47 +42,31 @@ functions
             mk_fmi3InstanceEnvironment(modelExchangeFMU, mk_SolverData([]), nil),
             fmi3Logger);
 
-     testInstantiateBasicCoSimulation: fmi3Boolean -> [fmi3Instance]
-     testInstantiateBasicCoSimulation(intermediateReq) ==
+     testInstantiateBasicCoSimulation: seq of fmi3ValueReference * fmi3Boolean -> [fmi3Instance]
+     testInstantiateBasicCoSimulation(requiredIntermediateVariables, eventModeRequired) ==
         fmi3InstantiateBasicCoSimulation(
             "Basic instance",
             "{111-222-333-444}",
             "",
             false,
             true,
-            intermediateReq,
-            intermediateReq,
-            intermediateReq,
+            eventModeRequired,
+            requiredIntermediateVariables,
+            len requiredIntermediateVariables,
             mk_fmi3InstanceEnvironment(basicCosimulationFMU, mk_SolverData([]), nil),
             fmi3Logger,
             nil);
 
-     testInstantiateHybridCoSimulation: fmi3Boolean -> [fmi3Instance]
-     testInstantiateHybridCoSimulation(intermediateReq) ==
-        fmi3InstantiateHybridCoSimulation(
-            "Hybrid instance",
-            "{111-222-333-444}",
-            "",
-            false,
-            true,
-            intermediateReq,
-            intermediateReq,
-            intermediateReq,
-            mk_fmi3InstanceEnvironment(hybridCosimulationFMU, mk_SolverData([]), nil),
-            fmi3Logger,
-            nil);
-
-     testInstantiateScheduledCoSimulation: fmi3Boolean -> [fmi3Instance]
-     testInstantiateScheduledCoSimulation(intermediateReq) ==
+     testInstantiateScheduledCoSimulation: seq of fmi3ValueReference -> [fmi3Instance]
+     testInstantiateScheduledCoSimulation(requiredIntermediateVariables) ==
         fmi3InstantiateScheduledCoSimulation(
             "Scheduled instance",
             "{111-222-333-444}",
             "",
             false,
             true,
-            intermediateReq,
-            intermediateReq,
-            intermediateReq,
+            requiredIntermediateVariables,
+            len requiredIntermediateVariables,
             mk_fmi3InstanceEnvironment(scheduledCosimulationFMU, mk_SolverData([]), nil),
             fmi3Logger,
             nil,
@@ -118,7 +102,7 @@ functions
 	testGetAPI: () -> bool
 	testGetAPI() ==
         let instance = fmi3InstantiateBasicCoSimulation(
-            "VariableTypes", "", "", false, true, false, false, false,
+            "VariableTypes", "", "", false, true, false, [], 0,
             mk_fmi3InstanceEnvironment(variableTypesFMU, mk_SolverData([]), nil),
             fmi3Logger, nil),
             F64 = 2, F32 = 1, I8 = 3, UI8 = 4, I16 = 5, UI16 = 6, I32 = 7, UI32 = 8, I64 = 9, UI64 = 10,
@@ -167,7 +151,7 @@ functions
 	testSetAPI: () -> bool
 	testSetAPI() ==
         let instance = fmi3InstantiateBasicCoSimulation(
-            "VariableTypes", "", "", false, true, false, false, false,
+            "VariableTypes", "", "", false, true, false, [], 0,
             mk_fmi3InstanceEnvironment(variableTypesFMU, mk_SolverData([]), nil),
             fmi3Logger, nil),
             F64 = 2, F32 = 1, I8 = 3, UI8 = 4, I16 = 5, UI16 = 6, I32 = 7, UI32 = 8, I64 = 9, UI64 = 10,
@@ -222,14 +206,11 @@ functions
 		testInstantiateModelExchange("", "{111-222-333-444}") = nil,
 		testInstantiateModelExchange("ME", "wrong") = nil,
 
-		testInstantiateBasicCoSimulation(false) <> nil,
-		testInstantiateBasicCoSimulation(true) = nil,
+		testInstantiateBasicCoSimulation([], false) <> nil,
+		testInstantiateBasicCoSimulation([999], false) = nil,
 
-		testInstantiateHybridCoSimulation(false) <> nil,
-		testInstantiateHybridCoSimulation(true) = nil,
-
-		testInstantiateScheduledCoSimulation(false) <> nil,
-		testInstantiateScheduledCoSimulation(true) = nil,
+		testInstantiateScheduledCoSimulation([]) <> nil,
+		testInstantiateScheduledCoSimulation([999]) = nil,
 
 		testSetDebugLogging(["Full", "Terse"]),
 		testSetDebugLogging(["Wrong"]) = false,

@@ -73,16 +73,6 @@ types
 		<INTERMEDIATE_UPDATE_MODE> |
 		<TERMINATED>;
 
-	fmi3HybridCoSimulationState =
-		<INSTANTIATED> |
-		<CONFIGURATION_MODE> |
-		<INITIALIZATION_MODE> |
-		<EVENT_MODE> |
-		<STEP_MODE> |
-		<RECONFIGURATION_MODE> |
-		<INTERMEDIATE_UPDATE_MODE> |
-		<TERMINATED>;
-
 	fmi3ScheduledCoSimulationState =
 		<INSTANTIATED> |
 		<CONFIGURATION_MODE> |
@@ -97,7 +87,6 @@ types
 		<START> |
 		fmi3ModelExchangeState |
 		fmi3BasicCoSimulationState |
-		fmi3HybridCoSimulationState |
 		fmi3ScheduledCoSimulationState |
 		<ERROR> |
 		<FATAL> |
@@ -118,30 +107,26 @@ types
 
 	fmi3CoSimulationMode =
 	    <fmi3ModeBasicCoSimulation> |
-	    <fmi3ModeHybridCoSimulation> |
 	    <fmi3ModeScheduledExecutionSimulation>;
 
 	fmi3CoSimulationConfiguration ::
-	    intermediateVariableGetRequired			: fmi3Boolean
-	    intermediateInternalVariableGetRequired	: fmi3Boolean
-	    intermediateVariableSetRequired			: fmi3Boolean
+		eventModeRequired						: fmi3Boolean
+		requiredIntermediateVariables			: seq of fmi3ValueReference
 	    coSimulationMode						: fmi3CoSimulationMode
 		intermediateUpdate						: [fmi3CallbackIntermediateUpdate]
 		lockPreemption							: [fmi3CallbackLockPreemption]
 		unlockPreemption						: [fmi3CallbackUnlockPreemption]
 	inv
 		conf ==
-			( conf.intermediateVariableGetRequired
-			  or conf.intermediateInternalVariableGetRequired
-			  or conf.intermediateVariableSetRequired => conf.intermediateUpdate <> nil )
+			( conf.requiredIntermediateVariables <> [] => conf.intermediateUpdate <> nil )
 			and
 			( conf.lockPreemption <> nil <=> conf.unlockPreemption <> nil );
 
 	fmi3CallbackLogMessage =
 		fmi3InstanceEnvironment *	-- instanceEnvironment
-		fmi3String *				-- instanceName
-		fmi3Status *				-- status
-		fmi3String *				-- category
+		fmi3String *					-- instanceName
+		fmi3Status *					-- status
+		fmi3String *					-- category
 		fmi3String					-- message
 		-> <VOID>;
 
