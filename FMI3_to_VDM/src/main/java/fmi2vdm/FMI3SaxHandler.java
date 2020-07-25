@@ -57,7 +57,6 @@ import fmi2vdm.elements.FMIModelDescription;
 import fmi2vdm.elements.FMITerminalsAndIcons;
 import fmi2vdm.elements.GraphicalRepresentation;
 import fmi2vdm.elements.TerminalGraphicalRepresentation;
-import fmi2vdm.elements.HybridCoSimulation;
 import fmi2vdm.elements.Icon;
 import fmi2vdm.elements.IncludeDirectory;
 import fmi2vdm.elements.IntegerType;
@@ -76,7 +75,7 @@ import fmi2vdm.elements.Option;
 import fmi2vdm.elements.PreprocessorDefinition;
 import fmi2vdm.elements.SourceFile;
 import fmi2vdm.elements.RealVariable;
-import fmi2vdm.elements.ScheduledCoSimulation;
+import fmi2vdm.elements.ScheduledExecution;
 import fmi2vdm.elements.RealType;
 import fmi2vdm.elements.SourceFileSet;
 import fmi2vdm.elements.SourceFiles;
@@ -162,16 +161,12 @@ public class FMI3SaxHandler extends DefaultHandler
 				stack.push(new ModelExchange(attributes, locator));
 				break;
 
-			case "BasicCoSimulation":
+			case "CoSimulation":
 				stack.push(new BasicCoSimulation(attributes, locator));
 				break;
 
-			case "HybridCoSimulation":
-				stack.push(new HybridCoSimulation(attributes, locator));
-				break;
-
-			case "ScheduledCoSimulation":
-				stack.push(new ScheduledCoSimulation(attributes, locator));
+			case "ScheduledExecution":
+				stack.push(new ScheduledExecution(attributes, locator));
 				break;
 
 			case "SourceFiles":

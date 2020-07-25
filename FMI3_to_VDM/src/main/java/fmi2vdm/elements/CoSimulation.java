@@ -40,6 +40,7 @@ abstract public class CoSimulation extends InterfaceType
 	private Boolean providesIntermediateVariableAccess;
 	private Boolean canReturnEarlyAfterIntermediateUpdate;
 	private Double fixedInternalStepSize;
+	private Boolean hasEventMode;
 	
 	public CoSimulation(Attributes attributes, Locator locator)
 	{
@@ -61,7 +62,8 @@ abstract public class CoSimulation extends InterfaceType
 		printRawAttribute(indent + "\t", maxOutputDerivativeOrder, ",\n");
 		printRawAttribute(indent + "\t", providesIntermediateVariableAccess, ",\n");
 		printRawAttribute(indent + "\t", canReturnEarlyAfterIntermediateUpdate, ",\n");
-		printRawAttribute(indent + "\t", fixedInternalStepSize, "\n");
+		printRawAttribute(indent + "\t", fixedInternalStepSize, ",\n");
+		printRawAttribute(indent + "\t", hasEventMode, "\n");
 		System.out.print(indent + ")");
 	}
 }
