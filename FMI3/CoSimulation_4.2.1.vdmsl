@@ -44,7 +44,7 @@ types
 		providesAdjointDerivative				: [bool]
 		providesPerElementDependencies			: [bool];
 
-	CoSimulationKind = <BasicCoSimulation> | <ScheduledCoSimulation>;
+	CoSimulationKind = <CoSimulation> | <ScheduledExecution>;
 
 	CoSimulation ::
 		base									: fmi3InterfaceType
