@@ -41,7 +41,7 @@ public class FMIModelDescription extends Element
 	private final String varname;
 
 	private ModelAttributes modelAttributes;
-	private CoSimulation coSimulation;
+	private AbstractCoSimulation coSimulation;
 	private ModelExchange modelExchange;
 	private UnitDefinitions unitDefinitions;
 	private TypeDefinitions typeDefinitions;
@@ -63,7 +63,7 @@ public class FMIModelDescription extends Element
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof CoSimulation)
+		if (element instanceof AbstractCoSimulation)
 		{
 			if (coSimulation != null)
 			{
@@ -71,7 +71,7 @@ public class FMIModelDescription extends Element
 			}
 			else
 			{
-				coSimulation = (CoSimulation) element;
+				coSimulation = (AbstractCoSimulation) element;
 			}
 		}
 		else if (element instanceof ModelExchange)

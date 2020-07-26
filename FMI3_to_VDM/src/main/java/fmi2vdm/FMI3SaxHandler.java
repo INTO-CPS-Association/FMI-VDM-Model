@@ -38,7 +38,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import fmi2vdm.elements.Alias;
 import fmi2vdm.elements.Any;
 import fmi2vdm.elements.BaseUnit;
-import fmi2vdm.elements.BasicCoSimulation;
+import fmi2vdm.elements.CoSimulation;
 import fmi2vdm.elements.BinaryType;
 import fmi2vdm.elements.BinaryVariable;
 import fmi2vdm.elements.BooleanType;
@@ -162,7 +162,7 @@ public class FMI3SaxHandler extends DefaultHandler
 				break;
 
 			case "CoSimulation":
-				stack.push(new BasicCoSimulation(attributes, locator));
+				stack.push(new CoSimulation(attributes, locator));
 				break;
 
 			case "ScheduledExecution":

@@ -1,69 +1,35 @@
-/**
- * This file is part of the INTO-CPS toolchain.
+/*******************************************************************************
  *
- * Copyright (c) 2017-2019, INTO-CPS Association,
- * c/o Professor Peter Gorm Larsen, Department of Engineering
- * Finlandsgade 22, 8200 Aarhus N.
+ *	Copyright (c) 2020 Nick Battle.
  *
- * All rights reserved.
+ *	Author: Nick Battle
  *
- * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
- * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
- * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
- * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *	This file is part of VDMJ.
  *
- * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
- * obtained from the INTO-CPS Association, either from the above address, from
- * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
- * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *	VDMJ is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * This program is distributed WITHOUT ANY WARRANTY; without
- * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
- * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
- * THE INTO-CPS ASSOCIATION.
+ *	VDMJ is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * See the full INTO-CPS Association Public License conditions for more details.
- */
+ *	You should have received a copy of the GNU General Public License
+ *	along with VDMJ.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ ******************************************************************************/
 
 package fmi2vdm.elements;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-abstract public class CoSimulation extends InterfaceType
+public class CoSimulation extends AbstractCoSimulation
 {
-	private Boolean canHandleVariableCommunicationStepSize;
-	private Boolean canInterpolateInputs;
-	private Long maxOutputDerivativeOrder;
-	private Boolean providesIntermediateVariableAccess;
-	private Boolean canReturnEarlyAfterIntermediateUpdate;
-	private Double fixedInternalStepSize;
-	private Boolean hasEventMode;
-	
 	public CoSimulation(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
-		setAttributes(CoSimulation.class, attributes);
-	}
-
-	@Override
-	public void toVDM(String indent)
-	{
-		System.out.println(indent + "mk_CoSimulation");
-		System.out.println(indent + "(");
-		super.toVDM(indent + "\t");
-		System.out.println(",");
-		
-		printQuoteAttribute(indent + "\t", this.getClass().getSimpleName(), ",\n");
-		printRawAttribute(indent + "\t", canHandleVariableCommunicationStepSize, ",\n");
-		printRawAttribute(indent + "\t", canInterpolateInputs, ",\n");
-		printRawAttribute(indent + "\t", maxOutputDerivativeOrder, ",\n");
-		printRawAttribute(indent + "\t", providesIntermediateVariableAccess, ",\n");
-		printRawAttribute(indent + "\t", canReturnEarlyAfterIntermediateUpdate, ",\n");
-		printRawAttribute(indent + "\t", fixedInternalStepSize, ",\n");
-		printRawAttribute(indent + "\t", hasEventMode, "\n");
-		System.out.print(indent + ")");
 	}
 }

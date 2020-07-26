@@ -26,7 +26,7 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class ScheduledExecution extends CoSimulation
+public class ScheduledExecution extends AbstractCoSimulation
 {
 	public ScheduledExecution(Attributes attributes, Locator locator)
 	{
