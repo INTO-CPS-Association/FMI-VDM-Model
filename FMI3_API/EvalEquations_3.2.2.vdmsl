@@ -130,7 +130,7 @@ functions
 
 	fmi3EnterStepMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3EnterStepMode(c) ==
-		if c.fmuKind not in set {<BasicCoSimulation>, <HybridCoSimulation>}
+		if c.fmuKind <> <CoSimulation>
 		then let - = logAPIError(c, "Cannot call fmi3EnterStepMode in this mode") in
 			mk_(<fmi3Error>, nil)
 		elseif c.fmuState not in set STATES_fmi3EnterStepMode

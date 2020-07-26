@@ -145,7 +145,7 @@ values
 				nil,
 				nil
 			),
-			<BasicCoSimulation>,
+			<CoSimulation>,
 			true,
 			true,
 			nil,

@@ -77,8 +77,8 @@ functions
 				else
 					cases c.fmuKind:
 						<ModelExchange>			-> <EVENT_MODE>,
-						<BasicCoSimulation>		-> <STEP_MODE>,
-						<ScheduledCoSimulation>	-> <CLOCK_ACTIVATION_MODE>
+						<CoSimulation>			-> <STEP_MODE>,
+						<ScheduledExecution>	-> <CLOCK_ACTIVATION_MODE>
 					end))
 	pre
 		c.fmuState in set STATES_fmi3ExitConfigurationMode
@@ -147,8 +147,8 @@ functions
 				fmuState |->
 					cases c.fmuKind:
 						<ModelExchange>			-> <EVENT_MODE>,
-						<BasicCoSimulation>		-> <STEP_MODE>,
-						<ScheduledCoSimulation>	-> <CLOCK_ACTIVATION_MODE>
+						<CoSimulation>			-> <STEP_MODE>,
+						<ScheduledExecution>	-> <CLOCK_ACTIVATION_MODE>
 					end))
 
 	pre

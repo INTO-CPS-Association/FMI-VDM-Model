@@ -197,7 +197,7 @@ functions
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateBasicCoSimulation instantiationToken does not match XML configuration") in nil
 		elseif instanceEnvironment.xmlModel.coSimulation = nil
-				or instanceEnvironment.xmlModel.coSimulation.kind <> <BasicCoSimulation>
+				or instanceEnvironment.xmlModel.coSimulation.kind <> <CoSimulation>
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateBasicCoSimulation must define BasicCoSimulation XML configuration") in nil
 		elseif len requiredIntermediateVariables <> nRequiredIntermediateVariables
@@ -221,7 +221,7 @@ functions
 				nil)
 			in
 				let instance = fmi3Instantiate_Impl(instanceName, instantiationToken,
-					<BasicCoSimulation>, coSimConfig, instanceEnvironment, logMessage) in
+					<CoSimulation>, coSimConfig, instanceEnvironment, logMessage) in
 				let mk_(-, result) = fmi3SetDebugLogging(instance, loggingOn, 0, []) in
 					result;
 
@@ -250,7 +250,7 @@ functions
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateScheduledCoSimulation instantiationToken does not match XML configuration") in nil
 		elseif instanceEnvironment.xmlModel.coSimulation = nil
-				or instanceEnvironment.xmlModel.coSimulation.kind <> <ScheduledCoSimulation>
+				or instanceEnvironment.xmlModel.coSimulation.kind <> <ScheduledExecution>
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateScheduledCoSimulation must define ScheduledCoSimulation XML configuration") in nil
 		elseif len requiredIntermediateVariables <> nRequiredIntermediateVariables
@@ -274,7 +274,7 @@ functions
 				unlockPreemption)
 			in
 				let instance = fmi3Instantiate_Impl(instanceName, instantiationToken,
-					<ScheduledCoSimulation>, coSimConfig, instanceEnvironment, logMessage) in
+					<ScheduledExecution>, coSimConfig, instanceEnvironment, logMessage) in
 				let mk_(-, result) = fmi3SetDebugLogging(instance, loggingOn, 0, []) in
 					result;
 

@@ -178,7 +178,7 @@ values
 				nil,
 				nil
 			),
-			<BasicCoSimulation>,
+			<CoSimulation>,
 			nil,
 			nil,
 			nil,
@@ -285,7 +285,7 @@ values
 				nil,
 				nil
 			),
-			<ScheduledCoSimulation>,
+			<ScheduledExecution>,
 			nil,
 			nil,
 			nil,
@@ -391,7 +391,7 @@ values
 				nil,
 				nil
 			),
-			<BasicCoSimulation>,
+			<CoSimulation>,
 			nil,
 			nil,
 			nil,

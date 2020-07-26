@@ -51,7 +51,7 @@ functions
 					others -> undefined
 				end,
 
-			<BasicCoSimulation>	->
+			<CoSimulation>	->
 				cases c.fmuState:
 					<INSTANTIATED>				-> note7(c, vrs),
 					<CONFIGURATION_MODE>		-> note11(c, vrs),
@@ -64,7 +64,7 @@ functions
 					others -> undefined
 				end,
 
-			<ScheduledCoSimulation> ->
+			<ScheduledExecution> ->
 				cases c.fmuState:
 					<INSTANTIATED>				-> true,
 					<CONFIGURATION_MODE>		-> true,

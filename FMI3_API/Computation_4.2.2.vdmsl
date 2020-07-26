@@ -91,8 +91,8 @@ functions
 		clockElementIndex	: nat1,
 		activationTime		: fmi3Float) result : fmi3Status
 	==
-		if c.fmuKind <> <ScheduledCoSimulation>
-		then let - = logAPIError(c, "Can only call fmi3ActivateModelPartition for scheduled co-simulation") in
+		if c.fmuKind <> <ScheduledExecution>
+		then let - = logAPIError(c, "Can only call fmi3ActivateModelPartition for scheduled execution") in
 			<fmi3Error>
 		elseif c.fmuState not in set STATES_fmi3ActivateModelPartition
 		then let - = logAPIError(c, "Cannot call fmi3ActivateModelPartition in this state") in
