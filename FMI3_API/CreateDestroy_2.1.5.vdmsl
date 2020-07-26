@@ -350,7 +350,7 @@ functions
 	fmi3FreeInstance_Impl(c) ==
 		<VOID>
 	pre
-		c.fmuState in set STATES_fmi3FreeInstance;
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3FreeInstance;
 
 	/**
 	 * The fmi3FreeInstance API. This performs sufficient checks to pass the precondition on the
@@ -361,7 +361,7 @@ functions
 		if c = nil
 		then -- The function ignores a "null" argument
 			<VOID>
-		elseif c.fmuState not in set STATES_fmi3FreeInstance
+		elseif mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3FreeInstance
 		then let - = logAPIError(c, "Cannot call fmi3FreeInstance in this state") in
 			<VOID>
 		else
@@ -385,7 +385,7 @@ functions
 						else elems categories
 					else nil)))
 	pre
-		c.fmuState in set STATES_fmi3SetDebugLogging
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3SetDebugLogging
 		and nCategories = len categories
 		and card elems categories = nCategories
 		and (nCategories > 0 =>
@@ -410,7 +410,7 @@ functions
 	 */
 	fmi3SetDebugLogging: fmi3Instance * fmi3Boolean * nat * seq of fmi3String +> fmi3Status * [fmi3Instance]
 	fmi3SetDebugLogging(c, loggingOn, nCategories, categories) ==
-		if c.fmuState not in set STATES_fmi3SetDebugLogging
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3SetDebugLogging
 		then let - = logAPIError(c, "Cannot call fmi3SetDebugLogging in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif nCategories <> len categories or card elems categories <> nCategories

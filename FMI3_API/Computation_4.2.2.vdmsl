@@ -42,8 +42,7 @@ functions
 			then mk_(s, nil, nil, nil, nil)
 			else mk_(s, nil, nil, nil, c2)		-- TODO!
 	pre
-		is_(c.fmuKind, CoSimulationKind)
-		and c.fmuState in set STATES_fmi3DoStep
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3DoStep
 		and communicationStepSize > 0.0
 		and currentCommunicationPoint >= 0.0
 	post
@@ -57,10 +56,7 @@ functions
 	 */
 	fmi3DoStep: fmi3Instance * fmi3Float * fmi3Float * fmi3Boolean +> fmi3Status * [fmi3Boolean] * [fmi3Boolean] * [fmi3Float] * [fmi3Instance]
 	fmi3DoStep(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
-		if not is_(c.fmuKind, CoSimulationKind)
-		then let - = logAPIError(c, "Can only call fmi3DoStep for co-simulation") in
-			mk_(<fmi3Error>, nil, nil, nil, nil)
-		elseif c.fmuState not in set STATES_fmi3DoStep
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3DoStep
 		then let - = logAPIError(c, "Cannot call fmi3DoStep in this state") in
 			mk_(<fmi3Error>, nil, nil, nil, nil)
 		elseif communicationStepSize <= 0.0
@@ -91,10 +87,7 @@ functions
 		clockElementIndex	: nat1,
 		activationTime		: fmi3Float) result : fmi3Status
 	==
-		if c.fmuKind <> <ScheduledExecution>
-		then let - = logAPIError(c, "Can only call fmi3ActivateModelPartition for scheduled execution") in
-			<fmi3Error>
-		elseif c.fmuState not in set STATES_fmi3ActivateModelPartition
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3ActivateModelPartition
 		then let - = logAPIError(c, "Cannot call fmi3ActivateModelPartition in this state") in
 			<fmi3Error>
 		else let clock = lookup(c.eModelVariables, clockReference) in

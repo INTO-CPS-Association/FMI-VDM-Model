@@ -39,7 +39,7 @@ functions
 		mk_(<fmi3OK>, mu(c,
 			fmuState |-> <EVENT_MODE>))
 	pre
-		c.fmuState in set STATES_fmi3EnterEventMode
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3EnterEventMode
 	post
 		RESULT.#2.fmuState = <EVENT_MODE>;
 
@@ -51,10 +51,7 @@ functions
          nEventIndicators	: nat,
          -					: fmi3Boolean) result: fmi3Status * [fmi3Instance]
 	==
-		if c.fmuKind not in set {<ModelExchange>, <BasicCoSimulation>}
-		then let - = logAPIError(c, "Cannot call fmi3EnterEventMode in this mode") in
-			mk_(<fmi3Error>, nil)
-		elseif c.fmuState not in set STATES_fmi3EnterEventMode
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3EnterEventMode
 		then let - = logAPIError(c, "Cannot call fmi3EnterEventMode in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif nEventIndicators <> len rootsFound
@@ -74,15 +71,11 @@ functions
     	-- let mk_(s, c2) = c.instanceEnvironment.calculateEvents(c) in
 			mk_(<fmi3OK>, c.eventInfo, c)
 	pre
-		c.fmuKind = <ModelExchange>
-		and c.fmuState in set STATES_fmi3NewDiscreteStates;
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3NewDiscreteStates;
 
 	fmi3NewDiscreteStates: fmi3Instance +> fmi3Status * [fmi3EventInfo] * [fmi3Instance]
 	fmi3NewDiscreteStates(c) ==
-		if c.fmuKind <> <ModelExchange>
-		then let - = logAPIError(c, "Cannot call fmi3NewDiscreteStates for CoSimulation") in
-			mk_(<fmi3Error>, nil, nil)
-		elseif c.fmuState not in set STATES_fmi3NewDiscreteStates
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3NewDiscreteStates
 		then let - = logAPIError(c, "Cannot call fmi3NewDiscreteStates in this state") in
 			mk_(<fmi3Error>, nil, nil)
 	 	else
@@ -97,17 +90,13 @@ functions
 		mk_(<fmi3OK>, mu(c,
 			fmuState |-> <CONTINUOUS_TIME_MODE>))
 	pre
-		c.fmuKind = <ModelExchange>
-		and c.fmuState in set STATES_fmi3EnterContinuousTimeMode
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3EnterContinuousTimeMode
 	post
 		RESULT.#2.fmuState = <CONTINUOUS_TIME_MODE>;
 
 	fmi3EnterContinuousTimeMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3EnterContinuousTimeMode(c) ==
-		if c.fmuKind <> <ModelExchange>
-		then let - = logAPIError(c, "Cannot call fmi3EnterContinuousTimeMode in this mode") in
-			mk_(<fmi3Error>, nil)
-		elseif c.fmuState not in set STATES_fmi3EnterContinuousTimeMode
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3EnterContinuousTimeMode
 		then let - = logAPIError(c, "Cannot call fmi3EnterContinuousTimeMode in this state") in
 			mk_(<fmi3Error>, nil)
 		else
@@ -124,16 +113,13 @@ functions
 		mk_(<fmi3OK>, mu(c,
 			fmuState |-> <STEP_MODE>))
 	pre
-		c.fmuState in set STATES_fmi3EnterStepMode
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3EnterStepMode
 	post
 		RESULT.#2.fmuState = <STEP_MODE>;
 
 	fmi3EnterStepMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3EnterStepMode(c) ==
-		if c.fmuKind <> <CoSimulation>
-		then let - = logAPIError(c, "Cannot call fmi3EnterStepMode in this mode") in
-			mk_(<fmi3Error>, nil)
-		elseif c.fmuState not in set STATES_fmi3EnterStepMode
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3EnterStepMode
 		then let - = logAPIError(c, "Cannot call fmi3EnterStepMode in this state") in
 			mk_(<fmi3Error>, nil)
 		else
@@ -149,18 +135,14 @@ functions
     fmi3CompletedIntegratorStep_Impl(c, -) ==
 		mk_(<fmi3OK>, false, false)	-- TODO!!
 	pre
-		c.fmuKind = <ModelExchange>
-		and c.fmuState in set STATES_fmi3CompletedIntegratorStep
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3CompletedIntegratorStep
 		and not nilBool(c.xmlModel.modelExchange.completedIntegratorStepNotNeeded);
 
 	fmi3CompletedIntegratorStep(
 		c									: fmi3Instance,
         noSetFMUStatePriorToCurrentPoint	: fmi3Boolean) result : fmi3Status * [fmi3Boolean] * [fmi3Boolean]
 	==
-		if c.fmuKind <> <ModelExchange>
-		then let - = logAPIError(c, "Cannot call fmi3CompletedIntegratorStep for fmi3CoSimulation") in
-			mk_(<fmi3Error>, nil, nil)
-		elseif c.fmuState not in set STATES_fmi3CompletedIntegratorStep
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3CompletedIntegratorStep
 		then let - = logAPIError(c, "Cannot call fmi3CompletedIntegratorStep in this state") in
 			mk_(<fmi3Error>, nil, nil)
 		elseif nilBool(c.xmlModel.modelExchange.completedIntegratorStepNotNeeded)
@@ -180,16 +162,12 @@ functions
 		-- Compute derivatives TODO
 		mk_(<fmi3OK>, conc [ c.variables(vref) | vref in seq c.continuousTimeStates ])
 	pre
-		c.fmuKind = <ModelExchange>
-		and c.fmuState in set STATES_fmi3GetDerivatives
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetDerivatives
 		and nx = len c.continuousTimeStates;
 
 	fmi3GetDerivatives: fmi3Instance * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetDerivatives(c, nx) ==
-		if c.fmuKind <> <ModelExchange>
-		then let - = logAPIError(c, "Cannot call fmi3GetDerivatives for fmi3CoSimulation") in
-			mk_(<fmi3Error>, nil)
-		elseif c.fmuState not in set STATES_fmi3GetDerivatives
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetDerivatives
 		then let - = logAPIError(c, "Cannot call fmi3GetDerivatives in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif nx <> len c.continuousTimeStates
@@ -209,16 +187,12 @@ functions
 		-- Compute event indicators TODO
 		mk_(<fmi3OK>, [ 0 | - in set {1, ..., ni} ])
 	pre
-		c.fmuKind = <ModelExchange>
-		and c.fmuState in set STATES_fmi3GetEventIndicators
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetEventIndicators
 		and ni = nilNat(c.xmlModel.attributes.numberOfEventIndicators);
 
 	fmi3GetEventIndicators: fmi3Instance * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetEventIndicators(c, ni) ==
-		if c.fmuKind <> <ModelExchange>
-		then let - = logAPIError(c, "Cannot call fmi3GetEventIndicators for fmi3CoSimulation") in
-			mk_(<fmi3Error>, nil)
-		elseif c.fmuState not in set STATES_fmi3GetEventIndicators
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetEventIndicators
 		then let - = logAPIError(c, "Cannot call fmi3GetEventIndicators in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif ni <> nilNat(c.xmlModel.attributes.numberOfEventIndicators)
@@ -237,16 +211,12 @@ functions
 	fmi3GetContinuousStates_Impl(c, nx) ==
 		mk_(<fmi3OK>, conc [ c.variables(vref) | vref in seq c.continuousTimeStates ])
 	pre
-		c.fmuKind = <ModelExchange>
-		and c.fmuState in set STATES_fmi3GetContinuousStates
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetContinuousStates
 		and nx = len c.continuousTimeStates;
 
 	fmi3GetContinuousStates: fmi3Instance * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetContinuousStates(c, nx) ==
-		if c.fmuKind <> <ModelExchange>
-		then let - = logAPIError(c, "Cannot call fmi3GetContinuousStates for fmi3CoSimulation") in
-			mk_(<fmi3Error>, nil)
-		elseif c.fmuState not in set STATES_fmi3GetContinuousStates
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetContinuousStates
 		then let - = logAPIError(c, "Cannot call fmi3GetContinuousStates in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif nx <> len c.continuousTimeStates
@@ -265,16 +235,12 @@ functions
 	fmi3GetNominalsOfContinuousStates_Impl(c, nx) ==
 		mk_(<fmi3OK>, [ 1.0 | - in seq c.continuousTimeStates ])	-- TODO!
 	pre
-		c.fmuKind = <ModelExchange>
-		and c.fmuState in set STATES_fmi3GetNominalsOfContinuousStates
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetNominalsOfContinuousStates
 		and nx = len c.continuousTimeStates;
 
 	fmi3GetNominalsOfContinuousStates: fmi3Instance * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetNominalsOfContinuousStates(c, nx) ==
-		if c.fmuKind <> <ModelExchange>
-		then let - = logAPIError(c, "Cannot call fmi3GetNominalsOfContinuousStates for fmi3CoSimulation") in
-			mk_(<fmi3Error>, nil)
-		elseif c.fmuState not in set STATES_fmi3GetNominalsOfContinuousStates
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetNominalsOfContinuousStates
 		then let - = logAPIError(c, "Cannot call fmi3GetNominalsOfContinuousStates in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif nx <> len c.continuousTimeStates

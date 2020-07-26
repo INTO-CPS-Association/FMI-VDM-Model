@@ -9,7 +9,7 @@ fmi3CallbackIntermediateUpdate,X,,,,,,,,,,,,,,,,X,X,,,,,,,,,,,
 fmi3CompletedIntegratorStep,X,,,,,,,,,X,,,,,,,,,,,,,,,,,,,
 fmi3DeSerializeFMUState,X,X,,,,X,X,X,X,X,X,X,,X,X,X,X,X,X,X,X,,X,X,X,X,X,X,X
 fmi3DoStep,X,,,,,,,,,,,,,,,,X,X,,,,,,,,,,,
-fmi3EnterConfigurationMode,X,X,,,,,X,,,,X,,,,,,9,X,,X,,,X,,,X,,,
+fmi3EnterConfigurationMode,X,X,,,,X,,,X,,,,,X,,,9,,,,,,X,,,X,,,
 fmi3EnterContinuousTimeMode,X,X,,,,,,,X,,,,,,,,,,,,,,,,,,,,
 fmi3EnterEventMode,X,X,,,,,,,,X,,,,,,,X,,,,,,,,,,,,
 fmi3EnterInitializationMode,X,X,,,,X,,,,,,,,X,,,,,,,,,X,,,,,,

@@ -33,173 +33,249 @@
  * 6.2.3 State Machine for Scheduled Co-Simulation
  */
 types
-	States = set of fmi3State;
+	States = set of ([fmi3FMUKind] * fmi3State);
 
 /**
  * Values are generated from the FMI3_API_Matrix spreadsheet, using csv2vdm.awk.
  * DO NOT EDIT DIRECTLY!
  */
 values
+
 STATES_fmi3GetVersion: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <END>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <START>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>),
+    mk_(nil, <END>),
+    mk_(nil, <START>)
 };
 
 STATES_fmi3InstantiateCoSimulation: States = {
-    <START>
+    mk_(nil, <START>)
 };
 
 STATES_fmi3InstantiateModelExchange: States = {
-    <START>
+    mk_(nil, <START>)
 };
 
 STATES_fmi3InstantiateScheduledExecution: States = {
-    <START>
+    mk_(nil, <START>)
 };
 
 STATES_fmi3ActivateModelPartition: States = {
-    <CLOCK_ACTIVATION_MODE>
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>)
 };
 
 STATES_fmi3CallbackIntermediateUpdate: States = {
-    <EVENT_MODE>,
-    <STEP_MODE>
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>)
 };
 
 STATES_fmi3CompletedIntegratorStep: States = {
-    <CONTINUOUS_TIME_MODE>
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>)
 };
 
 STATES_fmi3DeSerializeFMUState: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3DoStep: States = {
-    <EVENT_MODE>,
-    <STEP_MODE>
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>)
 };
 
 STATES_fmi3EnterConfigurationMode: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <EVENT_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>)
 };
 
 STATES_fmi3EnterContinuousTimeMode: States = {
-    <EVENT_MODE>
+    mk_(<ModelExchange>, <EVENT_MODE>)
 };
 
 STATES_fmi3EnterEventMode: States = {
-    <CONTINUOUS_TIME_MODE>,
-    <STEP_MODE>
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>)
 };
 
 STATES_fmi3EnterInitializationMode: States = {
-    <INSTANTIATED>
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>)
 };
 
 STATES_fmi3EnterStepMode: States = {
-    <EVENT_MODE>,
-    <RECONFIGURATION_MODE>
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>)
 };
 
 STATES_fmi3ExitConfigurationMode: States = {
-    <CONFIGURATION_MODE>,
-    <RECONFIGURATION_MODE>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>)
 };
 
 STATES_fmi3ExitInitializationMode: States = {
-    <INITIALIZATION_MODE>
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>)
 };
 
 STATES_fmi3FreeFMUState: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3FreeInstance: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <END>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>),
+    mk_(nil, <END>)
 };
 
 STATES_fmi3GetAdjointDerivative: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>)
 };
 
 STATES_fmi3GetBinary: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetBoolean: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetClock: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetContinuousStates: States = {
@@ -207,135 +283,193 @@ STATES_fmi3GetContinuousStates: States = {
 };
 
 STATES_fmi3GetDerivatives: States = {
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <TERMINATED>
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>)
 };
 
 STATES_fmi3GetDirectionalDerivative: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>)
 };
 
 STATES_fmi3GetEventIndicators: States = {
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>)
 };
 
 STATES_fmi3GetFloat32: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetFloat64: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetFMUState: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetInt16: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetInt32: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetInt64: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetInt8: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetIntervalDecimal: States = {
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <TERMINATED>
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>)
 };
 
 STATES_fmi3GetIntervalFraction: States = {
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <TERMINATED>
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>)
 };
 
 STATES_fmi3GetNominalsOfContinuousStates: States = {
-    <EVENT_MODE>
+    mk_(<ModelExchange>, <EVENT_MODE>)
 };
 
 STATES_fmi3GetNumberOfContinuousStates: States = {
@@ -343,8 +477,8 @@ STATES_fmi3GetNumberOfContinuousStates: States = {
 };
 
 STATES_fmi3GetNumberOfEventIndicators: States = {
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>)
 };
 
 STATES_fmi3GetNumberOfVariableDependencies: States = {
@@ -352,160 +486,264 @@ STATES_fmi3GetNumberOfVariableDependencies: States = {
 };
 
 STATES_fmi3GetOutputDerivatives: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <EVENT_MODE>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>)
 };
 
 STATES_fmi3GetString: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetUInt16: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetUInt32: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetUInt64: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetUInt8: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetVariableDependencies: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3NewDiscreteStates: States = {
-    <EVENT_MODE>
+    mk_(<ModelExchange>, <EVENT_MODE>)
 };
 
 STATES_fmi3Reset: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SerializedFMUStateSize: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SerializeFMUState: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetBinary: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetBoolean: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetClock: States = {
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <TERMINATED>
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>)
 };
 
 STATES_fmi3SetContinuousStates: States = {
@@ -513,211 +751,376 @@ STATES_fmi3SetContinuousStates: States = {
 };
 
 STATES_fmi3SetDebugLogging: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetFloat32: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetFloat64: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetFMUState: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetInt16: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetInt32: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetInt64: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetInt8: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetIntervalDecimal: States = {
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <TERMINATED>
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>)
 };
 
 STATES_fmi3SetIntervalFraction: States = {
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <TERMINATED>
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>)
 };
 
 STATES_fmi3SetString: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetTime: States = {
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <TERMINATED>
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>)
 };
 
 STATES_fmi3SetUInt16: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetUInt32: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetUInt64: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3SetUInt8: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <INTERMEDIATE_UPDATE_MODE>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3Terminate: States = {
-    <CLOCK_ACTIVATION_MODE>,
-    <CONFIGURATION_MODE>,
-    <CONTINUOUS_TIME_MODE>,
-    <EVENT_MODE>,
-    <INITIALIZATION_MODE>,
-    <INSTANTIATED>,
-    <RECONFIGURATION_MODE>,
-    <STEP_MODE>,
-    <TERMINATED>
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 

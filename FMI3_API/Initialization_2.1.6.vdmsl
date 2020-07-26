@@ -42,7 +42,7 @@ functions
 				then <CONFIGURATION_MODE>
 				else <RECONFIGURATION_MODE>))
 	pre
-		c.fmuState in set STATES_fmi3EnterConfigurationMode
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3EnterConfigurationMode
 		and exists sv in seq c.eModelVariables &
 			sv.base.causality = <structuralParameter> and
 			(c.fmuState = <RECONFIGURATION_MODE> => sv.base.variability = <tunable>)
@@ -51,7 +51,7 @@ functions
 
 	fmi3EnterConfigurationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3EnterConfigurationMode(c) ==
-		if c.fmuState not in set STATES_fmi3EnterConfigurationMode
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3EnterConfigurationMode
 		then let - = logAPIError(c, "Cannot call fmi3EnterConfigurationMode in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif not exists sv in seq c.eModelVariables &
@@ -81,13 +81,13 @@ functions
 						<ScheduledExecution>	-> <CLOCK_ACTIVATION_MODE>
 					end))
 	pre
-		c.fmuState in set STATES_fmi3ExitConfigurationMode
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3ExitConfigurationMode
 	post
-		RESULT.#2.fmuState in set STATES_fmi3EnterConfigurationMode;	-- ie. could call Enter again
+		mk_(c.fmuKind, RESULT.#2.fmuState) in set STATES_fmi3EnterConfigurationMode;	-- ie. could call Enter again
 
 	fmi3ExitConfigurationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3ExitConfigurationMode(c) ==
-		if c.fmuState not in set STATES_fmi3ExitConfigurationMode
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3ExitConfigurationMode
 		then let - = logAPIError(c, "Cannot call fmi3ExitConfigurationMode in this state") in 
 			mk_(<fmi3Error>, nil)
 		else
@@ -108,7 +108,7 @@ functions
 			stopTime	|-> stopTime,
 			currentTime	|-> startTime))		-- (Re)start experiment
 	pre
-		c.fmuState in set STATES_fmi3EnterInitializationMode
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3EnterInitializationMode
 	post
 		RESULT.#2.fmuState = <INITIALIZATION_MODE>;
 
@@ -120,7 +120,7 @@ functions
 		stopTimeDefined		: fmi3Boolean,
 		stopTime			: [fmi3Float]) result : fmi3Status * [fmi3Instance]
 	==
-		if c.fmuState not in set STATES_fmi3EnterInitializationMode
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3EnterInitializationMode
 		then let - = logAPIError(c, "Cannot call fmi3EnterInitializationMode in this state") in
 			mk_(<fmi3Error>, nil)
 		elseif toleranceDefined and tolerance = nil
@@ -152,13 +152,13 @@ functions
 					end))
 
 	pre
-		c.fmuState in set STATES_fmi3ExitInitializationMode
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3ExitInitializationMode
 	post
 		RESULT.#2.fmuState in set {<EVENT_MODE>, <STEP_MODE>, <CLOCK_ACTIVATION_MODE>};
 
 	fmi3ExitInitializationMode: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3ExitInitializationMode(c) ==
-		if c.fmuState not in set STATES_fmi3ExitInitializationMode
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3ExitInitializationMode
 		then let - = logAPIError(c, "Cannot call fmi3ExitInitializationMode in this state") in
 			mk_(<fmi3Error>, nil)
 		else
@@ -174,13 +174,13 @@ functions
 	fmi3Terminate_Impl(c) ==
 		mk_(<fmi3OK>, mu(c, fmuState |-> <TERMINATED>))
 	pre
-		c.fmuState in set STATES_fmi3Terminate
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3Terminate
 	post
 		RESULT.#2.fmuState = <TERMINATED>;
 
 	fmi3Terminate: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3Terminate(c) ==
-		if c.fmuState not in set STATES_fmi3Terminate
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3Terminate
 		then let - = logAPIError(c, "Cannot call fmi3Terminate in this state") in
 			mk_(<fmi3Error>, nil)
 		else
@@ -201,13 +201,13 @@ functions
 			dirty			|-> true,
 			fmuState		|-> <INSTANTIATED>))
 	pre
-		c.fmuState in set STATES_fmi3Reset
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3Reset
 	post
 		RESULT.#2.fmuState = <INSTANTIATED>;
 
 	fmi3Reset: fmi3Instance +> fmi3Status * [fmi3Instance]
 	fmi3Reset(c) ==
-		if c.fmuState not in set STATES_fmi3Reset
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3Reset
 		then let - = logAPIError(c, "Cannot call fmi3Reset in this state") in
 			mk_(<fmi3Error>, nil)
 		else

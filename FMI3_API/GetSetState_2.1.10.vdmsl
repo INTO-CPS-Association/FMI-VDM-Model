@@ -35,9 +35,9 @@ types
 	SerializedState = fmi3FMUState * nat;		-- state and size of serialized state
 
 functions
-	canDoGetSetState: fmi3Instance * set of fmi3State +> bool
+	canDoGetSetState: fmi3Instance * set of ([fmi3FMUKind] * fmi3State) +> bool
 	canDoGetSetState(c, states) ==
-		c.fmuState in set states
+		mk_(c.fmuKind, c.fmuState) in set states
 		and if is_(c.fmuKind, CoSimulationKind)
 		then nilBool(c.xmlModel.coSimulation.base.canGetAndSetFMUState)
 		else nilBool(c.xmlModel.modelExchange.base.canGetAndSetFMUState);
