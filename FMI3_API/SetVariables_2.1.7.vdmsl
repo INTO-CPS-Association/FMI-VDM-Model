@@ -99,9 +99,12 @@ functions
 	 * A general set of API argument checks for fmi3SetXXX. These are not literally used as a VDM
 	 * "pre" because the API function must return an <fmi3Error> response.
 	 */
-	setterArgChecks: fmi3Instance * Kind * seq of fmi3ValueReference * nat * seq1 of ? +> bool
-	setterArgChecks(c, kind, vrs, nvr, value) ==
-		if len vrs <> nvr
+	setterArgChecks: fmi3Instance * States * Kind * seq of fmi3ValueReference * nat * seq1 of ? +> bool
+	setterArgChecks(c, allowed, kind, vrs, nvr, value) ==
+		if mk_(c.fmuKind, c.fmuState) not in set allowed
+		then let - = logAPIError(c, "Cannot call set function in this state") in false
+
+		elseif len vrs <> nvr
 		then let - = logAPIError(c, "vrs and nvr do not match") in false
 
 		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr) = nil
@@ -153,9 +156,10 @@ functions
 	/**
 	 * Preconditions for the fmi3SetXXX_Impl functions. This is the "pre" complement to the above.
 	 */
-	setterArgPreconditions: fmi3Instance * Kind * seq1 of fmi3ValueReference * nat1 * seq1 of ? +> bool
-	setterArgPreconditions(c, kind, vrs, nvr, value) ==
-		len vrs = nvr
+	setterArgPreconditions: fmi3Instance * States * Kind * seq1 of fmi3ValueReference * nat1 * seq1 of ? +> bool
+	setterArgPreconditions(c, allowed, kind, vrs, nvr, value) ==
+		mk_(c.fmuKind, c.fmuState) in set allowed
+		and len vrs = nvr
 		and ( forall vr in seq vrs &
 			    let sv = lookup(c.eModelVariables, vr) in
 				   sv <> nil
@@ -176,8 +180,8 @@ functions
 	/**
 	 * Implementation and API for fmi3SetFloatXX.
 	 */
-	fmi3SetFloat_Impl: fmi3Instance * FloatKind * seq1 of fmi3ValueReference * nat1 * seq1 of fmi3Float +> fmi3Status * fmi3Instance
-	fmi3SetFloat_Impl(c, kind, vrs, nvr, value) ==
+	fmi3SetFloat_Impl: fmi3Instance * States * FloatKind * seq1 of fmi3ValueReference * nat1 * seq1 of fmi3Float +> fmi3Status * fmi3Instance
+	fmi3SetFloat_Impl(c, allowed, kind, vrs, nvr, value) ==
 		let updates = merge
 		{
 			let mk_(first, last) = valueRange(c, vrs, i) in { vrs(i) |-> value(first, ..., last) }
@@ -188,31 +192,31 @@ functions
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
-		setterArgPreconditions(c, kind, vrs, nvr, value)
+		setterArgPreconditions(c, allowed, kind, vrs, nvr, value)
 		and setterMinMaxPreconditions(c, kind, vrs, value);
 
-	fmi3SetFloat: fmi3Instance * FloatKind * seq1 of fmi3ValueReference * nat1 * seq1 of fmi3Float +> fmi3Status * [fmi3Instance]
-	fmi3SetFloat(c, kind, vrs, nvr, value) ==
-		if setterArgChecks(c, kind, vrs, nvr, value) and setterMinMaxChecks(c, kind, vrs, value)
-		then fmi3SetFloat_Impl(c, kind, vrs, nvr, value)
+	fmi3SetFloat: fmi3Instance * States * FloatKind * seq1 of fmi3ValueReference * nat1 * seq1 of fmi3Float +> fmi3Status * [fmi3Instance]
+	fmi3SetFloat(c, allowed, kind, vrs, nvr, value) ==
+		if setterArgChecks(c, allowed, kind, vrs, nvr, value) and setterMinMaxChecks(c, kind, vrs, value)
+		then fmi3SetFloat_Impl(c, allowed, kind, vrs, nvr, value)
 		else mk_(<fmi3Error>, nil)
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
 	fmi3SetFloat64: fmi3Instance * seq1 of fmi3ValueReference * nat1 * seq1 of fmi3Float +> fmi3Status * [fmi3Instance]
 	fmi3SetFloat64(c, vrs, nvr, value) ==
-		fmi3SetFloat(c, <Float64>, vrs, nvr, value);
+		fmi3SetFloat(c, STATES_fmi3SetFloat64, <Float64>, vrs, nvr, value);
 
 	fmi3SetFloat32: fmi3Instance * seq1 of fmi3ValueReference * nat1 * seq1 of fmi3Float +> fmi3Status * [fmi3Instance]
 	fmi3SetFloat32(c, vrs, nvr, value) ==
-		fmi3SetFloat(c, <Float32>, vrs, nvr, value);
+		fmi3SetFloat(c, STATES_fmi3SetFloat32, <Float32>, vrs, nvr, value);
 
 
 	/**
 	 * Implementation and API for fmi3Set(U)IntXX.
 	 */
-	fmi3SetInteger_Impl: fmi3Instance * IntegerKind * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * fmi3Instance
-	fmi3SetInteger_Impl(c, kind, vrs, nvr, value) ==
+	fmi3SetInteger_Impl: fmi3Instance * States * IntegerKind * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * fmi3Instance
+	fmi3SetInteger_Impl(c, allowed, kind, vrs, nvr, value) ==
 		let updates = merge
 		{
 			let mk_(first, last) = valueRange(c, vrs, i) in { vrs(i) |-> value(first, ..., last) }
@@ -223,54 +227,54 @@ functions
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
-		setterArgPreconditions(c, kind, vrs, nvr, value)
+		setterArgPreconditions(c, allowed, kind, vrs, nvr, value)
 		and setterMinMaxPreconditions(c, kind, vrs, value);
 
-	fmi3SetInteger: fmi3Instance * IntegerKind * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * [fmi3Instance]
-	fmi3SetInteger(c, kind, vrs, nvr, value) ==
-		if setterArgChecks(c, kind, vrs, nvr, value) and setterMinMaxChecks(c, kind, vrs, value)
-		then fmi3SetInteger_Impl(c, kind, vrs, nvr, value)
+	fmi3SetInteger: fmi3Instance * States * IntegerKind * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * [fmi3Instance]
+	fmi3SetInteger(c, allowed, kind, vrs, nvr, value) ==
+		if setterArgChecks(c, allowed, kind, vrs, nvr, value) and setterMinMaxChecks(c, kind, vrs, value)
+		then fmi3SetInteger_Impl(c, allowed, kind, vrs, nvr, value)
 		else mk_(<fmi3Error>, nil)
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
 	fmi3SetInt64: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * [fmi3Instance]
 	fmi3SetInt64(c, vrs, nvr, value) ==
-		fmi3SetInteger(c, <Int64>, vrs, nvr, value);
+		fmi3SetInteger(c, STATES_fmi3SetInt64, <Int64>, vrs, nvr, value);
 
 	fmi3SetInt32: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * [fmi3Instance]
 	fmi3SetInt32(c, vrs, nvr, value) ==
-		fmi3SetInteger(c, <Int32>, vrs, nvr, value);
+		fmi3SetInteger(c, STATES_fmi3SetInt32, <Int32>, vrs, nvr, value);
 
 	fmi3SetInt16: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * [fmi3Instance]
 	fmi3SetInt16(c, vrs, nvr, value) ==
-		fmi3SetInteger(c, <Int16>, vrs, nvr, value);
+		fmi3SetInteger(c, STATES_fmi3SetInt16, <Int16>, vrs, nvr, value);
 
 	fmi3SetInt8: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * [fmi3Instance]
 	fmi3SetInt8(c, vrs, nvr, value) ==
-		fmi3SetInteger(c, <Int8>, vrs, nvr, value);
+		fmi3SetInteger(c, STATES_fmi3SetInt8, <Int8>, vrs, nvr, value);
 
 	fmi3SetUInt64: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * [fmi3Instance]
 	fmi3SetUInt64(c, vrs, nvr, value) ==
-		fmi3SetInteger(c, <UInt64>, vrs, nvr, value);
+		fmi3SetInteger(c, STATES_fmi3SetUInt64, <UInt64>, vrs, nvr, value);
 
 	fmi3SetUInt32: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * [fmi3Instance]
 	fmi3SetUInt32(c, vrs, nvr, value) ==
-		fmi3SetInteger(c, <UInt32>, vrs, nvr, value);
+		fmi3SetInteger(c, STATES_fmi3SetUInt32, <UInt32>, vrs, nvr, value);
 
 	fmi3SetUInt16: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * [fmi3Instance]
 	fmi3SetUInt16(c, vrs, nvr, value) ==
-		fmi3SetInteger(c, <UInt16>, vrs, nvr, value);
+		fmi3SetInteger(c, STATES_fmi3SetUInt16, <UInt16>, vrs, nvr, value);
 
 	fmi3SetUInt8: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Integer +> fmi3Status * [fmi3Instance]
 	fmi3SetUInt8(c, vrs, nvr, value) ==
-		fmi3SetInteger(c, <UInt8>, vrs, nvr, value);
+		fmi3SetInteger(c, STATES_fmi3SetUInt8, <UInt8>, vrs, nvr, value);
 
 	/**
 	 * Implementation and API for fmi3SetBoolean.
 	 */
-	fmi3SetBoolean_Impl: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Boolean +> fmi3Status * fmi3Instance
-	fmi3SetBoolean_Impl(c, vrs, nvr, value) ==
+	fmi3SetBoolean_Impl: fmi3Instance * States * seq of fmi3ValueReference * nat1 * seq1 of fmi3Boolean +> fmi3Status * fmi3Instance
+	fmi3SetBoolean_Impl(c, allowed, vrs, nvr, value) ==
 		let updates = merge
 		{
 			let mk_(first, last) = valueRange(c, vrs, i) in { vrs(i) |-> value(first, ..., last) }
@@ -281,12 +285,12 @@ functions
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
-		setterArgPreconditions(c, <BooleanKind>, vrs, nvr, value);
+		setterArgPreconditions(c, allowed, <BooleanKind>, vrs, nvr, value);
 
 	fmi3SetBoolean: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Boolean +> fmi3Status * [fmi3Instance]
 	fmi3SetBoolean(c, vrs, nvr, value) ==
-		if setterArgChecks(c, <BooleanKind>, vrs, nvr, value)
-		then fmi3SetBoolean_Impl(c, vrs, nvr, value)
+		if setterArgChecks(c, STATES_fmi3SetBoolean, <BooleanKind>, vrs, nvr, value)
+		then fmi3SetBoolean_Impl(c, STATES_fmi3SetBoolean, vrs, nvr, value)
 		else mk_(<fmi3Error>, nil)
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
@@ -295,8 +299,8 @@ functions
 	/**
 	 * Implementation and API for fmi3SetString.
 	 */
-	fmi3SetString_Impl: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3String +> fmi3Status * fmi3Instance
-	fmi3SetString_Impl(c, vrs, nvr, value) ==
+	fmi3SetString_Impl: fmi3Instance * States * seq of fmi3ValueReference * nat1 * seq1 of fmi3String +> fmi3Status * fmi3Instance
+	fmi3SetString_Impl(c, allowed, vrs, nvr, value) ==
 		let updates = merge
 		{
 			let mk_(first, last) = valueRange(c, vrs, i) in { vrs(i) |-> value(first, ..., last) }
@@ -307,12 +311,12 @@ functions
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
-		setterArgPreconditions(c, <StringKind>, vrs, nvr, value);
+		setterArgPreconditions(c, allowed, <StringKind>, vrs, nvr, value);
 
 	fmi3SetString: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3String +> fmi3Status * [fmi3Instance]
 	fmi3SetString(c, vrs, nvr, value) ==
-		if setterArgChecks(c, <StringKind>, vrs, nvr, value)
-		then fmi3SetString_Impl(c, vrs, nvr, value)
+		if setterArgChecks(c, STATES_fmi3SetString, <StringKind>, vrs, nvr, value)
+		then fmi3SetString_Impl(c, STATES_fmi3SetString, vrs, nvr, value)
 		else mk_(<fmi3Error>, nil)
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
@@ -320,8 +324,8 @@ functions
 	/**
 	 * Implementation and API for fmi3SetBinary.
 	 */
-	fmi3SetBinary_Impl: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Binary +> fmi3Status * fmi3Instance
-	fmi3SetBinary_Impl(c, vrs, nvr, value) ==
+	fmi3SetBinary_Impl: fmi3Instance * States * seq of fmi3ValueReference * nat1 * seq1 of fmi3Binary +> fmi3Status * fmi3Instance
+	fmi3SetBinary_Impl(c, allowed, vrs, nvr, value) ==
 		let updates = merge
 		{
 			let mk_(first, last) = valueRange(c, vrs, i) in { vrs(i) |-> value(first, ..., last) }
@@ -332,12 +336,12 @@ functions
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
-		setterArgPreconditions(c, <BinaryKind>, vrs, nvr, value);
+		setterArgPreconditions(c, allowed, <BinaryKind>, vrs, nvr, value);
 
 	fmi3SetBinary: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Binary +> fmi3Status * [fmi3Instance]
 	fmi3SetBinary(c, vrs, nvr, value) ==
-		if setterArgChecks(c, <BinaryKind>, vrs, nvr, value)
-		then fmi3SetBinary_Impl(c, vrs, nvr, value)
+		if setterArgChecks(c, STATES_fmi3SetBinary, <BinaryKind>, vrs, nvr, value)
+		then fmi3SetBinary_Impl(c, STATES_fmi3SetBinary, vrs, nvr, value)
 		else mk_(<fmi3Error>, nil)
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;

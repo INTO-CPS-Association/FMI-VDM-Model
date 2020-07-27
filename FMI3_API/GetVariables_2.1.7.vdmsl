@@ -91,9 +91,12 @@ functions
 	 * A general set of API argument checks for fmi3GetXXX. These are not literally used as a VDM
 	 * "pre" because the API function must return an <fmi3Error> response.
 	 */
-	getterArgChecks: fmi3Instance * Kind * seq of fmi3ValueReference * nat * nat +> bool
-	getterArgChecks(c, kind, vrs, nvr, nval) ==
-		if len vrs <> nvr
+	getterArgChecks: fmi3Instance * States * Kind * seq of fmi3ValueReference * nat * nat +> bool
+	getterArgChecks(c, allowed, kind, vrs, nvr, nval) ==
+		if mk_(c.fmuKind, c.fmuState) not in set allowed
+		then let - = logAPIError(c, "Cannot call get function in this state") in false
+
+		elseif len vrs <> nvr
 		then let - = logAPIError(c, "vrs and nvr do not match") in false
 
 		elseif exists vr in seq vrs &
@@ -111,9 +114,10 @@ functions
 	/**
 	 * Preconditions for the fmi3GetXXX_Impl functions. This is the "pre" complement to the above.
 	 */
-	getterPreconditions: fmi3Instance * Kind * seq of fmi3ValueReference * nat * nat +> bool
-	getterPreconditions(c, kind, vrs, nvr, nval) ==
-		len vrs = nvr
+	getterPreconditions: fmi3Instance * States * Kind * seq of fmi3ValueReference * nat * nat +> bool
+	getterPreconditions(c, allowed, kind, vrs, nvr, nval) ==
+		mk_(c.fmuKind, c.fmuState) in set allowed
+		and len vrs = nvr
 		and ( forall vr in seq vrs &
 			    let sv = lookup(c.eModelVariables, vr) in
 				  sv <> nil and sv.kind = kind )
@@ -124,110 +128,110 @@ functions
 	/**
 	 * Implementation and API for fmi3GetFloatXX.
 	 */
-	fmi3GetReal_Impl: fmi3Instance * FloatKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
-	fmi3GetReal_Impl(c, kind, vrs, nvr, nval) ==
+	fmi3GetReal_Impl: fmi3Instance * States * FloatKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
+	fmi3GetReal_Impl(c, allowed, kind, vrs, nvr, nval) ==
 		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
 			if s <> <fmi3OK>
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
 	pre
-		getterPreconditions(c, kind, vrs, nvr, nval)
+		getterPreconditions(c, allowed, kind, vrs, nvr, nval)
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval
 			and let mk_(min, max) = minMaxKind(kind) in
 				forall v in seq RESULT.#2 & min <= v and v <= max;
 
-	fmi3GetReal: fmi3Instance * FloatKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
-	fmi3GetReal(c, kind, vrs, nvr, nval) ==
-		if getterArgChecks(c, kind, vrs, nvr, nval)
-		then fmi3GetReal_Impl(c, kind, vrs, nvr, nval)
+	fmi3GetReal: fmi3Instance * States * FloatKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
+	fmi3GetReal(c, allowed, kind, vrs, nvr, nval) ==
+		if getterArgChecks(c, allowed, kind, vrs, nvr, nval)
+		then fmi3GetReal_Impl(c, allowed, kind, vrs, nvr, nval)
 		else mk_(<fmi3Error>, nil)
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
 	fmi3GetFloat64: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetFloat64(c, vrs, nvr, nval) ==
-		fmi3GetReal(c, <Float64>, vrs, nvr, nval);
+		fmi3GetReal(c, STATES_fmi3GetFloat64, <Float64>, vrs, nvr, nval);
 
 	fmi3GetFloat32: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetFloat32(c, vrs, nvr, nval) ==
-		fmi3GetReal(c, <Float32>, vrs, nvr, nval);
+		fmi3GetReal(c, STATES_fmi3GetFloat32, <Float32>, vrs, nvr, nval);
 
 
 	/**
 	 * Implementation and API for fmi3Get(U)IntXX.
 	 */
-	fmi3GetInteger_Impl: fmi3Instance * IntegerKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
-	fmi3GetInteger_Impl(c, kind, vrs, nvr, nval) ==
+	fmi3GetInteger_Impl: fmi3Instance * States * IntegerKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
+	fmi3GetInteger_Impl(c, allowed, kind, vrs, nvr, nval) ==
 		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
 			if s <> <fmi3OK>
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
 	pre
-		getterPreconditions(c, kind, vrs, nvr, nval)
+		getterPreconditions(c, allowed, kind, vrs, nvr, nval)
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval
 	 		and let mk_(min, max) = minMaxKind(kind) in
 				forall v in seq RESULT.#2 & min <= v and v <= max;
 
-	fmi3GetInteger: fmi3Instance * IntegerKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
-	fmi3GetInteger(c, kind, vrs, nvr, nval) ==
-		if getterArgChecks(c, kind, vrs, nvr, nval)
-		then fmi3GetInteger_Impl(c, kind, vrs, nvr, nval)
+	fmi3GetInteger: fmi3Instance * States * IntegerKind * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
+	fmi3GetInteger(c, allowed, kind, vrs, nvr, nval) ==
+		if getterArgChecks(c, allowed, kind, vrs, nvr, nval)
+		then fmi3GetInteger_Impl(c, allowed, kind, vrs, nvr, nval)
 		else mk_(<fmi3Error>, nil)
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
 	fmi3GetInt64: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetInt64(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <Int64>, vrs, nvr, nval);
+		fmi3GetInteger(c, STATES_fmi3GetInt64, <Int64>, vrs, nvr, nval);
 
 	fmi3GetInt32: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetInt32(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <Int32>, vrs, nvr, nval);
+		fmi3GetInteger(c, STATES_fmi3GetInt32, <Int32>, vrs, nvr, nval);
 
 	fmi3GetInt16: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetInt16(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <Int16>, vrs, nvr, nval);
+		fmi3GetInteger(c, STATES_fmi3GetInt16, <Int16>, vrs, nvr, nval);
 
 	fmi3GetInt8: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetInt8(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <Int8>, vrs, nvr, nval);
+		fmi3GetInteger(c, STATES_fmi3GetInt8, <Int8>, vrs, nvr, nval);
 
 	fmi3GetUInt64: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetUInt64(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <UInt64>, vrs, nvr, nval);
+		fmi3GetInteger(c, STATES_fmi3GetUInt64, <UInt64>, vrs, nvr, nval);
 
 	fmi3GetUInt32: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetUInt32(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <UInt32>, vrs, nvr, nval);
+		fmi3GetInteger(c, STATES_fmi3GetUInt32, <UInt32>, vrs, nvr, nval);
 
 	fmi3GetUInt16: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetUInt16(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <UInt16>, vrs, nvr, nval);
+		fmi3GetInteger(c, STATES_fmi3GetUInt16, <UInt16>, vrs, nvr, nval);
 
 	fmi3GetUInt8: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Integer]
 	fmi3GetUInt8(c, vrs, nvr, nval) ==
-		fmi3GetInteger(c, <UInt8>, vrs, nvr, nval);
+		fmi3GetInteger(c, STATES_fmi3GetUInt8, <UInt8>, vrs, nvr, nval);
 
 	/**
 	 * Implementation and API for fmi3GetBoolean.
 	 */
-	fmi3GetBoolean_Impl: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Boolean]
-	fmi3GetBoolean_Impl(c, vrs, nvr, nval) ==
+	fmi3GetBoolean_Impl: fmi3Instance * States * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Boolean]
+	fmi3GetBoolean_Impl(c, allowed, vrs, nvr, nval) ==
 		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
 			if s <> <fmi3OK>
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
 	pre
-		getterPreconditions(c, <BooleanKind>, vrs, nvr, nval)
+		getterPreconditions(c, allowed, <BooleanKind>, vrs, nvr, nval)
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
 
 	fmi3GetBoolean: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Boolean]
 	fmi3GetBoolean(c, vrs, nvr, nval) ==
-		if getterArgChecks(c, <BooleanKind>, vrs, nvr, nval)
-		then fmi3GetBoolean_Impl(c, vrs, nvr, nval)
+		if getterArgChecks(c, STATES_fmi3GetBoolean, <BooleanKind>, vrs, nvr, nval)
+		then fmi3GetBoolean_Impl(c, STATES_fmi3GetBoolean, vrs, nvr, nval)
 		else mk_(<fmi3Error>, nil)
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
@@ -236,21 +240,21 @@ functions
 	/**
 	 * Implementation and API for fmi3GetString.
 	 */
-	fmi3GetString_Impl: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3String]
-	fmi3GetString_Impl(c, vrs, nvr, nval) ==
+	fmi3GetString_Impl: fmi3Instance * States * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3String]
+	fmi3GetString_Impl(c, allowed, vrs, nvr, nval) ==
 		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
 			if s <> <fmi3OK>
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
 	pre
-		getterPreconditions(c, <StringKind>, vrs, nvr, nval)
+		getterPreconditions(c, allowed, <StringKind>, vrs, nvr, nval)
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
 
 	fmi3GetString: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3String]
 	fmi3GetString(c, vrs, nvr, nval) ==
-		if getterArgChecks(c, <StringKind>, vrs, nvr, nval)
-		then fmi3GetString_Impl(c, vrs, nvr, nval)
+		if getterArgChecks(c, STATES_fmi3GetString, <StringKind>, vrs, nvr, nval)
+		then fmi3GetString_Impl(c, STATES_fmi3GetString, vrs, nvr, nval)
 		else mk_(<fmi3Error>, nil)
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
@@ -258,21 +262,21 @@ functions
 	/**
 	 * Implementation and API for fmi3GetBinary.
 	 */
-	fmi3GetBinary_Impl: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Binary]
-	fmi3GetBinary_Impl(c, vrs, nvr, nval) ==
+	fmi3GetBinary_Impl: fmi3Instance * States * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Binary]
+	fmi3GetBinary_Impl(c, allowed, vrs, nvr, nval) ==
 		let mk_(s, c2) = /* if c.dirty then c.calculateValues(c) else */ mk_(<fmi3OK>, c) in
 			if s <> <fmi3OK>
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
 	pre
-		getterPreconditions(c, <BinaryKind>, vrs, nvr, nval)
+		getterPreconditions(c, allowed, <BinaryKind>, vrs, nvr, nval)
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
 
 	fmi3GetBinary: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Binary]
 	fmi3GetBinary(c, vrs, nvr, nval) ==
-		if getterArgChecks(c, <BinaryKind>, vrs, nvr, nval)
-		then fmi3GetBinary_Impl(c, vrs, nvr, nval)
+		if getterArgChecks(c, STATES_fmi3GetBinary, <BinaryKind>, vrs, nvr, nval)
+		then fmi3GetBinary_Impl(c, STATES_fmi3GetBinary, vrs, nvr, nval)
 		else mk_(<fmi3Error>, nil)
 	post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;

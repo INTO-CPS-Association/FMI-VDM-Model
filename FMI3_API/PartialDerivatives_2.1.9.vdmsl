@@ -79,7 +79,7 @@ functions
 	==
 		mk_(<fmi3OK>, nil, nil)	-- TODO!
 	pre
-		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetDirectionalDerivative
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetAdjointDerivative
 		and nUnknowns = len unknowns
 		and nKnowns = len knowns
 	post

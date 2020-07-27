@@ -35,6 +35,7 @@ functions
 	 * Implementation of basic fmi3Instantiate. See API methods below for different modes.
 	 */
 	fmi3Instantiate_Impl(
+		allowed				: States,
 		instanceName		: fmi3String,
 		instantiationToken	: fmi3String,
 		fmuKind				: fmi3FMUKind,
@@ -137,7 +138,8 @@ functions
 			)
 
 	pre
-		instanceName <> ""
+		mk_(nil, <START>) in set allowed
+		and instanceName <> ""
 		and instantiationToken = instanceEnvironment.xmlModel.attributes.instantiationToken
 	post
 		result.fmuState = <INSTANTIATED>
@@ -158,7 +160,10 @@ functions
 		instanceEnvironment	: fmi3InstanceEnvironment,
 		logMessage			: fmi3CallbackLogMessage) result : [fmi3Instance]
 	==
-		if instanceName = ""
+		if mk_(nil, <START>) not in set STATES_fmi3InstantiateModelExchange
+		then let - = logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateModelExchange cannot be called in this state") in nil
+		elseif instanceName = ""
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateModelExchange instanceName cannot be empty") in nil
 		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
@@ -168,8 +173,8 @@ functions
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateModelExchange must define ModelExchange XML configuration") in nil
 		else
-			let instance = fmi3Instantiate_Impl(instanceName, instantiationToken,
-				<ModelExchange>, nil, instanceEnvironment, logMessage) in
+			let instance = fmi3Instantiate_Impl(STATES_fmi3InstantiateModelExchange, instanceName,
+				instantiationToken, <ModelExchange>, nil, instanceEnvironment, logMessage) in
 			let mk_(-, result) = fmi3SetDebugLogging(instance, loggingOn, 0, []) in
 				result;
 
@@ -190,7 +195,10 @@ functions
 		logMessage								: fmi3CallbackLogMessage,
 		intermediateUpdate						: [fmi3CallbackIntermediateUpdate]) result : [fmi3Instance]
 	==
-		if instanceName = ""
+		if mk_(nil, <START>) not in set STATES_fmi3InstantiateCoSimulation
+		then let - = logInst(instanceEnvironment, instanceName,
+				"fmi3fmi3InstantiateCoSimulation cannot be called in this state") in nil
+		elseif instanceName = ""
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateBasicCoSimulation instanceName cannot be empty") in nil
 		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
@@ -220,8 +228,8 @@ functions
 				nil,
 				nil)
 			in
-				let instance = fmi3Instantiate_Impl(instanceName, instantiationToken,
-					<CoSimulation>, coSimConfig, instanceEnvironment, logMessage) in
+				let instance = fmi3Instantiate_Impl(STATES_fmi3InstantiateCoSimulation, instanceName,
+					instantiationToken, <CoSimulation>, coSimConfig, instanceEnvironment, logMessage) in
 				let mk_(-, result) = fmi3SetDebugLogging(instance, loggingOn, 0, []) in
 					result;
 
@@ -243,7 +251,10 @@ functions
 		lockPreemption							: fmi3CallbackLockPreemption,
 		unlockPreemption						: fmi3CallbackUnlockPreemption) result : [fmi3Instance]
 	==
-		if instanceName = ""
+		if mk_(nil, <START>) not in set STATES_fmi3InstantiateScheduledExecution
+		then let - = logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateScheduledExecution cannot be called in this state") in nil
+		elseif instanceName = ""
 		then let - = logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateScheduledCoSimulation instanceName cannot be empty") in nil
 		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
@@ -268,13 +279,13 @@ functions
 			let coSimConfig = mk_fmi3CoSimulationConfiguration(
 				false,
 				requiredIntermediateVariables,
-				<fmi3ModeScheduledExecutionSimulation>,
+				<fmi3ModeScheduledExecution>,
 				intermediateUpdate,
 				lockPreemption,
 				unlockPreemption)
 			in
-				let instance = fmi3Instantiate_Impl(instanceName, instantiationToken,
-					<ScheduledExecution>, coSimConfig, instanceEnvironment, logMessage) in
+				let instance = fmi3Instantiate_Impl(STATES_fmi3InstantiateScheduledExecution, instanceName,
+					instantiationToken, <ScheduledExecution>, coSimConfig, instanceEnvironment, logMessage) in
 				let mk_(-, result) = fmi3SetDebugLogging(instance, loggingOn, 0, []) in
 					result;
 
@@ -358,11 +369,11 @@ functions
 	 */
 	fmi3FreeInstance: [fmi3Instance] +> <VOID>
 	fmi3FreeInstance(c) ==
-		if c = nil
-		then -- The function ignores a "null" argument
-			<VOID>
-		elseif mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3FreeInstance
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3FreeInstance
 		then let - = logAPIError(c, "Cannot call fmi3FreeInstance in this state") in
+			<VOID>
+		elseif c = nil
+		then -- The function ignores a "null" argument
 			<VOID>
 		else
 			fmi3FreeInstance_Impl(c);

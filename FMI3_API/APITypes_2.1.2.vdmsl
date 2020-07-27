@@ -107,7 +107,7 @@ types
 
 	fmi3CoSimulationMode =
 	    <fmi3ModeBasicCoSimulation> |
-	    <fmi3ModeScheduledExecutionSimulation>;
+	    <fmi3ModeScheduledExecution>;
 
 	fmi3CoSimulationConfiguration ::
 		eventModeRequired						: fmi3Boolean

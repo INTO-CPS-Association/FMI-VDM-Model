@@ -33,7 +33,7 @@
  * 6.2.3 State Machine for Scheduled Co-Simulation
  */
 types
-	States = set of ([fmi3FMUKind] * fmi3State);
+	States = set of ([fmi3FMUKind] * fmi3State);		-- nil kind indicates <START>/<END> states
 
 /**
  * Values are generated from the FMI3_API_Matrix spreadsheet, using csv2vdm.awk.
