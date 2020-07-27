@@ -161,17 +161,17 @@ functions
 		logMessage			: fmi3CallbackLogMessage) result : [fmi3Instance]
 	==
 		if mk_(nil, <START>) not in set STATES_fmi3InstantiateModelExchange
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateModelExchange cannot be called in this state") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateModelExchange cannot be called in this state", nil)
 		elseif instanceName = ""
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateModelExchange instanceName cannot be empty") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateModelExchange instanceName cannot be empty", nil)
 		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateModelExchange instantiationToken does not match XML configuration") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateModelExchange instantiationToken does not match XML configuration", nil)
 		elseif instanceEnvironment.xmlModel.modelExchange = nil
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateModelExchange must define ModelExchange XML configuration") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateModelExchange must define ModelExchange XML configuration", nil)
 		else
 			let instance = fmi3Instantiate_Impl(STATES_fmi3InstantiateModelExchange, instanceName,
 				instantiationToken, <ModelExchange>, nil, instanceEnvironment, logMessage) in
@@ -196,29 +196,29 @@ functions
 		intermediateUpdate						: [fmi3CallbackIntermediateUpdate]) result : [fmi3Instance]
 	==
 		if mk_(nil, <START>) not in set STATES_fmi3InstantiateCoSimulation
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3fmi3InstantiateCoSimulation cannot be called in this state") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3fmi3InstantiateCoSimulation cannot be called in this state", nil)
 		elseif instanceName = ""
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateBasicCoSimulation instanceName cannot be empty") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3fmi3InstantiateCoSimulation instanceName cannot be empty", nil)
 		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateBasicCoSimulation instantiationToken does not match XML configuration") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3fmi3InstantiateCoSimulation instantiationToken does not match XML configuration", nil)
 		elseif instanceEnvironment.xmlModel.coSimulation = nil
 				or instanceEnvironment.xmlModel.coSimulation.kind <> <CoSimulation>
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateBasicCoSimulation must define BasicCoSimulation XML configuration") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3fmi3InstantiateCoSimulation must define BasicCoSimulation XML configuration", nil)
 		elseif len requiredIntermediateVariables <> nRequiredIntermediateVariables
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateBasicCoSimulation requiredIntermediateVariables length mismatch") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3fmi3InstantiateCoSimulation requiredIntermediateVariables length mismatch", nil)
 		elseif nRequiredIntermediateVariables > 0 and intermediateUpdate = nil
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateBasicCoSimulation must provide intermediateUpdate") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3fmi3InstantiateCoSimulation must provide intermediateUpdate", nil)
 		elseif exists vr in seq requiredIntermediateVariables &
 			 let v = lookup(instanceEnvironment.xmlModel.modelVariables, vr) in
 			 	v = nil or not v.base.intermediateAccess
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateBasicCoSimulation variables are not all intermediateAccess") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3fmi3InstantiateCoSimulation variables are not all intermediateAccess", nil)
 		else
 			let coSimConfig = mk_fmi3CoSimulationConfiguration(
 				eventModeRequired,
@@ -252,29 +252,29 @@ functions
 		unlockPreemption						: fmi3CallbackUnlockPreemption) result : [fmi3Instance]
 	==
 		if mk_(nil, <START>) not in set STATES_fmi3InstantiateScheduledExecution
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateScheduledExecution cannot be called in this state") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateScheduledExecution cannot be called in this state", nil)
 		elseif instanceName = ""
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateScheduledCoSimulation instanceName cannot be empty") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateScheduledExecution instanceName cannot be empty", nil)
 		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateScheduledCoSimulation instantiationToken does not match XML configuration") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateScheduledExecution instantiationToken does not match XML configuration", nil)
 		elseif instanceEnvironment.xmlModel.coSimulation = nil
 				or instanceEnvironment.xmlModel.coSimulation.kind <> <ScheduledExecution>
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateScheduledCoSimulation must define ScheduledCoSimulation XML configuration") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateScheduledExecution must define ScheduledCoSimulation XML configuration", nil)
 		elseif len requiredIntermediateVariables <> nRequiredIntermediateVariables
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateBasicCoSimulation requiredIntermediateVariables length mismatch") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateScheduledExecution requiredIntermediateVariables length mismatch", nil)
 		elseif nRequiredIntermediateVariables > 0 and intermediateUpdate = nil
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateBasicCoSimulation must provide intermediateUpdate") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateScheduledExecution must provide intermediateUpdate", nil)
 		elseif exists vr in seq requiredIntermediateVariables &
 			 let v = lookup(instanceEnvironment.xmlModel.modelVariables, vr) in
 			 	v = nil or not v.base.intermediateAccess
-		then let - = logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateBasicCoSimulation variables are not all intermediateAccess") in nil
+		then logInst(instanceEnvironment, instanceName,
+				"fmi3InstantiateScheduledExecution variables are not all intermediateAccess", nil)
 		else
 			let coSimConfig = mk_fmi3CoSimulationConfiguration(
 				false,
@@ -295,9 +295,10 @@ functions
 	 * fmi3Instance that defines the enabled categories has not yet been created. It implicitly
 	 * uses the raw implementation - ie. it is guaranteed to log.
 	 */
-	logInst: fmi3InstanceEnvironment * fmi3String * fmi3String +> <VOID>
-	logInst(ienv, instanceName, message) ==
-		fmi3Logger_Impl(ienv, instanceName, <fmi3Error>, "logAll", message);
+	logInst: fmi3InstanceEnvironment * fmi3String * fmi3String * ? +> ?
+	logInst(ienv, instanceName, message, result) ==
+		let - = fmi3Logger_Impl(ienv, instanceName, <fmi3Error>, "logAll", message)
+		in result;
 
 	/**
 	 * Calculate the initial map of SV values, given their "start" attributes.
@@ -369,12 +370,10 @@ functions
 	 */
 	fmi3FreeInstance: [fmi3Instance] +> <VOID>
 	fmi3FreeInstance(c) ==
-		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3FreeInstance
-		then let - = logAPIError(c, "Cannot call fmi3FreeInstance in this state") in
-			<VOID>
+		if c <> nil and mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3FreeInstance
+		then logAPIError(c, "Cannot call fmi3FreeInstance in this state", <VOID>)
 		elseif c = nil
-		then -- The function ignores a "null" argument
-			<VOID>
+		then <VOID>	-- The function ignores a "null" argument
 		else
 			fmi3FreeInstance_Impl(c);
 
@@ -422,18 +421,14 @@ functions
 	fmi3SetDebugLogging: fmi3Instance * fmi3Boolean * nat * seq of fmi3String +> fmi3Status * [fmi3Instance]
 	fmi3SetDebugLogging(c, loggingOn, nCategories, categories) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3SetDebugLogging
-		then let - = logAPIError(c, "Cannot call fmi3SetDebugLogging in this state") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Cannot call fmi3SetDebugLogging in this state", mk_(<fmi3Error>, nil))
 		elseif nCategories <> len categories or card elems categories <> nCategories
-		then let - = logAPIError(c, "nCategories does not match categories length") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "nCategories does not match categories length", mk_(<fmi3Error>, nil))
 		else let logcats = c.xmlModel.logCategories in
 			if logcats = nil and nCategories > 0
-			then let - = logAPIError(c, "No log categories defined in XML configuration") in
-				mk_(<fmi3Error>, nil)
+			then logAPIError(c, "No log categories defined in XML configuration", mk_(<fmi3Error>, nil))
 			elseif exists cname in seq categories & not exists lc in seq logcats & lc.name = cname
-			then let - = logAPIError(c, "Some log categories not found in XML configuration") in
-				mk_(<fmi3Error>, nil)
+			then logAPIError(c, "Some log categories not found in XML configuration", mk_(<fmi3Error>, nil))
 			else
 				fmi3SetDebugLogging_Impl(c, loggingOn, nCategories, categories)
 	post

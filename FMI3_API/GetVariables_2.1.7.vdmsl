@@ -94,20 +94,20 @@ functions
 	getterArgChecks: fmi3Instance * States * Kind * seq of fmi3ValueReference * nat * nat +> bool
 	getterArgChecks(c, allowed, kind, vrs, nvr, nval) ==
 		if mk_(c.fmuKind, c.fmuState) not in set allowed
-		then let - = logAPIError(c, "Cannot call get function in this state") in false
+		then logAPIError(c, "Cannot call get function in this state", false)
 
 		elseif len vrs <> nvr
-		then let - = logAPIError(c, "vrs and nvr do not match") in false
+		then logAPIError(c, "vrs and nvr do not match", false)
 
 		elseif exists vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr) in sv = nil or sv.kind <> kind
-		then let - = logAPIError(c, "Value references are not all defined for kind") in false
+		then logAPIError(c, "Value references are not all defined for kind", false)
 
 		elseif not generalGetPrecondition(c, vrs)
-		then let - = logAPIError(c, "Get preconditions failed") in false
+		then logAPIError(c, "Get preconditions failed", false)
 
 		elseif nval <> totalValues(c, vrs)
-		then let - = logAPIError(c, "nValues does not match total valueReference dimensions") in false
+		then logAPIError(c, "nValues does not match total valueReference dimensions", false)
 
 		else true;
 

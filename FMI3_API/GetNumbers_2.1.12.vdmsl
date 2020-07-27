@@ -47,8 +47,7 @@ functions
 	fmi3GetNumberOfEventIndicators: fmi3Instance -> fmi3Status * [nat]
 	fmi3GetNumberOfEventIndicators(c) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetNumberOfEventIndicators
-		then let - = logAPIError(c, "Cannot call fmi3GetNumberOfEventIndicators in this state") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Cannot call fmi3GetNumberOfEventIndicators in this state", mk_(<fmi3Error>, nil))
 		else
 			fmi3GetNumberOfEventIndicators_Impl(c)
 	 post
@@ -69,8 +68,7 @@ functions
 	fmi3GetNumberOfContinuousStates: fmi3Instance -> fmi3Status * [nat]
 	fmi3GetNumberOfContinuousStates(c) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetNumberOfContinuousStates
-		then let - = logAPIError(c, "Cannot call fmi3GetNumberOfContinuousStates in this state") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Cannot call fmi3GetNumberOfContinuousStates in this state", mk_(<fmi3Error>, nil))
 		else
 			fmi3GetNumberOfEventIndicators_Impl(c)
 	 post
@@ -91,8 +89,7 @@ functions
 	fmi3GetNumberOfVariableDependencies: fmi3Instance * fmi3ValueReference -> fmi3Status * [nat]
 	fmi3GetNumberOfVariableDependencies(c, valueReference) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetNumberOfVariableDependencies
-		then let - = logAPIError(c, "Cannot call fmi3GetNumberOfVariableDependencies in this state") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Cannot call fmi3GetNumberOfVariableDependencies in this state", mk_(<fmi3Error>, nil))
 		else
 			fmi3GetNumberOfVariableDependencies_Impl(c, valueReference)
 	 post

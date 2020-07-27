@@ -102,30 +102,30 @@ functions
 	setterArgChecks: fmi3Instance * States * Kind * seq of fmi3ValueReference * nat * seq1 of ? +> bool
 	setterArgChecks(c, allowed, kind, vrs, nvr, value) ==
 		if mk_(c.fmuKind, c.fmuState) not in set allowed
-		then let - = logAPIError(c, "Cannot call set function in this state") in false
+		then logAPIError(c, "Cannot call set function in this state", false)
 
 		elseif len vrs <> nvr
-		then let - = logAPIError(c, "vrs and nvr do not match") in false
+		then logAPIError(c, "vrs and nvr do not match", false)
 
 		elseif exists vr in seq vrs & lookup(c.eModelVariables, vr) = nil
-		then let - = logAPIError(c, "Value references are not all valid") in false
+		then logAPIError(c, "Value references are not all valid", false)
 
 		elseif len value <> totalValues(c, vrs)
-		then let - = logAPIError(c, "vrs and value do not match") in false
+		then logAPIError(c, "vrs and value do not match", false)
 
 		elseif not generalSetPrecondition(c, vrs)
-		then let - = logAPIError(c, "Set preconditions failed") in false
+		then logAPIError(c, "Set preconditions failed", false)
 
 		else forall vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr) in
 				if sv.base.causality = <independent>
-				then let - = logAPIError(c, "Cannot set value of independent variable") in false
+				then logAPIError(c, "Cannot set value of independent variable", false)
 
 				elseif sv.base.variability = <constant>
-				then let - = logAPIError(c, "Cannot set value of constant variable") in false
+				then logAPIError(c, "Cannot set value of constant variable", false)
 
 				elseif sv.kind <> kind
-				then let - = logAPIError(c, "Variables not of the correct kind") in false
+				then logAPIError(c, "Variables not of the correct kind", false)
 
 				else true;
 
@@ -139,7 +139,7 @@ functions
 					max = sv.floatAtts.max
 				in
 					(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
-			then let - = logAPIError(c, "Values not all within min/max for variables") in false
+			then logAPIError(c, "Values not all within min/max for variables", false)
 			else true
 		elseif is_(kind, IntegerKind)
 		then
@@ -149,7 +149,7 @@ functions
 					max = sv.intAtts.max
 				in
 					(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
-			then let - = logAPIError(c, "Values not all within min/max for variables") in false
+			then logAPIError(c, "Values not all within min/max for variables", false)
 			else true
 		else true;
 

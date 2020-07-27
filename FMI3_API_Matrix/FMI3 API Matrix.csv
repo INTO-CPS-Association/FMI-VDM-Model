@@ -32,7 +32,7 @@ fmi3GetFMUState,X,X,,,,X,X,X,X,X,X,X,,X,X,12,X,X,,,X,,X,X,X,X,13,,X
 fmi3GetInt16,X,X,,,,,,1,2,2,,X,,X,X,12,X,X,10,,X,,X,X,X,X,13,,X
 fmi3GetInt32,X,X,,,,,,1,2,2,,X,,X,X,12,X,X,10,,X,,X,X,X,X,13,,X
 fmi3GetInt64,X,X,,,,,,1,2,2,,X,,X,X,12,X,X,10,,X,,X,X,X,X,13,,X
-fmi3GetInt8,X,X,,,,,,1,2,2,,X,,,X,12,X,X,10,,X,,X,X,X,X,13,,X
+fmi3GetInt8,X,X,,,,,,1,2,2,,X,,X,X,12,X,X,10,,X,,X,X,X,X,13,,X
 fmi3GetIntervalDecimal,X,,,,,X,X,X,X,X,X,X,,,,,,,,,,,,,,,,,
 fmi3GetIntervalFraction,X,,,,,X,X,X,X,X,X,X,,,,,,,,,,,,,,,,,
 fmi3GetNominalsOfContinuousStates,X,,,,,,,,X,,,,,,,,,,,,,,,,,,,,

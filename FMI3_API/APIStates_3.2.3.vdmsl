@@ -433,6 +433,7 @@ STATES_fmi3GetInt8: States = {
     mk_(<CoSimulation>, <CONFIGURATION_MODE>),
     mk_(<CoSimulation>, <EVENT_MODE>),
     mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
     mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
     mk_(<CoSimulation>, <STEP_MODE>),
     mk_(<CoSimulation>, <TERMINATED>),

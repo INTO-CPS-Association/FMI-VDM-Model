@@ -44,8 +44,7 @@ functions
 	fmi3SetTime: fmi3Instance * fmi3Float +> fmi3Status * [fmi3Instance]
 	fmi3SetTime(c, time) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3SetTime
-		then let - = logAPIError(c, "Cannot call fmi3SetTime in this state") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Cannot call fmi3SetTime in this state", mk_(<fmi3Error>, nil))
 		else
 			fmi3SetTime_Impl(c, time)
 	 post
@@ -75,14 +74,11 @@ functions
 	fmi3SetContinuousStates: fmi3Instance * seq of fmi3Float * nat +> fmi3Status * [fmi3Instance]
 	fmi3SetContinuousStates(c, x, nx) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3SetContinuousStates
-		then let - = logAPIError(c, "Cannot call fmi3SetContinuousStates in this state") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Cannot call fmi3SetContinuousStates in this state", mk_(<fmi3Error>, nil))
 		elseif nx <> len x
-		then let - = logAPIError(c, "Wrong number of derivates passed") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Wrong number of derivates passed", mk_(<fmi3Error>, nil))
 		elseif nx <> len c.continuousTimeStates
-		then let - = logAPIError(c, "Wrong number of derivates being set") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Wrong number of derivates being set", mk_(<fmi3Error>, nil))
 	 	else
 	 		fmi3SetContinuousStates_Impl(c, x, nx)
 	 post

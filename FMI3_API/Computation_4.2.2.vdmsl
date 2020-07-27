@@ -57,14 +57,11 @@ functions
 	fmi3DoStep: fmi3Instance * fmi3Float * fmi3Float * fmi3Boolean +> fmi3Status * [fmi3Boolean] * [fmi3Boolean] * [fmi3Float] * [fmi3Instance]
 	fmi3DoStep(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3DoStep
-		then let - = logAPIError(c, "Cannot call fmi3DoStep in this state") in
-			mk_(<fmi3Error>, nil, nil, nil, nil)
+		then logAPIError(c, "Cannot call fmi3DoStep in this state",	mk_(<fmi3Error>, nil, nil, nil, nil))
 		elseif communicationStepSize <= 0.0
-		then let - = logAPIError(c, "Communication step size must be >0") in
-			mk_(<fmi3Error>, nil, nil, nil, nil)
+		then logAPIError(c, "Communication step size must be >0", mk_(<fmi3Error>, nil, nil, nil, nil))
 		elseif currentCommunicationPoint < 0.0
-		then let - = logAPIError(c, "Curret communication point must be >=0") in
-			mk_(<fmi3Error>, nil, nil, nil, nil)
+		then logAPIError(c, "Curret communication point must be >=0", mk_(<fmi3Error>, nil, nil, nil, nil))
 		else
 			fmi3DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint)
 	 post
@@ -88,15 +85,12 @@ functions
 		activationTime		: fmi3Float) result : fmi3Status
 	==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3ActivateModelPartition
-		then let - = logAPIError(c, "Cannot call fmi3ActivateModelPartition in this state") in
-			<fmi3Error>
+		then logAPIError(c, "Cannot call fmi3ActivateModelPartition in this state",	<fmi3Error>)
 		else let clock = lookup(c.eModelVariables, clockReference) in
 			if clock = nil
-			then let - = logAPIError(c, "ValueReference not found") in
-				<fmi3Error>
+			then logAPIError(c, "ValueReference not found", <fmi3Error>)
 			elseif not is_(clock, Clock)
-			then let - = logAPIError(c, "ValueReference is not a clock") in
-				<fmi3Error>
+			then logAPIError(c, "ValueReference is not a clock", <fmi3Error>)
 			else
 				fmi3ActivateModelPartition_Impl(c, clockReference, clockElementIndex, activationTime);
 

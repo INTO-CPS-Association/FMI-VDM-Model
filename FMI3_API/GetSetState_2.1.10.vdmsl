@@ -54,8 +54,7 @@ functions
 	fmi3GetFMUState: fmi3Instance +> fmi3Status * [fmi3FMUState]
 	fmi3GetFMUState(c) ==
 		if not canDoGetSetState(c, STATES_fmi3GetFMUState)
-		then let - = logAPIError(c, "Can't call fmi3GetFMUState") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Can't call fmi3GetFMUState", mk_(<fmi3Error>, nil))
 		else
 			fmi3GetFMUState_Impl(c)
 	 post
@@ -74,8 +73,7 @@ functions
 	fmi3SetFMUState: fmi3Instance * fmi3FMUState +> fmi3Status * [fmi3Instance]
 	fmi3SetFMUState(c, FMUstate) ==
 		if not canDoGetSetState(c, STATES_fmi3SetFMUState)
-		then let - = logAPIError(c, "Can't call fmi3SetFMUState") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Can't call fmi3SetFMUState", mk_(<fmi3Error>, nil))
 		else
 			fmi3SetFMUState_Impl(c, FMUstate)
 	 post
@@ -94,8 +92,7 @@ functions
 	fmi3FreeFMUstate: fmi3Instance * fmi3FMUState +> fmi3Status
 	fmi3FreeFMUstate(c, FMUstate) ==
 		if not canDoGetSetState(c, STATES_fmi3FreeFMUState)
-		then let - = logAPIError(c, "Can't call fmi3FreeFMUstate") in
-			<fmi3Error>
+		then logAPIError(c, "Can't call fmi3FreeFMUstate", <fmi3Error>)
 		else
 			fmi3FreeFMUstate_Impl(c, FMUstate);
 
@@ -112,8 +109,7 @@ functions
 	fmi3SerializedFMUStateSize: fmi3Instance * fmi3FMUState +> fmi3Status * [nat]
 	fmi3SerializedFMUStateSize(c, FMUState) ==
 		if not canDoGetSetState(c, STATES_fmi3SerializedFMUStateSize)
-		then let - = logAPIError(c, "Can't call fmi3SerializedFMUStateSize") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Can't call fmi3SerializedFMUStateSize", mk_(<fmi3Error>, nil))
 		else
 			fmi3SerializedFMUStateSize_Impl(c, FMUState)
 	 post
@@ -132,8 +128,7 @@ functions
 	fmi3SerializeFMUState: fmi3Instance * fmi3FMUState * nat +> fmi3Status * [SerializedState]
 	fmi3SerializeFMUState(c, FMUState, size) ==
 		if not canDoGetSetState(c, STATES_fmi3SerializeFMUState)
-		then let - = logAPIError(c, "Can't call fmi3SerializeFMUState") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Can't call fmi3SerializeFMUState", mk_(<fmi3Error>, nil))
 		else
 			fmi3SerializeFMUState_Impl(c, FMUState, size)
 	 post
@@ -153,11 +148,9 @@ functions
 	fmi3DeSerializeFMUState: fmi3Instance * SerializedState * nat +> fmi3Status * [fmi3FMUState]
 	fmi3DeSerializeFMUState(c, serializedState, size) ==
 		if serializedState.#2 <> size
-		then let - = logAPIError(c, "Size does not match serialised state") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Size does not match serialised state", mk_(<fmi3Error>, nil))
 		elseif not canDoGetSetState(c, STATES_fmi3DeSerializeFMUState)
-		then let - = logAPIError(c, "Can't call fmi3DeSerializeFMUState") in
-			mk_(<fmi3Error>, nil)
+		then logAPIError(c, "Can't call fmi3DeSerializeFMUState", mk_(<fmi3Error>, nil))
 		else
 			fmi3DeSerializeFMUState_Impl(c, serializedState, size)
 	 post

@@ -53,11 +53,14 @@ functions
 
 
 	/**
-	 * Helper functions for the APIs to raise various status code log messages.
+	 * Helper functions for the APIs to raise various status code log messages. The function takes
+	 * a result argument of an arbitrary type, and returns that. So the function is expected to be
+	 * used to log an error and return an error value.
 	 */
-	logAPIError: fmi3Instance * fmi3String +> <VOID>
-	logAPIError(c, message) ==
-		c.logMessage(c.instanceEnvironment, c.instanceName, <fmi3Error>, "logAll", message);
+	logAPIError: fmi3Instance * fmi3String * ? +> ?
+	logAPIError(c, message, result) ==
+		let - = c.logMessage(c.instanceEnvironment, c.instanceName, <fmi3Error>, "logAll", message)
+		in result;
 
 
 	/**
