@@ -145,7 +145,7 @@ values
 		(
 			3,  -- Line
 			"3.0-alpha",
-			"Basic Cosimultation example",
+			"Cosimultation example",
 			"{111-222-333-444}",
 			nil,
 			nil,
@@ -252,7 +252,7 @@ values
 		(
 			3,  -- Line
 			"3.0-alpha",
-			"Scheduled cosimulation example",
+			"Scheduled execution example",
 			"{111-222-333-444}",
 			nil,
 			nil,

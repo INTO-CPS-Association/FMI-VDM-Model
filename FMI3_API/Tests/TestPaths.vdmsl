@@ -120,8 +120,8 @@ operations
 		return (fmi3FreeInstance(c) = <VOID>);
 	);
 
-	testBasicCoSimulationPaths: () ==> bool
-	testBasicCoSimulationPaths() ==
+	testCoSimulationPaths: () ==> bool
+	testCoSimulationPaths() ==
 	(
 		dcl c : [fmi3Instance] := testInstantiateCoSimulation([], false);
 		if c = nil then return false;
@@ -189,8 +189,8 @@ operations
 		return (fmi3FreeInstance(c) = <VOID>);
 	);
 
-	testHybridCoSimulationPaths: () ==> bool
-	testHybridCoSimulationPaths() ==
+	testCoSimulationPaths2: () ==> bool
+	testCoSimulationPaths2() ==
 	(
 		dcl c : [fmi3Instance] := testInstantiateCoSimulation([], true);	-- eventModeRequired!
 		if c = nil then return false;
@@ -348,8 +348,8 @@ operations
 	testPaths() == return
 	[
 		testModelExchangePaths(),
-		testBasicCoSimulationPaths(),
-		testHybridCoSimulationPaths(),
+		testCoSimulationPaths(),
+		testCoSimulationPaths2(),
 		testScheduledExecutionPaths()
 	]
 	post elems RESULT = {true};

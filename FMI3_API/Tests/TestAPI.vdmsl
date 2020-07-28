@@ -45,7 +45,7 @@ functions
      testInstantiateCoSimulation: seq of fmi3ValueReference * fmi3Boolean -> [fmi3Instance]
      testInstantiateCoSimulation(requiredIntermediateVariables, eventModeRequired) ==
         fmi3InstantiateCoSimulation(
-            "Basic instance",
+            "CS",
             "{111-222-333-444}",
             "",
             false,
@@ -60,7 +60,7 @@ functions
      testInstantiateScheduledExecution: seq of fmi3ValueReference -> [fmi3Instance]
      testInstantiateScheduledExecution(requiredIntermediateVariables) ==
         fmi3InstantiateScheduledExecution(
-            "Scheduled instance",
+            "SE",
             "{111-222-333-444}",
             "",
             false,
