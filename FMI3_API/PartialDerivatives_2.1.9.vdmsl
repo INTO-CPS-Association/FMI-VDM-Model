@@ -41,7 +41,7 @@ functions
 		knowns		: seq1 of fmi3ValueReference,
 		nKnowns		: nat1) result : fmi3Status * [seq1 of fmi3Float] * [nat1]
 	==
-		mk_(<fmi3OK>, nil, nil)	-- TODO!
+		is not yet specified	-- TODO
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetDirectionalDerivative
 		and nUnknowns = len unknowns
