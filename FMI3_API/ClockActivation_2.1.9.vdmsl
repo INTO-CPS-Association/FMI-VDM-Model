@@ -91,7 +91,7 @@ functions
 		interval			: seq1 of fmi3Float,
 		nValues				: nat1) result : fmi3Status
 	==
-		is not yet specified
+		is not yet specified	-- TODO
 	pre
 		nValueReferences = len valueReferences
 		and ( forall vr in seq valueReferences &
@@ -106,7 +106,7 @@ functions
 		interval			: seq1 of fmi3Float,
 		nValues				: nat1) result : fmi3Status
 	==
-		is not yet specified;
+		is not yet specified;	-- TODO
 
 
 	/**
@@ -120,7 +120,7 @@ functions
 		resolution			: seq1 of fmi3Integer,
 		nValues				: nat1) result : fmi3Status
 	==
-		is not yet specified
+		is not yet specified	-- TODO
 	pre
 		nValues = len intervalCounter
 		and nValues = len resolution
@@ -139,7 +139,7 @@ functions
 		resolution			: seq1 of fmi3Integer,
 		nValues				: nat1) result : fmi3Status
 	==
-		is not yet specified;
+		is not yet specified;	-- TODO
 
 
 	/**
@@ -152,7 +152,7 @@ functions
 		interval			: seq1 of fmi3Float,
 		nValues				: nat1) result : fmi3Status
 	==
-		is not yet specified
+		is not yet specified	-- TODO
 	pre
 		(forall vr in seq valueReferences &
 		    let sv = lookup(c.eModelVariables, vr) in
@@ -166,7 +166,7 @@ functions
 		interval			: seq1 of fmi3Float,
 		nValues				: nat1) result : fmi3Status
 	==
-		is not yet specified;
+		is not yet specified;	-- TODO
 
 
 	/**
@@ -180,7 +180,7 @@ functions
 		resolution			: seq1 of fmi3Integer,
 		nValues				: nat1) result : fmi3Status
 	==
-		is not yet specified
+		is not yet specified	-- TODO
 	pre
 		nValues = len intervalCounter
 		and nValues = len resolution
@@ -199,4 +199,4 @@ functions
 		resolution			: seq1 of fmi3Integer,
 		nValues				: nat1) result : fmi3Status
 	==
-		is not yet specified;
+		is not yet specified;	-- TODO

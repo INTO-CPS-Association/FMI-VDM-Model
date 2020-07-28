@@ -294,7 +294,7 @@ functions
 		dependencyKinds					: seq1 of fmi3DependencyKind,
 		nDependencies					: nat1) result : fmi3Status
 	==
-		is not yet specified;
+		is not yet specified;	-- TODO
 
 	fmi3GetVariableDependencies(
 		c								: fmi3Instance,
@@ -305,4 +305,4 @@ functions
 		dependencyKinds					: seq1 of fmi3DependencyKind,
 		nDependencies					: nat1) result : fmi3Status
 	==
-		is not yet specified;
+		is not yet specified;	-- TODO

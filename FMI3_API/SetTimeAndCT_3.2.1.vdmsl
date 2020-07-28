@@ -45,8 +45,7 @@ functions
 	fmi3SetTime(c, time) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3SetTime
 		then logAPIError(c, "Cannot call fmi3SetTime in this state", mk_(<fmi3Error>, nil))
-		else
-			fmi3SetTime_Impl(c, time)
+		else fmi3SetTime_Impl(c, time)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -75,12 +74,14 @@ functions
 	fmi3SetContinuousStates(c, x, nx) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3SetContinuousStates
 		then logAPIError(c, "Cannot call fmi3SetContinuousStates in this state", mk_(<fmi3Error>, nil))
+
 		elseif nx <> len x
 		then logAPIError(c, "Wrong number of derivates passed", mk_(<fmi3Error>, nil))
+
 		elseif nx <> len c.continuousTimeStates
 		then logAPIError(c, "Wrong number of derivates being set", mk_(<fmi3Error>, nil))
-	 	else
-	 		fmi3SetContinuousStates_Impl(c, x, nx)
+
+	 	else fmi3SetContinuousStates_Impl(c, x, nx)
 	 post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 

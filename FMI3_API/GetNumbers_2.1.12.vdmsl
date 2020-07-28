@@ -38,7 +38,7 @@ functions
 	 */
 	fmi3GetNumberOfEventIndicators_Impl: fmi3Instance -> fmi3Status * [nat]
 	fmi3GetNumberOfEventIndicators_Impl(c) ==
-		mk_(<fmi3OK>, nil)	-- TODO!
+		is not yet specified	-- TODO
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetNumberOfEventIndicators
 	post
@@ -48,8 +48,7 @@ functions
 	fmi3GetNumberOfEventIndicators(c) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetNumberOfEventIndicators
 		then logAPIError(c, "Cannot call fmi3GetNumberOfEventIndicators in this state", mk_(<fmi3Error>, nil))
-		else
-			fmi3GetNumberOfEventIndicators_Impl(c)
+		else fmi3GetNumberOfEventIndicators_Impl(c)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -59,7 +58,7 @@ functions
 	 */
 	fmi3GetNumberOfContinuousStates_Impl: fmi3Instance -> fmi3Status * [nat]
 	fmi3GetNumberOfContinuousStates_Impl(c) ==
-		mk_(<fmi3OK>, nil)	-- TODO!
+		is not yet specified	-- TODO
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetNumberOfContinuousStates
 	post
@@ -69,8 +68,7 @@ functions
 	fmi3GetNumberOfContinuousStates(c) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetNumberOfContinuousStates
 		then logAPIError(c, "Cannot call fmi3GetNumberOfContinuousStates in this state", mk_(<fmi3Error>, nil))
-		else
-			fmi3GetNumberOfEventIndicators_Impl(c)
+		else fmi3GetNumberOfEventIndicators_Impl(c)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -80,7 +78,7 @@ functions
 	 */
 	fmi3GetNumberOfVariableDependencies_Impl: fmi3Instance * fmi3ValueReference -> fmi3Status * [nat]
 	fmi3GetNumberOfVariableDependencies_Impl(c, valueReference) ==
-		is not yet specified
+		is not yet specified	-- TODO
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetNumberOfVariableDependencies
 	post
@@ -90,8 +88,7 @@ functions
 	fmi3GetNumberOfVariableDependencies(c, valueReference) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetNumberOfVariableDependencies
 		then logAPIError(c, "Cannot call fmi3GetNumberOfVariableDependencies in this state", mk_(<fmi3Error>, nil))
-		else
-			fmi3GetNumberOfVariableDependencies_Impl(c, valueReference)
+		else fmi3GetNumberOfVariableDependencies_Impl(c, valueReference)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 

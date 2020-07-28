@@ -58,12 +58,14 @@ functions
 	fmi3DoStep(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3DoStep
 		then logAPIError(c, "Cannot call fmi3DoStep in this state",	mk_(<fmi3Error>, nil, nil, nil, nil))
+
 		elseif communicationStepSize <= 0.0
 		then logAPIError(c, "Communication step size must be >0", mk_(<fmi3Error>, nil, nil, nil, nil))
+
 		elseif currentCommunicationPoint < 0.0
 		then logAPIError(c, "Curret communication point must be >=0", mk_(<fmi3Error>, nil, nil, nil, nil))
-		else
-			fmi3DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint)
+
+		else fmi3DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, noSetFMUStatePriorToCurrentPoint)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -86,11 +88,13 @@ functions
 	==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3ActivateModelPartition
 		then logAPIError(c, "Cannot call fmi3ActivateModelPartition in this state",	<fmi3Error>)
+
 		else let clock = lookup(c.eModelVariables, clockReference) in
 			if clock = nil
 			then logAPIError(c, "ValueReference not found", <fmi3Error>)
+
 			elseif not is_(clock, Clock)
 			then logAPIError(c, "ValueReference is not a clock", <fmi3Error>)
-			else
-				fmi3ActivateModelPartition_Impl(c, clockReference, clockElementIndex, activationTime);
+
+			else fmi3ActivateModelPartition_Impl(c, clockReference, clockElementIndex, activationTime);
 

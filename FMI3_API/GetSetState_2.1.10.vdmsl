@@ -55,8 +55,7 @@ functions
 	fmi3GetFMUState(c) ==
 		if not canDoGetSetState(c, STATES_fmi3GetFMUState)
 		then logAPIError(c, "Can't call fmi3GetFMUState", mk_(<fmi3Error>, nil))
-		else
-			fmi3GetFMUState_Impl(c)
+		else fmi3GetFMUState_Impl(c)
 	 post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
@@ -74,8 +73,7 @@ functions
 	fmi3SetFMUState(c, FMUstate) ==
 		if not canDoGetSetState(c, STATES_fmi3SetFMUState)
 		then logAPIError(c, "Can't call fmi3SetFMUState", mk_(<fmi3Error>, nil))
-		else
-			fmi3SetFMUState_Impl(c, FMUstate)
+		else fmi3SetFMUState_Impl(c, FMUstate)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -93,8 +91,7 @@ functions
 	fmi3FreeFMUstate(c, FMUstate) ==
 		if not canDoGetSetState(c, STATES_fmi3FreeFMUState)
 		then logAPIError(c, "Can't call fmi3FreeFMUstate", <fmi3Error>)
-		else
-			fmi3FreeFMUstate_Impl(c, FMUstate);
+		else fmi3FreeFMUstate_Impl(c, FMUstate);
 
 
 	/**
@@ -110,8 +107,7 @@ functions
 	fmi3SerializedFMUStateSize(c, FMUState) ==
 		if not canDoGetSetState(c, STATES_fmi3SerializedFMUStateSize)
 		then logAPIError(c, "Can't call fmi3SerializedFMUStateSize", mk_(<fmi3Error>, nil))
-		else
-			fmi3SerializedFMUStateSize_Impl(c, FMUState)
+		else fmi3SerializedFMUStateSize_Impl(c, FMUState)
 	 post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
@@ -129,8 +125,7 @@ functions
 	fmi3SerializeFMUState(c, FMUState, size) ==
 		if not canDoGetSetState(c, STATES_fmi3SerializeFMUState)
 		then logAPIError(c, "Can't call fmi3SerializeFMUState", mk_(<fmi3Error>, nil))
-		else
-			fmi3SerializeFMUState_Impl(c, FMUState, size)
+		else fmi3SerializeFMUState_Impl(c, FMUState, size)
 	 post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
@@ -149,10 +144,11 @@ functions
 	fmi3DeSerializeFMUState(c, serializedState, size) ==
 		if serializedState.#2 <> size
 		then logAPIError(c, "Size does not match serialised state", mk_(<fmi3Error>, nil))
+
 		elseif not canDoGetSetState(c, STATES_fmi3DeSerializeFMUState)
 		then logAPIError(c, "Can't call fmi3DeSerializeFMUState", mk_(<fmi3Error>, nil))
-		else
-			fmi3DeSerializeFMUState_Impl(c, serializedState, size)
+
+		else fmi3DeSerializeFMUState_Impl(c, serializedState, size)
 	 post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 

@@ -53,10 +53,11 @@ functions
 	==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3EnterEventMode
 		then logAPIError(c, "Cannot call fmi3EnterEventMode in this state", mk_(<fmi3Error>, nil))
+
 		elseif nEventIndicators <> len rootsFound
 		then logAPIError(c, "nEventIndicators does not match rootsFound", mk_(<fmi3Error>, nil))
-		else
-			fmi3EnterEventMode_Impl(c)
+
+		else fmi3EnterEventMode_Impl(c)
 	 post
 	 	result.#1 <> <fmi3OK> <=> result.#2 = nil;
 
@@ -75,8 +76,7 @@ functions
 	fmi3NewDiscreteStates(c) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3NewDiscreteStates
 		then logAPIError(c, "Cannot call fmi3NewDiscreteStates in this state", mk_(<fmi3Error>, nil, nil))
-	 	else
-	 		fmi3NewDiscreteStates_Impl(c);
+	 	else fmi3NewDiscreteStates_Impl(c);
 
 
 	/**
@@ -95,8 +95,7 @@ functions
 	fmi3EnterContinuousTimeMode(c) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3EnterContinuousTimeMode
 		then logAPIError(c, "Cannot call fmi3EnterContinuousTimeMode in this state", mk_(<fmi3Error>, nil))
-		else
-			fmi3EnterContinuousTimeMode_Impl(c)
+		else fmi3EnterContinuousTimeMode_Impl(c)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -117,8 +116,7 @@ functions
 	fmi3EnterStepMode(c) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3EnterStepMode
 		then logAPIError(c, "Cannot call fmi3EnterStepMode in this state", mk_(<fmi3Error>, nil))
-		else
-			fmi3EnterStepMode_Impl(c)
+		else fmi3EnterStepMode_Impl(c)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
 
@@ -139,10 +137,11 @@ functions
 	==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3CompletedIntegratorStep
 		then logAPIError(c, "Cannot call fmi3CompletedIntegratorStep in this state", mk_(<fmi3Error>, nil, nil))
+
 		elseif nilBool(c.xmlModel.modelExchange.completedIntegratorStepNotNeeded)
 		then logAPIError(c, "fmi3CompletedIntegratorStep not needed", mk_(<fmi3Error>, nil, nil))
-	 	else
-	 		fmi3CompletedIntegratorStep_Impl(c, noSetFMUStatePriorToCurrentPoint)
+
+	 	else fmi3CompletedIntegratorStep_Impl(c, noSetFMUStatePriorToCurrentPoint)
 	 post
 	 	result.#1 = <fmi3OK> <=> result.#2 <> nil and result.#3 <> nil;
 
@@ -162,10 +161,11 @@ functions
 	fmi3GetDerivatives(c, nx) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetDerivatives
 		then logAPIError(c, "Cannot call fmi3GetDerivatives in this state", mk_(<fmi3Error>, nil))
+
 		elseif nx <> len c.continuousTimeStates
 		then logAPIError(c, "Wrong number of derivates requested", mk_(<fmi3Error>, nil))
-	 	else
-	 		fmi3GetDerivatives_Impl(c, nx)
+
+	 	else fmi3GetDerivatives_Impl(c, nx)
 	 post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
@@ -185,10 +185,11 @@ functions
 	fmi3GetEventIndicators(c, ni) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetEventIndicators
 		then logAPIError(c, "Cannot call fmi3GetEventIndicators in this state", mk_(<fmi3Error>, nil))
+
 		elseif ni <> nilNat(c.xmlModel.attributes.numberOfEventIndicators)
 		then logAPIError(c, "Wrong number of event indicators passed", mk_(<fmi3Error>, nil))
-	 	else
-	 		fmi3GetEventIndicators_Impl(c, ni)
+
+	 	else fmi3GetEventIndicators_Impl(c, ni)
 	 post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
@@ -207,10 +208,11 @@ functions
 	fmi3GetContinuousStates(c, nx) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetContinuousStates
 		then logAPIError(c, "Cannot call fmi3GetContinuousStates in this state", mk_(<fmi3Error>, nil))
+
 		elseif nx <> len c.continuousTimeStates
 		then logAPIError(c, "Wrong number of derivates requested", mk_(<fmi3Error>, nil))
-	 	else
-	 		fmi3GetContinuousStates_Impl(c, nx)
+
+	 	else fmi3GetContinuousStates_Impl(c, nx)
 	 post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;
 
@@ -229,9 +231,10 @@ functions
 	fmi3GetNominalsOfContinuousStates(c, nx) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetNominalsOfContinuousStates
 		then logAPIError(c, "Cannot call fmi3GetNominalsOfContinuousStates in this state", mk_(<fmi3Error>, nil))
+
 		elseif nx <> len c.continuousTimeStates
 		then logAPIError(c, "Wrong number of derivates requested", mk_(<fmi3Error>, nil))
-	 	else
-	 		fmi3GetNominalsOfContinuousStates_Impl(c, nx)
+
+	 	else fmi3GetNominalsOfContinuousStates_Impl(c, nx)
 	 post
 	 	RESULT.#1 = <fmi3OK> <=> RESULT.#2 <> nil;

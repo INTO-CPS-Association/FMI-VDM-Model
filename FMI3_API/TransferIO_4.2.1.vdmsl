@@ -85,10 +85,13 @@ functions
 	fmi3GetOutputDerivatives(c, vrs, nvr, orders) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetOutputDerivatives
 		then logAPIError(c, "Cannot call fmi3GetOutputDerivatives in this state", mk_(<fmi3Error>, nil))
+
 		elseif nvr <> len vrs or nvr <> len orders
 		then logAPIError(c, "nvr, vr and order are not consistent", mk_(<fmi3Error>, nil))
+
 		elseif exists o in seq orders & o <= 0
 		then logAPIError(c, "Order entries must all be >0", mk_(<fmi3Error>, nil))
+
 		elseif exists vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr) in
 				sv = nil or sv.base.causality <> <output>
@@ -105,7 +108,6 @@ functions
 					o = orders(i) and c.eModelVariables(bidx).base.valueReference = vrs(i)
 		then logAPIError(c, "Some outputs do not have derivatives of the right order", mk_(<fmi3Error>, nil))
 
-		else
-			fmi3GetOutputDerivatives_Impl(c, vrs, nvr, orders)
+		else fmi3GetOutputDerivatives_Impl(c, vrs, nvr, orders)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
