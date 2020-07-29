@@ -29,9 +29,8 @@
 
 /**
  * 3.2.3 State Machine for Model Exchange
- * 4.2.3 State Machine for Basic Co-Simulation
- * 5.2.4 State Machine for Hybrid Co-Simulation
- * 6.2.3 State Machine for Scheduled Co-Simulation
+ * 4.2.8 State Machine for Co-Simulation
+ * 5.2.3 State Machine for Scheduled Co-Simulation
  *
  * These functions implement the "notes" in the API matrix that lists which API functions
  * can be called in which states in which modes. The functions all assume that the basic

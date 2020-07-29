@@ -28,8 +28,8 @@
  */
 
 /**
- * 4.2.2 Computation in Co-Simulation Interface Types
- * 6.2.2 Computation in Scheduled Co-Simulation
+ * 4.2.4 Computation in Co-Simulation Interface Types
+ * 5.2.2 Computation in Scheduled Execution
  */
 functions
 	/**

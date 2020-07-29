@@ -28,7 +28,7 @@
  */
 
 /**
- * 5.2.3.1 Transfer of Input/Output Values and Parameters in Hybrid Co-Simulation
+ * 4.2.3. Variables Access
  */
 functions
 	/**

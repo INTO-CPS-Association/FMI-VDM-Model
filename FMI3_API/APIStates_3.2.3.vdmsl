@@ -29,8 +29,8 @@
 
 /**
  * 3.2.3 State Machine for Model Exchange
- * 4.2.3 State Machine for Basic Co-Simulation
- * 6.2.3 State Machine for Scheduled Co-Simulation
+ * 4.2.3 State Machine for Co-Simulation
+ * 5.2.3 State Machine for Scheduled Execution
  */
 types
 	States = set of ([fmi3FMUKind] * fmi3State);		-- nil kind indicates <START>/<END> states
