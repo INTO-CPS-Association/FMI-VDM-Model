@@ -9,6 +9,7 @@ This repository contains a VDM model of the FMI standard, plus supporting tools.
 * **FMI2_Tests** - a set of test XML files for the static semantics
 * **FMI3** - a VDM-SL model of the static semantics of FMI 3.0 modelDescription XML files
 * **FMI3_API** - a VDM-SL model of the dynamic semantics of the FMI 3.0 API
+* **FMI3_API_Matrix** - a spreadsheet of the mode/state callability of the FMI3 API functions
 * **COSIM** - a VDM-SL model of the interaction of a set of FMUs
 * **FMI2_to_VDM** - a Java tool to convert FMI 2.0 modeDescription XML files to VDM-SL and check them
 * **FMI3_to_VDM** - a Java tool to convert FMI 3.0 modeDescription XML files to VDM-SL and check them
