@@ -587,7 +587,8 @@ functions
 	isContinuousTimeState: nat1 * seq of ScalarVariable +> bool
 	isContinuousTimeState(i, svs) ==
 		is_Real(svs(i).variable)
-		and svs(i).variability = <continuous> 
+		and svs(i).variability = <continuous>
+		and svs(i).causality in set { <local>, <output> }	-- See defn. causality
 		and exists j in seq svs &
 			is_Real(j.variable) and j.variable.derivative = i;
 
