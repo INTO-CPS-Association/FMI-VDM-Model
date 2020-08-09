@@ -251,32 +251,29 @@ functions
 						( md.modelStructure.outputs = nil )
 			),
 
+			-- ModelStructure derivative indexes must be valid and if the derivative has dependencies, then
+			-- it must be continuous. Note that SVs can have derivative set but not be listed here.
 			(
 				md.modelExchange <> nil
 				or (md.coSimulation <> nil and nilBool(md.coSimulation.providesDirectionalDerivative)) =>
-					let derivativeIndexes = { svi | svi in set inds eModelVariables &
-						isStateDerivative(eModelVariables(svi)) }
-					in
-						if derivativeIndexes <> {}
-						then
-							/* @OnFail("2.2.8 Real/derivative variables but no Derivatives declared at line %s",
-								md.modelStructure.location) */
-							( md.modelStructure.derivatives <> nil )
+					md.modelStructure.derivatives <> nil =>
+					{
+						/* @OnFail("2.2.8 Derivative index out of range at line %s", u.location) */
+						( u.index <= len eModelVariables )
 
-							and let structIndexes = { u.index | u in seq md.modelStructure.derivatives } in
-							{
-								/* @OnFail("2.2.8 Derivatives section does not match Real/derivative variables at line %s",
-									md.modelStructure.location) */
-								( structIndexes = derivativeIndexes ),
+						and let sv = eModelVariables(u.index) in
+						{
+							/* @OnFail("2.2.8 SV not a state derivative at line %s", u.location) */
+							( isStateDerivative(sv) ),
 
-								/* @OnFail("2.2.8 Derivatives indexes out of range at line %s",
-									md.modelStructure.location) */
-								( forall i in set structIndexes & i <= len eModelVariables )
-							} = {true}
-						else
-							/* @OnFail("2.2.8 Derivatives declared, but no Real/derivative variables at line %s",
-								md.modelStructure.location) */
-							( md.modelStructure.derivatives = nil )
+							/* @OnFail("2.2.8 Derivative must be continuous at line %s", u.location) */
+							( u.dependencies <> nil => sv.variability = <continuous> )
+						}
+						= {true}
+
+						| u in seq md.modelStructure.derivatives
+					}
+					= {true}
 			),
 
 			-- InitalUnknowns must include all output (approx/calculated), calculatedParameters and 
