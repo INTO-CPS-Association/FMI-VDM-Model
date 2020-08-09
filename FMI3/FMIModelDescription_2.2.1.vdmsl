@@ -239,28 +239,28 @@ functions
 						( structRefs = {} )
 			),
 
+			-- ModelStructure derivative indexes must be valid and if the derivative has dependencies, then
+			-- it must be continuous. Note that SVs can have derivative set but not be listed here.
 			(
 				md.modelExchange <> nil =>
-					let derivativeRefs = { sv.base.valueReference |
-							sv in seq eModelVariables & isStateDerivative(sv) },
-						structRefs = { u.valueReference |
-							u in seq nilSeq[Unknown](md.modelStructure.unknowns) &
-							u.kind = <Derivative> }
-					in
-						if derivativeRefs <> {}
-						then
-							/* @OnFail("2.2.9 Real/derivative variables but no Derivatives declared at line %s",
-								md.modelStructure.location) */
-							( structRefs <> {} )
+				{
+					let sv = lookup(eModelVariables, uk.valueReference) in
+						/* @OnFail("2.2.9 Derivative valueReference unknown at line %s", uk.location) */
+						( sv <> nil )
 
-							and
-							/* @OnFail("2.2.9 Derivatives do not match Real/derivative variables at line %s",
-								md.modelStructure.location) */
-							( structRefs = derivativeRefs )
-						else
-							/* @OnFail("2.2.9 Derivatives declared, but no Real/derivative variables at line %s",
-								md.modelStructure.location) */
-							( structRefs = {} )
+						and
+						{
+							/* @OnFail("2.2.9 SV not a state derivative at line %s", uk.location) */
+							( isStateDerivative(sv) ),
+
+							/* @OnFail("2.2.9 Derivative must be continuous at line %s", uk.location) */
+							( uk.dependencies <> nil => sv.base.variability = <continuous> )
+						}
+						= {true}
+
+					| uk in set { u | u in seq nilSeq[Unknown](md.modelStructure.unknowns) & u.kind = <Derivative> }
+				}
+				= {true}
 			),
 
 			-- InitalUnknowns must include all output (approx/calculated), calculatedParameters and 
