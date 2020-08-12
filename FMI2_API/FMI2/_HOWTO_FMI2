@@ -7,3 +7,12 @@ How to populate this folder
 
 This will then populate the folder with links to the FMI2 project files, which are hence automatically up to date if
 those files change in the other project.
+
+How to populate this folder in VSCode
+=====================================
+
+1. In a bash shell, navigate to the FMI2_API/2MI3 folder
+2. Run the command: ln -s ../../FMI2/*.vdmsl .
+3. These should appear after a refresh (F5) in Overture
+
+The process is similar in Windows, but using Symlinks via the File Explorer.
