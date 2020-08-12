@@ -133,13 +133,13 @@ functions
 	note10g(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				nilBool(v.base.intermediateAccess) => c.intermediateAccessGetAllowed;	-- Getters
+				nilBool(v.base.intermediateUpdate) => c.intermediateAccessGetAllowed;	-- Getters
 
 	note10s: fmi3Instance * seq of fmi3ValueReference +> bool
 	note10s(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				nilBool(v.base.intermediateAccess) => c.intermediateAccessSetAllowed;	-- Setters
+				nilBool(v.base.intermediateUpdate) => c.intermediateAccessSetAllowed;	-- Setters
 
 
 	-- Note 11: 4.2.3.10 - Only for variables with causality = structuralParameter

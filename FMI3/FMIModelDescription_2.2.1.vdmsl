@@ -242,7 +242,7 @@ functions
 			-- ModelStructure derivative indexes must be valid and if the derivative has dependencies, then
 			-- it must be continuous. Note that SVs can have derivative set but not be listed here.
 			(
-				md.modelExchange <> nil =>
+				md.modelExchange <> nil and md.modelStructure.unknowns <> nil =>
 				{
 					let sv = lookup(eModelVariables, uk.valueReference) in
 						/* @OnFail("2.2.9 Derivative valueReference unknown at line %s", uk.location) */
@@ -258,7 +258,7 @@ functions
 						}
 						= {true}
 
-					| uk in set { u | u in seq nilSeq[Unknown](md.modelStructure.unknowns) & u.kind = <Derivative> }
+					| uk in set { u | u in seq md.modelStructure.unknowns & u.kind = <Derivative> }
 				}
 				= {true}
 			),
