@@ -48,7 +48,8 @@ abstract class Variable extends Element
 	private Boolean canHandleMultipleSetPerTimeInstant;
 	private String declaredType;
 	private BigInteger clockReference;
-	private Boolean intermediateAccess;
+	private BigInteger clockElementIndex;
+	private Boolean intermediateUpdate;
 
 	protected Variable(Attributes attributes, Locator locator)
 	{
@@ -102,7 +103,8 @@ abstract class Variable extends Element
 		printRawAttribute(indent + "\t", canHandleMultipleSetPerTimeInstant, ",\n");
 		printStringAttribute(indent + "\t", declaredType, ",\n");
 		printRawAttribute(indent + "\t", clockReference, ",\n");
-		printRawAttribute(indent + "\t", intermediateAccess, ",\n");
+		printRawAttribute(indent + "\t", clockElementIndex, ",\n");
+		printRawAttribute(indent + "\t", intermediateUpdate, ",\n");
 		
 		printSequence(indent + "\t", dimensions, ",\n");
 		printOptional(indent + "\t", annotations, ",\n");

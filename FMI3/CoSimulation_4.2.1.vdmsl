@@ -50,12 +50,11 @@ types
 		base									: fmi3InterfaceType
 		kind									: CoSimulationKind
 		canHandleVariableCommunicationStepSize	: [bool]
-		canInterpolateInputs					: [bool]
 		maxOutputDerivativeOrder				: [nat]
-		providesIntermediateVariableAccess		: [bool]
+		providesIntermediateUpdate				: [bool]
+		recommendedIntermediateInputSmoothness	: [int]
 		canReturnEarlyAfterIntermediateUpdate	: [bool]
-		fixedInternalStepSize					: [real]
-		hasEventMode							: [bool];
+		fixedInternalStepSize					: [real];
 
 functions
 

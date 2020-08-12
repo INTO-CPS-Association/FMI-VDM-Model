@@ -29,18 +29,19 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 abstract public class AbstractCoSimulation extends InterfaceType
 {
 	private Boolean canHandleVariableCommunicationStepSize;
-	private Boolean canInterpolateInputs;
 	private Long maxOutputDerivativeOrder;
-	private Boolean providesIntermediateVariableAccess;
+	private Boolean providesIntermediateUpdate;
+	private BigInteger recommendedIntermediateInputSmoothness;
 	private Boolean canReturnEarlyAfterIntermediateUpdate;
 	private Double fixedInternalStepSize;
-	private Boolean hasEventMode;
 	
 	public AbstractCoSimulation(Attributes attributes, Locator locator)
 	{
@@ -58,12 +59,11 @@ abstract public class AbstractCoSimulation extends InterfaceType
 		
 		printQuoteAttribute(indent + "\t", this.getClass().getSimpleName(), ",\n");
 		printRawAttribute(indent + "\t", canHandleVariableCommunicationStepSize, ",\n");
-		printRawAttribute(indent + "\t", canInterpolateInputs, ",\n");
 		printRawAttribute(indent + "\t", maxOutputDerivativeOrder, ",\n");
-		printRawAttribute(indent + "\t", providesIntermediateVariableAccess, ",\n");
+		printRawAttribute(indent + "\t", providesIntermediateUpdate, ",\n");
+		printRawAttribute(indent + "\t", recommendedIntermediateInputSmoothness, ",\n");
 		printRawAttribute(indent + "\t", canReturnEarlyAfterIntermediateUpdate, ",\n");
-		printRawAttribute(indent + "\t", fixedInternalStepSize, ",\n");
-		printRawAttribute(indent + "\t", hasEventMode, "\n");
+		printRawAttribute(indent + "\t", fixedInternalStepSize, "\n");
 		System.out.print(indent + ")");
 	}
 }

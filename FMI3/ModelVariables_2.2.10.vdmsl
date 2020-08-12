@@ -97,7 +97,8 @@ types
 		canHandleMultipleSetPerTimeInstant	: [bool]
 		declaredType						: [NormalizedString]
 		clockReference						: [fmi3ValueReference]
-		intermediateAccess					: [bool]
+		clockElementIndex					: [nat]
+		intermediateUpdate					: [bool]
 		dimensions							: [seq1 of Dimension]
 		annotations							: [fmi3Annotation]
 		aliases								: [seq1 of Alias];
@@ -629,6 +630,7 @@ functions
 							"Implicit independent time variable",
 							<independent>,
 							<continuous>,
+							nil,
 							nil,
 							nil,
 							nil,

@@ -226,9 +226,9 @@ functions
 
 		elseif exists vr in seq requiredIntermediateVariables &
 			 let v = lookup(instanceEnvironment.xmlModel.modelVariables, vr) in
-			 	v = nil or not v.base.intermediateAccess
+			 	v = nil or not v.base.intermediateUpdate
 		then logInst(instanceEnvironment, instanceName,
-				"fmi3fmi3InstantiateCoSimulation variables are not all intermediateAccess", nil)
+				"fmi3fmi3InstantiateCoSimulation variables are not all intermediateUpdate", nil)
 
 		else
 			let coSimConfig = mk_fmi3CoSimulationConfiguration(
@@ -289,9 +289,9 @@ functions
 
 		elseif exists vr in seq requiredIntermediateVariables &
 			 let v = lookup(instanceEnvironment.xmlModel.modelVariables, vr) in
-			 	v = nil or not v.base.intermediateAccess
+			 	v = nil or not v.base.intermediateUpdate
 		then logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateScheduledExecution variables are not all intermediateAccess", nil)
+				"fmi3InstantiateScheduledExecution variables are not all intermediateUpdate", nil)
 
 		else
 			let coSimConfig = mk_fmi3CoSimulationConfiguration(
