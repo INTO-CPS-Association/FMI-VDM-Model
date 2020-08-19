@@ -168,8 +168,8 @@ functions
 	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
 	 */
-	isInRange[@T]: [@T] * [@T] * [seq1 of @T] * Kind +> bool
-	isInRange(min, max, start, kind) ==
+	isInRange[@T]: [@T] * [@T] * [seq1 of @T] * Kind * [Initial] +> bool
+	isInRange(min, max, start, kind, initial) ==
 		let mk_(kmin, kmax) = minMaxKind(kind) in
 		{
 			max <> nil =>
@@ -193,7 +193,7 @@ functions
 				( (min <> nil => forall s in seq start & min <= s) and
 				  (max <> nil => forall s in seq start & max >= s) ),
 
-			start = nil =>
+			start = nil and initial not in set {<calculated>, <independent>} =>
 				--@OnFail("2.2.8 Warning: implicit start of 0 is not within min %s/max %s", min, max)
 				( (min <> nil => min <= 0) and
 				  (max <> nil => max >= 0) ) or true	-- NOTE warning
@@ -427,15 +427,15 @@ functions
 					mk_fmi3RealVariableAttributes(-, -),
 					mk_fmi3RealAttributes(-, -, -, -, -),
 					mk_fmi3FloatXXAttributes(min, max, nominal), start) ->
-					isInRange[real](min, max, start, kind)
+					isInRange[real](min, max, start, kind, sv.base.initial)
 					-- @OnFail("2.2.8 Real nominal must be >0.0 at line %s", sv.base.location)
 					and (nominal <> nil => nominal > 0.0),
 
 				mk_Integer(-, kind, -, mk_fmi3IntXXAttributes(min, max), start) ->
-					isInRange[int](min, max, start, kind),
+					isInRange[int](min, max, start, kind, sv.base.initial),
 
 				mk_Enumeration(-, -, -, min, max, start) ->
-					isInRange[nat](min, max, start, <UInt32>),	-- TODO kind of enum?
+					isInRange[nat](min, max, start, <UInt32>, sv.base.initial),	-- TODO kind of enum?
 
 				mk_Binary(-, -, -, -, start) ->
 					-- @OnFail("2.2.8 Binary %s start is not hex-binary at line %s", sv.base.name, sv.base.location)

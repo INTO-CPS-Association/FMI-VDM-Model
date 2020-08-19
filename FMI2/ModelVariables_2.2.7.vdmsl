@@ -129,8 +129,8 @@ functions
 	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
 	 */
-	isInRange[@T]: [@T] * [@T] * [@T] * Location +> bool
-	isInRange(min, max, start, location) ==
+	isInRange[@T]: [@T] * [@T] * [@T] * [Initial] * Location +> bool
+	isInRange(min, max, start, initial, location) ==
 	{
 		max <> nil and min <> nil =>
 			--@OnFail("2.2.7 min %s is not <= max %s at line %s", min, max, location)
@@ -141,7 +141,7 @@ functions
 			( (min <> nil => min <= start) and
 			  (max <> nil => max >= start) ),
 
-		start = nil =>
+		start = nil and initial not in set {<calculated>, <independent>} =>
 			--@OnFail("2.2.7 Warning: implicit start of 0 is not within min %s/max %s at line %s", min, max, location)
 			( (min <> nil => min <= 0) and
 			  (max <> nil => max >= 0) ) or true	-- NOTE warning
@@ -306,15 +306,15 @@ functions
 		(
 			cases sv.variable:
 				mk_Real(-, -, -, -, -, min, max, nominal, -, start, -, -) ->
-					isInRange[real](min, max, start, sv.location)
+					isInRange[real](min, max, start, sv.initial, sv.location)
 					-- @OnFail("2.2.7 Real nominal must be >0.0 at line %s", sv.location)
 					and (nominal <> nil => nominal > 0.0),
 
 				mk_Integer(-, -, min, max, start) ->
-					isInRange[real](min, max, start, sv.location),
+					isInRange[real](min, max, start, sv.initial, sv.location),
 
 				mk_Enumeration(-, -, min, max, start) ->
-					isInRange[real](min, max, start, sv.location),
+					isInRange[real](min, max, start, sv.initial, sv.location),
 
 				others -> true		-- String, Boolean
 			end
