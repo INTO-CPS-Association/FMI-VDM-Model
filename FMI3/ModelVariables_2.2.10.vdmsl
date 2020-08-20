@@ -580,7 +580,8 @@ functions
 				cases eVariability:
 					<constant> -> <exact>,
 					<fixed>, <tunable> -> <calculated>,
-					<discrete>, <continuous> -> <calculated>
+					<discrete>, <continuous> -> <calculated>,
+					others -> nil
 				end,
 
 			<independent> ->
