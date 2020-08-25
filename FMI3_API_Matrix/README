@@ -1,0 +1,9 @@
+The awk script in this folder is intended to turn the exported Google Docs matrix of APIs
+into a VDM-SL "values" definition that can be directly imported into the semantic API model.
+
+The matrix firstly has to be downloaded from Google, which is just a "File/Download" menu
+option. Select the CSV format and just download the Matrix sheet.
+
+To convert the CSV file, run "awk -f csv2vdm.awk <CSV name>". The converted text appears
+on stdout, so redirect to a file and copy/paste into the VDM-SL "APIStates.vdmsl" file.
+
