@@ -68,6 +68,13 @@ types
 				and forall cat in set ienv.logCategories &
 					exists lc in seq ienv.xmlModel.logCategories & lc.name = cat);
 
+	-- Structure used to represent per-element dependencies
+	ElementDependency ::
+		elementIndexOfDependent		: nat
+		independent					: fmi3ValueReference
+		elementIndexIndependent		: nat
+		dependencyKind				: DependencyKind;
+
 	-- The opaque instance data for the model, passed to and from API functions
 	fmi3Instance ::
 		instanceName				: fmi3String
@@ -86,8 +93,9 @@ types
 		solverDerivatives		: seq of SolverDerivative
 
 		-- state, events and settings
-		aliasVars				: map fmi3ValueReference to set of Variable		-- map vref to Variables
+		aliasVars				: map fmi3ValueReference to set of Variable		-- Map vref to Variables
 		variables				: map fmi3ValueReference to seq1 of fmi3Value	-- Raw SV data values (scalar and array)
+		dependencies			: map fmi3ValueReference to seq of ElementDependency	-- Per element dependencies
 		derivatives				: seq of fmi3Float					-- Solver derivative data
 		eventIndicators			: seq of fmi3Float					-- ME events
 		dirty					: bool								-- True if SVs updated but not recalculated

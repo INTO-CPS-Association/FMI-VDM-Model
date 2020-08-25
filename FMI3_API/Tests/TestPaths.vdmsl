@@ -104,6 +104,9 @@ operations
 							if s5 <> <fmi3OK> then return false
 							else c := c2;
 
+		let mk_(s, size) = fmi3GetNumberOfVariableDependencies(c, 1) in
+			if s <> <fmi3OK> then return false
+			else assert(size = 0);
 
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false

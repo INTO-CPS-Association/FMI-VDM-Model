@@ -92,6 +92,9 @@ functions
 				-- Initially either the start value given, or the default start value for the type.
 				getStartValues(aliasVars, eModelVariables),
 
+				-- The map of valueReferences to per-element dependencies
+				getDependencies(eModelVariables),
+
 				-- The solver data vector, addressed by SolverData's vref
 				getSolverValues(instanceEnvironment),
 
@@ -347,6 +350,28 @@ functions
 
 		| vref in set dom aliasVars
 	};
+
+	/**
+	 * Calculate the map of per-element dependencies.
+	 */
+	getDependencies: seq1 of Variable +> map fmi3ValueReference to seq of ElementDependency
+	getDependencies(eModelVariables) ==
+	{
+		sv.base.valueReference |->
+			let size = dimensionsProduct(eModelVariables, sv.base.dimensions) in
+				if size = 0		-- we don't know
+				then []			-- TODO!
+				else [ getOneDependency(sv, i) | i in set {1, ..., size} ]
+
+		| sv in seq eModelVariables
+	};
+	
+	/**
+	 * Calculate the per-element dependencies for element i of a compound variable.
+	 */
+	getOneDependency: Variable * nat1 +> ElementDependency
+	getOneDependency(sv, i) ==
+		is not yet specified;	-- TODO
 
 	/**
 	 * Calculate the initial solver values, given the solver configuration data.

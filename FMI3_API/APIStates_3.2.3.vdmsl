@@ -486,7 +486,21 @@ STATES_fmi3GetNumberOfEventIndicators: States = {
 };
 
 STATES_fmi3GetNumberOfVariableDependencies: States = {
-
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>)
 };
 
 STATES_fmi3GetOutputDerivatives: States = {

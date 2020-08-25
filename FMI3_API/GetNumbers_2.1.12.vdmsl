@@ -76,18 +76,27 @@ functions
 	/**
 	 * Implementation and API for fmi3GetNumberOfVariableDependencies.
 	 */
-	fmi3GetNumberOfVariableDependencies_Impl: fmi3Instance * fmi3ValueReference -> fmi3Status * [nat]
+	fmi3GetNumberOfVariableDependencies_Impl: fmi3Instance * fmi3ValueReference -> fmi3Status * nat
 	fmi3GetNumberOfVariableDependencies_Impl(c, valueReference) ==
-		is not yet specified	-- TODO
+		mk_(<fmi3OK>, len c.dependencies(valueReference))
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetNumberOfVariableDependencies
+		and (c.fmuKind = <CoSimulation> and nilBool(c.xmlModel.coSimulation.base.providesPerElementDependencies)
+			or c.fmuKind = <ModelExchange> and nilBool(c.xmlModel.modelExchange.base.providesPerElementDependencies))
+		and valueReference in set dom c.dependencies
 	post
-		RESULT.#1 = <fmi3OK> => RESULT.#2 <> nil;
+		RESULT.#1 = <fmi3OK>;
 
 	fmi3GetNumberOfVariableDependencies: fmi3Instance * fmi3ValueReference -> fmi3Status * [nat]
 	fmi3GetNumberOfVariableDependencies(c, valueReference) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetNumberOfVariableDependencies
 		then logAPIError(c, "Cannot call fmi3GetNumberOfVariableDependencies in this state", mk_(<fmi3Error>, nil))
+		elseif c.fmuKind = <CoSimulation> and not nilBool(c.xmlModel.coSimulation.base.providesPerElementDependencies)
+		then logAPIError(c, "FMU does not provide per element dependencies", mk_(<fmi3Error>, nil))
+		elseif c.fmuKind = <ModelExchange> and not nilBool(c.xmlModel.modelExchange.base.providesPerElementDependencies)
+		then logAPIError(c, "FMU does not provide per element dependencies", mk_(<fmi3Error>, nil))
+		elseif valueReference not in set dom c.dependencies
+		then logAPIError(c, "Unknown valueReference", mk_(<fmi3Error>, nil))
 		else fmi3GetNumberOfVariableDependencies_Impl(c, valueReference)
 	 post
 	 	RESULT.#1 <> <fmi3OK> <=> RESULT.#2 = nil;
