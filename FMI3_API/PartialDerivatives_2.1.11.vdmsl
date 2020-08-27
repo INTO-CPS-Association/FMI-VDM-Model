@@ -41,9 +41,12 @@ functions
 		knowns		: seq1 of fmi3ValueReference,
 		nKnowns		: nat1) result : fmi3Status * [seq1 of fmi3Float] * [nat1]
 	==
-		is not yet specified	-- TODO
+		let mk_(s, derivatives, n) = mk_(<fmi3OK>, [1.0], 1) in		-- TODO calculate function?
+			mk_(s, derivatives, n)
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetDirectionalDerivative
+		and (c.fmuKind = <CoSimulation> and nilBool(c.xmlModel.coSimulation.base.providesDirectionalDerivatives)
+			or c.fmuKind = <ModelExchange> and nilBool(c.xmlModel.modelExchange.base.providesDirectionalDerivatives))
 		and nUnknowns = len unknowns
 		and nKnowns = len knowns
 	post
@@ -58,6 +61,12 @@ functions
 	==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetDirectionalDerivative
 		then logAPIError(c, "Cannot call fmi3GetDirectionalDerivative in this state", mk_(<fmi3Error>, nil, nil))
+
+		elseif c.fmuKind = <CoSimulation> and not nilBool(c.xmlModel.coSimulation.base.providesDirectionalDerivatives)
+		then logAPIError(c, "Model does not support directional derivatives", mk_(<fmi3Error>, nil, nil))
+
+		elseif c.fmuKind = <ModelExchange> and not nilBool(c.xmlModel.modelExchange.base.providesDirectionalDerivatives)
+		then logAPIError(c, "Model does not support directional derivatives", mk_(<fmi3Error>, nil, nil))
 
 		elseif nUnknowns <> len unknowns or nKnowns <> len knowns
 		then logAPIError(c, "Array length mismatch", mk_(<fmi3Error>, nil, nil))
@@ -76,9 +85,12 @@ functions
 		knowns		: seq1 of fmi3ValueReference,
 		nKnowns		: nat1) result : fmi3Status * [seq1 of fmi3Float] * [nat1]
 	==
-		is not yet specified	-- TODO
+		let mk_(s, derivatives, n) = mk_(<fmi3OK>, [1.0], 1) in		-- TODO calculate function?
+			mk_(s, derivatives, n)
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetAdjointDerivative
+		and (c.fmuKind = <CoSimulation> and nilBool(c.xmlModel.coSimulation.base.providesAdjointDerivatives)
+			or c.fmuKind = <ModelExchange> and nilBool(c.xmlModel.modelExchange.base.providesAdjointDerivatives))
 		and nUnknowns = len unknowns
 		and nKnowns = len knowns
 	post
@@ -93,6 +105,12 @@ functions
 	==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetAdjointDerivative
 		then logAPIError(c, "Cannot call fmi3GetAdjointDerivative in this state", mk_(<fmi3Error>, nil, nil))
+
+		elseif c.fmuKind = <CoSimulation> and not nilBool(c.xmlModel.coSimulation.base.providesAdjointDerivatives)
+		then logAPIError(c, "Model does not support adjoint derivatives", mk_(<fmi3Error>, nil, nil))
+
+		elseif c.fmuKind = <ModelExchange> and not nilBool(c.xmlModel.modelExchange.base.providesAdjointDerivatives)
+		then logAPIError(c, "Model does not support adjoint derivatives", mk_(<fmi3Error>, nil, nil))
 
 		elseif nUnknowns <> len unknowns or nKnowns <> len knowns
 		then logAPIError(c, "Array length mismatch", mk_(<fmi3Error>, nil, nil))

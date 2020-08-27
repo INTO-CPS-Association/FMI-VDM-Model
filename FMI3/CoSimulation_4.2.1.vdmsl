@@ -40,8 +40,8 @@ types
 		canNotUseMemoryManagementFunctions		: [bool]
 		canGetAndSetFMUState					: [bool]
 		canSerializeFMUState					: [bool]
-		providesDirectionalDerivative			: [bool]
-		providesAdjointDerivative				: [bool]
+		providesDirectionalDerivatives			: [bool]
+		providesAdjointDerivatives				: [bool]
 		providesPerElementDependencies			: [bool];
 
 	CoSimulationKind = <CoSimulation> | <ScheduledExecution>;

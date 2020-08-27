@@ -126,7 +126,8 @@ functions
 	 */
 	fmi3CompletedIntegratorStep_Impl: fmi3Instance * fmi3Boolean +> fmi3Status * fmi3Boolean * fmi3Boolean
     fmi3CompletedIntegratorStep_Impl(c, -) ==
-		is not yet specified	-- TODO
+		let mk_(s, enterEventMode, terminateSimulation) = mk_(<fmi3OK>, false, false) in	-- TODO calculate?
+			mk_(s, enterEventMode, terminateSimulation)
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3CompletedIntegratorStep
 		and not nilBool(c.xmlModel.modelExchange.completedIntegratorStepNotNeeded);
@@ -222,7 +223,7 @@ functions
 	 */
 	fmi3GetNominalsOfContinuousStates_Impl: fmi3Instance * nat +> fmi3Status * seq of fmi3Float
 	fmi3GetNominalsOfContinuousStates_Impl(c, nx) ==
-		is not yet specified	-- TODO
+		mk_(<fmi3OK>, [ 1.0 | - in set {1, ..., nx}])	-- TODO via calculate function?
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetNominalsOfContinuousStates
 		and nx = len c.continuousTimeStates;

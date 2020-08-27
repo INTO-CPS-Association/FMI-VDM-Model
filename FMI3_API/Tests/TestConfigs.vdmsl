@@ -175,8 +175,8 @@ values
 				nil,
 				true,
 				nil,
-				nil,
-				nil,
+				true,	-- direction derivatives
+				true,	-- adjoint derivatives
 				nil
 			),
 			<CoSimulation>,

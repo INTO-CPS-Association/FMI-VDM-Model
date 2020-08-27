@@ -116,9 +116,11 @@ operations
 			if s <> <fmi3OK> then return false
 			else assert(size = 3);
 
-		let mk_(s, size) = fmi3GetNumberOfContinuousStates(c) in
-			if s <> <fmi3OK> then return false
-			else assert(size = 0);
+		let mk_(s1, size) = fmi3GetNumberOfContinuousStates(c),
+			mk_(s2, nominals) = fmi3GetNominalsOfContinuousStates(c, size)
+		in
+			if s1 <> <fmi3OK> or s2 <> <fmi3OK> then return false
+			else assert(size = 0 and nominals = []);
 
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false
@@ -192,6 +194,13 @@ operations
 							if s5 <> <fmi3OK> then return false
 							else c := c2;
 
+		let mk_(s, ds, n) = fmi3GetDirectionalDerivative(c, [0], 1, [0], 1) in
+			if s <> <fmi3OK> then return false
+			else assert(ds = [1.0] and n = 1);
+
+		let mk_(s, ds, n) = fmi3GetAdjointDerivative(c, [0], 1, [0], 1) in
+			if s <> <fmi3OK> then return false
+			else assert(ds = [1.0] and n = 1);
 
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false
