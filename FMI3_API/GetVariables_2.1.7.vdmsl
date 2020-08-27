@@ -288,21 +288,53 @@ functions
 	fmi3GetVariableDependencies_Impl(
 		c								: fmi3Instance,
 		dependent						: fmi3ValueReference,
-		elementIndicesOfDependent		: seq1 of nat1,
-		independents					: seq1 of fmi3ValueReference,
-		elementIndicesOfIndependents	: seq1 of nat1,
-		dependencyKinds					: seq1 of fmi3DependencyKind,
-		nDependencies					: nat1) result : fmi3Status
+		nDependencies					: nat1)
+		result : fmi3Status *
+		(
+			seq1 of nat						-- elementIndicesOfDependent
+			* seq1 of fmi3ValueReference	-- independents
+			* seq1 of nat					-- elementIndicesOfIndependents
+			* seq1 of fmi3DependencyKind	-- dependencyKinds
+		)
 	==
-		is not yet specified;	-- TODO
+		let deps	= c.dependencies(dependent),
+			eiods	= [ e.elementIndexOfDependent | e in seq deps ],
+			eis		= [ e.independent | e in seq deps ],
+			eiois	= [ e.elementIndexOfIndependent | e in seq deps ],
+			ekinds	= [ e.dependencyKind | e in seq deps ]
+		in
+			mk_(<fmi3OK>, mk_(eiods, eis, eiois, ekinds))
+	pre
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetVariableDependencies
+		and (c.fmuKind = <CoSimulation> and nilBool(c.xmlModel.coSimulation.base.providesPerElementDependencies)
+			or c.fmuKind = <ModelExchange> and nilBool(c.xmlModel.modelExchange.base.providesPerElementDependencies))
+		and dependent in set dom c.dependencies
+		and nDependencies = len c.dependencies(dependent)
+	post
+		result.#1 = <fmi3OK>;
 
 	fmi3GetVariableDependencies(
 		c								: fmi3Instance,
 		dependent						: fmi3ValueReference,
-		elementIndicesOfDependent		: seq1 of nat1,
-		independents					: seq1 of fmi3ValueReference,
-		elementIndicesOfIndependents	: seq1 of nat1,
-		dependencyKinds					: seq1 of fmi3DependencyKind,
-		nDependencies					: nat1) result : fmi3Status
+		nDependencies					: nat1)
+		result : fmi3Status *
+		[
+			seq1 of nat						-- elementIndicesOfDependent
+			* seq1 of fmi3ValueReference	-- independents
+			* seq1 of nat					-- elementIndicesOfIndependents
+			* seq1 of fmi3DependencyKind	-- dependencyKinds
+		]
 	==
-		is not yet specified;	-- TODO
+		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetVariableDependencies
+		then logAPIError(c, "Cannot call fmi3GetVariableDependencies in this state", mk_(<fmi3Error>, nil))
+		elseif c.fmuKind = <CoSimulation> and not nilBool(c.xmlModel.coSimulation.base.providesPerElementDependencies)
+		then logAPIError(c, "FMU does not provide per element dependencies", mk_(<fmi3Error>, nil))
+		elseif c.fmuKind = <ModelExchange> and not nilBool(c.xmlModel.modelExchange.base.providesPerElementDependencies)
+		then logAPIError(c, "FMU does not provide per element dependencies", mk_(<fmi3Error>, nil))
+		elseif dependent not in set dom c.dependencies
+		then logAPIError(c, "Unknown valueReference", mk_(<fmi3Error>, nil))
+		elseif nDependencies <> len c.dependencies(dependent)
+		then logAPIError(c, "nDependencies incorrect", mk_(<fmi3Error>, nil))
+		else fmi3GetVariableDependencies_Impl(c, dependent, nDependencies)
+	 post
+	 	result.#1 <> <fmi3OK> <=> result.#2 = nil;

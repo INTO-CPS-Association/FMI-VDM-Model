@@ -370,8 +370,8 @@ functions
 	 * Calculate the per-element dependencies for element i of a compound variable.
 	 */
 	getOneDependency: Variable * nat1 +> ElementDependency
-	getOneDependency(sv, i) ==
-		is not yet specified;	-- TODO
+	getOneDependency(-, i) ==
+		mk_ElementDependency(i, 0, 0, <Dependent>);	-- TODO maybe via calculate function?
 
 	/**
 	 * Calculate the initial solver values, given the solver configuration data.

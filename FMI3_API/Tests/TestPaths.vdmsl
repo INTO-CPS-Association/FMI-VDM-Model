@@ -106,7 +106,11 @@ operations
 
 		let mk_(s, size) = fmi3GetNumberOfVariableDependencies(c, 1) in
 			if s <> <fmi3OK> then return false
-			else assert(size = 0);
+			else assert(size = 1);
+
+		let mk_(s, mk_(A, B, C, D)) = fmi3GetVariableDependencies(c, 1, 1) in
+			if s <> <fmi3OK> then return false
+			else assert(A = [1] and B = [0] and C = [0] and D = [<Dependent>]);
 
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false

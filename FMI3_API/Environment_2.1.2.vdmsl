@@ -72,8 +72,8 @@ types
 	ElementDependency ::
 		elementIndexOfDependent		: nat
 		independent					: fmi3ValueReference
-		elementIndexIndependent		: nat
-		dependencyKind				: DependencyKind;
+		elementIndexOfIndependent	: nat
+		dependencyKind				: fmi3DependencyKind;
 
 	-- The opaque instance data for the model, passed to and from API functions
 	fmi3Instance ::
