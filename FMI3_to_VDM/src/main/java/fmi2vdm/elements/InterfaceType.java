@@ -41,9 +41,9 @@ public class InterfaceType extends Element
 	private Boolean canNotUseMemoryManagementFunctions;
 	private Boolean canGetAndSetFMUState;
 	private Boolean canSerializeFMUState;
-	private Boolean providesDirectionalDerivative;
-	private Boolean providesAdjointDerivative;
-	private Boolean providesPerElementDependencies;;
+	private Boolean providesDirectionalDerivatives;
+	private Boolean providesAdjointDerivatives;
+	private Boolean providesPerElementDependencies;
 
 	protected InterfaceType(Attributes attributes, Locator locator)
 	{
@@ -79,8 +79,8 @@ public class InterfaceType extends Element
 		printRawAttribute(indent + "\t", canNotUseMemoryManagementFunctions, ",\n");
 		printRawAttribute(indent + "\t", canGetAndSetFMUState, ",\n");
 		printRawAttribute(indent + "\t", canSerializeFMUState, ",\n");
-		printRawAttribute(indent + "\t", providesDirectionalDerivative, ",\n");
-		printRawAttribute(indent + "\t", providesAdjointDerivative, ",\n");
+		printRawAttribute(indent + "\t", providesDirectionalDerivatives, ",\n");
+		printRawAttribute(indent + "\t", providesAdjointDerivatives, ",\n");
 		printRawAttribute(indent + "\t", providesPerElementDependencies, "\n");
 		System.out.print(indent + ")");
 	}
