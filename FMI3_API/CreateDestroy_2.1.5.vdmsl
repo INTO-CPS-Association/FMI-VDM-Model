@@ -71,7 +71,7 @@ functions
 
 				-- The continuous time state references
 				[ v.base.valueReference |
-					v in seq getContinuousTimeStates(eModelVariables, xmlModel) ],
+					v in seq getContinuousTimeStates(eModelVariables) ],
 
 				-- The state derivative references
 				{ v.base.valueReference |
@@ -390,13 +390,13 @@ functions
 		[ 0.0 | - in set {1, ..., nilNat(xmlModel.attributes.numberOfEventIndicators)} ];
 
 	/**
-	 * Get CT state Variables in ModelStructure order.
+	 * Get CT state Variables.
 	 */
-	getContinuousTimeStates: seq1 of Variable * FMIModelDescription -> seq of Variable
-	getContinuousTimeStates(eModelVariables, xmlModel) ==
-		if xmlModel.modelStructure.unknowns <> nil
-		then [ lookup(eModelVariables, unknown.valueReference) | unknown in seq xmlModel.modelStructure.unknowns & true ]
-		else [];
+	getContinuousTimeStates: seq1 of Variable -> seq of Variable
+	getContinuousTimeStates(eModelVariables) ==
+	[
+		eModelVariables(i) | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables)
+	];
 
 	/**
 	 * Implementation of fmi3FreeInstance. See API method below.

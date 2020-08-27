@@ -477,7 +477,28 @@ STATES_fmi3GetNominalsOfContinuousStates: States = {
 };
 
 STATES_fmi3GetNumberOfContinuousStates: States = {
-
+    mk_(<CoSimulation>, <CONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <EVENT_MODE>),
+    mk_(<CoSimulation>, <INITIALIZATION_MODE>),
+    mk_(<CoSimulation>, <INSTANTIATED>),
+    mk_(<CoSimulation>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<CoSimulation>, <RECONFIGURATION_MODE>),
+    mk_(<CoSimulation>, <STEP_MODE>),
+    mk_(<CoSimulation>, <TERMINATED>),
+    mk_(<ModelExchange>, <CONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <CONTINUOUS_TIME_MODE>),
+    mk_(<ModelExchange>, <EVENT_MODE>),
+    mk_(<ModelExchange>, <INITIALIZATION_MODE>),
+    mk_(<ModelExchange>, <INSTANTIATED>),
+    mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
+    mk_(<ModelExchange>, <TERMINATED>),
+    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
+    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
+    mk_(<ScheduledExecution>, <INSTANTIATED>),
+    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
+    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
+    mk_(<ScheduledExecution>, <TERMINATED>)
 };
 
 STATES_fmi3GetNumberOfEventIndicators: States = {
@@ -621,14 +642,7 @@ STATES_fmi3GetVariableDependencies: States = {
     mk_(<ModelExchange>, <INITIALIZATION_MODE>),
     mk_(<ModelExchange>, <INSTANTIATED>),
     mk_(<ModelExchange>, <RECONFIGURATION_MODE>),
-    mk_(<ModelExchange>, <TERMINATED>),
-    mk_(<ScheduledExecution>, <CLOCK_ACTIVATION_MODE>),
-    mk_(<ScheduledExecution>, <CONFIGURATION_MODE>),
-    mk_(<ScheduledExecution>, <INITIALIZATION_MODE>),
-    mk_(<ScheduledExecution>, <INSTANTIATED>),
-    mk_(<ScheduledExecution>, <INTERMEDIATE_UPDATE_MODE>),
-    mk_(<ScheduledExecution>, <RECONFIGURATION_MODE>),
-    mk_(<ScheduledExecution>, <TERMINATED>)
+    mk_(<ModelExchange>, <TERMINATED>)
 };
 
 STATES_fmi3NewDiscreteStates: States = {

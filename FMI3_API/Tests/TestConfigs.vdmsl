@@ -51,7 +51,7 @@ values
 			nil,
 			nil,
 			<flat>,
-			nil
+			3		-- No. event indicators
 		),
 
 		-- ModelExchange

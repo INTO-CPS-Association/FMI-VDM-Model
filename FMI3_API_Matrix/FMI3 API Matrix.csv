@@ -1,5 +1,5 @@
 ,,,,,,Model Exchange,,,,,,,,Co-Simulation,,,,,,,,,Scheduled Execution,,,,,,
-API,Formal API Signature 100%,Formal API Complete 69%,Start,End,,Instantiated,Configuration Mode,Initialization Mode,Event Mode,Continuous Time Mode,Reconfiguration Mode,Terminated,,Instantiated,Configuration Mode,Initialization Mode,Step Mode,Event Mode,Intermediate Update Mode,Reconfiguration Mode,Terminated,,Instantiated,Configuration Mode,Initialization Mode,Clock Activation Mode,Intermediate Update Mode,Reconfiguration Mode,Terminated
+API,Formal API Signature 100%,Formal API Complete 75%,Start,End,,Instantiated,Configuration Mode,Initialization Mode,Event Mode,Continuous Time Mode,Reconfiguration Mode,Terminated,,Instantiated,Configuration Mode,Initialization Mode,Step Mode,Event Mode,Intermediate Update Mode,Reconfiguration Mode,Terminated,,Instantiated,Configuration Mode,Initialization Mode,Clock Activation Mode,Intermediate Update Mode,Reconfiguration Mode,Terminated
 fmi3GetVersion,X,X,X,X,,X,X,X,X,X,X,X,,X,X,X,X,X,X,X,X,,X,X,X,X,X,X,X
 fmi3InstantiateCoSimulation,X,X,X,,,,,,,,,,,,,,,,,,,,,,,,,,
 fmi3InstantiateModelExchange,X,X,X,,,,,,,,,,,,,,,,,,,,,,,,,,
@@ -36,16 +36,16 @@ fmi3GetInt8,X,X,,,,,,1,2,2,,X,,X,X,12,X,X,10,,X,,X,X,X,X,13,,X
 fmi3GetIntervalDecimal,X,,,,,X,X,X,X,X,X,X,,,,,,,,,,,,,,,,,
 fmi3GetIntervalFraction,X,,,,,X,X,X,X,X,X,X,,,,,,,,,,,,,,,,,
 fmi3GetNominalsOfContinuousStates,X,,,,,,,,X,,,,,,,,,,,,,,,,,,,,
-fmi3GetNumberOfContinuousStates,X,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-fmi3GetNumberOfEventIndicators,X,,,,,,,,X,X,,,,,,,,,,,,,,,,,,,
-fmi3GetNumberOfVariableDependencies,X,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+fmi3GetNumberOfContinuousStates,X,X,,,,X,X,X,X,X,X,X,,X,X,X,X,X,X,X,X,,X,X,X,X,X,X,X
+fmi3GetNumberOfEventIndicators,X,X,,,,,,,X,X,,,,,,,,,,,,,,,,,,,
+fmi3GetNumberOfVariableDependencies,X,X,,,,X,X,X,X,X,X,X,,X,X,X,X,X,X,X,X,,,,,,,,
 fmi3GetOutputDerivatives,X,,,,,,,,,,,,,,,,X,X,10,,X,,,,,X,,,
 fmi3GetString,X,X,,,,,,1,2,2,,,,X,X,12,X,X,10,,X,,X,X,X,X,13,,X
 fmi3GetUInt16,X,X,,,,,,1,2,2,,,,X,X,12,X,X,10,,X,,X,X,X,X,13,,X
 fmi3GetUInt32,X,X,,,,,,1,2,2,,,,X,X,12,X,X,10,,X,,X,X,X,X,13,,X
 fmi3GetUInt64,X,X,,,,,,1,2,2,,,,X,X,12,X,X,10,,X,,X,X,X,X,13,,X
 fmi3GetUInt8,X,X,,,,,,1,2,2,,,,X,X,12,X,X,10,,X,,X,X,X,X,13,,X
-fmi3GetVariableDependencies,X,,,,,X,X,X,X,X,X,X,,X,X,X,X,X,X,X,X,,X,X,X,X,X,X,X
+fmi3GetVariableDependencies,X,X,,,,X,X,X,X,X,X,X,,X,X,X,X,X,X,X,X,,,,,,,,
 fmi3NewDiscreteStates,X,,,,,,,,X,,,,,,,,,,,,,,,,,,,,
 fmi3Reset,X,X,,,,X,X,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,X,,X,X
 fmi3SerializedFMUStateSize,X,X,,,,X,X,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,X,,X,X
@@ -71,7 +71,7 @@ fmi3SetUInt32,X,X,,,,4,5,3,X,X,6,X,,7,11,8,9,9,10,X,X,,X,X,X,X,13,14,X
 fmi3SetUInt64,X,X,,,,4,5,3,X,X,6,X,,7,11,8,9,9,10,X,X,,X,X,X,X,13,14,X
 fmi3SetUInt8,X,X,,,,4,5,3,X,X,6,X,,7,11,8,9,99,10,X,X,,X,X,X,X,13,14,X
 fmi3Terminate,X,,,,,X,X,X,X,X,X,X,,X,X,X,X,X,,X,X,,X,X,X,X,,X,X
-,1.00,0.69,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,1.00,0.75,,,,,,,,,,,,,,,,,,,,,,,,,,,
 Notes:,,,X,,The API function is available unconditionally.,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,1,,3.2.3.3 - The variables that can be retrieved by fmi3Get{VariableType} calls are (1) defined in the XML file as elements <ModelStructure><InitialUnknown> and (2) variables with causality = output,,,,,,,,,,,,,,,,,,,,,,,,
 ,,,2,,3.2.3.7 - output variables can be retrieved with fmi3Get{VariableType} interchangeably according to the model structure defined under element <ModelStructure> in the XML file,,,,,,,,,,,,,,,,,,,,,,,,

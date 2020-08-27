@@ -112,6 +112,14 @@ operations
 			if s <> <fmi3OK> then return false
 			else assert(A = [1] and B = [0] and C = [0] and D = [<Dependent>]);
 
+		let mk_(s, size) = fmi3GetNumberOfEventIndicators(c) in
+			if s <> <fmi3OK> then return false
+			else assert(size = 3);
+
+		let mk_(s, size) = fmi3GetNumberOfContinuousStates(c) in
+			if s <> <fmi3OK> then return false
+			else assert(size = 0);
+
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false
 			else c := c2;
