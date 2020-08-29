@@ -39,7 +39,14 @@ functions
             "",
             false,
             true,
-            mk_fmi3InstanceEnvironment(modelExchangeFMU, mk_SolverData([]), nil),
+            mk_fmi3InstanceEnvironment(
+				modelExchangeFMU,
+				mk_SolverData([]),
+				nil,
+				nullCalculateValues,
+				nullCalculateDoStep,
+				nullCalculateEvents
+			),
             fmi3Logger);
 
      testInstantiateCoSimulation: seq of fmi3ValueReference * fmi3Boolean -> [fmi3Instance]
@@ -53,7 +60,14 @@ functions
             eventModeRequired,
             requiredIntermediateVariables,
             len requiredIntermediateVariables,
-            mk_fmi3InstanceEnvironment(basicCosimulationFMU, mk_SolverData([]), nil),
+            mk_fmi3InstanceEnvironment(
+				basicCosimulationFMU,
+				mk_SolverData([]),
+				nil,
+				nullCalculateValues,
+				nullCalculateDoStep,
+				nullCalculateEvents
+			),
             fmi3Logger,
             nil);
 
@@ -67,7 +81,14 @@ functions
             true,
             requiredIntermediateVariables,
             len requiredIntermediateVariables,
-            mk_fmi3InstanceEnvironment(scheduledCosimulationFMU, mk_SolverData([]), nil),
+            mk_fmi3InstanceEnvironment(
+				scheduledCosimulationFMU,
+				mk_SolverData([]),
+				nil,
+				nullCalculateValues,
+				nullCalculateDoStep,
+				nullCalculateEvents
+			),
             fmi3Logger,
             nil,
             preemptionVoid,
@@ -103,7 +124,14 @@ functions
 	testGetAPI() ==
         let instance = fmi3InstantiateCoSimulation(
             "VariableTypes", "", "", false, true, false, [], 0,
-            mk_fmi3InstanceEnvironment(variableTypesFMU, mk_SolverData([]), nil),
+            mk_fmi3InstanceEnvironment(
+				variableTypesFMU,
+				mk_SolverData([]),
+				nil,
+				nullCalculateValues,
+				nullCalculateDoStep,
+				nullCalculateEvents
+			),
             fmi3Logger, nil),
             F64 = 2, F32 = 1, I8 = 3, UI8 = 4, I16 = 5, UI16 = 6, I32 = 7, UI32 = 8, I64 = 9, UI64 = 10,
             BOOL = 11, STRING = 12, BINARY = 13
@@ -152,7 +180,14 @@ functions
 	testSetAPI() ==
         let instance = fmi3InstantiateCoSimulation(
             "VariableTypes", "", "", false, true, false, [], 0,
-            mk_fmi3InstanceEnvironment(variableTypesFMU, mk_SolverData([]), nil),
+            mk_fmi3InstanceEnvironment(
+				variableTypesFMU,
+				mk_SolverData([]),
+				nil,
+				nullCalculateValues,
+				nullCalculateDoStep,
+				nullCalculateEvents
+			),
             fmi3Logger, nil),
             F64 = 2, F32 = 1, I8 = 3, UI8 = 4, I16 = 5, UI16 = 6, I32 = 7, UI32 = 8, I64 = 9, UI64 = 10,
             BOOL = 11, STRING = 12, BINARY = 13

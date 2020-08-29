@@ -41,9 +41,13 @@ types
 
 	-- The opaque data for the model - the XML model and solver data
 	fmi3InstanceEnvironment ::
-		xmlModel						: FMIModelDescription
-		solverData						: SolverData
-		logCategories					: [set1 of fmi3String]	-- nil means logging off
+		xmlModel				: FMIModelDescription
+		solverData				: SolverData
+		logCategories			: [set1 of fmi3String]	-- nil means logging is off
+		calculateValues			: fmi3Instance -> fmi3Status * [fmi3Instance]
+		calculateDoStep			: fmi3Instance * fmi3Float * fmi3Float -> fmi3Status * [fmi3Instance]
+		calculateEvents			: fmi3Instance -> fmi3Status * [fmi3EventInfo] * [fmi3Instance]
+
 	inv ienv ==
 		-- The FMI model is valid
 		isValidFMIModelDescription(ienv.xmlModel)

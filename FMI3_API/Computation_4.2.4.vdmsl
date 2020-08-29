@@ -37,7 +37,7 @@ functions
 	 */
 	fmi3DoStep_Impl: fmi3Instance * fmi3Float * fmi3Float * fmi3Boolean +> fmi3Status * [fmi3Boolean] * [fmi3Boolean] * [fmi3Float] * [fmi3Instance]
 	fmi3DoStep_Impl(c, currentCommunicationPoint, communicationStepSize, -/*noSetFMUStatePriorToCurrentPoint*/) ==
-		let mk_(s, c2) = mk_(<fmi3OK>, c) /* c.instanceEnvironment.calculateDoStep(c,  currentCommunicationPoint, communicationStepSize) */ in
+		let mk_(s, c2) =  c.instanceEnvironment.calculateDoStep(c,  currentCommunicationPoint, communicationStepSize) in
 			if s <> <fmi3OK>
 			then mk_(s, nil, nil, nil, nil)
 			else mk_(s, nil, nil, nil, c2)		-- TODO!

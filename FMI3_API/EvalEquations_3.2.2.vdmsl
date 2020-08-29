@@ -65,10 +65,9 @@ functions
 	/**
 	 * Implementation and API for fmi3NewDiscreteStates.
 	 */
-	fmi3NewDiscreteStates_Impl: fmi3Instance +> fmi3Status * fmi3EventInfo * fmi3Instance
+	fmi3NewDiscreteStates_Impl: fmi3Instance +> fmi3Status * [fmi3EventInfo] * [fmi3Instance]
 	fmi3NewDiscreteStates_Impl(c) ==
-    	-- let mk_(s, c2) = c.instanceEnvironment.calculateEvents(c) in
-			mk_(<fmi3OK>, c.eventInfo, c)
+    	c.instanceEnvironment.calculateEvents(c)
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3NewDiscreteStates;
 
