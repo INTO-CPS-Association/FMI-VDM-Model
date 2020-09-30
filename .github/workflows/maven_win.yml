@@ -19,13 +19,5 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Import VDMJ package
-      run: mvn install:install-file -Dfile="lib/vdmj-4.3.0.jar" -DgroupId="com.fujitsu" -DartifactId="vdmj" -Dversion="4.3.0" -Dpackaging="jar"
-    - name: Import VDMJ-P package
-      run: mvn install:install-file -Dfile="lib/vdmj-4.3.0-P.jar" -DgroupId="com.fujitsu" -DartifactId="vdmj" -Dversion="4.3.0-P" -Dpackaging="jar"
-    - name: Import Annotations
-      run: mvn install:install-file -Dfile="lib/annotations-1.0.0.jar" -DgroupId="com.fujitsu" -DartifactId="annotations" -Dversion="1.0.0" -Dpackaging="jar"
-    - name: Import Annotations2
-      run: mvn install:install-file -Dfile="lib/annotations2-1.0.0.jar" -DgroupId="com.fujitsu" -DartifactId="annotations2" -Dversion="1.0.0" -Dpackaging="jar"
     - name: Build with Maven
-      run: mvn test
+      run: mvn clean package

@@ -1,0 +1,53 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+	<id>distribution</id>
+
+	<formats>
+		<format>zip</format>
+	</formats>
+	
+	<baseDirectory>vdmcheck-${project.version}</baseDirectory>
+
+	<files>
+		<file>
+			<source>src/main/scripts/VDMCheck3.sh</source>
+			<destName>VDMCheck3.sh</destName>
+			<filtered>true</filtered>
+		</file>
+		<file>
+			<source>../../LICENCE</source>
+			<destName>LICENCE</destName>
+		</file>
+	</files>
+
+	<fileSets>
+		<fileSet>
+			<directory>src/main/resources/schema</directory>
+			<outputDirectory>schema</outputDirectory>
+		</fileSet>
+	</fileSets>
+
+	<dependencySets>
+		<dependencySet>
+			<includes>
+				<include>org.into-cps.vdmcheck.fmi3:vdm-model</include>
+			</includes>
+			<unpack>true</unpack>
+			<outputDirectory>model</outputDirectory>
+			<unpackOptions>
+				<excludes>
+					<exclude>Tests/**</exclude>
+					<exclude>META-INF/**</exclude>
+				</excludes>
+			</unpackOptions>
+		</dependencySet>
+		<dependencySet>
+			<includes>
+				<include>org.into-cps.vdmcheck.fmi3:fmi2vdm</include>
+				<include>com.fujitsu:vdmj</include>
+				<include>com.fujitsu:annotations</include>
+			</includes>
+		</dependencySet>
+	</dependencySets>
+</assembly>
