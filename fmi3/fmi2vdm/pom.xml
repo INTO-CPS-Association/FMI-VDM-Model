@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.into-cps.vdmcheck</groupId>
+		<artifactId>fmi3</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<groupId>org.into-cps.vdmcheck.fmi3</groupId>
+	<artifactId>fmi2vdm</artifactId>
+
+	<properties>
+		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>
+	</properties>
+
+	<version>0.0.3</version>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.into-cps.vdmcheck.fmi3</groupId>
+			<artifactId>static-model</artifactId>
+			<version>0.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fujitsu</groupId>
+			<artifactId>vdmj</artifactId>
+			<version>4.3.0-P</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fujitsu</groupId>
+			<artifactId>annotations</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Main-Class>VDMCheck</Main-Class>
+							<Implementation-Version>${project.version} build ${maven.build.timestamp}</Implementation-Version>
+							<Class-Path>.</Class-Path>
+						</manifestEntries>
+					</archive>
+					<finalName>
+						${project.artifactId}-${project.version}-${maven.build.timestamp}
+					</finalName>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/assembly.xml</descriptor>
+					</descriptors>
+					<finalName>vdmcheck-${project.version}-${maven.build.timestamp}</finalName>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
