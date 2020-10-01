@@ -23,7 +23,7 @@
 	<modules>
 		<module>cosim-model</module>
 		<module>cosim2vdm</module>
-		<module>vdm-model</module>
+		<module>static-model</module>
 		<module>fmi2vdm</module>
 	</modules>
 

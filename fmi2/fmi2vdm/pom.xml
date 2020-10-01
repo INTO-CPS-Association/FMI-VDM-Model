@@ -20,7 +20,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.into-cps.vdmcheck.fmi2</groupId>
-			<artifactId>vdm-model</artifactId>
+			<artifactId>static-model</artifactId>
 			<version>0.0.2</version>
 		</dependency>
 		<dependency>

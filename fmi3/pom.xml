@@ -21,7 +21,7 @@
 
 	<!-- sub modules -->
 	<modules>
-		<module>vdm-model</module>
+		<module>static-model</module>
 		<module>fmi2vdm</module>
 	</modules>
 

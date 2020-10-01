@@ -31,7 +31,7 @@
 	<dependencySets>
 		<dependencySet>
 			<includes>
-				<include>org.into-cps.vdmcheck.fmi2:vdm-model</include>
+				<include>org.into-cps.vdmcheck.fmi2:static-model</include>
 			</includes>
 			<unpack>true</unpack>
 			<outputDirectory>model</outputDirectory>

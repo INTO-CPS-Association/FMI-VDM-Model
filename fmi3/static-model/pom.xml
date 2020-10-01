@@ -4,13 +4,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.into-cps.vdmcheck</groupId>
-		<artifactId>fmi2</artifactId>
+		<artifactId>fmi3</artifactId>
 		<version>1.0.0</version>
 	</parent>
 
-	<groupId>org.into-cps.vdmcheck.fmi2</groupId>
-	<artifactId>vdm-model</artifactId>
-	<version>0.0.2</version>
+	<groupId>org.into-cps.vdmcheck.fmi3</groupId>
+	<artifactId>static-model</artifactId>
+	<version>0.0.3</version>
 	<build>
 		<directory>generated</directory>
 		<plugins>

@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.into-cps.vdmcheck.fmi3</groupId>
-			<artifactId>vdm-model</artifactId>
+			<artifactId>static-model</artifactId>
 			<version>0.0.3</version>
 		</dependency>
 		<dependency>
