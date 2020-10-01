@@ -5,12 +5,11 @@
 	<parent>
 		<groupId>org.into-cps.vdmcheck</groupId>
 		<artifactId>fmi3</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
 	<groupId>org.into-cps.vdmcheck.fmi3</groupId>
 	<artifactId>static-model</artifactId>
-	<version>0.0.3</version>
 	<build>
 		<directory>generated</directory>
 		<plugins>

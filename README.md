@@ -67,3 +67,11 @@ or
 VDMCheck2.sh
 ```
 This will print the usage.
+
+## Release 
+
+~~~bash
+mvn -Dmaven.repo.local=repository release:clean
+mvn -Dmaven.repo.local=repository release:prepare -DreleaseVersion=${RELEASE_VER} -DdevelopmentVersion=${NEW_DEV_VER}
+mvn -Dmaven.repo.local=repository release:perform
+~~~

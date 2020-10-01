@@ -9,14 +9,13 @@
 	<parent>
 		<groupId>org.into-cps</groupId>
 		<artifactId>vdmcheck</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
 
 	<!-- parent pom -->
 	<groupId>org.into-cps.vdmcheck</groupId>
 	<artifactId>fmi2</artifactId>
-	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
 	<!-- sub modules -->
