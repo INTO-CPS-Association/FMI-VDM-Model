@@ -116,4 +116,46 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>overture.au.dk-releases</name>
+            <url>http://overture.au.dk/artifactory/into-cps</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>overture.au.dk-snapshots</name>
+            <url>http://overture.au.dk/artifactory/into-cps</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+  
+    <scm>
+        <url>git@github.com:INTO-CPS-Association/FMI-VDM-Model</url>
+        <connection>scm:git:git//github.com/INTO-CPS-Association/FMI-VDM-Model
+        </connection>
+        <developerConnection>
+            scm:git:git@github.com:INTO-CPS-Association/FMI-VDM-Model
+        </developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+
+    <licenses>
+        <license>
+            <name>INTO-CPS Association Public License</name>
+            <url>
+                https://gist.github.com/lausdahl/12499d97459e75f495bd0bb3e50670d6#file-into-cps-association-license-txt
+            </url>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>INTO CPS</name>
+        <url>http://into-cps.org/</url>
+    </organization>
+
+    <inceptionYear>2020</inceptionYear>
+
+
 </project>
