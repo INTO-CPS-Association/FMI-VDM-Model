@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class RealType extends Type
 {
 	private String quantity;
@@ -50,19 +52,19 @@ public class RealType extends Type
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.print(indent + "mk_RealType(");
+		writer.print(indent + "mk_RealType(");
 		
-		printStringAttribute("", quantity, ", ");
-		printStringAttribute("", unit, ", ");
-		printStringAttribute("", displayUnit, ", ");
-		printRawAttribute("", relativeQuantity, ", ");
-		printRawAttribute("", min, ", ");
-		printRawAttribute("", max, ", ");
-		printRawAttribute("", nominal, ", ");
-		printRawAttribute("", unbounded, "");
+		printStringAttribute("", quantity, ", ",writer);
+		printStringAttribute("", unit, ", ",writer);
+		printStringAttribute("", displayUnit, ", ",writer);
+		printRawAttribute("", relativeQuantity, ", ",writer);
+		printRawAttribute("", min, ", ",writer);
+		printRawAttribute("", max, ", ",writer);
+		printRawAttribute("", nominal, ", ",writer);
+		printRawAttribute("", unbounded, "",writer);
 		
-		System.out.print(")");
+		writer.print(")");
 	}
 }

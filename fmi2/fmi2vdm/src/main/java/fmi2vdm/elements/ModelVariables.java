@@ -31,6 +31,8 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 
 public class ModelVariables extends Element
 {
@@ -60,8 +62,8 @@ public class ModelVariables extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		printSequence(indent, modelVariables, "");
+		printSequence(indent, modelVariables, "",writer);
 	}
 }

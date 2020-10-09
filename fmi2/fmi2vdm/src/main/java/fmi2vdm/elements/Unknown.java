@@ -34,6 +34,8 @@ import org.xml.sax.Locator;
 
 import fmi2vdm.FMI2SaxParser;
 
+import java.io.PrintWriter;
+
 public class Unknown extends Element
 {
 	private Integer index;
@@ -93,49 +95,49 @@ public class Unknown extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.println(indent + "mk_Unknown");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printRawAttribute(indent + "\t", index, ",\n");
+		writer.println(indent + "mk_Unknown");
+		writer.println(indent + "(");
+		writer.println(indent + "\t" + lineNumber + ",  -- Line");
+		printRawAttribute(indent + "\t", index, ",\n",writer);
 		
 		if (dependencies == null)
 		{
-			System.out.println(indent + "\tnil,");
+			writer.println(indent + "\tnil,");
 		}
 		else
 		{
-			System.out.print(indent + "\t[");
+			writer.print(indent + "\t[");
 			String sep = "";
 			
 			for (Integer d: dependencies)
 			{
-				System.out.print(sep + d);
+				writer.print(sep + d);
 				sep = ", ";
 			}
 			
-			System.out.println("],");
+			writer.println("],");
 		}
 		
 		if (dependenciesKind == null)
 		{
-			System.out.println(indent + "\tnil");
+			writer.println(indent + "\tnil");
 		}
 		else
 		{
-			System.out.print(indent + "\t[");
+			writer.print(indent + "\t[");
 			String sep = "";
 			
 			for (String dk: dependenciesKind)
 			{
-				System.out.print(sep + "<" + dk + ">");
+				writer.print(sep + "<" + dk + ">");
 				sep = ", ";
 			}
 			
-			System.out.println("]");
+			writer.println("]");
 		}
 
-		System.out.print(indent + ")");
+		writer.print(indent + ")");
 	}
 }

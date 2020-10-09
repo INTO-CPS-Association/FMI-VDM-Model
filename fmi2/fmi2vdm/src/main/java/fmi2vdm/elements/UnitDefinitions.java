@@ -31,6 +31,8 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class UnitDefinitions extends Element
 {
 	private ElementList<Unit> unitDefinitions = null;
@@ -59,8 +61,8 @@ public class UnitDefinitions extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		printSequence(indent, unitDefinitions, "");
+		printSequence(indent, unitDefinitions, "",writer);
 	}
 }

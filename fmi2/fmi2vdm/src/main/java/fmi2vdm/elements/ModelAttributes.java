@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class ModelAttributes extends Element
 {
 	private String fmiVersion;
@@ -60,25 +62,25 @@ public class ModelAttributes extends Element
 	}
 
 	@Override
-	public void toVDM(String indent)
+	public void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.println(indent + "mk_ModelAttributes");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		writer.println(indent + "mk_ModelAttributes");
+		writer.println(indent + "(");
+		writer.println(indent + "\t" + lineNumber + ",  -- Line");
 		
-		printStringAttribute(indent + "\t", fmiVersion, ",\n");
-		printStringAttribute(indent + "\t", modelName, ",\n");
-		printStringAttribute(indent + "\t", guid, ",\n");
-		printStringAttribute(indent + "\t", description, ",\n");
-		printStringAttribute(indent + "\t", author, ",\n");
-		printStringAttribute(indent + "\t", version, ",\n");
-		printStringAttribute(indent + "\t", copyright, ",\n");
-		printStringAttribute(indent + "\t", license, ",\n");
-		printStringAttribute(indent + "\t", generationTool, ",\n");
-		printStringAttribute(indent + "\t", generationDateAndTime, ",\n");
-		printQuoteAttribute(indent + "\t", variableNamingConvention, ",\n");
-		printRawAttribute(indent + "\t", numberOfEventIndicators, "\n");
+		printStringAttribute(indent + "\t", fmiVersion, ",\n",writer);
+		printStringAttribute(indent + "\t", modelName, ",\n",writer);
+		printStringAttribute(indent + "\t", guid, ",\n",writer);
+		printStringAttribute(indent + "\t", description, ",\n",writer);
+		printStringAttribute(indent + "\t", author, ",\n",writer);
+		printStringAttribute(indent + "\t", version, ",\n",writer);
+		printStringAttribute(indent + "\t", copyright, ",\n",writer);
+		printStringAttribute(indent + "\t", license, ",\n",writer);
+		printStringAttribute(indent + "\t", generationTool, ",\n",writer);
+		printStringAttribute(indent + "\t", generationDateAndTime, ",\n",writer);
+		printQuoteAttribute(indent + "\t", variableNamingConvention, ",\n",writer);
+		printRawAttribute(indent + "\t", numberOfEventIndicators, "\n",writer);
 		
-		System.out.print(indent + ")");
+		writer.print(indent + ")");
 	}
 }

@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class BaseUnit extends Element
 {
 	private Integer kg;
@@ -52,19 +54,19 @@ public class BaseUnit extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.print(indent + "mk_BaseUnit(");
-		printRawAttribute("", kg, ", ");
-		printRawAttribute("", m, ", ");
-		printRawAttribute("", s, ", ");
-		printRawAttribute("", A, ", ");
-		printRawAttribute("", K, ", ");
-		printRawAttribute("", mol, ", ");
-		printRawAttribute("", cs, ", ");
-		printRawAttribute("", rad, ", ");
-		printRawAttribute("", factor, ", ");
-		printRawAttribute("", offset, "");
-		System.out.print(")");
+		writer.print(indent + "mk_BaseUnit(");
+		printRawAttribute("", kg, ", ",writer);
+		printRawAttribute("", m, ", ",writer);
+		printRawAttribute("", s, ", ",writer);
+		printRawAttribute("", A, ", ",writer);
+		printRawAttribute("", K, ", ",writer);
+		printRawAttribute("", mol, ", ",writer);
+		printRawAttribute("", cs, ", ",writer);
+		printRawAttribute("", rad, ", ",writer);
+		printRawAttribute("", factor, ", ",writer);
+		printRawAttribute("", offset, "",writer);
+		writer.print(")");
 	}
 }

@@ -32,6 +32,7 @@ package fmi2vdm;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -67,7 +68,7 @@ public class FMI2SaxParser
 		FMI2SaxHandler handler = new FMI2SaxHandler(args[0], args[1]);
 		saxParser.parse(args[0], handler);
 		
-		handler.getFMIModelDescription().toVDM("\t");
+		handler.getFMIModelDescription().toVDM("\t",new PrintWriter(System.out));
 		
 		if (errors > 0)
 		{

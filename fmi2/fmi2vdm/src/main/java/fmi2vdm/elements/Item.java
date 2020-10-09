@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class Item extends Element
 {
 	private String name;
@@ -45,15 +47,15 @@ public class Item extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.print(indent + "mk_Item(");
+		writer.print(indent + "mk_Item(");
 		
-		printStringAttribute("", name, ", ");
-		printRawAttribute("", value, ", ");
-		printStringAttribute("", description, "");
+		printStringAttribute("", name, ", ",writer);
+		printRawAttribute("", value, ", ",writer);
+		printStringAttribute("", description, "",writer);
 		
-		System.out.print(")");
+		writer.print(")");
 
 	}
 }

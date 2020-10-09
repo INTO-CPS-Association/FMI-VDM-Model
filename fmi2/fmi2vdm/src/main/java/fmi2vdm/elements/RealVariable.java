@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class RealVariable extends Variable
 {
 	private String declaredType;
@@ -54,23 +56,23 @@ public class RealVariable extends Variable
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.print(indent + "mk_Real(");
+		writer.print(indent + "mk_Real(");
 		
-		printStringAttribute("", declaredType, ", ");
-		printStringAttribute("", quantity, ", ");
-		printStringAttribute("", unit, ", ");
-		printStringAttribute("", displayUnit, ", ");
-		printRawAttribute("", relativeQuantity, ", ");
-		printRawAttribute("", min, ", ");
-		printRawAttribute("", max, ", ");
-		printRawAttribute("", nominal, ", ");
-		printRawAttribute("", unbounded, ", ");
-		printRawAttribute("", start, ", ");
-		printRawAttribute("", derivative, ", ");
-		printRawAttribute("", reinit, "");
+		printStringAttribute("", declaredType, ", ",writer);
+		printStringAttribute("", quantity, ", ",writer);
+		printStringAttribute("", unit, ", ",writer);
+		printStringAttribute("", displayUnit, ", ",writer);
+		printRawAttribute("", relativeQuantity, ", ",writer);
+		printRawAttribute("", min, ", ",writer);
+		printRawAttribute("", max, ", ",writer);
+		printRawAttribute("", nominal, ", ",writer);
+		printRawAttribute("", unbounded, ", ",writer);
+		printRawAttribute("", start, ", ",writer);
+		printRawAttribute("", derivative, ", ",writer);
+		printRawAttribute("", reinit, "",writer);
 		
-		System.out.print(")");
+		writer.print(")");
 	}
 }

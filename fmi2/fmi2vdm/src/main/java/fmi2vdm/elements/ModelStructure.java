@@ -31,6 +31,8 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 
 public class ModelStructure extends Element
 {
@@ -76,45 +78,45 @@ public class ModelStructure extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.println(indent + "mk_ModelStructure");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		writer.println(indent + "mk_ModelStructure");
+		writer.println(indent + "(");
+		writer.println(indent + "\t" + lineNumber + ",  -- Line");
 		
 		if (outputs != null)
 		{
-			System.out.println(indent + "\t-- Outputs");
-			outputs.toVDM(indent);
-			System.out.println(",\n");
+			writer.println(indent + "\t-- Outputs");
+			outputs.toVDM(indent,writer);
+			writer.println(",\n");
 		}
 		else
 		{
-			System.out.println(indent + "\tnil,");
+			writer.println(indent + "\tnil,");
 		}
 		
 		if (derivatives != null)
 		{
-			System.out.println(indent + "\t-- Derivatives");
-			derivatives.toVDM(indent);
-			System.out.println(",\n");
+			writer.println(indent + "\t-- Derivatives");
+			derivatives.toVDM(indent,writer);
+			writer.println(",\n");
 		}
 		else
 		{
-			System.out.println(indent + "\tnil,");
+			writer.println(indent + "\tnil,");
 		}
 		
 		if (initialUnknowns != null)
 		{
-			System.out.println(indent + "\t-- InitialUnknowns");
-			initialUnknowns.toVDM(indent);
-			System.out.println();
+			writer.println(indent + "\t-- InitialUnknowns");
+			initialUnknowns.toVDM(indent,writer);
+			writer.println();
 		}
 		else
 		{
-			System.out.println(indent + "\tnil");
+			writer.println(indent + "\tnil");
 		}
 		
-		System.out.println(indent + ")");
+		writer.println(indent + ")");
 	}
 }

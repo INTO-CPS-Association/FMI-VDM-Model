@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class BooleanType extends Type
 {
 	public BooleanType(Attributes attributes, Locator locator)
@@ -40,8 +42,8 @@ public class BooleanType extends Type
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.print(indent + "mk_BooleanType()");
+		writer.print(indent + "mk_BooleanType()");
 	}
 }

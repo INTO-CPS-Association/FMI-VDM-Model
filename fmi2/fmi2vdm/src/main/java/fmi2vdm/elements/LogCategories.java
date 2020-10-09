@@ -31,6 +31,8 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class LogCategories extends Element
 {
 	private ElementList<Category> logCategories = null;
@@ -59,8 +61,8 @@ public class LogCategories extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		printSequence(indent, logCategories, "");
+		printSequence(indent, logCategories, "",writer);
 	}
 }

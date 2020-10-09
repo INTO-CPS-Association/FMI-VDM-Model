@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class ScalarVariable extends Element
 {
 	private String name;
@@ -68,20 +70,20 @@ public class ScalarVariable extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.println(indent + "mk_ScalarVariable");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, ",\n");
-		printRawAttribute(indent + "\t", valueReference, ",\n");
-		printStringAttribute(indent + "\t", description, ",\n");
-		printQuoteAttribute(indent + "\t", causality, ",\n");
-		printQuoteAttribute(indent + "\t", variability, ",\n");
-		printQuoteAttribute(indent + "\t", initial, ",\n");
-		printRawAttribute(indent + "\t", canHandleMultipleSetPerTimeInstant, ",\n");
-		printOptional(indent + "\t", variable, ",\n");
-		printOptional(indent + "\t", annotations, "\n");
-		System.out.print(indent + ")");
+		writer.println(indent + "mk_ScalarVariable");
+		writer.println(indent + "(");
+		writer.println(indent + "\t" + lineNumber + ",  -- Line");
+		printStringAttribute(indent + "\t", name, ",\n",writer);
+		printRawAttribute(indent + "\t", valueReference, ",\n",writer);
+		printStringAttribute(indent + "\t", description, ",\n",writer);
+		printQuoteAttribute(indent + "\t", causality, ",\n",writer);
+		printQuoteAttribute(indent + "\t", variability, ",\n",writer);
+		printQuoteAttribute(indent + "\t", initial, ",\n",writer);
+		printRawAttribute(indent + "\t", canHandleMultipleSetPerTimeInstant, ",\n",writer);
+		printOptional(indent + "\t", variable, ",\n",writer);
+		printOptional(indent + "\t", annotations, "\n",writer);
+		writer.print(indent + ")");
 	}
 }

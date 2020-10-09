@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class DefaultExperiment extends Element
 {
 	private Double startTime;
@@ -46,15 +48,15 @@ public class DefaultExperiment extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.println(indent + "mk_DefaultExperiment");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printRawAttribute(indent + "\t", startTime, ",\n");
-		printRawAttribute(indent + "\t", stopTime, ",\n");
-		printRawAttribute(indent + "\t", tolerance, ",\n");
-		printRawAttribute(indent + "\t", stepSize, "\n");
-		System.out.print(indent + ")");
+		writer.println(indent + "mk_DefaultExperiment");
+		writer.println(indent + "(");
+		writer.println(indent + "\t" + lineNumber + ",  -- Line");
+		printRawAttribute(indent + "\t", startTime, ",\n",writer);
+		printRawAttribute(indent + "\t", stopTime, ",\n",writer);
+		printRawAttribute(indent + "\t", tolerance, ",\n",writer);
+		printRawAttribute(indent + "\t", stepSize, "\n",writer);
+		writer.print(indent + ")");
 	}
 }

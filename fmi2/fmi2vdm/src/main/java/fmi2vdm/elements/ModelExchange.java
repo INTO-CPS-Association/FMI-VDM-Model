@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class ModelExchange extends Element
 {
 	private String modelIdentifier;
@@ -64,21 +66,21 @@ public class ModelExchange extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.println(indent + "mk_ModelExchange");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		writer.println(indent + "mk_ModelExchange");
+		writer.println(indent + "(");
+		writer.println(indent + "\t" + lineNumber + ",  -- Line");
 		
-		printStringAttribute(indent + "\t", modelIdentifier, ",\n");
-		printRawAttribute(indent + "\t", needsExecutionTool, ",\n");
-		printRawAttribute(indent + "\t", completedIntegratorStepNotNeeded, ",\n");
-		printRawAttribute(indent + "\t", canBeInstantiatedOnlyOncePerProcess, ",\n");
-		printRawAttribute(indent + "\t", canNotUseMemoryManagementFunctions, ",\n");
-		printRawAttribute(indent + "\t", canGetAndSetFMUstate, ",\n");
-		printRawAttribute(indent + "\t", canSerializeFMUstate, ",\n");
-		printRawAttribute(indent + "\t", providesDirectionalDerivative, ",\n");
-		printOptional(indent + "\t", sourceFiles, "");
-		System.out.print(indent + ")");
+		printStringAttribute(indent + "\t", modelIdentifier, ",\n",writer);
+		printRawAttribute(indent + "\t", needsExecutionTool, ",\n",writer);
+		printRawAttribute(indent + "\t", completedIntegratorStepNotNeeded, ",\n",writer);
+		printRawAttribute(indent + "\t", canBeInstantiatedOnlyOncePerProcess, ",\n",writer);
+		printRawAttribute(indent + "\t", canNotUseMemoryManagementFunctions, ",\n",writer);
+		printRawAttribute(indent + "\t", canGetAndSetFMUstate, ",\n",writer);
+		printRawAttribute(indent + "\t", canSerializeFMUstate, ",\n",writer);
+		printRawAttribute(indent + "\t", providesDirectionalDerivative, ",\n",writer);
+		printOptional(indent + "\t", sourceFiles, "",writer);
+		writer.print(indent + ")");
 	}
 }

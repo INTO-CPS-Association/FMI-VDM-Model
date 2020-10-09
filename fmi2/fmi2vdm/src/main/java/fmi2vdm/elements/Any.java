@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class Any extends Element
 {
 	private String text;
@@ -68,15 +70,15 @@ public class Any extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
 		if (text == null)
 		{
-			System.out.print(indent + "nil");
+			writer.print(indent + "nil");
 		}
 		else
 		{
-			System.out.print(indent + "mk_token(\"" + text + "\")");
+			writer.print(indent + "mk_token(\"" + text + "\")");
 		}
 	}
 }

@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class EnumerationType extends Type
 {
 	private String quantity;
@@ -62,12 +64,12 @@ public class EnumerationType extends Type
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.println(indent + "mk_EnumerationType");
-		System.out.println(indent + "(");
-		printStringAttribute(indent + "\t", quantity, ",\n");
-		printSequence(indent + "\t", items, "\n");
-		System.out.println(indent + ")");
+		writer.println(indent + "mk_EnumerationType");
+		writer.println(indent + "(");
+		printStringAttribute(indent + "\t", quantity, ",\n",writer);
+		printSequence(indent + "\t", items, "\n",writer);
+		writer.println(indent + ")");
 	}
 }

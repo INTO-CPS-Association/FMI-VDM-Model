@@ -31,6 +31,8 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class Unknowns extends Element
 {
 	public final String kind;
@@ -61,8 +63,8 @@ public class Unknowns extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		printSequence(indent + "\t", unknowns, "");
+		printSequence(indent + "\t", unknowns, "",writer);
 	}
 }

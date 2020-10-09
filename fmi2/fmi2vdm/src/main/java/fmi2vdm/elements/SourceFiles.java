@@ -31,6 +31,8 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class SourceFiles extends Element
 {
 	private ElementList<File> sourceFiles = null;
@@ -59,9 +61,9 @@ public class SourceFiles extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		printSequence(indent, sourceFiles, "\n");
+		printSequence(indent, sourceFiles, "\n",writer);
 	}
 
 	public boolean isEmpty()

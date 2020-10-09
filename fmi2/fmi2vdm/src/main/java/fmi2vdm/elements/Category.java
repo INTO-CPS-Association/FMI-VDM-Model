@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class Category extends Element
 {
 	private String name;
@@ -44,13 +46,13 @@ public class Category extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.println(indent + "mk_Category");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, ",\n");
-		printStringAttribute(indent + "\t", description, "\n");
-		System.out.print(indent + ")");
+		writer.println(indent + "mk_Category");
+		writer.println(indent + "(");
+		writer.println(indent + "\t" + lineNumber + ",  -- Line");
+		printStringAttribute(indent + "\t", name, ",\n",writer);
+		printStringAttribute(indent + "\t", description, "\n",writer);
+		writer.print(indent + ")");
 	}
 }

@@ -31,6 +31,8 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class VendorAnnotations extends Element
 {
 	private ElementList<Tool> annotations = null;
@@ -55,8 +57,8 @@ public class VendorAnnotations extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		printSequence(indent, annotations, "");
+		printSequence(indent, annotations, "",writer);
 	}
 }

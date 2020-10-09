@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class StringVariable extends Variable
 {
 	private String declaredType;
@@ -44,13 +46,13 @@ public class StringVariable extends Variable
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.print(indent + "mk_String(");
+		writer.print(indent + "mk_String(");
 		
-		printStringAttribute("", declaredType, ", ");
-		printStringAttribute("", start, "");
+		printStringAttribute("", declaredType, ", ",writer);
+		printStringAttribute("", start, "",writer);
 		
-		System.out.print(")");
+		writer.print(")");
 	}
 }

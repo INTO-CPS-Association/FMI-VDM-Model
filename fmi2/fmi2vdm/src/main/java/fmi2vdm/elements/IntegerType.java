@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class IntegerType extends Type
 {
 	private String quantity;
@@ -45,14 +47,14 @@ public class IntegerType extends Type
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.print(indent + "mk_IntegerType(");
+		writer.print(indent + "mk_IntegerType(");
 		
-		printStringAttribute("", quantity, ", ");
-		printRawAttribute("", min, ", ");
-		printRawAttribute("", max, "");
+		printStringAttribute("", quantity, ", ",writer);
+		printRawAttribute("", min, ", ",writer);
+		printRawAttribute("", max, "",writer);
 		
-		System.out.print(")");
+		writer.print(")");
 	}
 }

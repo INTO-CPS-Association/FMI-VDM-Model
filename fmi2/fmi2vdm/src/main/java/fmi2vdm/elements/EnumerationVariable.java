@@ -32,6 +32,8 @@ package fmi2vdm.elements;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class EnumerationVariable extends Variable
 {
 	private String declaredType;
@@ -47,16 +49,16 @@ public class EnumerationVariable extends Variable
 	}
 	
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		System.out.print(indent + "mk_Enumeration(");
+		writer.print(indent + "mk_Enumeration(");
 		
-		printStringAttribute("", declaredType, ", ");
-		printStringAttribute("", quantity, ", ");
-		printRawAttribute("", min, ", ");
-		printRawAttribute("", max, ", ");
-		printRawAttribute("", start, "");
+		printStringAttribute("", declaredType, ", ",writer);
+		printStringAttribute("", quantity, ", ",writer);
+		printRawAttribute("", min, ", ",writer);
+		printRawAttribute("", max, ", ",writer);
+		printRawAttribute("", start, "",writer);
 		
-		System.out.print(")");
+		writer.print(")");
 	}
 }

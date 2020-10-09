@@ -31,6 +31,8 @@ package fmi2vdm.elements;
 
 import org.xml.sax.Locator;
 
+import java.io.PrintWriter;
+
 public class TypeDefinitions extends Element
 {
 	private ElementList<SimpleType> typeDefinitions = null;
@@ -59,8 +61,8 @@ public class TypeDefinitions extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	void toVDM(String indent, PrintWriter writer)
 	{
-		printSet(indent, typeDefinitions, "");
+		printSet(indent, typeDefinitions, "",writer);
 	}
 }
