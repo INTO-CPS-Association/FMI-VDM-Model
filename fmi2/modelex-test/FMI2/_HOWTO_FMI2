@@ -1,9 +1,18 @@
-How to populate this folder
-===========================
+How to populate this folder in Overture
+=======================================
 
-1. Right click the folder and "Import", "File System" and locate the FMI2 project
+1. Right click the FMI2 folder and "Import", "File System" and locate the fmi2/static-model project
 2. Select all of the top-level *.vdmsl files, but not the subfolders or .project/.ignore files etc.
 3. Under the Advanced button, select "Create links in workspace" and "Create links relative to PROJECT_LOC"
 
-This will then populate the folder with links to the FMI2 project files, which are hence automatically up to date if
-those files change in the other project.
+This will then populate the folder with links to the static-model project files, which are hence automatically
+up to date if those files change in the other project.
+
+How to populate this folder in VSCode
+=====================================
+
+1. In a bash shell, navigate to the dynamic-model/FMI2 folder
+2. Run the command: ln -s ../../static-model/*.vdmsl .
+3. These should appear after a refresh (F5) in Overture and work as expected in VSCode
+
+The process is similar in Windows, but using Symlinks via the File Explorer.
