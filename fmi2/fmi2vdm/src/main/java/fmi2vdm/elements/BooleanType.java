@@ -40,8 +40,8 @@ public class BooleanType extends Type
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.print(indent + "mk_BooleanType()");
+		return indent + "mk_BooleanType()";
 	}
 }

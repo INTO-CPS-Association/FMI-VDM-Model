@@ -60,25 +60,27 @@ public class ModelAttributes extends Element
 	}
 
 	@Override
-	public void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.println(indent + "mk_ModelAttributes");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_ModelAttributes\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "\t" + lineNumber + ",  -- Line\n");
 		
-		printStringAttribute(indent + "\t", fmiVersion, ",\n");
-		printStringAttribute(indent + "\t", modelName, ",\n");
-		printStringAttribute(indent + "\t", guid, ",\n");
-		printStringAttribute(indent + "\t", description, ",\n");
-		printStringAttribute(indent + "\t", author, ",\n");
-		printStringAttribute(indent + "\t", version, ",\n");
-		printStringAttribute(indent + "\t", copyright, ",\n");
-		printStringAttribute(indent + "\t", license, ",\n");
-		printStringAttribute(indent + "\t", generationTool, ",\n");
-		printStringAttribute(indent + "\t", generationDateAndTime, ",\n");
-		printQuoteAttribute(indent + "\t", variableNamingConvention, ",\n");
-		printRawAttribute(indent + "\t", numberOfEventIndicators, "\n");
+		sb.append(printStringAttribute(indent + "\t", fmiVersion, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", modelName, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", guid, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", description, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", author, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", version, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", copyright, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", license, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", generationTool, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", generationDateAndTime, ",\n"));
+		sb.append(printQuoteAttribute(indent + "\t", variableNamingConvention, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", numberOfEventIndicators, "\n"));
 		
-		System.out.print(indent + ")");
+		sb.append(indent + ")");
+		return sb.toString();
 	}
 }

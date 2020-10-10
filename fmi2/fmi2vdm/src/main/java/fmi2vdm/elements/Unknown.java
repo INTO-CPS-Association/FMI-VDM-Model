@@ -93,49 +93,51 @@ public class Unknown extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.println(indent + "mk_Unknown");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printRawAttribute(indent + "\t", index, ",\n");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_Unknown\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "\t" + lineNumber + ",  -- Line\n");
+		sb.append(printRawAttribute(indent + "\t", index, ",\n"));
 		
 		if (dependencies == null)
 		{
-			System.out.println(indent + "\tnil,");
+			sb.append(indent + "\tnil,\n");
 		}
 		else
 		{
-			System.out.print(indent + "\t[");
+			sb.append(indent + "\t[");
 			String sep = "";
 			
 			for (Integer d: dependencies)
 			{
-				System.out.print(sep + d);
+				sb.append(sep + d);
 				sep = ", ";
 			}
 			
-			System.out.println("],");
+			sb.append("],\n");
 		}
 		
 		if (dependenciesKind == null)
 		{
-			System.out.println(indent + "\tnil");
+			sb.append(indent + "\tnil\n");
 		}
 		else
 		{
-			System.out.print(indent + "\t[");
+			sb.append(indent + "\t[");
 			String sep = "";
 			
 			for (String dk: dependenciesKind)
 			{
-				System.out.print(sep + "<" + dk + ">");
+				sb.append(sep + "<" + dk + ">");
 				sep = ", ";
 			}
 			
-			System.out.println("]");
+			sb.append("]\n");
 		}
 
-		System.out.print(indent + ")");
+		sb.append(indent + ")");
+		return sb.toString();
 	}
 }

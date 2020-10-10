@@ -190,7 +190,7 @@ abstract public class Element
 		}
 	}
 	
-	abstract void toVDM(String indent);
+	public abstract String toVDM(String indent);
 	
 	public void add(Element element)
 	{
@@ -198,84 +198,84 @@ abstract public class Element
 				 " at line %d", element.lineNumber);
 	}
 	
-	protected void printOptional(String indent, Element element, String tail)
+	protected String printOptional(String indent, Element element, String tail)
 	{
 		if (element == null)
 		{
-			System.out.print(indent + "nil" + tail);
+			return indent + "nil" + tail;
 		}
 		else
 		{
-			element.toVDM(indent);
-			System.out.print(tail);
+			return element.toVDM(indent) + tail; 
 		}
 	}
 
-	protected void printRawAttribute(String indent, Object attr, String tail)
+	protected String printRawAttribute(String indent, Object attr, String tail)
 	{
 		if (attr != null)
 		{
-			System.out.print(indent + attr + tail);
+			return indent + attr + tail;
 		} 
 		else
 		{
-			System.out.print(indent + "nil" + tail);
+			return indent + "nil" + tail;
 		}
 	}
 
-	protected void printStringAttribute(String indent, String attr, String tail)
+	protected String printStringAttribute(String indent, String attr, String tail)
 	{
 		if (attr != null)
 		{
-			System.out.print(indent + "\"" + attr + "\"" + tail);
+			return indent + "\"" + attr + "\"" + tail;
 		} 
 		else
 		{
-			System.out.print(indent + "nil" + tail);
+			return indent + "nil" + tail;
 		}
 	}
 
-	protected void printQuoteAttribute(String indent, String attr, String tail)
+	protected String printQuoteAttribute(String indent, String attr, String tail)
 	{
 		if (attr != null && !attr.isEmpty())
 		{
-			System.out.print(indent + "<" + attr + ">" + tail);
+			return indent + "<" + attr + ">" + tail;
 		}
 		else
 		{
-			System.out.print(indent + "nil" + tail);
+			return indent + "nil" + tail;
 		}
 	}
 	
-	protected void printSequence(String indent, List<? extends Element> items, String tail)
+	protected String printSequence(String indent, List<? extends Element> items, String tail)
 	{
-		printSeqSet(indent, items, tail, "[", "]");
+		return printSeqSet(indent, items, tail, "[", "]");
 	}
 	
-	protected void printSet(String indent, List<? extends Element> items, String tail)
+	protected String printSet(String indent, List<? extends Element> items, String tail)
 	{
-		printSeqSet(indent, items, tail, "{", "}");
+		return printSeqSet(indent, items, tail, "{", "}");
 	}
 	
-	private void printSeqSet(String indent, List<? extends Element> items, String tail, String open, String close)
+	private String printSeqSet(String indent, List<? extends Element> items, String tail, String open, String close)
 	{
 		if (items == null)
 		{
-			System.out.print(indent + "nil" + tail);
+			return indent + "nil" + tail;
 		}
 		else
 		{
-			System.out.println(indent + open);
+			StringBuilder sb = new StringBuilder(indent + open + "\n");
 			String sep = "";
 			
 			for (Element item: items)
 			{
-				System.out.print(sep);
-				item.toVDM(indent + "\t");
+				sb.append(sep);
+				sb.append(item.toVDM(indent + "\t"));
 				sep = ",\n";
 			}
 			
-			System.out.print("\n" + indent + close + tail);
+			sb.append("\n" + indent + close + tail);
+			return sb.toString();
 		}
 	}
 }

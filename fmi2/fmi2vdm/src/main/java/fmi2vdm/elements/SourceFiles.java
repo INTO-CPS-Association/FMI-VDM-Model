@@ -59,9 +59,9 @@ public class SourceFiles extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		printSequence(indent, sourceFiles, "\n");
+		return printSequence(indent, sourceFiles, "\n");
 	}
 
 	public boolean isEmpty()

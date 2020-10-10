@@ -45,14 +45,16 @@ public class IntegerType extends Type
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.print(indent + "mk_IntegerType(");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_IntegerType(");
 		
-		printStringAttribute("", quantity, ", ");
-		printRawAttribute("", min, ", ");
-		printRawAttribute("", max, "");
+		sb.append(printStringAttribute("", quantity, ", "));
+		sb.append(printRawAttribute("", min, ", "));
+		sb.append(printRawAttribute("", max, ""));
 		
-		System.out.print(")");
+		sb.append(")");
+		return sb.toString();
 	}
 }

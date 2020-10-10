@@ -46,15 +46,17 @@ public class DefaultExperiment extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.println(indent + "mk_DefaultExperiment");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printRawAttribute(indent + "\t", startTime, ",\n");
-		printRawAttribute(indent + "\t", stopTime, ",\n");
-		printRawAttribute(indent + "\t", tolerance, ",\n");
-		printRawAttribute(indent + "\t", stepSize, "\n");
-		System.out.print(indent + ")");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_DefaultExperiment\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "\t" + lineNumber + ",  -- Line\n");
+		sb.append(printRawAttribute(indent + "\t", startTime, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", stopTime, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", tolerance, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", stepSize, "\n"));
+		sb.append(indent + ")");
+		return sb.toString();
 	}
 }

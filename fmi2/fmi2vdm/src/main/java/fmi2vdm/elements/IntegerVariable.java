@@ -47,16 +47,18 @@ public class IntegerVariable extends Variable
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Integer(");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_Integer(");
 		
-		printStringAttribute("", declaredType, ", ");
-		printStringAttribute("", quantity, ", ");
-		printRawAttribute("", min, ", ");
-		printRawAttribute("", max, ", ");
-		printRawAttribute("", start, "");
+		sb.append(printStringAttribute("", declaredType, ", "));
+		sb.append(printStringAttribute("", quantity, ", "));
+		sb.append(printRawAttribute("", min, ", "));
+		sb.append(printRawAttribute("", max, ", "));
+		sb.append(printRawAttribute("", start, ""));
 		
-		System.out.print(")");
+		sb.append(")");
+		return sb.toString();
 	}
 }

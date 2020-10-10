@@ -52,19 +52,21 @@ public class BaseUnit extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.print(indent + "mk_BaseUnit(");
-		printRawAttribute("", kg, ", ");
-		printRawAttribute("", m, ", ");
-		printRawAttribute("", s, ", ");
-		printRawAttribute("", A, ", ");
-		printRawAttribute("", K, ", ");
-		printRawAttribute("", mol, ", ");
-		printRawAttribute("", cs, ", ");
-		printRawAttribute("", rad, ", ");
-		printRawAttribute("", factor, ", ");
-		printRawAttribute("", offset, "");
-		System.out.print(")");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_BaseUnit(");
+		sb.append(printRawAttribute("", kg, ", "));
+		sb.append(printRawAttribute("", m, ", "));
+		sb.append(printRawAttribute("", s, ", "));
+		sb.append(printRawAttribute("", A, ", "));
+		sb.append(printRawAttribute("", K, ", "));
+		sb.append(printRawAttribute("", mol, ", "));
+		sb.append(printRawAttribute("", cs, ", "));
+		sb.append(printRawAttribute("", rad, ", "));
+		sb.append(printRawAttribute("", factor, ", "));
+		sb.append(printRawAttribute("", offset, ""));
+		sb.append(")");
+		return sb.toString();
 	}
 }

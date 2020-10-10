@@ -54,23 +54,25 @@ public class RealVariable extends Variable
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Real(");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_Real(");
 		
-		printStringAttribute("", declaredType, ", ");
-		printStringAttribute("", quantity, ", ");
-		printStringAttribute("", unit, ", ");
-		printStringAttribute("", displayUnit, ", ");
-		printRawAttribute("", relativeQuantity, ", ");
-		printRawAttribute("", min, ", ");
-		printRawAttribute("", max, ", ");
-		printRawAttribute("", nominal, ", ");
-		printRawAttribute("", unbounded, ", ");
-		printRawAttribute("", start, ", ");
-		printRawAttribute("", derivative, ", ");
-		printRawAttribute("", reinit, "");
+		sb.append(printStringAttribute("", declaredType, ", "));
+		sb.append(printStringAttribute("", quantity, ", "));
+		sb.append(printStringAttribute("", unit, ", "));
+		sb.append(printStringAttribute("", displayUnit, ", "));
+		sb.append(printRawAttribute("", relativeQuantity, ", "));
+		sb.append(printRawAttribute("", min, ", "));
+		sb.append(printRawAttribute("", max, ", "));
+		sb.append(printRawAttribute("", nominal, ", "));
+		sb.append(printRawAttribute("", unbounded, ", "));
+		sb.append(printRawAttribute("", start, ", "));
+		sb.append(printRawAttribute("", derivative, ", "));
+		sb.append(printRawAttribute("", reinit, ""));
 		
-		System.out.print(")");
+		sb.append(")");
+		return sb.toString();
 	}
 }

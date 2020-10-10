@@ -119,52 +119,56 @@ public class FMIModelDescription extends Element
 		}
 	}
 
-	@Override
-	public void toVDM(String indent)
+	@Override public String toVDM(String indent)
 	{
-		System.out.println("/**");
-		System.out.println(" * VDM Model generated from " + xmlfile + " on " + new Date());
-		System.out.println(" */");
-		System.out.println("values");
+		StringBuilder sb = new StringBuilder();
+		sb.append("/**\n");
+		sb.append(" * VDM Model generated from " + xmlfile + " on " + new Date() + "\n");
+		sb.append(" */\n");
+		sb.append("values\n");
 		
-		System.out.println(indent + varname + " = mk_FMIModelDescription");
-		System.out.println(indent + "(");
+		sb.append(indent + varname + " = mk_FMIModelDescription\n");
+		sb.append(indent + "(\n");
 		
-		modelAttributes.toVDM(indent + "\t");
-		System.out.println(",\n");
+		sb.append(modelAttributes.toVDM(indent + "\t"));
+		sb.append(",\n\n");
 		
-		printOne(indent, modelExchange, "ModelExchange");
-		System.out.println(",\n");
-		printOne(indent, coSimulation, "CoSimulation");
-		System.out.println(",\n");
-		printOne(indent, unitDefinitions, "UnitDefinitions");
-		System.out.println(",\n");
-		printOne(indent, typeDefinitions, "TypeDefinitions");
-		System.out.println(",\n");
-		printOne(indent, logCategories, "LogCategories");
-		System.out.println(",\n");
-		printOne(indent, defaultExperiment, "DefaultExperiment");
-		System.out.println(",\n");
-		printOne(indent, vendorAnnotations, "VendorAnnotations");
-		System.out.println(",\n");
-		printOne(indent, modelVariables, "ModelVariables");
-		System.out.println(",\n");
-		printOne(indent, modelStructure, "ModelStructure");
+		sb.append(printOne(indent, modelExchange, "ModelExchange"));
+		sb.append(",\n\n");
+		sb.append(printOne(indent, coSimulation, "CoSimulation"));
+		sb.append(",\n\n");
+		sb.append(printOne(indent, unitDefinitions, "UnitDefinitions"));
+		sb.append(",\n\n");
+		sb.append(printOne(indent, typeDefinitions, "TypeDefinitions"));
+		sb.append(",\n\n");
+		sb.append(printOne(indent, logCategories, "LogCategories"));
+		sb.append(",\n\n");
+		sb.append(printOne(indent, defaultExperiment, "DefaultExperiment"));
+		sb.append(",\n\n");
+		sb.append(printOne(indent, vendorAnnotations, "VendorAnnotations"));
+		sb.append(",\n\n");
+		sb.append(printOne(indent, modelVariables, "ModelVariables"));
+		sb.append(",\n\n");
+		sb.append(printOne(indent, modelStructure, "ModelStructure"));
 
-		System.out.println(indent + ");");
+		sb.append(indent + ");\n");
+		return sb.toString();
 	}
 
-	private void printOne(String indent, Element element, String title)
+	private String printOne(String indent, Element element, String title)
 	{
-		System.out.println(indent + "\t-- " + title);
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "\t-- " + title + "\n");
 		
 		if (element != null)
 		{
-			element.toVDM(indent + "\t");
+			sb.append(element.toVDM(indent + "\t"));
 		}
 		else
 		{
-			System.out.print(indent + "\tnil");
+			sb.append(indent + "\tnil");
 		}
+		
+		return sb.toString();
 	}
 }

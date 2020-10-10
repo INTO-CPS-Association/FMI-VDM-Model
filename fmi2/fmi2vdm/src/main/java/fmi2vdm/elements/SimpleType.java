@@ -58,14 +58,16 @@ public class SimpleType extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.println(indent + "mk_SimpleType");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, ",\n");
-		printStringAttribute(indent + "\t", description, ",\n");
-		printOptional(indent + "\t", type, "");
-		System.out.print("\n" + indent + ")");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_SimpleType\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "\t" + lineNumber + ",  -- Line\n");
+		sb.append(printStringAttribute(indent + "\t", name, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", description, ",\n"));
+		sb.append(printOptional(indent + "\t", type, ""));
+		sb.append("\n" + indent + ")");
+		return sb.toString();
 	}
 }

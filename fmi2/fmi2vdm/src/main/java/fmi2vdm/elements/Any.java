@@ -68,15 +68,15 @@ public class Any extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
 		if (text == null)
 		{
-			System.out.print(indent + "nil");
+			return indent + "nil";
 		}
 		else
 		{
-			System.out.print(indent + "mk_token(\"" + text + "\")");
+			return indent + "mk_token(\"" + text + "\")";
 		}
 	}
 }

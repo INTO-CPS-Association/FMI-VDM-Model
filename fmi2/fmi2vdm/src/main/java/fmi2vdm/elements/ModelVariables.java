@@ -60,8 +60,8 @@ public class ModelVariables extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		printSequence(indent, modelVariables, "");
+		return printSequence(indent, modelVariables, "");
 	}
 }
