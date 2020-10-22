@@ -76,45 +76,47 @@ public class ModelStructure extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.println(indent + "mk_ModelStructure");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_ModelStructure\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "\t" + lineNumber + ",  -- Line\n");
 		
 		if (outputs != null)
 		{
-			System.out.println(indent + "\t-- Outputs");
-			outputs.toVDM(indent);
-			System.out.println(",\n");
+			sb.append(indent + "\t-- Outputs\n");
+			sb.append(outputs.toVDM(indent));
+			sb.append(",\n\n");
 		}
 		else
 		{
-			System.out.println(indent + "\tnil,");
+			sb.append(indent + "\tnil,\n");
 		}
 		
 		if (derivatives != null)
 		{
-			System.out.println(indent + "\t-- Derivatives");
-			derivatives.toVDM(indent);
-			System.out.println(",\n");
+			sb.append(indent + "\t-- Derivatives\n");
+			sb.append(derivatives.toVDM(indent));
+			sb.append(",\n\n");
 		}
 		else
 		{
-			System.out.println(indent + "\tnil,");
+			sb.append(indent + "\tnil,\n");
 		}
 		
 		if (initialUnknowns != null)
 		{
-			System.out.println(indent + "\t-- InitialUnknowns");
-			initialUnknowns.toVDM(indent);
-			System.out.println();
+			sb.append(indent + "\t-- InitialUnknowns\n");
+			sb.append(initialUnknowns.toVDM(indent));
+			sb.append("\n");
 		}
 		else
 		{
-			System.out.println(indent + "\tnil");
+			sb.append(indent + "\tnil\n");
 		}
 		
-		System.out.println(indent + ")");
+		sb.append(indent + ")\n");
+		return sb.toString();
 	}
 }

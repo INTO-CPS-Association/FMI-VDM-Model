@@ -67,24 +67,26 @@ public class CoSimulation extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.println(indent + "mk_CoSimulation");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_CoSimulation\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "\t" + lineNumber + ",  -- Line\n");
 		
-		printStringAttribute(indent + "\t", modelIdentifier, ",\n");
-		printRawAttribute(indent + "\t", needsExecutionTool, ",\n");
-		printRawAttribute(indent + "\t", canHandleVariableCommunicationStepSize, ",\n");
-		printRawAttribute(indent + "\t", canInterpolateInputs, ",\n");
-		printRawAttribute(indent + "\t", maxOutputDerivativeOrder, ",\n");
-		printRawAttribute(indent + "\t", canRunAsynchronuously, ",\n");
-		printRawAttribute(indent + "\t", canBeInstantiatedOnlyOncePerProcess, ",\n");
-		printRawAttribute(indent + "\t", canNotUseMemoryManagementFunctions, ",\n");
-		printRawAttribute(indent + "\t", canGetAndSetFMUstate, ",\n");
-		printRawAttribute(indent + "\t", canSerializeFMUstate, ",\n");
-		printRawAttribute(indent + "\t", providesDirectionalDerivative, ",\n");
-		printOptional(indent + "\t", sourceFiles, "\n");
-		System.out.print(indent + ")");
+		sb.append(printStringAttribute(indent + "\t", modelIdentifier, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", needsExecutionTool, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", canHandleVariableCommunicationStepSize, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", canInterpolateInputs, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", maxOutputDerivativeOrder, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", canRunAsynchronuously, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", canBeInstantiatedOnlyOncePerProcess, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", canNotUseMemoryManagementFunctions, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", canGetAndSetFMUstate, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", canSerializeFMUstate, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", providesDirectionalDerivative, ",\n"));
+		sb.append(printOptional(indent + "\t", sourceFiles, "\n"));
+		sb.append(indent + ")");
+		return sb.toString();
 	}
 }

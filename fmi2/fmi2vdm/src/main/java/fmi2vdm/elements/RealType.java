@@ -50,19 +50,21 @@ public class RealType extends Type
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.print(indent + "mk_RealType(");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_RealType(");
 		
-		printStringAttribute("", quantity, ", ");
-		printStringAttribute("", unit, ", ");
-		printStringAttribute("", displayUnit, ", ");
-		printRawAttribute("", relativeQuantity, ", ");
-		printRawAttribute("", min, ", ");
-		printRawAttribute("", max, ", ");
-		printRawAttribute("", nominal, ", ");
-		printRawAttribute("", unbounded, "");
+		sb.append(printStringAttribute("", quantity, ", "));
+		sb.append(printStringAttribute("", unit, ", "));
+		sb.append(printStringAttribute("", displayUnit, ", "));
+		sb.append(printRawAttribute("", relativeQuantity, ", "));
+		sb.append(printRawAttribute("", min, ", "));
+		sb.append(printRawAttribute("", max, ", "));
+		sb.append(printRawAttribute("", nominal, ", "));
+		sb.append(printRawAttribute("", unbounded, ""));
 		
-		System.out.print(")");
+		sb.append(")");
+		return sb.toString();
 	}
 }

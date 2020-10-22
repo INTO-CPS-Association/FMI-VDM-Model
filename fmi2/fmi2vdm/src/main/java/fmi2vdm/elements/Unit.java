@@ -67,14 +67,16 @@ public class Unit extends Element
 	}
 
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.println(indent + "mk_Unit");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, ",\n");
-		printOptional(indent + "\t", baseUnit, ",\n");
-		printSequence(indent + "\t", displayUnits, "\n");
-		System.out.print(indent + ")");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_Unit\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "\t" + lineNumber + ",  -- Line\n");
+		sb.append(printStringAttribute(indent + "\t", name, ",\n"));
+		sb.append(printOptional(indent + "\t", baseUnit, ",\n"));
+		sb.append(printSequence(indent + "\t", displayUnits, "\n"));
+		sb.append(indent + ")");
+		return sb.toString();
 	}
 }

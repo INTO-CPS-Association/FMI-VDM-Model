@@ -55,8 +55,8 @@ public class VendorAnnotations extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		printSequence(indent, annotations, "");
+		return printSequence(indent, annotations, "");
 	}
 }

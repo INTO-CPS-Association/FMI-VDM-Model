@@ -67,7 +67,7 @@ public class FMI2SaxParser
 		FMI2SaxHandler handler = new FMI2SaxHandler(args[0], args[1]);
 		saxParser.parse(args[0], handler);
 		
-		handler.getFMIModelDescription().toVDM("\t");
+		System.out.println(handler.getFMIModelDescription().toVDM("\t"));
 		
 		if (errors > 0)
 		{

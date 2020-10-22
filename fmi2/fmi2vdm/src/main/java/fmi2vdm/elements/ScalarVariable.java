@@ -68,20 +68,22 @@ public class ScalarVariable extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.println(indent + "mk_ScalarVariable");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, ",\n");
-		printRawAttribute(indent + "\t", valueReference, ",\n");
-		printStringAttribute(indent + "\t", description, ",\n");
-		printQuoteAttribute(indent + "\t", causality, ",\n");
-		printQuoteAttribute(indent + "\t", variability, ",\n");
-		printQuoteAttribute(indent + "\t", initial, ",\n");
-		printRawAttribute(indent + "\t", canHandleMultipleSetPerTimeInstant, ",\n");
-		printOptional(indent + "\t", variable, ",\n");
-		printOptional(indent + "\t", annotations, "\n");
-		System.out.print(indent + ")");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_ScalarVariable\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "\t" + lineNumber + ",  -- Line\n");
+		sb.append(printStringAttribute(indent + "\t", name, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", valueReference, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", description, ",\n"));
+		sb.append(printQuoteAttribute(indent + "\t", causality, ",\n"));
+		sb.append(printQuoteAttribute(indent + "\t", variability, ",\n"));
+		sb.append(printQuoteAttribute(indent + "\t", initial, ",\n"));
+		sb.append(printRawAttribute(indent + "\t", canHandleMultipleSetPerTimeInstant, ",\n"));
+		sb.append(printOptional(indent + "\t", variable, ",\n"));
+		sb.append(printOptional(indent + "\t", annotations, "\n"));
+		sb.append(indent + ")");
+		return sb.toString();
 	}
 }

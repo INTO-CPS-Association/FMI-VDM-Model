@@ -59,8 +59,8 @@ public class UnitDefinitions extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		printSequence(indent, unitDefinitions, "");
+		return printSequence(indent, unitDefinitions, "");
 	}
 }

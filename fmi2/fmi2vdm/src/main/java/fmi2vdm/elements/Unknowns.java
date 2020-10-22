@@ -61,8 +61,8 @@ public class Unknowns extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		printSequence(indent + "\t", unknowns, "");
+		return printSequence(indent + "\t", unknowns, "");
 	}
 }

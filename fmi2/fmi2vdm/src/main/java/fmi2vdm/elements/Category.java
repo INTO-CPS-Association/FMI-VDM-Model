@@ -44,13 +44,15 @@ public class Category extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.println(indent + "mk_Category");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, ",\n");
-		printStringAttribute(indent + "\t", description, "\n");
-		System.out.print(indent + ")");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_Category\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "\t" + lineNumber + ",  -- Line\n");
+		sb.append(printStringAttribute(indent + "\t", name, ",\n"));
+		sb.append(printStringAttribute(indent + "\t", description, "\n"));
+		sb.append(indent + ")");
+		return sb.toString();
 	}
 }

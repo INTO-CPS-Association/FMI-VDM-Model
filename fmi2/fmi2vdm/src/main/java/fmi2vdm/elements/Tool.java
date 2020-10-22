@@ -57,13 +57,15 @@ public class Tool extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.println(indent + "mk_Tool");
-		System.out.println(indent + "(");
-		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
-		printStringAttribute(indent + "\t", name, ",\n");
-		printOptional(indent + "\t", annotation, "\n");
-		System.out.print(indent + ")");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_Tool\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "\t" + lineNumber + ",  -- Line\n");
+		sb.append(printStringAttribute(indent + "\t", name, ",\n"));
+		sb.append(printOptional(indent + "\t", annotation, "\n"));
+		sb.append(indent + ")");
+		return sb.toString();
 	}
 }

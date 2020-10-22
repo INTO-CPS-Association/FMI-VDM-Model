@@ -45,15 +45,16 @@ public class Item extends Element
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.print(indent + "mk_Item(");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_Item(");
 		
-		printStringAttribute("", name, ", ");
-		printRawAttribute("", value, ", ");
-		printStringAttribute("", description, "");
+		sb.append(printStringAttribute("", name, ", "));
+		sb.append(printRawAttribute("", value, ", "));
+		sb.append(printStringAttribute("", description, ""));
 		
-		System.out.print(")");
-
+		sb.append(")");
+		return sb.toString();
 	}
 }

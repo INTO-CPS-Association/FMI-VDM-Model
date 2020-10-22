@@ -44,13 +44,15 @@ public class StringVariable extends Variable
 	}
 	
 	@Override
-	void toVDM(String indent)
+	public String toVDM(String indent)
 	{
-		System.out.print(indent + "mk_String(");
+		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_String(");
 		
-		printStringAttribute("", declaredType, ", ");
-		printStringAttribute("", start, "");
+		sb.append(printStringAttribute("", declaredType, ", "));
+		sb.append(printStringAttribute("", start, ""));
 		
-		System.out.print(")");
+		sb.append(")");
+		return sb.toString();
 	}
 }
