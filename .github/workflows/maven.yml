@@ -24,7 +24,7 @@ jobs:
         run: mvn clean package
 
   deploy:
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/development' || github.ref == 'refs/heads/master')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/development'
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -32,9 +32,6 @@ jobs:
         - name: Configure deploy for snapshots
           if: github.ref == 'refs/heads/development'
           run: echo "SERVER_ID=snapshots" >> $GITHUB_ENV
-        - name: Configure deploy for release
-          if: github.ref == 'refs/heads/master'
-          run: echo "SERVER_ID=central" >> $GITHUB_ENV
         - name: Environment variables
           run: echo ${{ env.SERVER_ID }}
         - name: Set up JDK
