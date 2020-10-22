@@ -124,13 +124,13 @@
 
     <distributionManagement>
         <repository>
-            <id>central</id>
-            <name>overture.au.dk-releases</name>
+            <id>artifactory-into-cps-release</id>
+            <name>artifactory-into-cps-release</name>
             <url>https://overture.au.dk/artifactory/into-cps</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <name>overture.au.dk-snapshots</name>
+            <id>artifactory-into-cps-snapshots</id>
+            <name>artifactory-into-cps-snapshots</name>
             <url>https://overture.au.dk/artifactory/into-cps</url>
         </snapshotRepository>
     </distributionManagement>
