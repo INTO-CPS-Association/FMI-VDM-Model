@@ -137,7 +137,7 @@ esac
 		exit 2
 	fi
 	
-	java -Xmx1g -cp vdmj-4.3.0.jar:annotations-1.0.0.jar com.fujitsu.vdmj.VDMJ \
+	java -Xmx1g -cp vdmj-4.3.0.jar:annotations-4.3.0.jar com.fujitsu.vdmj.VDMJ \
 		-vdmsl -q -annotations -e "isValidFMIModelDescription($VAR)" \
 		model $VDM |
 		awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'
