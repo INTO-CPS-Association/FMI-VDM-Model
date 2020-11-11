@@ -2,20 +2,20 @@
 
 This repository contains a VDM model of the FMI standard, plus supporting tools. The repository contains the following projects:
 
-* **FMI2** - a VDM-SL model of the static semantics of FMI 2.0 modelDescription XML files
-* **FMI2_API** - a VDM-SL model of the dynamic semantics of the FMI 2.0 API
-* **FMI2_API_CoSim** - a VDM-SL model to test the dynamic semantics of co-simulation FMUs
-* **FMI2_API_ModelEx** - a VDM-SL model to test the dynamic semantics of model-exchange FMUs
-* **FMI2_Tests** - a set of test XML files for the static semantics
-* **FMI3** - a VDM-SL model of the static semantics of FMI 3.0 modelDescription XML files
-* **FMI3_API** - a VDM-SL model of the dynamic semantics of the FMI 3.0 API
-* **FMI3_API_Matrix** - a spreadsheet of the mode/state callability of the FMI3 API functions
-* **COSIM** - a VDM-SL model of the interaction of a set of FMUs
-* **FMI2_to_VDM** - a Java tool to convert FMI 2.0 modeDescription XML files to VDM-SL and check them
-* **FMI3_to_VDM** - a Java tool to convert FMI 3.0 modeDescription XML files to VDM-SL and check them
-* **COSIM_to_VDM** - a Java tool to convert Maestro JSON configurations to VDM-SL.
+* **fmi2.static-model** - a VDM-SL model of the static semantics of FMI 2.0 modelDescription XML files
+* **fmi2.dynamic-model** - a VDM-SL model of the dynamic semantics of the FMI 2.0 API
+* **fmi2.cosim-test** - a VDM-SL model to test the dynamic semantics of co-simulation FMUs
+* **fmi2.modelex-test** - a VDM-SL model to test the dynamic semantics of model-exchange FMUs
+* **fmi2.static-tests** - a set of test XML files for the static semantics
+* **fmi3.static-model** - a VDM-SL model of the static semantics of FMI 3.0 modelDescription XML files
+* **fmi3.dynamic-model** - a VDM-SL model of the dynamic semantics of the FMI 3.0 API
+* **fmi3.dynamic-matrix** - a spreadsheet of the mode/state callability of the FMI3 API functions
+* **fmi2.cosim** - a VDM-SL model of the interaction of a set of FMUs
+* **fmi2.fmi2vdm** - a Java tool to convert FMI 2.0 modeDescription XML files to VDM-SL and check them
+* **fmi3.fmi2vdm** - a Java tool to convert FMI 3.0 modeDescription XML files to VDM-SL and check them
+* **fmi2.cosim2vdm** - a Java tool to convert Maestro JSON configurations to VDM-SL.
 
-The FMI\{2,3\} static semantic models and the FMI\{2,3\}_to_VDM tool are packaged in the release to create stand-alone tools for verifying FMU files, called VDMCheck\{2,3\}. This can be used to check existing FMI version 2 or 3 FMU files against the standard.
+The FMI\{2,3\} static semantic models and the FMI\{2,3\} VDM conversion tools are packaged in the release to create stand-alone tools for verifying FMU files, called VDMCheck\{2,3\}. This can be used to check existing FMI version 2 or 3 FMU files against the standard.
 
 ```
 $ VDMCheck2.sh
@@ -56,7 +56,7 @@ mvn install:install-file -Dfile=".\lib\annotations-1.0.0.jar" -DgroupId="com.fuj
 mvn package
 ```
 
-4. The distributed packages will be generated in the target folders of the projects "FMI2_to_VDM" and "FMI3_to_VDM".
+4. The distributed packages will be generated in the target folders of the projects "fmi2.fmi2vdm" and "fmi3.fmi2vdm".
 
 ## Installation
 
