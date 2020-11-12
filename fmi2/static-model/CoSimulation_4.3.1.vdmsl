@@ -81,7 +81,7 @@ functions
 		cs <> nil =>
 		{
 			cs.sourceFiles <> nil =>
-				/* @OnFail("4.3.1 CoSimulation source file names are not unique: %s",
+				/* @OnFail(1450, "4.3.1 CoSimulation source file names are not unique: %s",
 					let files = cs.sourceFiles in
 						{ files(a).name | a, b in set inds files &
 							a <> b and files(a).name = files(b).name })
@@ -92,7 +92,7 @@ functions
 				 */
 				( len cs.sourceFiles = card { f.name | f in seq cs.sourceFiles } ),
 
-			/* @OnFail("4.3.1 CoSimulation modelIdentifer %s not valid C variable name at line %s",
+			/* @OnFail(1451, "4.3.1 CoSimulation modelIdentifer %s not valid C variable name at line %s",
 						cs.modelIdentifier, cs.location) */
 			( cs.modelIdentifier <> ""
 			  and cs.modelIdentifier(1) in set elems NONDIGITS )

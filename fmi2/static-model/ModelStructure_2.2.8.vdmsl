@@ -52,20 +52,20 @@ functions
 	 */
 	isValidUnknown: Unknown +> bool
 	isValidUnknown(u) ==
-	-- @OnFail("2.2.8 Unknown %s has invalid dependencies/kinds at line %s", u.index, u.location)
+	-- @OnFail(1350, "2.2.8 Unknown %s has invalid dependencies/kinds at line %s", u.index, u.location)
 	(
 		if u.dependencies <> nil
 		then u.dependenciesKind <> nil =>
 			{
-				-- @OnFail("2.2.8 Dependencies list does not match dependenciesKind at line %s", u.location)
+				-- @OnFail(1351, "2.2.8 Dependencies list does not match dependenciesKind at line %s", u.location)
 				( len u.dependencies = len u.dependenciesKind ),
 
-				/* @OnFail("2.2.8 Unknown has duplicate indexes %s at line %s",
+				/* @OnFail(1352, "2.2.8 Unknown has duplicate indexes %s at line %s",
 					{ u.dependencies(a) | a, b in set inds u.dependencies &
 						a <> b and u.dependencies(a) = u.dependencies(b) }, u.location ) */
 				( len u.dependencies = card elems u.dependencies),
 
-				-- @OnFail("2.2.8 Unknown cannot depend on itself at line %s", u.location)
+				-- @OnFail(1353, "2.2.8 Unknown cannot depend on itself at line %s", u.location)
 				(true) -- CHECK THIS! ( u.index not in set elems u.dependencies )
 			} = {true}
 		else
@@ -78,7 +78,7 @@ functions
 	isValidModelStructure: ModelStructure +> bool
 	isValidModelStructure(ms) ==
 	{
-		-- @OnFail("2.2.8 ModelStructure has invalid Unknowns")
+		-- @OnFail(1354, "2.2.8 ModelStructure has invalid Unknowns")
 		(
 			{
 				list <> nil =>
@@ -88,7 +88,7 @@ functions
 			} = {true}
 		),
 
-		-- @OnFail("2.2.8 InitialUnknowns are not of kind dependent or constant")
+		-- @OnFail(1355, "2.2.8 InitialUnknowns are not of kind dependent or constant")
 		(
 			ms.initialUnknowns <> nil =>
 				forall iu in seq ms.initialUnknowns &

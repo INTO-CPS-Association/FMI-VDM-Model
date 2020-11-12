@@ -71,7 +71,7 @@ functions
 		me <> nil =>
 		{
 			me.sourceFiles <> nil =>
-				/* @OnFail("3.3.1 ModelExchange source file names are not unique: %s",
+				/* @OnFail(1400, "3.3.1 ModelExchange source file names are not unique: %s",
 					let files = me.sourceFiles in
 						{ files(a).name | a, b in set inds files &
 							a <> b and files(a).name = files(b).name })
@@ -82,7 +82,7 @@ functions
 				 */
 				( len me.sourceFiles = card { f.name | f in seq me.sourceFiles } ),
 
-			/* @OnFail("3.3.1 ModelExchange modelIdentifer %s not valid C variable name at line %s",
+			/* @OnFail(1401, "3.3.1 ModelExchange modelIdentifer %s not valid C variable name at line %s",
 							me.modelIdentifier, me.location) */
 			( me.modelIdentifier <> ""
 			  and me.modelIdentifier(1) in set elems NONDIGITS )

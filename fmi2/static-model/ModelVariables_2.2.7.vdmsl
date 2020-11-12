@@ -133,16 +133,16 @@ functions
 	isInRange(min, max, start, initial, location) ==
 	{
 		max <> nil and min <> nil =>
-			--@OnFail("2.2.7 min %s is not <= max %s at line %s", min, max, location)
+			--@OnFail(1300, "2.2.7 min %s is not <= max %s at line %s", min, max, location)
 			( max >= min ),
 
 		start <> nil =>
-			--@OnFail("2.2.7 start %s is not within min %s/max %s at line %s", start, min, max, location)
+			--@OnFail(1301, "2.2.7 start %s is not within min %s/max %s at line %s", start, min, max, location)
 			( (min <> nil => min <= start) and
 			  (max <> nil => max >= start) ),
 
 		start = nil and initial not in set {<calculated>, <independent>} =>
-			--@OnFail("2.2.7 Warning: implicit start of 0 is not within min %s/max %s at line %s", min, max, location)
+			--@OnFail(1302, "2.2.7 Warning: implicit start of 0 is not within min %s/max %s at line %s", min, max, location)
 			( (min <> nil => min <= 0) and
 			  (max <> nil => max >= 0) ) or true	-- NOTE warning
 	} = {true}
@@ -154,18 +154,18 @@ functions
 	isValidScalarVariables: seq1 of ScalarVariable +> bool
 	isValidScalarVariables(svs) ==
 		{
-			/* @OnFail("2.2.7 ScalarVariables define more than one independent variable: %s",
+			/* @OnFail(1303, "2.2.7 ScalarVariables define more than one independent variable: %s",
 				{ sv.name | sv in seq svs & sv.causality = <independent> }) */
 			( card { sv | sv in seq svs & sv.causality = <independent> } <= 1 ),
 
-			/* @OnFail("2.2.7 ScalarVariable names are not unique: %s",
+			/* @OnFail(1304, "2.2.7 ScalarVariable names are not unique: %s",
 				{ svs(a).name | a, b in set inds svs &
 					a <> b and svs(a).name = svs(b).name } ) */
 			( card { sv.name | sv in seq svs } = len svs )
 		}
 		union
 		{
-			-- @OnFail("2.2.7 ScalarVariable %s invalid at line %s", sv.name, sv.location)
+			-- @OnFail(1305, "2.2.7 ScalarVariable %s invalid at line %s", sv.name, sv.location)
 			( isValidScalarVariable(sv) )
 
 			| sv in seq svs
@@ -182,7 +182,7 @@ functions
 		in
 		{
 			-- Table on p46 defining causality, and p48/49 defining combinations
-			/* @OnFail("2.2.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
+			/* @OnFail(1306, "2.2.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
 				sv.name, eCausality, eVariability, eInitial, sv.variable.start, sv.location) */
 			(
 				cases eCausality:
@@ -232,13 +232,13 @@ functions
 				end
 			),
 
-			-- @OnFail("2.2.7 Independent variable must be Real at line %s", sv.location)
+			-- @OnFail(1307, "2.2.7 Independent variable must be Real at line %s", sv.location)
 			(
 				eCausality = <independent> => is_Real(sv.variable)
 			),
 
 			-- Table on p46 defining variability, and p49 defining combinations
-			/* @OnFail("2.2.7 Variable %s variability/causality %s/%s invalid at line %s",
+			/* @OnFail(1308, "2.2.7 Variable %s variability/causality %s/%s invalid at line %s",
 				sv.name, eVariability, eCausality, sv.location) */
 			(
 				cases eVariability:
@@ -256,13 +256,13 @@ functions
 				end
 			),
 
-			-- @OnFail("2.2.7 Continuous variable must be Real at line %s", sv.location)
+			-- @OnFail(1309, "2.2.7 Continuous variable must be Real at line %s", sv.location)
 			(
 				eVariability = <continuous> => is_Real(sv.variable)
 			),
 
 			-- Table on p47 defining initial
-			/* @OnFail("2.2.7 Variable %s initial/causality %s/%s invalid at %s",
+			/* @OnFail(1310, "2.2.7 Variable %s initial/causality %s/%s invalid at %s",
 				sv.name, sv.initial, eCausality, sv.location) */
 			(
 				sv.initial <> nil =>
@@ -270,7 +270,7 @@ functions
 			),
 
 			-- Table on p47 defining initial
-			/* @OnFail("2.2.7 Variable %s initial/variability/start %s/%s/%s invalid at line %s",
+			/* @OnFail(1311, "2.2.7 Variable %s initial/variability/start %s/%s/%s invalid at line %s",
 				sv.name, eInitial, eVariability, sv.variable.start, sv.location) */
 			(
 				cases eInitial:
@@ -290,7 +290,7 @@ functions
 				end
 			),
 
-			-- @OnFail("2.2.7 VendorAnnotations invalid")
+			-- @OnFail(1312, "2.2.7 VendorAnnotations invalid")
 			( isValidVendorAnnotations(sv.annotations) )
 		} = {true};
 
@@ -302,12 +302,12 @@ functions
 	isValidEffectiveVariables: seq1 of ScalarVariable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail("2.2.7 Variable %s min/max/start/nominal invalid at line %s", sv.name, sv.location)
+		-- @OnFail(1313, "2.2.7 Variable %s min/max/start/nominal invalid at line %s", sv.name, sv.location)
 		(
 			cases sv.variable:
 				mk_Real(-, -, -, -, -, min, max, nominal, -, start, -, -) ->
 					isInRange[real](min, max, start, sv.initial, sv.location)
-					-- @OnFail("2.2.7 Real nominal must be >0.0 at line %s", sv.location)
+					-- @OnFail(1314, "2.2.7 Real nominal must be >0.0 at line %s", sv.location)
 					and (nominal <> nil => nominal > 0.0),
 
 				mk_Integer(-, -, min, max, start) ->
@@ -324,32 +324,32 @@ functions
 	}
 	union
 	{
-		/* @OnFail("2.2.7 Invalid ScalarVariable aliasing") */
+		/* @OnFail(1315, "2.2.7 Invalid ScalarVariable aliasing") */
 		(
 			let refmap = getAliasRefMap(svs) in
 			card dom refmap < len svs => dunion	-- Must be some aliases
 			{
 				let aliases = refmap(ref) in
 				{
-					/* @OnFail("2.2.7 Multiple aliases of reference %s are settable: %s", ref,
+					/* @OnFail(1316, "2.2.7 Multiple aliases of reference %s are settable: %s", ref,
 							{ a.name | a in set aliases & isSettable(a) }) */
 					( card { a | a in set aliases & isSettable(a) } <= 1 ),
 
-					/* @OnFail("2.2.7 Aliases of reference %s are settable and independent: %s", ref,
+					/* @OnFail(1317, "2.2.7 Aliases of reference %s are settable and independent: %s", ref,
 							{ {a.name, b.name} | a, b in set aliases &
 								a <> b and isSettable(a) and b.causality = <independent> } ) */
 					( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
 
-					-- @OnFail("2.2.7 Too many aliases of reference %s have start set", ref)
+					-- @OnFail(1318, "2.2.7 Too many aliases of reference %s have start set", ref)
 					( card { a.variable.start | a in set aliases & a.variability <> <constant> and a.variable.start <> nil } <= 1 ),
 
-					-- @OnFail("2.2.7 Constant aliases of reference %s have different start values", ref)
+					-- @OnFail(1319, "2.2.7 Constant aliases of reference %s have different start values", ref)
 					( card { a.variable.start | a in set aliases & a.variability = <constant> and a.variable.start <> nil } <= 1 ),
 
-					-- @OnFail("2.2.7 Aliases of reference %s must all be constant or variable", ref)
+					-- @OnFail(1320, "2.2.7 Aliases of reference %s must all be constant or variable", ref)
 					( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
 
-					-- @OnFail("2.2.7 Aliases of reference %s must all have same unit/baseUnits", ref)
+					-- @OnFail(1321, "2.2.7 Aliases of reference %s must all have same unit/baseUnits", ref)
 					( card { a.variable.unit | a in set aliases & is_Real(a.variable) } <= 1 ),
 
 					/*
@@ -362,12 +362,12 @@ functions
 					 	if exists a in set aliases & a.causality in set {<input>, <parameter>}
 					 	then
 					 		let a in set aliases be st a.causality in set {<input>, <parameter>} in
-				 				/* @OnFail("2.2.7 Warning: aliases of reference %s must all be %s, because of %s",
+				 				/* @OnFail(1322, "2.2.7 Warning: aliases of reference %s must all be %s, because of %s",
 				 						ref, a.variability, a.name) */
 				 				( vars = { a.variability } ) or true
 					 	else
 					 		let highest in set vars be st not exists v in set vars & v > highest in
-					 			-- @OnFail("2.2.7 Warning: aliases of reference %s must all be %s", ref, highest)
+					 			-- @OnFail(1323, "2.2.7 Warning: aliases of reference %s must all be %s", ref, highest)
 					 			( vars = { highest } ) or true
 				}
 

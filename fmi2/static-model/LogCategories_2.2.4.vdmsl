@@ -40,7 +40,7 @@ functions
 	isValidLogCategories: [seq1 of Category] +> bool
 	isValidLogCategories(cats) ==
 		cats <> nil =>
-			/* @OnFail("2.2.4 LogCategory names are not unique: %s",
+			/* @OnFail(1150, "2.2.4 LogCategory names are not unique: %s",
 				{ cats(a).name | a, b in set inds cats &
 					a <> b and cats(a).name = cats(b).name }) */
 			( card { c.name | c in seq cats } = len cats );
