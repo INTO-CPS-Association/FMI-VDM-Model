@@ -131,13 +131,13 @@ esac
 		exit 2
 	fi
 	
-	if ! java -cp fmi2vdm-${project.version}.jar fmi2vdm.FMI2SaxParser "$XML" "$VAR" "$INXSD" >$VDM
+	if ! java -cp fmi2vdm.jar fmi2vdm.FMI2SaxParser "$XML" "$VAR" "$INXSD" >$VDM
 	then
 		echo "Problem converting modelDescription.xml to VDM-SL?"
 		exit 2
 	fi
 	
-	java -Xmx1g -cp vdmj-4.4.0-SNAPSHOT.jar:annotations-4.4.0-SNAPSHOT.jar com.fujitsu.vdmj.VDMJ \
+	java -Xmx1g -cp vdmj.jar:annotations.jar com.fujitsu.vdmj.VDMJ \
 		-vdmsl -q -annotations -e "isValidFMIModelDescription($VAR)" \
 		model $VDM |
 		awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'
