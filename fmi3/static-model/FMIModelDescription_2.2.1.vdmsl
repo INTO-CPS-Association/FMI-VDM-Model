@@ -86,7 +86,7 @@ functions
 	 */
 	isValidModelAttributes: ModelAttributes +> bool
 	isValidModelAttributes(attrs) ==
-		-- @OnFail("2.2.1 ModelAttribute fmiVersion should start with 3.0")
+		-- @OnFail(1000, "2.2.1 ModelAttribute fmiVersion should start with 3.0")
 		( attrs.fmiVersion(1, ..., 3) = "3.0" );
 
 	/**
@@ -97,43 +97,43 @@ functions
 		-- First fill in effective values for model variables' missing attributes
 		let eModelVariables = effectiveScalarVariables(md) in
 		{
-			-- @OnFail("2.2.1 ModelAttributes invalid at line %s", md.attributes.location)
+			-- @OnFail(1001, "2.2.1 ModelAttributes invalid at line %s", md.attributes.location)
 			( isValidModelAttributes(md.attributes) ),
 
-			-- @OnFail("2.2.1 ModelExchange invalid at line %s", md.modelExchange.base.location)
+			-- @OnFail(1002, "2.2.1 ModelExchange invalid at line %s", md.modelExchange.base.location)
 			( isValidModelExchange(md.modelExchange) ),
 
-			-- @OnFail("2.2.1 CoSimulation invalid at line %s", md.coSimulation.base.location)
+			-- @OnFail(1003, "2.2.1 CoSimulation invalid at line %s", md.coSimulation.base.location)
 			( isValidCoSimulation(md.coSimulation) ),
 
-			-- @OnFail("2.2.1 UnitDefinitions invalid"))
+			-- @OnFail(1004, "2.2.1 UnitDefinitions invalid"))
 			( isValidUnitDefinitions(md.unitDefinitions) ),
 
-			-- @OnFail("2.2.1 TypeDefinitions invalid")
+			-- @OnFail(1005, "2.2.1 TypeDefinitions invalid")
 			( isValidTypeDefinitions(md.typeDefinitions) ),
 
-			-- @OnFail("2.2.1 LogCategories invalid")
+			-- @OnFail(1006, "2.2.1 LogCategories invalid")
 			( isValidLogCategories(md.logCategories) ),
 
-			-- @OnFail("2.2.1 DefaultExperiment invalid at line %s", md.defaultExperiment.location)
+			-- @OnFail(1007, "2.2.1 DefaultExperiment invalid at line %s", md.defaultExperiment.location)
 			( isValidDefaultExperiment(md.defaultExperiment) ),
 
-			-- @OnFail("2.2.1 VendorAnnotations invalid")
+			-- @OnFail(1008, "2.2.1 VendorAnnotations invalid")
 			( isValidVendorAnnotation(md.vendorAnnotations) ),
 
-			-- @OnFail("2.2.1 Variables invalid")
+			-- @OnFail(1009, "2.2.1 Variables invalid")
 			( isValidModelVariables(md.modelVariables) ),		-- NOTE: NOT effective variables!
 
-			-- @OnFail("2.2.1 Effective Variables invalid")
+			-- @OnFail(1010, "2.2.1 Effective Variables invalid")
 			( isValidEffectiveVariables(eModelVariables) ),		-- NOTE: effective variables!
 
-			-- @OnFail("2.2.1 ModelStructure invalid at line %s", md.modelStructure.location)
+			-- @OnFail(1011, "2.2.1 ModelStructure invalid at line %s", md.modelStructure.location)
 			( isValidModelStructure(md.modelStructure) ),
 
-			-- @OnFail("2.2.1 Variables typecheck against TypeDefinitions failed")
+			-- @OnFail(1012, "2.2.1 Variables typecheck against TypeDefinitions failed")
 			( typeCheck(eModelVariables, md.typeDefinitions) ),
 
-			-- @OnFail("2.2.1 Neither ModelExchange nor CoSimulation specified")
+			-- @OnFail(1013, "2.2.1 Neither ModelExchange nor CoSimulation specified")
 			( md.modelExchange <> nil or md.coSimulation <> nil ),
 
 			(
@@ -141,10 +141,10 @@ functions
 					dunion
 					{
 						{
-							-- @OnFail("2.2.10 Structured name %s invalid at line %s", sv.base.name, sv.base.location)
+							-- @OnFail(1014, "2.2.10 Structured name %s invalid at line %s", sv.base.name, sv.base.location)
 							( isValidStructuredName(sv.base.name) ),
 
-							-- @OnFail("2.2.10 Name %s is not Real at line %s", sv.base.name, sv.base.location)
+							-- @OnFail(1015, "2.2.10 Name %s is not Real at line %s", sv.base.name, sv.base.location)
 							( sv.base.name(1, ..., 4) = "der(" => is_Real(sv) )
 						}
 
@@ -158,13 +158,13 @@ functions
 					dunion
 					{
 						{
-							/* @OnFail("2.2.3 TypeDefinition and Variable names overlap: %s at line %s",
+							/* @OnFail(1016, "2.2.3 TypeDefinition and Variable names overlap: %s at line %s",
 									std.base.name, std.base.location) */
 							( not exists sv in seq eModelVariables & sv.base.name = std.base.name ),
 
 							is_RealType(std) =>
 								std.realAtts.unit <> nil =>
-									/* @OnFail("2.2.3 Type %s, Real unit %s not defined in UnitDefinitions at line %s",
+									/* @OnFail(1017, "2.2.3 Type %s, Real unit %s not defined in UnitDefinitions at line %s",
 										std.base.name, std.realAtts.unit, std.base.location) */
 									( md.unitDefinitions <> nil
 									  and exists u in seq md.unitDefinitions & u.name = std.realAtts.unit )
@@ -177,7 +177,7 @@ functions
 			(
 				{
 					sv.base.canHandleMultipleSetPerTimeInstant <> nil =>
-						/* @OnFail("2.2.8 Variable %s, canHandleMultipleSetPerTimeInstant invalid at line %s",
+						/* @OnFail(1018, "2.2.8 Variable %s, canHandleMultipleSetPerTimeInstant invalid at line %s",
 							sv.base.name, sv.base.location) */
 						( md.modelExchange <> nil and sv.base.causality = <input> )
 
@@ -189,12 +189,12 @@ functions
 				{
 					is_Real(sv) =>
 					{
-						/* @OnFail("2.2.8 Variable %s, Real unit must be defined for displayUnit %s at line %s",
+						/* @OnFail(1019, "2.2.8 Variable %s, Real unit must be defined for displayUnit %s at line %s",
 							sv.base.name, sv.realAtts.displayUnit, sv.base.location) */
 						( sv.realAtts.displayUnit <> nil => sv.realAtts.unit <> nil ),
 
 						sv.realAtts.unit <> nil =>
-							/* @OnFail("2.2.8 Variable %s, Real unit %s not defined in UnitDefinitions at line %s",
+							/* @OnFail(1020, "2.2.8 Variable %s, Real unit %s not defined in UnitDefinitions at line %s",
 								sv.base.name, sv.realAtts.unit, sv.base.location) */
 							( md.unitDefinitions <> nil
 							  and exists u in seq md.unitDefinitions & u.name = sv.realAtts.unit )
@@ -209,7 +209,7 @@ functions
 				{
 					let sv = eModelVariables(svi) in
 						is_Real(sv) and sv.varAtts.reinit <> nil =>
-						/* @OnFail("2.2.8 Variable %s, Real reinit for model exchange continuous time only at line %s",
+						/* @OnFail(1021, "2.2.8 Variable %s, Real reinit for model exchange continuous time only at line %s",
 								sv.base.name, sv.base.location) */
 						( isContinuousTimeState(svi, eModelVariables) and md.modelExchange <> nil )
 
@@ -226,16 +226,16 @@ functions
 				in
 					if outputRefs <> {}
 					then
-						/* @OnFail("2.2.9 Output variables but no outputs declared at line %s",
+						/* @OnFail(1022, "2.2.9 Output variables but no outputs declared at line %s",
 							md.modelStructure.location) */
 						( structRefs <> {} )
 
 						and
-						/* @OnFail("2.2.9 Outputs section does not match output variables at line %s",
+						/* @OnFail(1023, "2.2.9 Outputs section does not match output variables at line %s",
 							md.modelStructure.location) */
 						( structRefs = outputRefs )
 					else
-						/* @OnFail("2.2.9 Outputs should be omitted at line %s", md.modelStructure.location) */
+						/* @OnFail(1024, "2.2.9 Outputs should be omitted at line %s", md.modelStructure.location) */
 						( structRefs = {} )
 			),
 
@@ -245,15 +245,15 @@ functions
 				md.modelExchange <> nil and md.modelStructure.unknowns <> nil =>
 				{
 					let sv = lookup(eModelVariables, uk.valueReference) in
-						/* @OnFail("2.2.9 Derivative valueReference unknown at line %s", uk.location) */
+						/* @OnFail(1025, "2.2.9 Derivative valueReference unknown at line %s", uk.location) */
 						( sv <> nil )
 
 						and
 						{
-							/* @OnFail("2.2.9 SV not a state derivative at line %s", uk.location) */
+							/* @OnFail(1026, "2.2.9 SV not a state derivative at line %s", uk.location) */
 							( isStateDerivative(sv) ),
 
-							/* @OnFail("2.2.9 Derivative must be continuous at line %s", uk.location) */
+							/* @OnFail(1027, "2.2.9 Derivative must be continuous at line %s", uk.location) */
 							( uk.dependencies <> nil => sv.base.variability = <continuous> )
 						}
 						= {true}
@@ -285,10 +285,10 @@ functions
 							iu in seq nilSeq[Unknown](md.modelStructure.unknowns) &
 							iu.kind = <InitialUnknown> ] in
 						{
-							-- @OnFail("2.2.9 InitialUnknowns must include refs: %s", initRefs)
+							-- @OnFail(1028, "2.2.9 InitialUnknowns must include refs: %s", initRefs)
 							( ius <> [] ),
 
-							-- @OnFail("2.2.9 InitialUnknowns must only include refs: %s", initRefs)
+							-- @OnFail(1029, "2.2.9 InitialUnknowns must only include refs: %s", initRefs)
 							( { u.valueReference | u in seq ius } subset initRefs )
 						} = {true}
 			),
@@ -296,7 +296,7 @@ functions
 			(
 				md.modelStructure.eventIndicators <> nil =>
 				{
-					/* @OnFail("2.2.9 EventIndicator valueReference %s invalid at line %s",
+					/* @OnFail(1030, "2.2.9 EventIndicator valueReference %s invalid at line %s",
 						ei.valueReference, ei.location)	 */
 					( exists sv in seq eModelVariables &
 						sv.base.valueReference = ei.valueReference )
@@ -311,7 +311,7 @@ functions
 				{
 					unk.dependencies <> nil =>
 					{
-						-- @OnFail("2.2.9 Unknown dependency %s invalid at line %s", vr, unk.location)
+						-- @OnFail(1031, "2.2.9 Unknown dependency %s invalid at line %s", vr, unk.location)
 						( exists sv in seq eModelVariables & sv.base.valueReference = vr )
 
 						| vr in seq unk.dependencies
@@ -335,11 +335,11 @@ functions
 					td in set nilSet[VariableType](typedefs) &
 					td.base.name = sv.base.declaredType } in
 				{
-					/* @OnFail("2.2.3 Typedefs have multiple matching names: %s",
+					/* @OnFail(1032, "2.2.3 Typedefs have multiple matching names: %s",
 						{ m.base.name | m in set matchingTypes } ) */
 					( matchingTypes <> {} => card matchingTypes = 1 ),
 
-					/* @OnFail("2.2.3 Declared type %s unknown at line %s",
+					/* @OnFail(1033, "2.2.3 Declared type %s unknown at line %s",
 						sv.base.declaredType, sv.base.location ) */
 					( card matchingTypes <> 0 ),
 
@@ -347,14 +347,14 @@ functions
 					card matchingTypes = 1 => let { simpleType } = matchingTypes in
 						cases simpleType:
 							mk_RealType(-, -, -, mk_fmi3FloatXXAttributes(min, max, -)) ->
-								/* @OnFail("2.2.8 Variable %s min/max exceeds RealType %s at line %s",
+								/* @OnFail(1034, "2.2.8 Variable %s min/max exceeds RealType %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
 									and
 								  (max <> nil and sv.floatAtts.max <> nil => max >= sv.floatAtts.max) ),
 
 							mk_IntegerType(-, -, -, mk_fmi3IntXXAttributes(min, max)) ->
-								/* @OnFail("2.2.8 Variable %s min/max exceeds IntegerType %s at line %s",
+								/* @OnFail(1035, "2.2.8 Variable %s min/max exceeds IntegerType %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( (min <> nil and sv.floatAtts.min <> nil => min <= sv.floatAtts.min)
 									and
@@ -367,37 +367,37 @@ functions
 					card matchingTypes = 1 => let { simpleType } = matchingTypes in
 						cases simpleType:
 							mk_RealType(-, -, -, -) ->
-								/* @OnFail("2.2.8 Variable %s, RealType not referenced by Real variable %s at line %s",
+								/* @OnFail(1036, "2.2.8 Variable %s, RealType not referenced by Real variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Real(sv) ),
 
 							mk_IntegerType(-, -, -, -) ->
-								/* @OnFail("2.2.8 Variable %s, IntegerType not referenced by Integer variable %s at line %s",
+								/* @OnFail(1037, "2.2.8 Variable %s, IntegerType not referenced by Integer variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Integer(sv) ),
 
 							mk_BooleanType(-, -) ->
-								/* @OnFail("2.2.8 Variable %s, BooleanType not referenced by Boolean variable %s at line %s",
+								/* @OnFail(1038, "2.2.8 Variable %s, BooleanType not referenced by Boolean variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Boolean(sv) ),
 
 							mk_StringType(-, -) ->
-								/* @OnFail("2.2.8 Variable %s, StringType not referenced by String variable %s at line %s",
+								/* @OnFail(1039, "2.2.8 Variable %s, StringType not referenced by String variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_String(sv) ),
 
 							mk_BinaryType(-,-, -, -) ->
-								/* @OnFail("2.2.8 Variable %s, BinaryType not referenced by Binary variable %s at line %s",
+								/* @OnFail(1040, "2.2.8 Variable %s, BinaryType not referenced by Binary variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Binary(sv) ),
 
 							mk_EnumerationType(-, -, -, -) ->
-								/* @OnFail("2.2.8 Variable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
+								/* @OnFail(1041, "2.2.8 Variable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Enumeration(sv) ),
 
 							mk_ClockType(-, -, -) ->
-								/* @OnFail("2.2.8 Variable %s, StringType not referenced by String variable %s at line %s",
+								/* @OnFail(1042, "2.2.8 Variable %s, StringType not referenced by String variable %s at line %s",
 									sv.base.name, sv.base.declaredType, sv.base.location) */
 								( is_Clock(sv) )
 						end

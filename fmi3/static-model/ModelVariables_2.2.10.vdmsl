@@ -173,28 +173,28 @@ functions
 		let mk_(kmin, kmax) = minMaxKind(kind) in
 		{
 			max <> nil =>
-				--@OnFail("2.2.8 max %s is not a valid %s", max, kind)
+				--@OnFail(1450, "2.2.8 max %s is not a valid %s", max, kind)
 				( max <= kmax and max >= kmin ),
 
 			min <> nil =>
-				--@OnFail("2.2.8 min %s is not a valid %s", min, kind)
+				--@OnFail(1451, "2.2.8 min %s is not a valid %s", min, kind)
 				( min <= kmax and min >= kmin ),
 
 			start <> nil =>
-				--@OnFail("2.2.8 start %s is not a valid %s", start, kind)
+				--@OnFail(1452, "2.2.8 start %s is not a valid %s", start, kind)
 				( forall s in seq start & s <= kmax and s >= kmin ),
 
 			max <> nil and min <> nil =>
-				--@OnFail("2.2.8 min %s is not <= max %s", min, max)
+				--@OnFail(1453, "2.2.8 min %s is not <= max %s", min, max)
 				( max >= min ),
 
 			start <> nil =>
-				--@OnFail("2.2.8 start %s is not within min %s/max %s", start, min, max)
+				--@OnFail(1454, "2.2.8 start %s is not within min %s/max %s", start, min, max)
 				( (min <> nil => forall s in seq start & min <= s) and
 				  (max <> nil => forall s in seq start & max >= s) ),
 
 			start = nil and initial not in set {<calculated>, <independent>} =>
-				--@OnFail("2.2.8 Warning: implicit start of 0 is not within min %s/max %s", min, max)
+				--@OnFail(1455, "2.2.8 Warning: implicit start of 0 is not within min %s/max %s", min, max)
 				( (min <> nil => min <= 0) and
 				  (max <> nil => max >= 0) ) or true	-- NOTE warning
 		} = {true}
@@ -224,23 +224,23 @@ functions
 	isValidModelVariables: seq1 of Variable +> bool
 	isValidModelVariables(svs) ==
 		{
-			/* @OnFail("2.2.8 Variables define more than one independent variable: %s",
+			/* @OnFail(1456, "2.2.8 Variables define more than one independent variable: %s",
 				{ sv.base.name | sv in seq svs & sv.base.causality = <independent> }) */
 			( card { sv | sv in seq svs & sv.base.causality = <independent> } <= 1 ),
 
-			/* @OnFail("2.2.8 Variable names are not unique: %s",
+			/* @OnFail(1457, "2.2.8 Variable names are not unique: %s",
 				{ svs(a).base.name | a, b in set inds svs &
 					a <> b and svs(a).base.name = svs(b).base.name } ) */
 			( card { sv.base.name | sv in seq svs } = len svs ),
 
-			/* @OnFail("2.2.8 Clock variables must all be the same type") */
+			/* @OnFail(1458, "2.2.8 Clock variables must all be the same type") */
 			( card { sv.clockAtts.clockType | sv in seq svs & is_(sv, Clock) } <= 1 ),
 
 			isValidVariableDimensions(svs)
 		}
 		union
 		{
-			-- @OnFail("2.2.8 Variable %s invalid at line %s", sv.base.name, sv.base.location)
+			-- @OnFail(1459, "2.2.8 Variable %s invalid at line %s", sv.base.name, sv.base.location)
 			( isValidVariableAttributes(sv) )
 
 			| sv in seq svs
@@ -256,7 +256,7 @@ functions
 			eInitial     = effectiveInitial(sv.base.initial, eCausality, eVariability)
 		in
 		{
-			/* @OnFail("2.2.8 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
+			/* @OnFail(1460, "2.2.8 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
 				sv.base.name, eCausality, eVariability, eInitial, sv.start, sv.base.location) */
 			(
 				cases eCausality:
@@ -285,7 +285,7 @@ functions
 						eVariability = <continuous>
 						and eInitial = nil		-- (D)
 						and sv.start = nil
-						-- @OnFail("2.2.8 Independent variable must be Real at line %s", sv.base.location)
+						-- @OnFail(1461, "2.2.8 Independent variable must be Real at line %s", sv.base.location)
 						and (is_Real(sv)),
 
 					<output> ->
@@ -321,7 +321,7 @@ functions
 				end
 			),
 
-			/* @OnFail("2.2.8 Variable %s variability/causality %s/%s invalid at line %s",
+			/* @OnFail(1462, "2.2.8 Variable %s variability/causality %s/%s invalid at line %s",
 				sv.base.name, eVariability, eCausality, sv.base.location) */
 			(
 				cases eVariability:
@@ -336,7 +336,7 @@ functions
 
 					<continuous> ->
 						eCausality in set {<input>, <output>, <local>, <independent>}
-						-- @OnFail("2.2.8 Continuous variable must be Real at line %s", sv.base.location)
+						-- @OnFail(1463, "2.2.8 Continuous variable must be Real at line %s", sv.base.location)
 						and (is_Real(sv)),
 
 					<clock> ->
@@ -344,14 +344,14 @@ functions
 				end
 			),
 
-			/* @OnFail("2.2.8 Variable %s initial/causality %s/%s invalid at %s",
+			/* @OnFail(1464, "2.2.8 Variable %s initial/causality %s/%s invalid at %s",
 				sv.base.name, sv.base.initial, eCausality, sv.base.location) */
 			(
 				sv.base.initial <> nil =>
 					eCausality <> <independent>
 			),
 
-			/* @OnFail("2.2.8 Variable %s initial/variability/start %s/%s/%s invalid at line %s",
+			/* @OnFail(1465, "2.2.8 Variable %s initial/variability/start %s/%s/%s invalid at line %s",
 				sv.base.name, eInitial, eVariability, sv.start, sv.base.location) */
 			(
 				cases eInitial:
@@ -371,7 +371,7 @@ functions
 				end
 			),
 
-			-- @OnFail("2.2.8 Variable %s VendorAnnotations invalid", sv.base.name)
+			-- @OnFail(1466, "2.2.8 Variable %s VendorAnnotations invalid", sv.base.name)
 			( isValidVendorAnnotation(sv.base.annotations) )
 		} = {true};
 
@@ -383,18 +383,18 @@ functions
 		vars <> nil => dunion
 		{
 			{
-				-- @OnFail("2.2.8 Dimensions of %s cannot define start and valueReference", v.base.name)
+				-- @OnFail(1467, "2.2.8 Dimensions of %s cannot define start and valueReference", v.base.name)
 				( v.base.dimensions <> nil =>
 					forall dim in seq v.base.dimensions &
 						dim.start = nil <=> dim.valueReference <> nil ),
 
-				-- @OnFail("2.2.8 Dimension of %s cannot reference itself at line %s", v.base.name)
+				-- @OnFail(1468, "2.2.8 Dimension of %s cannot reference itself at line %s", v.base.name)
 				( v.base.dimensions <> nil =>
 					forall dim in seq v.base.dimensions &
 						dim.valueReference <> nil =>
 							dim.valueReference <> v.base.valueReference ),
 
-				-- @OnFail("2.2.8 Dimensions of %s, valueReference is not Integer, constant or structuralParameter, with start", v.base.name)
+				-- @OnFail(1469, "2.2.8 Dimensions of %s, valueReference is not Integer, constant or structuralParameter, with start", v.base.name)
 				( v.base.dimensions <> nil =>
 					forall dim in seq v.base.dimensions &
 						dim.valueReference <> nil =>
@@ -404,7 +404,7 @@ functions
 								and ( r.base.causality = <structuralParameter> or r.base.variability = <constant> )
 								and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
 
-				-- @OnFail("2.2.8 Structural parameter %s cannot have Dimensions", v.base.name)
+				-- @OnFail(1470, "2.2.8 Structural parameter %s cannot have Dimensions", v.base.name)
 				( v.base.dimensions <> nil =>
 					v.base.causality <> <structuralParameter> )
 			}
@@ -420,7 +420,7 @@ functions
 	isValidEffectiveVariables: seq1 of Variable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail("2.2.8 Variable %s min/max/start/nominal invalid at line %s", sv.base.name, sv.base.location)
+		-- @OnFail(1471, "2.2.8 Variable %s min/max/start/nominal invalid at line %s", sv.base.name, sv.base.location)
 		(
 			cases sv:
 				mk_Real(-, kind,
@@ -428,7 +428,7 @@ functions
 					mk_fmi3RealAttributes(-, -, -, -, -),
 					mk_fmi3FloatXXAttributes(min, max, nominal), start) ->
 					isInRange[real](min, max, start, kind, sv.base.initial)
-					-- @OnFail("2.2.8 Real nominal must be >0.0 at line %s", sv.base.location)
+					-- @OnFail(1472, "2.2.8 Real nominal must be >0.0 at line %s", sv.base.location)
 					and (nominal <> nil => nominal > 0.0),
 
 				mk_Integer(-, kind, -, mk_fmi3IntXXAttributes(min, max), start) ->
@@ -438,7 +438,7 @@ functions
 					isInRange[nat](min, max, start, <UInt32>, sv.base.initial),	-- TODO kind of enum?
 
 				mk_Binary(-, -, -, -, start) ->
-					-- @OnFail("2.2.8 Binary %s start is not hex-binary at line %s", sv.base.name, sv.base.location)
+					-- @OnFail(1473, "2.2.8 Binary %s start is not hex-binary at line %s", sv.base.name, sv.base.location)
 					( start = nil or forall s in seq start &
 						forall c in seq s &
 							c in set elems "ABCDEFabcdef0123456789" ),
@@ -451,7 +451,7 @@ functions
 	}
 	union
 	{
-		-- @OnFail("2.2.8 Dimensions of %s do not match start vector at line %s", sv.base.name, sv.base.location)
+		-- @OnFail(1474, "2.2.8 Dimensions of %s do not match start vector at line %s", sv.base.name, sv.base.location)
 		( sv.start <> nil =>
 			let size = dimensionsProduct(svs, sv.base.dimensions) in
 				size > 0 => size = len sv.start )
@@ -460,32 +460,32 @@ functions
 	}
 	union
 	{
-		/* @OnFail("2.2.8 Invalid Variable aliasing") */
+		/* @OnFail(1475, "2.2.8 Invalid Variable aliasing") */
 		(
 			let refmap = getAliasRefMap(svs) in
 			card dom refmap < len svs => dunion	-- Must be some aliases
 			{
 				let aliases = refmap(ref) in
 				{
-					/* @OnFail("2.2.8 Multiple aliases of reference %s are settable: %s", ref,
+					/* @OnFail(1476, "2.2.8 Multiple aliases of reference %s are settable: %s", ref,
 							{ a.base.name | a in set aliases & isSettable(a) }) */
 					( card { a | a in set aliases & isSettable(a) } <= 1 ),
 
-					/* @OnFail("2.2.8 Aliases of reference %s are settable and independent: %s", ref,
+					/* @OnFail(1477, "2.2.8 Aliases of reference %s are settable and independent: %s", ref,
 							{ {a.base.name, b.base.name} | a, b in set aliases &
 								a <> b and isSettable(a) and b.base.causality = <independent> } ) */
 					( not exists a, b in set aliases & a <> b and isSettable(a) and b.base.causality = <independent> ),
 
-					-- @OnFail("2.2.8 Too many aliases of reference %s have start set", ref)
+					-- @OnFail(1478, "2.2.8 Too many aliases of reference %s have start set", ref)
 					( card { a.start | a in set aliases & a.base.variability <> <constant> and a.start <> nil } <= 1 ),
 
-					-- @OnFail("2.2.8 Constant aliases of reference %s have different start values", ref)
+					-- @OnFail(1479, "2.2.8 Constant aliases of reference %s have different start values", ref)
 					( card { a.start | a in set aliases & a.base.variability = <constant> and a.start <> nil } <= 1 ),
 
-					-- @OnFail("2.2.8 Aliases of reference %s must all be constant or variable", ref)
+					-- @OnFail(1480, "2.2.8 Aliases of reference %s must all be constant or variable", ref)
 					( card { a | a in set aliases & a.base.variability = <constant> } in set {0, card aliases} ),
 
-					-- @OnFail("2.2.8 Aliases of reference %s must all have same unit/baseUnits", ref)
+					-- @OnFail(1481, "2.2.8 Aliases of reference %s must all have same unit/baseUnits", ref)
 					( card { a.realAtts.unit | a in set aliases & is_Real(a) } <= 1 ),
 
 					/*
@@ -498,12 +498,12 @@ functions
 					 	if exists a in set aliases & a.base.causality in set {<input>, <parameter>}
 					 	then
 					 		let a in set aliases be st a.base.causality in set {<input>, <parameter>} in
-				 				/* @OnFail("2.2.8 Warning: aliases of reference %s must all be %s, because of %s",
+				 				/* @OnFail(1482, "2.2.8 Warning: aliases of reference %s must all be %s, because of %s",
 				 						ref, a.base.variability, a.base.name) */
 				 				( vars = { a.base.variability } ) or true
 					 	else
 					 		let highest in set vars be st not exists v in set vars & v > highest in
-					 			-- @OnFail("2.2.8 Warning: aliases of reference %s must all be %s", ref, highest)
+					 			-- @OnFail(1483, "2.2.8 Warning: aliases of reference %s must all be %s", ref, highest)
 					 			( vars = { highest } ) or true
 				}
 

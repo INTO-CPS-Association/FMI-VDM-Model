@@ -166,7 +166,7 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 			exit 2
 		fi
 		
-		java -cp fmi2vdm-${project.version}.jar fmi2vdm.FMI3SaxParser "$1" "$VAR" "$INXSD" >$VDM
+		java -cp fmi2vdm.jar fmi2vdm.FMI3SaxParser "$1" "$VAR" "$INXSD" >$VDM
 		
 		if [ $? -ne 0 ]
 		then
@@ -174,7 +174,7 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 			exit 2
 		fi
 		
-		java -Xmx1g -cp vdmj-4.3.0-P.jar:annotations-4.3.0-P.jar com.fujitsu.vdmj.VDMJ \
+		java -Xmx1g -cp vdmj.jar:annotations.jar com.fujitsu.vdmj.VDMJ \
 			-vdmsl -q -annotations -e "isValidFMIConfiguration($VAR)" \
 			model $VDM |
 			awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'

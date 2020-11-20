@@ -65,10 +65,10 @@ functions
 	isValidCoSimulation(cs) ==
 		cs <> nil =>
 		{
-			-- @OnFail("4.3.1 CoSimulation annotations invalid at line %s", cs.base.location)
+			-- @OnFail(1550, "4.3.1 CoSimulation annotations invalid at line %s", cs.base.location)
 			( isValidVendorAnnotation(cs.base.annotations) ),
 
-			/* @OnFail("4.3.1 CoSimulation modelIdentifer %s not valid C variable name at line %s",
+			/* @OnFail(1551, "4.3.1 CoSimulation modelIdentifer %s not valid C variable name at line %s",
 						 cs.base.modelIdentifier, cs.base.location) */
 			( cs.base.modelIdentifier <> ""
 			  and cs.base.modelIdentifier(1) in set elems NONDIGITS )
