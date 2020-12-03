@@ -75,11 +75,17 @@ functions
 		let mk_(ok, tail) = bname(source) in
 			if ok
 			then if tail <> [] and hd tail = '.'
-				then identifier(tail(2, ..., len tail))
+				then let mk_(ok2, tail2) = identifier(tail(2, ..., len tail)) in
+					if ok2
+					then mk_(ok2, tail2)
+					else mk_(false, source)
 				else let mk_(ok2, tail2) = arrayIndices(tail) in
 					if ok2
 					then if tail2 <> [] and hd tail2 = '.'
-						then identifier(tail2(2, ..., len tail2))
+						then let mk_(ok3, tail3) = identifier(tail2(2, ..., len tail2)) in
+							if ok3
+							then mk_(ok3, tail3)
+							else mk_(false, source)
 						else mk_(true, tail2)
 					else mk_(true, tail)
 			else mk_(false, source)

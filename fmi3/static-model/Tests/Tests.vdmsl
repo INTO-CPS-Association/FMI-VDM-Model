@@ -202,7 +202,9 @@ functions
 		isValidStructuredName("'\\\"\\?\\\\'"),
 		not isValidStructuredName("a[1,]"),
 		not isValidStructuredName("[1]"),
-		not isValidStructuredName("'1@")
+		not isValidStructuredName("'1@"),
+		not isValidStructuredName("ABC..DEF"),
+		not isValidStructuredName("ABC[1]..DEF")
 	];
 
 functions
