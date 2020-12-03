@@ -301,7 +301,7 @@ functions
 							-- @OnFail(1029, "2.2.8 InitialUnknowns must include: %s", initIndexes)
 							( ius <> nil ),
 
-							-- @OnFail(1030, "2.2.8 InitialUnknowns must include: %s", initIndexes)
+							-- @OnFail(1030, "2.2.8 InitialUnknowns must not include: %s", { u.index | u in seq ius } \ initIndexes )
 							( ius <> nil => { u.index | u in seq ius } subset initIndexes ),
 
 							-- @OnFail(1031, "2.2.8 InitialUnknowns are not sorted: %s", [ u.index | u in seq ius ])
