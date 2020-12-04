@@ -62,7 +62,7 @@
 					<descriptors>
 						<descriptor>src/assembly/assembly.xml</descriptor>
 					</descriptors>
-					<finalName>vdmcheck-${project.version}-${maven.build.timestamp}</finalName>
+					<finalName>FMI2-vdmcheck-${project.version}-${maven.build.timestamp}</finalName>
 				</configuration>
 				<executions>
 					<execution>
