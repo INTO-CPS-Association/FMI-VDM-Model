@@ -280,7 +280,7 @@ public class VDMCheck
 			
 			String[] dependencies = {"vdmj.jar", "annotations.jar"};
 	
-			int exit = runCommand(jarLocation, tempOUT,
+			runCommand(jarLocation, tempOUT,
 					"java", "-Xmx1g", "-cp", String.join(File.pathSeparator, dependencies), 
 					"com.fujitsu.vdmj.VDMJ", "-vdmsl", "-q", "-annotations",
 					"-e", "isValidFMIConfiguration(" + varName + ")", "model", tempVDM.getCanonicalPath());
@@ -288,6 +288,8 @@ public class VDMCheck
 			sed(tempOUT, System.out,
 					"^true$", "No errors found.",
 					"^false$", "Errors found.");
+			
+			int exit = grep("^true$", tempOUT) ? 0 : 1;
 	
 			if (vdmOUT != null)
 			{
@@ -380,5 +382,21 @@ public class VDMCheck
 		}
 		
 		br.close();
+	}
+
+	private static boolean grep(String pattern, File input) throws IOException
+	{
+		BufferedReader br = new BufferedReader(new FileReader(input));
+		String line = br.readLine();
+		boolean result = false;
+		
+		while (line != null)
+		{
+			result = result || line.matches(pattern);
+			line = br.readLine();
+		}
+		
+		br.close();
+		return result;
 	}
 }
