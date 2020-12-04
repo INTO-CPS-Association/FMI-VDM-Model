@@ -243,24 +243,26 @@ functions
 			-- it must be continuous. Note that SVs can have derivative set but not be listed here.
 			(
 				md.modelExchange <> nil and md.modelStructure.unknowns <> nil =>
-				{
-					let sv = lookup(eModelVariables, uk.valueReference) in
-						/* @OnFail(1025, "2.2.9 Derivative valueReference unknown at line %s", uk.location) */
-						( sv <> nil )
-
-						and
+					let derivatives = { u | u in seq md.modelStructure.unknowns & u.kind = <Derivative> } in
+						derivatives <> {} =>
 						{
-							/* @OnFail(1026, "2.2.9 SV not a state derivative at line %s", uk.location) */
-							( isStateDerivative(sv) ),
+							let sv = lookup(eModelVariables, uk.valueReference) in
+								/* @OnFail(1025, "2.2.9 Derivative valueReference unknown at line %s", uk.location) */
+								( sv <> nil )
 
-							/* @OnFail(1027, "2.2.9 Derivative must be continuous at line %s", uk.location) */
-							( uk.dependencies <> nil => sv.base.variability = <continuous> )
+								and
+								{
+									/* @OnFail(1026, "2.2.9 SV not a state derivative at line %s", uk.location) */
+									( isStateDerivative(sv) ),
+
+									/* @OnFail(1027, "2.2.9 Derivative must be continuous at line %s", uk.location) */
+									( uk.dependencies <> nil => sv.base.variability = <continuous> )
+								}
+								= {true}
+
+							| uk in set derivatives
 						}
 						= {true}
-
-					| uk in set { u | u in seq md.modelStructure.unknowns & u.kind = <Derivative> }
-				}
-				= {true}
 			),
 
 			-- InitalUnknowns must include all output (approx/calculated), calculatedParameters and 
