@@ -41,7 +41,9 @@ No errors found.
 
 ## Installation
 
-To install the package, unzip the distribution ZIP (the top level contains a folder called `vdmcheck-<version>`). Add the top level folder to your PATH so that the script within is available. You can then run the tool as follows:
+To install the package, unzip the distribution ZIP (the top level contains a folder called `vdmcheck-<version>`). Add the top level folder to your PATH so that the script within is available.
+
+## Execution
 ```
 $ VDMCheck2.sh
 Usage: VDMCheck2.sh [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml
