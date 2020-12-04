@@ -15,7 +15,7 @@ This repository contains a VDM model of the FMI standard, plus supporting tools.
 * **fmi3.fmi2vdm** - a Java tool to convert FMI 3.0 modeDescription XML files to VDM-SL and check them
 * **fmi2.cosim2vdm** - a Java tool to convert Maestro JSON configurations to VDM-SL.
 
-The FMI\{2,3\} static semantic models and the FMI\{2,3\} VDM conversion tools are packaged in the release to create stand-alone tools for verifying FMU files, called VDMCheck\{2,3\}. This can be used to check existing FMI version 2 or 3 FMU files against the standard.
+The FMI\{2,3\} static semantic models and the FMI\{2,3\} VDM conversion tools are packaged in the release to create stand-alone tools for verifying FMU files, called VDMCheck\{2,3\}. These can be used to check existing FMI version 2 or 3 FMU files against the standard; a pure Java version of each tool is available, which does not depend on the bash shell (eg. for use on Windows).
 
 ```
 $ VDMCheck2.sh
@@ -25,53 +25,52 @@ $ VDMCheck2.sh WaterTank_Control.fmu
 No errors found.
 
 $ VDMCheck2.sh invalidOutputs2.xml
-2.2.7 Causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
-2.2.7 ScalarVariables["v1"] invalid at line 6
-2.2.1 ScalarVariables invalid
-2.2.8 Outputs should be omitted at line 10
+1306: 2.2.7 Variable "v1" causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+1305: 2.2.7 ScalarVariable "v1" invalid at line 6
+1009: 2.2.1 ScalarVariables invalid
+1025: 2.2.8 Outputs should be omitted at line 10
 Errors found.
 $
 
-C:\> java -jar <path to installation>/fmi2vdm-0.0.2.jar
+C:\> java -jar <path to installation>/fmi2vdm.jar
 Usage: java -jar fmi2vdm-<version>.jar [-v <VDM outfile>][-s <XSD>] -x <XML> | <file>.fmu | <file>.xml
 
-C:\> java -jar <path to installation>/fmi2vdm-0.0.2.jar WaterTank_Control.fmu 
+C:\> java -jar <path to installation>/fmi2vdm.jar WaterTank_Control.fmu 
 No errors found.
 ```
 
-## Building and Exporting the Tool
-
-Prebuilt packages are provided in the Releases area, but you can build the tool locally if required. To do this, it is easiest to import the Maven dependencies from the "lib" folder (step 2 below). Alternatively, you can build the [VDMJ](https://github.com/nickbattle/vdmj) project, which will install its Maven artifacts.
-
-1. Install maven.
-
-2. At the root of the repo, run the following commands, to install the dependencies in the local maven repository:
-```
-mvn install:install-file -Dfile=".\lib\vdmj-4.3.0.jar" -DgroupId="com.fujitsu" -DartifactId="vdmj" -Dversion="4.3.0" -Dpackaging="jar"
-mvn install:install-file -Dfile=".\lib\annotations-1.0.0.jar" -DgroupId="com.fujitsu" -DartifactId="annotations" -Dversion="1.0.0" -Dpackaging="jar"
-```
-
-3. Run maven package:
-```
-mvn package
-```
-
-4. The distributed packages will be generated in the target folders of the projects "fmi2.fmi2vdm" and "fmi3.fmi2vdm".
-
 ## Installation
 
-To install the package, unzip the distribution ZIP somewhere and run:
+To install the package, unzip the distribution ZIP (the top level contains a folder called `vdmcheck-<version>`). Add the top level folder to your PATH so that the script within is available. You can then run the tool as follows:
 ```
-java -jar fmi2vdm-<version>.jar
+$ VDMCheck2.sh
+Usage: VDMCheck2.sh [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml
+$ VDMCheck3.sh 
+Usage: VDMCheck3.sh [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml
+
 or
-VDMCheck2.sh
+
+C:\> java -jar <path to vdmcheck2 installation>/fmi2vdm.jar 
+Usage: java -jar fmi2vdm.jar [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml
+C:\> java -jar <path to vdmcheck3 installation>/fmi2vdm.jar 
+Usage: java -jar fmi2vdm.jar [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml
 ```
-This will print the usage.
+For normal use, the tool would be invoked with a single FMU file, though it is possible to analyse an extracted modelDescription.xml file. It is also possible to provide the XML inline as a string using `-x`, though this is only really useful when VDMCheck is integrated with other tools.
 
-## Release 
+By default, the XML file will be checked against the FMI Standard XSD schema, but it is possible to include an alternative XSD using the `-s` option. The argument is an XSD file that includes the full set of XSD subfiles for the schema.
 
-~~~bash
-mvn -Dmaven.repo.local=repository release:clean
-mvn -Dmaven.repo.local=repository release:prepare -DreleaseVersion=${RELEASE_VER} -DdevelopmentVersion=${NEW_DEV_VER}
-mvn -Dmaven.repo.local=repository release:perform
-~~~
+It is possible to capture the VDM-SL version of the XML file that is produced by using the `-v` option, but this is mainly for working with the formal model itself.
+
+If the FMU or XML has no errors, the tool will report `No errors found` and have an exit code of 0.
+
+Otherwise errors are listed on standard output. They consist of a unique error number, followed by a section number in the FMI Standard that is relevant to the error, followed by an error message:
+```
+VDMCheck2.sh invalidOutputs2.xml 
+1306: 2.2.7 Variable "v1" causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
+1305: 2.2.7 ScalarVariable "v1" invalid at line 6
+1009: 2.2.1 ScalarVariables invalid
+Errors found.
+```
+Here, error 1306 indicates a problem with the configuration of the "v1" variable. The line number indicates the location in the XML file. Then 1305 summarises that there were errors (possibly several) with v1, and error 1009 indicates that there were errors with the ScalarVariables in general. The exit code from the tool will be 1 rather than 0, since there were errors.
+
+
