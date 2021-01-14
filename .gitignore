@@ -17,6 +17,7 @@ target/
 #vscode
 .vscode
 .history/
+*.code-workspace
 
 # other
 generated
