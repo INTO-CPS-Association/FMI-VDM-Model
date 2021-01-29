@@ -58,6 +58,9 @@ types
 		-- CoSimulation
 		coSimulation			: [CoSimulation]			-- XSD 4.3.1
 
+		-- ScheduledExecution
+		scheduledExecution		: [ScheduledExecution]		-- XSD 4.3.1
+
 		-- Unit Definitions that are utilized in "ModelVariables"
 		unitDefinitions			: [seq1 of Unit]			-- XSD 2.2.3
 
@@ -105,6 +108,9 @@ functions
 
 			-- @OnFail(1003, "2.2.1 CoSimulation invalid at line %s", md.coSimulation.base.location)
 			( isValidCoSimulation(md.coSimulation) ),
+
+			-- @OnFail(1003, "2.2.1 ScheduledExecution invalid at line %s", md.scheduledExecution.base.location)
+			( isValidCoSimulation(md.scheduledExecution) ),
 
 			-- @OnFail(1004, "2.2.1 UnitDefinitions invalid"))
 			( isValidUnitDefinitions(md.unitDefinitions) ),

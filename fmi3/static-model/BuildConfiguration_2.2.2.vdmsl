@@ -46,6 +46,7 @@ types
 
 	SourceFileSet ::
 		location				: Location
+		name					: [NormalizedString]
 		language				: [NormalizedString]
 		compiler				: [NormalizedString]
 		compilerOptions			: [AnyString]

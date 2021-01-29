@@ -28,7 +28,7 @@
  */
 
 /**
- * 4.3.1 Definition of a CoSimulation section of an FMU.
+ * 4.3.1 Definition of a CoSimulation and ScheduledExecution section of an FMU.
  */
 types
 	fmi3InterfaceType ::
@@ -44,33 +44,44 @@ types
 		providesAdjointDerivatives				: [bool]
 		providesPerElementDependencies			: [bool];
 
-	CoSimulationKind = <CoSimulation> | <ScheduledExecution>;
-
 	CoSimulation ::
 		base									: fmi3InterfaceType
-		kind									: CoSimulationKind
 		canHandleVariableCommunicationStepSize	: [bool]
 		maxOutputDerivativeOrder				: [nat]
 		providesIntermediateUpdate				: [bool]
 		recommendedIntermediateInputSmoothness	: [int]
 		canReturnEarlyAfterIntermediateUpdate	: [bool]
-		fixedInternalStepSize					: [real];
+		fixedInternalStepSize					: [real]
+		hasEventMode							: [bool];
+
+	ScheduledExecution ::
+		base									: fmi3InterfaceType
+		maxOutputDerivativeOrder				: [nat]
+		providesIntermediateUpdate				: [bool]
+		recommendedIntermediateInputSmoothness	: [int];
 
 functions
 
 	/**
-	 * Check CoSimulation values.
+	 * Check CoSimulation and ScheduledExecution values.
 	 */
 	isValidCoSimulation: [CoSimulation] +> bool
 	isValidCoSimulation(cs) ==
-		cs <> nil =>
-		{
-			-- @OnFail(1550, "4.3.1 CoSimulation annotations invalid at line %s", cs.base.location)
-			( isValidVendorAnnotation(cs.base.annotations) ),
+		cs <> nil => isValidInterfaceType(cs.base);
 
-			/* @OnFail(1551, "4.3.1 CoSimulation modelIdentifer %s not valid C variable name at line %s",
-						 cs.base.modelIdentifier, cs.base.location) */
-			( cs.base.modelIdentifier <> ""
-			  and cs.base.modelIdentifier(1) in set elems NONDIGITS )
-		}
-		= {true};
+	isValidScheduledExecution: [ScheduledExecution] +> bool
+	isValidScheduledExecution(se) ==
+		se <> nil => isValidInterfaceType(se.base);
+
+	isValidInterfaceType: fmi3InterfaceType +> bool
+	isValidInterfaceType(itype) ==
+	{
+		-- @OnFail(1550, "4.3.1 Annotations invalid at line %s", itype.location)
+		( isValidVendorAnnotation(itype.annotations) ),
+
+		/* @OnFail(1551, "4.3.1 modelIdentifer %s not valid C variable name at line %s",
+						itype.modelIdentifier, itype.location) */
+		( itype.modelIdentifier <> ""
+			and itype.modelIdentifier(1) in set elems NONDIGITS )
+	}
+	= {true};
