@@ -37,6 +37,7 @@ public class DisplayUnit extends Element
 	private String name;
 	private Double factor;
 	private Double offset;
+	private Boolean inverse;
 
 	public DisplayUnit(Attributes attributes, Locator locator)
 	{
@@ -51,7 +52,8 @@ public class DisplayUnit extends Element
 		System.out.println(indent + "(");
 		printStringAttribute(indent + "\t", name, ",\n");
 		printRawAttribute(indent + "\t", factor, ",\n");
-		printRawAttribute(indent + "\t", offset, "\n");
+		printRawAttribute(indent + "\t", offset, ",\n");
+		printRawAttribute(indent + "\t", inverse, "\n");
 		System.out.print(indent + ")");
 	}
 }

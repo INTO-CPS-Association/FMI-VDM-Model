@@ -41,8 +41,9 @@ public class FMIModelDescription extends Element
 	private final String varname;
 
 	private ModelAttributes modelAttributes;
-	private AbstractCoSimulation coSimulation;
 	private ModelExchange modelExchange;
+	private CoSimulation coSimulation;
+	private ScheduledExecution scheduledExecution;
 	private UnitDefinitions unitDefinitions;
 	private TypeDefinitions typeDefinitions;
 	private LogCategories logCategories;
@@ -63,7 +64,7 @@ public class FMIModelDescription extends Element
 	@Override
 	public void add(Element element)
 	{
-		if (element instanceof AbstractCoSimulation)
+		if (element instanceof CoSimulation)
 		{
 			if (coSimulation != null)
 			{
@@ -71,7 +72,18 @@ public class FMIModelDescription extends Element
 			}
 			else
 			{
-				coSimulation = (AbstractCoSimulation) element;
+				coSimulation = (CoSimulation) element;
+			}
+		}
+		else if (element instanceof ScheduledExecution)
+		{
+			if (scheduledExecution != null)
+			{
+				FMI3SaxParser.error("Only one ScheduledExecution element permitted at line %d", element.lineNumber);
+			}
+			else
+			{
+				scheduledExecution = (ScheduledExecution) element;
 			}
 		}
 		else if (element instanceof ModelExchange)
@@ -136,6 +148,8 @@ public class FMIModelDescription extends Element
 		printOne(indent, modelExchange, "ModelExchange");
 		System.out.println(",\n");
 		printOne(indent, coSimulation, "CoSimulation");
+		System.out.println(",\n");
+		printOne(indent, scheduledExecution, "ScheduledExecution");
 		System.out.println(",\n");
 		printOne(indent, unitDefinitions, "UnitDefinitions");
 		System.out.println(",\n");

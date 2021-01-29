@@ -34,6 +34,7 @@ import org.xml.sax.Locator;
 
 public class SourceFileSet extends Element
 {
+	private String name;
 	private String language;
 	private String compiler;
 	private String compilerOptions;
@@ -89,6 +90,7 @@ public class SourceFileSet extends Element
 		System.out.println(indent + "mk_SourceFileSet");
 		System.out.println(indent + "(");
 		System.out.println(indent + "\t" + lineNumber + ",  -- Line");
+		printStringAttribute(indent + "\t", name, ",\n");
 		printStringAttribute(indent + "\t", language, ",\n");
 		printStringAttribute(indent + "\t", compiler, ",\n");
 		printStringAttribute(indent + "\t", compilerOptions, ",\n");

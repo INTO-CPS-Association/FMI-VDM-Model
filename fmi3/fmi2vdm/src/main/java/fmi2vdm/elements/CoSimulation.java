@@ -23,13 +23,42 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class CoSimulation extends AbstractCoSimulation
+public class CoSimulation extends InterfaceType
 {
+	private Boolean canHandleVariableCommunicationStepSize;
+	private Long maxOutputDerivativeOrder;
+	private Boolean providesIntermediateUpdate;
+	private BigInteger recommendedIntermediateInputSmoothness;
+	private Boolean canReturnEarlyAfterIntermediateUpdate;
+	private Double fixedInternalStepSize;
+	private Boolean hasEventMode;
+	
 	public CoSimulation(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
+		setAttributes(CoSimulation.class, attributes);
+	}
+
+	@Override
+	public void toVDM(String indent)
+	{
+		System.out.println(indent + "mk_CoSimulation");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");
+		System.out.println(",");
+		
+		printRawAttribute(indent + "\t", canHandleVariableCommunicationStepSize, ",\n");
+		printRawAttribute(indent + "\t", maxOutputDerivativeOrder, ",\n");
+		printRawAttribute(indent + "\t", providesIntermediateUpdate, ",\n");
+		printRawAttribute(indent + "\t", recommendedIntermediateInputSmoothness, ",\n");
+		printRawAttribute(indent + "\t", canReturnEarlyAfterIntermediateUpdate, ",\n");
+		printRawAttribute(indent + "\t", fixedInternalStepSize, ",\n");
+		printRawAttribute(indent + "\t", hasEventMode, "\n");
+		System.out.print(indent + ")");
 	}
 }

@@ -23,13 +23,34 @@
 
 package fmi2vdm.elements;
 
+import java.math.BigInteger;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-public class ScheduledExecution extends AbstractCoSimulation
+public class ScheduledExecution extends InterfaceType
 {
+	private Long maxOutputDerivativeOrder;
+	private Boolean providesIntermediateUpdate;
+	private BigInteger recommendedIntermediateInputSmoothness;
+
 	public ScheduledExecution(Attributes attributes, Locator locator)
 	{
 		super(attributes, locator);
+		setAttributes(ScheduledExecution.class, attributes);
+	}
+
+	@Override
+	public void toVDM(String indent)
+	{
+		System.out.println(indent + "mk_CoSimulation");
+		System.out.println(indent + "(");
+		super.toVDM(indent + "\t");
+		System.out.println(",");
+		
+		printRawAttribute(indent + "\t", maxOutputDerivativeOrder, ",\n");
+		printRawAttribute(indent + "\t", providesIntermediateUpdate, ",\n");
+		printRawAttribute(indent + "\t", recommendedIntermediateInputSmoothness, "\n");
+		System.out.print(indent + ")");
 	}
 }
