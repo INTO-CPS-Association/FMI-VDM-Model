@@ -60,6 +60,8 @@ types
 		providesIntermediateUpdate				: [bool]
 		recommendedIntermediateInputSmoothness	: [int];
 
+    CoSimulationKind = <CoSimulation> | <ScheduledExecution>;
+
 functions
 
 	/**

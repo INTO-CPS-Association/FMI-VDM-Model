@@ -78,6 +78,9 @@ values
 		-- CoSimulation
 		nil,
 
+        -- ScheduledExecution
+        nil,
+
 		-- UnitDefinitions
 		nil,
 
@@ -179,14 +182,17 @@ values
 				true,	-- adjoint derivatives
 				nil
 			),
-			<CoSimulation>,
 			nil,
 			nil,
 			nil,
 			nil,
 			nil,
-			nil
+			nil,
+            nil
 		),
+
+        -- ScheduledExecution
+        nil,
 
 		-- UnitDefinitions
 		nil,
@@ -270,7 +276,10 @@ values
 		nil,
 
 		-- CoSimulation
-		mk_CoSimulation
+        nil,
+
+        -- ScheduledExecution
+		mk_ScheduledExecution
 		(
 			mk_fmi3InterfaceType
 			(
@@ -286,10 +295,6 @@ values
 				nil,
 				nil
 			),
-			<ScheduledExecution>,
-			nil,
-			nil,
-			nil,
 			nil,
 			nil,
 			nil
@@ -392,14 +397,17 @@ values
 				nil,
 				nil
 			),
-			<CoSimulation>,
 			nil,
 			nil,
 			nil,
 			nil,
 			nil,
-			nil
+			nil,
+            nil
 		),
+
+        -- ScheduledExecution
+        nil,
 
 		-- UnitDefinitions
 		nil,

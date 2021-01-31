@@ -145,14 +145,17 @@ values
 				nil,
 				nil
 			),
-			<CoSimulation>,
 			true,
 			nil,
 			nil,
 			nil,
 			nil,
-			nil
+			nil,
+            nil
 		),
+
+        -- ScheduledExecution
+        nil,
 
 		-- UnitDefinitions
 		[
@@ -166,7 +169,8 @@ values
 					(
 						"deg",
 						57.2957795130823,
-						nil
+						nil,
+                        nil
 					)
 				]
 			),

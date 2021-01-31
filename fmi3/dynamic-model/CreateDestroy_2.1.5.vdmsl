@@ -215,7 +215,6 @@ functions
 				"fmi3fmi3InstantiateCoSimulation instantiationToken does not match XML configuration", nil)
 
 		elseif instanceEnvironment.xmlModel.coSimulation = nil
-				or instanceEnvironment.xmlModel.coSimulation.kind <> <CoSimulation>
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3fmi3InstantiateCoSimulation must define BasicCoSimulation XML configuration", nil)
 
@@ -278,7 +277,6 @@ functions
 				"fmi3InstantiateScheduledExecution instantiationToken does not match XML configuration", nil)
 
 		elseif instanceEnvironment.xmlModel.coSimulation = nil
-				or instanceEnvironment.xmlModel.coSimulation.kind <> <ScheduledExecution>
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateScheduledExecution must define ScheduledCoSimulation XML configuration", nil)
 
