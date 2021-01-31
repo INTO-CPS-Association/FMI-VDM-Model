@@ -73,7 +73,7 @@ types
 		<INTERMEDIATE_UPDATE_MODE> |
 		<TERMINATED>;
 
-	fmi3ScheduledCoSimulationState =
+	fmi3ScheduledExecutionState =
 		<INSTANTIATED> |
 		<CONFIGURATION_MODE> |
 		<INITIALIZATION_MODE> |
@@ -87,7 +87,7 @@ types
 		<START> |
 		fmi3ModelExchangeState |
 		fmi3BasicCoSimulationState |
-		fmi3ScheduledCoSimulationState |
+		fmi3ScheduledExecutionState |
 		<ERROR> |
 		<FATAL> |
 		<END>;

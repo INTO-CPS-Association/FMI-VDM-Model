@@ -182,6 +182,7 @@ values
 				true,	-- adjoint derivatives
 				nil
 			),
+			<CoSimulation>,
 			nil,
 			nil,
 			nil,
@@ -295,6 +296,7 @@ values
 				nil,
 				nil
 			),
+			<ScheduledExecution>,
 			nil,
 			nil,
 			nil
@@ -397,6 +399,7 @@ values
 				nil,
 				nil
 			),
+			<CoSimulation>,
 			nil,
 			nil,
 			nil,

@@ -46,6 +46,7 @@ types
 
 	CoSimulation ::
 		base									: fmi3InterfaceType
+		kind									: CoSimulationKind
 		canHandleVariableCommunicationStepSize	: [bool]
 		maxOutputDerivativeOrder				: [nat]
 		providesIntermediateUpdate				: [bool]
@@ -56,6 +57,7 @@ types
 
 	ScheduledExecution ::
 		base									: fmi3InterfaceType
+		kind									: CoSimulationKind
 		maxOutputDerivativeOrder				: [nat]
 		providesIntermediateUpdate				: [bool]
 		recommendedIntermediateInputSmoothness	: [int];
