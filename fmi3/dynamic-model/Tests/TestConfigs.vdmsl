@@ -253,7 +253,7 @@ values
 /**
  * Scheduled co-simulation.
  */
-	scheduledCosimulationFMU = mk_FMIModelDescription
+	scheduledExecutionFMU = mk_FMIModelDescription
 	(
 		mk_ModelAttributes
 		(

@@ -110,7 +110,7 @@ functions
 			( isValidCoSimulation(md.coSimulation) ),
 
 			-- @OnFail(1003, "2.2.1 ScheduledExecution invalid at line %s", md.scheduledExecution.base.location)
-			( isValidCoSimulation(md.scheduledExecution) ),
+			( isValidScheduledExecution(md.scheduledExecution) ),
 
 			-- @OnFail(1004, "2.2.1 UnitDefinitions invalid"))
 			( isValidUnitDefinitions(md.unitDefinitions) ),
@@ -139,8 +139,8 @@ functions
 			-- @OnFail(1012, "2.2.1 Variables typecheck against TypeDefinitions failed")
 			( typeCheck(eModelVariables, md.typeDefinitions) ),
 
-			-- @OnFail(1013, "2.2.1 Neither ModelExchange nor CoSimulation specified")
-			( md.modelExchange <> nil or md.coSimulation <> nil ),
+			-- @OnFail(1013, "2.2.1 Neither ModelExchange, CoSimulation nor ScheduledExecution specified")
+			( md.modelExchange <> nil or md.coSimulation <> nil or md.scheduledExecution <> nil ),
 
 			(
 				md.attributes.variableNamingConvention = <structured> =>

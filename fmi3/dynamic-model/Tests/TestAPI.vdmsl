@@ -82,7 +82,7 @@ functions
             requiredIntermediateVariables,
             len requiredIntermediateVariables,
             mk_fmi3InstanceEnvironment(
-				scheduledCosimulationFMU,
+				scheduledExecutionFMU,
 				mk_SolverData([]),
 				nil,
 				nullCalculateValues,

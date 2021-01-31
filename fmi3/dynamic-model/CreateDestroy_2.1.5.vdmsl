@@ -276,9 +276,9 @@ functions
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateScheduledExecution instantiationToken does not match XML configuration", nil)
 
-		elseif instanceEnvironment.xmlModel.coSimulation = nil
+		elseif instanceEnvironment.xmlModel.scheduledExecution = nil
 		then logInst(instanceEnvironment, instanceName,
-				"fmi3InstantiateScheduledExecution must define ScheduledCoSimulation XML configuration", nil)
+				"fmi3InstantiateScheduledExecution must define ScheduledExecution XML configuration", nil)
 
 		elseif len requiredIntermediateVariables <> nRequiredIntermediateVariables
 		then logInst(instanceEnvironment, instanceName,
@@ -295,7 +295,7 @@ functions
 				"fmi3InstantiateScheduledExecution variables are not all intermediateUpdate", nil)
 
 		else
-			let coSimConfig = mk_fmi3CoSimulationConfiguration(
+			let schExConfig = mk_fmi3CoSimulationConfiguration(
 				false,
 				requiredIntermediateVariables,
 				<fmi3ModeScheduledExecution>,
@@ -304,7 +304,7 @@ functions
 				unlockPreemption)
 			in
 				let instance = fmi3Instantiate_Impl(STATES_fmi3InstantiateScheduledExecution, instanceName,
-					instantiationToken, <ScheduledExecution>, coSimConfig, instanceEnvironment, logMessage) in
+					instantiationToken, <ScheduledExecution>, schExConfig, instanceEnvironment, logMessage) in
 				let mk_(-, result) = fmi3SetDebugLogging(instance, loggingOn, 0, []) in
 					result;
 
