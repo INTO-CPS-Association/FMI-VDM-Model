@@ -34,6 +34,7 @@
     <modules>
         <module>fmi2</module>
         <module>fmi3</module>
+        <module>xsd2vdm</module>
     </modules>
 
     <build>
