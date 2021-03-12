@@ -30,6 +30,7 @@
 package types;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 public class Record extends Type
@@ -54,9 +55,9 @@ public class Record extends Type
 		this.fields.add(field);
 	}
 
-	public void addField(String name, Type type)
+	public void addField(String name, Type type, Map<String, String> attributes)
 	{
-		this.fields.add(new Field(name, type));
+		this.fields.add(new Field(name, type, attributes));
 	}
 	
 	@Override

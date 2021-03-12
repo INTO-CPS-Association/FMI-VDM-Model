@@ -53,4 +53,24 @@ public class Union extends Type
 	{
 		return name;
 	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(name);
+		sb.append(" =");
+		String sep = "\n    ";
+		
+		for (Type type: types)
+		{
+			sb.append(sep);
+			sb.append(type.signature());
+			sep = " |\n    ";
+		}
+		
+		sb.append("\n;\n");
+		return sb.toString();
+	}
 }

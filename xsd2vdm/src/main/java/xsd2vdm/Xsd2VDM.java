@@ -233,7 +233,7 @@ public class Xsd2VDM
 		
 		switch (first.getType())
 		{
-			case "xs:sequence":	// record type
+			case "xs:sequence":
 				for (XSDElement remainder: complexType.getOtherChildren())
 				{
 					if (remainder.isType("xs:attribute"))
@@ -248,11 +248,15 @@ public class Xsd2VDM
 					{
 						String fname = field.getAttr("name");
 						if (fname == null) fname = field.getAttr("ref");
-						rec.addField(fname.toLowerCase(), convertElement(field));
+						rec.addField(fname.toLowerCase(), convertElement(field), first.getAttrs());
+					}
+					else if (field.isType("xs:attribute"))
+					{
+						rec.addField(convertAttribute(field));
 					}
 					else if (field.isType("xs:any"))
 					{
-						rec.addField("any", new BasicType("token"));
+						rec.addField("any", new BasicType("token"), field.getAttrs());
 					}
 					else
 					{
@@ -262,7 +266,7 @@ public class Xsd2VDM
 				break;
 
 			case "xs:group":
-				rec.addField(first.getAttr("name"), convertGroup(first));
+				rec.addField(first.getAttr("name"), convertGroup(first), first.getAttrs());
 				break;
 				
 			case "xs:complexContent":
@@ -270,7 +274,13 @@ public class Xsd2VDM
 				break;
 				
 			case "xs:attribute":
-				rec.addField(convertAttribute(first));
+				for (XSDElement child: complexType.getChildren())
+				{
+					if (child.isType("xs:attribute"))
+					{
+						rec.addField(convertAttribute(child));
+					}
+				}
 				break;
 				
 			default:
@@ -308,7 +318,7 @@ public class Xsd2VDM
 		return rec;
 	}
 	
-	private Union convertGroup(XSDElement element)
+	private Type convertGroup(XSDElement element)
 	{
 		assert element.isType("xs:group");
 
@@ -318,7 +328,15 @@ public class Xsd2VDM
 		}
 		else
 		{
-			Union rec = new Union(element.getAttr("name"));
+			String unionName = element.getAttr("name");
+			
+			if (converted.containsKey(unionName))
+			{
+				return converted.get(unionName);
+			}
+			
+			Union rec = new Union(unionName);
+			converted.put(unionName, new RefType(rec));
 			XSDElement first = element.getFirstChild();
 			
 			if (first.isType("xs:choice"))
@@ -350,11 +368,13 @@ public class Xsd2VDM
 		
 		if (attribute.getFirstChild() != null)
 		{
-			return new Field(attribute.getAttr("name"), convertSimpleType(attribute.getFirstChild()));
+			return new Field(attribute.getAttr("name"),
+				convertSimpleType(attribute.getFirstChild()), attribute.getAttrs());
 		}
 		else
 		{
-			return new Field(attribute.getAttr("name"), convertBasicType(attribute.getAttr("type")));
+			return new Field(attribute.getAttr("name"),
+				convertBasicType(attribute.getAttr("type")), attribute.getAttrs());
 		}
 	}
 	

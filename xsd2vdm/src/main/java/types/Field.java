@@ -29,17 +29,31 @@
 
 package types;
 
+import java.util.Map;
+
 public class Field
 {
 	private final String name;
 	private final Type type;
+	private final boolean optional;
+	private final String aggregate;
 	
-	public Field(String name, Type type)
+	public Field(String name, Type type, Map<String, String> attributes)
 	{
 		this.name = name;
 		this.type = type;
+		
+		String minOccurs = attributes.get("minOccurs");
+		String maxOccurs = attributes.get("maxOccurs");
+		String use = attributes.get("use");
+		
+		int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
+		int max = maxOccurs == null ? 1 : maxOccurs.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(maxOccurs);
+		
+		optional = min == 0 || !"required".equals(use);
+		aggregate = min > 1 ? "seq1 of " : max > min ? "seq of " : ""; 
 	}
-
+	
 	public String getName()
 	{
 		return name;
@@ -47,6 +61,13 @@ public class Field
 
 	public String getType()
 	{
-		return type.signature();
+		if (optional)
+		{
+			return "[" + aggregate + type.signature() + "]";
+		}
+		else
+		{
+			return aggregate + type.signature();
+		}
 	}
 }
