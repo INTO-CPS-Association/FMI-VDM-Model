@@ -29,7 +29,8 @@
 
 package xsd2vdm;
 
-import java.io.IOException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,25 +38,64 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.xml.sax.SAXException;
-
 public class Xsd2VDM
 {
+	private static void usage()
+	{
+		System.err.println("Usage: Xsd2VDM -xsd <XSD schema> [-vdm <output>]");
+		System.exit(1);
+	}
+	
 	public static void main(String[] args)
 	{
-		if (args.length != 1)
+		int arg = 0;
+		String xsdFile = null;
+		String vdmFile = null;
+		
+		while (arg < args.length)
 		{
-			System.err.println("Usage: Xsd2VDM <XSD schema>");
-			System.exit(1);
+			try
+			{
+				switch (args[arg])
+				{
+					case "-xsd":
+						xsdFile = args[++arg];
+						break;
+						
+					case "-vdm":
+						vdmFile = args[++arg];
+						break;
+						
+					default:
+						usage();
+				}
+			}
+			catch (Exception e)
+			{
+				usage();
+			}
+			
+			arg++;
+		}
+		
+		if (xsdFile == null)
+		{
+			usage();
 		}
 		
 		try
 		{
-			new Xsd2VDM().process(args[0]);
+			PrintStream vdmout = System.out;
+			
+			if (vdmFile != null)
+			{
+				vdmout = new PrintStream(new FileOutputStream(vdmFile));
+			}
+			
+			new Xsd2VDM().process(xsdFile, vdmout);
 		}
 		catch (Exception e)
 		{
@@ -65,7 +105,7 @@ public class Xsd2VDM
 	
 	private Map<String, VDMType> converted = new HashMap<String, VDMType>();
 	
-	private void process(String rootXSD) throws ParserConfigurationException, SAXException, IOException
+	private void process(String rootXSD, PrintStream output) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
@@ -99,8 +139,10 @@ public class Xsd2VDM
 		
 		for (String def: converted.keySet())
 		{
-			System.out.println(converted.get(def));
+			output.println(converted.get(def));
 		}
+		
+		output.close();
 	}
 
 	private void convertSchema(XSDElement schema)
@@ -203,7 +245,7 @@ public class Xsd2VDM
 					}
 					else if (field.isType("xs:any"))
 					{
-						vdmtype.addField(new VDMType("any"));
+						vdmtype.addField(new VDMType("any", "token"));
 					}
 					else
 					{
@@ -353,7 +395,7 @@ public class Xsd2VDM
 			
 			case "xs:boolean":
 				return "bool";
-				
+
 			default:
 				return type;
 		}
