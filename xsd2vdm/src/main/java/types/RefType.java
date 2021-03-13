@@ -29,6 +29,11 @@
 
 package types;
 
+/**
+ * RefTypes are added to the "converted" map early as a placeholder for recursive
+ * element definitions. They allow a type to be updated and referred to by a
+ * consistent reference.
+ */
 public class RefType extends Type
 {
 	private Type ref;

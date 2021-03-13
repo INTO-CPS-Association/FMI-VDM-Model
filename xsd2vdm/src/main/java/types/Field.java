@@ -51,7 +51,7 @@ public class Field
 		int max = maxOccurs == null ? 1 : maxOccurs.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(maxOccurs);
 		
 		optional = min == 0 || !"required".equals(use);
-		aggregate = min > 1 ? "seq1 of " : max > min ? "seq of " : ""; 
+		aggregate = min > 1 ? "seq1 of " : max > 1 ? (min == 1 ? "seq1 of " : "seq of ") : ""; 
 	}
 	
 	public String getName()
