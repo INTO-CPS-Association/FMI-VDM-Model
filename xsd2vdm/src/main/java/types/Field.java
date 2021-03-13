@@ -50,7 +50,7 @@ public class Field
 		int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
 		int max = maxOccurs == null ? 1 : maxOccurs.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(maxOccurs);
 		
-		optional = min == 0 || !"required".equals(use);
+		optional = min == 0 && !"required".equals(use);
 		aggregate = min > 1 ? "seq1 of " : max > 1 ? (min == 1 ? "seq1 of " : "seq of ") : ""; 
 	}
 	

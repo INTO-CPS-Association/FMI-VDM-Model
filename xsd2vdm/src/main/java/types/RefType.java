@@ -48,19 +48,6 @@ public class RefType extends Type
 		this.ref = type;
 	}
 
-	public void set(String elementName, Type type)
-	{
-		if (type instanceof Record)
-		{
-			Record rtype = (Record)type;
-			this.ref = new Record(elementName, rtype.getFields());
-		}
-		else
-		{
-			set(type);
-		}
-	}
-
 	@Override
 	protected String signature()
 	{

@@ -11,6 +11,10 @@
 
 	<artifactId>xsd2vdm</artifactId>
 	
+	<properties>
+		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>
+	</properties>
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -25,6 +29,21 @@
 				<artifactId>maven-resources-plugin</artifactId>
 				<configuration>
 					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Main-Class>xsd2vdm.Xsd2VDM</Main-Class>
+							<Implementation-Version>${project.version} build ${maven.build.timestamp}</Implementation-Version>
+							<Class-Path>.</Class-Path>
+						</manifestEntries>
+					</archive>
+					<finalName>
+						${project.artifactId}-${project.version}-${maven.build.timestamp}
+					</finalName>
 				</configuration>
 			</plugin>
 		</plugins>

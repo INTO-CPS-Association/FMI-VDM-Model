@@ -200,34 +200,33 @@ public class Xsd2VDM
 		
 		if (element.isReference())
 		{
-			ref.set(elementName, convertElement(XSDElement.lookup(element.getAttr("ref"))));
+			ref.set(convertElement(XSDElement.lookup(element.getAttr("ref"))));
 		}
 		else if (element.isComplexElement())
 		{
-			ref.set(elementName, convertComplexType(element.getFirstChild()));
+			ref.set(convertComplexType(element.getFirstChild(), elementName));
 		}
 		else if (element.isTypedElement())
 		{
-			ref.set(elementName, convertComplexType(XSDElement.lookup(element.getAttr("type"))));
+			ref.set(convertComplexType(XSDElement.lookup(element.getAttr("type")), elementName));
 		}
 		else if (element.isType("xs:group"))
 		{
-			ref.set(convertGroup(element));
+			ref.set(convertGroup(element, elementName));
 		}
 		else
 		{
 			System.err.println("Ignoring element " + element.getAttr("name"));
 		}
 		
-		// rec.qualify(element.getAttrs());
 		return ref;
 	}
 
-	private Record convertComplexType(XSDElement complexType)
+	private Record convertComplexType(XSDElement complexType, String outerName)
 	{
 		assert complexType.isType("xs:complexType");
 
-		String typename = complexType.getAttr("name");
+		String typename = outerName != null ? outerName : complexType.getAttr("name");
 		Record rec = new Record(typename);
 		
 		for (XSDElement top: complexType.getChildren())
@@ -259,11 +258,11 @@ public class Xsd2VDM
 					break;
 	
 				case "xs:group":
-					rec.addField(top.getAttr("name"), convertGroup(top), top.getAttrs());
+					rec.addField(typename.toLowerCase(), convertGroup(top, typename), top.getAttrs());
 					break;
 					
 				case "xs:complexContent":
-					rec = convertComplexContent(top);
+					rec = convertComplexContent(top, typename);
 					break;
 					
 				case "xs:attribute":
@@ -276,11 +275,10 @@ public class Xsd2VDM
 			}
 		}
 
-		// rec.qualify(first.getAttrs());
 		return rec;
 	}
 	
-	private Record convertComplexContent(XSDElement element)
+	private Record convertComplexContent(XSDElement element, String outerName)
 	{
 		assert element.isType("xs:complexContent");
 
@@ -288,9 +286,13 @@ public class Xsd2VDM
 		
 		if (element.getFirstChild().isType("xs:extension"))
 		{
-			rec = convertComplexType(XSDElement.lookup(element.getFirstChild().getAttr("base")));
+			rec = convertComplexType(XSDElement.lookup(element.getFirstChild().getAttr("base")), outerName);
 		}
-		else	// TODO restriction
+		else if (element.getFirstChild().isType("xs:restriction"))
+		{
+			rec = convertComplexType(XSDElement.lookup(element.getFirstChild().getAttr("base")), outerName);
+		}
+		else
 		{
 			System.err.println("Expecting xs:extension " + element.getType());
 		}
@@ -298,17 +300,18 @@ public class Xsd2VDM
 		return rec;
 	}
 	
-	private Type convertGroup(XSDElement element)
+	private Type convertGroup(XSDElement element, String outerName)
 	{
 		assert element.isType("xs:group");
 
 		if (element.isReference())
 		{
-			return convertGroup(XSDElement.lookup(element.getAttr("ref")));
+			String ref = element.getAttr("ref");
+			return convertGroup(XSDElement.lookup(ref), ref);
 		}
 		else
 		{
-			String unionName = element.getAttr("name");
+			String unionName = outerName != null ? outerName : element.getAttr("name");
 			
 			if (converted.containsKey(unionName))
 			{

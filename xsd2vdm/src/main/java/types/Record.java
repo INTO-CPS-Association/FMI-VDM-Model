@@ -64,11 +64,21 @@ public class Record extends Type
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append(name + " ::\n");
 		
-		for (Field field: fields)
+		if (fields.size() == 1)
 		{
-			sb.append("    " + field.getName() + " : " + field.getType() + "\n");
+			sb.append(name);
+			sb.append(" = ");
+			sb.append(fields.get(0).getType());
+		}
+		else
+		{
+			sb.append(name + " ::\n");
+			
+			for (Field field: fields)
+			{
+				sb.append("    " + field.getName() + " : " + field.getType() + "\n");
+			}
 		}
 		
 		sb.append(";\n");
