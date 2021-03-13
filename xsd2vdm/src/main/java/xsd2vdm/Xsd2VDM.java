@@ -253,7 +253,7 @@ public class Xsd2VDM
 						}
 						else
 						{
-							System.err.println("Ignoring complex child " + field.getType());
+							System.err.println("Ignoring sequence child " + field.getType());
 						}
 					}
 					break;
