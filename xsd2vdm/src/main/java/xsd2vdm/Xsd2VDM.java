@@ -138,12 +138,42 @@ public class Xsd2VDM
 			}
 		}
 		
+		// Look for, and print, a top level comment
+		out: for (XSDElement schema: roots)
+		{
+			for (XSDElement child: schema.getChildren())
+			{
+				if (child.isType("xs:annotation") &&
+					child.getFirstChild().isType("xs:documentation"))
+				{
+					XSDElement doc = child.getFirstChild();
+					
+					for (XSDElement comment: doc.getChildren())
+					{
+						if (comment instanceof XSDContent)
+						{
+							String[] lines = comment.toString().split("\n");
+							
+							for (String line: lines)
+							{
+								output.println("-- " + line);
+							}
+						}
+					}
+					
+					break out;
+				}
+			}
+		}
+		
 		converted.clear();
 		
 		for (XSDElement schema: roots)
 		{
 			convertSchema(schema);
 		}
+		
+		output.println("types");
 		
 		for (String def: converted.keySet())
 		{
@@ -188,43 +218,52 @@ public class Xsd2VDM
 	private Type convertElement(XSDElement element)
 	{
 		assert element.isType("xs:element");
-		String elementName = element.getAttr("name");
-		
-		if (converted.containsKey(elementName))
-		{
-			return converted.get(elementName);
-		}
-
-		RefType ref = new RefType(new Record(elementName));
-		converted.put(elementName, ref);
 		
 		if (element.isReference())
 		{
-			ref.set(convertElement(XSDElement.lookup(element.getAttr("ref"))));
-		}
-		else if (element.isComplexElement())
-		{
-			ref.set(convertComplexType(element.getFirstChild(), elementName));
-		}
-		else if (element.isTypedElement())
-		{
-			ref.set(convertComplexType(XSDElement.lookup(element.getAttr("type")), elementName));
-		}
-		else if (element.isType("xs:group"))
-		{
-			ref.set(convertGroup(element, elementName));
+			String ref = element.getAttr("ref");
+			return convertElement(XSDElement.lookup(ref));
 		}
 		else
 		{
-			System.err.println("Ignoring element " + element.getAttr("name"));
+			String elementName = element.getAttr("name");
+			
+			if (converted.containsKey(elementName))
+			{
+				return converted.get(elementName);
+			}
+	
+			RefType ref = new RefType(new Record(elementName));
+			converted.put(elementName, ref);
+			
+			if (element.isReference())
+			{
+				ref.set(convertElement(XSDElement.lookup(element.getAttr("ref"))));
+			}
+			else if (element.isComplexElement())
+			{
+				ref.set(convertComplexType(element.getFirstChild(), elementName));
+			}
+			else if (element.isTypedElement())
+			{
+				ref.set(convertComplexType(XSDElement.lookup(element.getAttr("type")), elementName));
+			}
+			else if (element.isType("xs:group"))
+			{
+				ref.set(convertGroup(element, elementName));
+			}
+			else
+			{
+				System.err.println("Ignoring element " + element.getAttr("name"));
+			}
+			
+			return ref;
 		}
-		
-		return ref;
 	}
 
 	private Record convertComplexType(XSDElement complexType, String outerName)
 	{
-		assert complexType.isType("xs:complexType");
+		assert complexType.isType("xs:complexType") || complexType.isType("xs:extension");
 
 		String typename = outerName != null ? outerName : complexType.getAttr("name");
 		Record rec = new Record(typename);
@@ -234,25 +273,28 @@ public class Xsd2VDM
 			switch (top.getType())
 			{
 				case "xs:sequence":
-					for (XSDElement field: top.getChildren())
+					for (XSDElement seq: top.getChildren())
 					{
-						if (field.isType("xs:element"))
+						Map<String, String> effective = top.getAttrs();
+						effective.putAll(seq.getAttrs());
+						
+						if (seq.isType("xs:element"))
 						{
-							String fname = field.getAttr("name");
-							if (fname == null) fname = field.getAttr("ref");
-							rec.addField(fname.toLowerCase(), convertElement(field), top.getAttrs());
+							String fname = seq.getAttr("name");
+							if (fname == null) fname = seq.getAttr("ref");
+							rec.addField(fname.toLowerCase(), convertElement(seq), effective);
 						}
-						else if (field.isType("xs:attribute"))
+						else if (seq.isType("xs:attribute"))
 						{
-							rec.addField(convertAttribute(field));
+							rec.addField(convertAttribute(seq));
 						}
-						else if (field.isType("xs:any"))
+						else if (seq.isType("xs:any"))
 						{
-							rec.addField("any", new BasicType("token"), field.getAttrs());
+							rec.addField("any", new BasicType("token"), effective);
 						}
 						else
 						{
-							System.err.println("Ignoring sequence child " + field.getType());
+							System.err.println("Ignoring sequence child " + seq.getType());
 						}
 					}
 					break;
@@ -267,6 +309,10 @@ public class Xsd2VDM
 					
 				case "xs:attribute":
 					rec.addField(convertAttribute(top));
+					break;
+
+				case "xs:attributeGroup":
+					rec.addFields(convertAttributeGroup(top));
 					break;
 					
 				default:
@@ -283,14 +329,12 @@ public class Xsd2VDM
 		assert element.isType("xs:complexContent");
 
 		Record rec = null;
+		XSDElement first = element.getFirstChild();
 		
-		if (element.getFirstChild().isType("xs:extension"))
+		if (first.isType("xs:extension"))
 		{
-			rec = convertComplexType(XSDElement.lookup(element.getFirstChild().getAttr("base")), outerName);
-		}
-		else if (element.getFirstChild().isType("xs:restriction"))
-		{
-			rec = convertComplexType(XSDElement.lookup(element.getFirstChild().getAttr("base")), outerName);
+			rec = convertComplexType(XSDElement.lookup(first.getAttr("base")), outerName);
+			rec.addFields(convertComplexType(first, outerName));
 		}
 		else
 		{
@@ -351,16 +395,48 @@ public class Xsd2VDM
 		
 		if (attribute.getFirstChild() != null)
 		{
-			return new Field("_" + attribute.getAttr("name"),
+			return new Field("$" + attribute.getAttr("name"),
 				convertSimpleType(attribute.getFirstChild()), attribute.getAttrs());
 		}
 		else
 		{
-			return new Field("_" + attribute.getAttr("name"),
+			return new Field("$" + attribute.getAttr("name"),
 				convertBasicType(attribute.getAttr("type")), attribute.getAttrs());
 		}
 	}
 	
+	private List<Field> convertAttributeGroup(XSDElement attributeGroup)
+	{
+		assert attributeGroup.isType("xs:attributeGroup");
+		
+		if (attributeGroup.isReference())
+		{
+			return convertAttributeGroup(XSDElement.lookup(attributeGroup.getAttr("ref")));
+		}
+		
+		List<Field> fields = new Vector<Field>();
+		
+		for (XSDElement attr: attributeGroup.getChildren())
+		{
+			switch (attr.getType())
+			{
+				case "xs:attribute":
+					fields.add(convertAttribute(attr));
+					break;
+
+				case "xs:attributeGroup":
+					fields.addAll(convertAttributeGroup(attr));
+					break;
+					
+				default:
+					System.err.println("Unexpected attributeGroup child " + attr.getType());
+					break;
+			}
+		}
+		
+		return fields;
+	}
+
 	private Type convertSimpleType(XSDElement simpleType)
 	{
 		assert simpleType.isType("xs:simpleType");
@@ -370,7 +446,7 @@ public class Xsd2VDM
 		switch (first.getType())
 		{
 			case "xs:restriction":
-				return new BasicType(first.getAttr("base"));
+				return convertBasicType(first.getAttr("base"));
 				
 			case "xs:list":
 				Type itemtype = null;
@@ -399,18 +475,24 @@ public class Xsd2VDM
 			case "xs:normalizedString":
 			case "xs:string":
 			case "xs:dateTime":
+			case "xs:hexBinary":
 				return new BasicType("seq1 of char");
 				
 			case "xs:double":
 			case "xs:float":
 				return new BasicType("real");
 			
-			case "xs:unsignedInt":
+			case "xs:nonNegativeInteger":
 			case "xs:unsignedLong":
+			case "xs:unsignedInt":
 			case "xs:unsignedByte":
+			case "xs:unsignedShort":
 				return new BasicType("nat");
 				
+			case "xs:long":
 			case "xs:int":
+			case "xs:short":
+			case "xs:byte":
 				return new BasicType("int");
 			
 			case "xs:boolean":

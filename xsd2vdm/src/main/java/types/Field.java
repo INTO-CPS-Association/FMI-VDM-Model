@@ -42,7 +42,7 @@ public class Field
 	{
 		this.name = name;
 		this.type = type;
-		
+
 		String minOccurs = attributes.get("minOccurs");
 		String maxOccurs = attributes.get("maxOccurs");
 		String use = attributes.get("use");
@@ -58,8 +58,13 @@ public class Field
 	{
 		return name;
 	}
+	
+	public Type getType()
+	{
+		return type;
+	}
 
-	public String getType()
+	public String getVDMType()
 	{
 		if (optional)
 		{

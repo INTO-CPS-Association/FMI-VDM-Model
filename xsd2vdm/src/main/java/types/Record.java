@@ -69,7 +69,7 @@ public class Record extends Type
 		{
 			sb.append(name);
 			sb.append(" = ");
-			sb.append(fields.get(0).getType());
+			sb.append(fields.get(0).getVDMType());
 		}
 		else
 		{
@@ -85,24 +85,24 @@ public class Record extends Type
 			}
 			
 			String format = "    %-" + longest + "s : %s\n";
-			boolean hasAttributes = false;
+			int attrCount = 0;
 			
 			for (Field field: fields)
 			{
-				if (field.getName().startsWith("_"))
+				if (field.getName().startsWith("$"))
 				{
-					sb.append(String.format(format, field.getName(), field.getType()));
-					hasAttributes = true;
+					sb.append(String.format(format, field.getName(), field.getVDMType()));
+					attrCount++;
 				}
 			}
 			
-			if (hasAttributes) sb.append("\n");
+			if (attrCount > 0 && attrCount < fields.size()) sb.append("\n");
 
 			for (Field field: fields)
 			{
-				if (!field.getName().startsWith("_"))
+				if (!field.getName().startsWith("$"))
 				{
-					sb.append(String.format(format, field.getName(), field.getType()));
+					sb.append(String.format(format, field.getName(), field.getVDMType()));
 				}
 			}
 		}
@@ -125,5 +125,18 @@ public class Record extends Type
 	public List<Field> getFields()
 	{
 		return fields;
+	}
+
+	public void addFields(Record other)
+	{
+		addFields(other.fields);
+	}
+
+	public void addFields(List<Field> group)
+	{
+		for (Field f: group)
+		{
+			addField(f);
+		}
 	}
 }
