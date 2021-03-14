@@ -85,10 +85,25 @@ public class Record extends Type
 			}
 			
 			String format = "    %-" + longest + "s : %s\n";
+			boolean hasAttributes = false;
 			
 			for (Field field: fields)
 			{
-				sb.append(String.format(format, field.getName(), field.getType()));
+				if (field.getName().startsWith("_"))
+				{
+					sb.append(String.format(format, field.getName(), field.getType()));
+					hasAttributes = true;
+				}
+			}
+			
+			if (hasAttributes) sb.append("\n");
+
+			for (Field field: fields)
+			{
+				if (!field.getName().startsWith("_"))
+				{
+					sb.append(String.format(format, field.getName(), field.getType()));
+				}
 			}
 		}
 		
