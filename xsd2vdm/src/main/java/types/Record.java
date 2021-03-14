@@ -74,10 +74,21 @@ public class Record extends Type
 		else
 		{
 			sb.append(name + " ::\n");
+			int longest = 0;
+
+			for (Field field: fields)
+			{
+				if (field.getName().length() > longest)
+				{
+					longest = field.getName().length();
+				}
+			}
+			
+			String format = "    %-" + longest + "s : %s\n";
 			
 			for (Field field: fields)
 			{
-				sb.append("    " + field.getName() + " : " + field.getType() + "\n");
+				sb.append(String.format(format, field.getName(), field.getType()));
 			}
 		}
 		
