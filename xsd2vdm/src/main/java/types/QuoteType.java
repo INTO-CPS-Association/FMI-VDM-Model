@@ -29,50 +29,19 @@
 
 package types;
 
-import java.util.Map;
-
-public class Field
+public class QuoteType extends Type
 {
-	private final String name;
-	private final Type type;
-	private final boolean optional;
-	private final String aggregate;
+	private final String tag;
 	
-	public Field(String name, Type type, Map<String, String> attributes)
+	public QuoteType(String tag)
 	{
-		this.name = name;
-		this.type = type;
-
-		String minOccurs = attributes.get("minOccurs");
-		String maxOccurs = attributes.get("maxOccurs");
-		String use = attributes.get("use");
-		
-		int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
-		int max = maxOccurs == null ? 1 : maxOccurs.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(maxOccurs);
-		
-		optional = min == 0 || "optional".equals(use);
-		aggregate = min > 1 ? "seq1 of " : max > 1 ? (min == 1 ? "seq1 of " : "seq of ") : ""; 
+		this.tag = tag;
 	}
 	
-	public String getName()
+	@Override
+	protected String signature()
 	{
-		return name;
-	}
-	
-	public Type getType()
-	{
-		return type;
+		return "<" + tag + ">";
 	}
 
-	public String getVDMType()
-	{
-		if (optional)
-		{
-			return "[" + aggregate + type.signature() + "]";
-		}
-		else
-		{
-			return aggregate + type.signature();
-		}
-	}
 }

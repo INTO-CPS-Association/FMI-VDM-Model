@@ -29,50 +29,36 @@
 
 package types;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Vector;
 
-public class Field
+public class CommentType extends Type
 {
-	private final String name;
-	private final Type type;
-	private final boolean optional;
-	private final String aggregate;
+	private final List<String> lines = new Vector<String>();
 	
-	public Field(String name, Type type, Map<String, String> attributes)
+	@Override
+	public String toString()
 	{
-		this.name = name;
-		this.type = type;
-
-		String minOccurs = attributes.get("minOccurs");
-		String maxOccurs = attributes.get("maxOccurs");
-		String use = attributes.get("use");
+		StringBuilder sb = new StringBuilder();
 		
-		int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
-		int max = maxOccurs == null ? 1 : maxOccurs.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(maxOccurs);
+		for (String line: lines)
+		{
+			sb.append("-- ");
+			sb.append(line);
+			sb.append("\n");
+		}
 		
-		optional = min == 0 || "optional".equals(use);
-		aggregate = min > 1 ? "seq1 of " : max > 1 ? (min == 1 ? "seq1 of " : "seq of ") : ""; 
+		return sb.toString();
 	}
 	
-	public String getName()
+	@Override
+	protected String signature()
 	{
-		return name;
-	}
-	
-	public Type getType()
-	{
-		return type;
+		return null;
 	}
 
-	public String getVDMType()
+	public void add(String line)
 	{
-		if (optional)
-		{
-			return "[" + aggregate + type.signature() + "]";
-		}
-		else
-		{
-			return aggregate + type.signature();
-		}
+		lines.add(line);
 	}
 }

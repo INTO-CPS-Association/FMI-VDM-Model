@@ -31,8 +31,8 @@ package xsd2vdm;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +42,9 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import types.BasicType;
+import types.CommentType;
 import types.Field;
+import types.QuoteType;
 import types.Record;
 import types.RefType;
 import types.SeqType;
@@ -111,7 +113,7 @@ public class Xsd2VDM
 		}
 	}
 	
-	private Map<String, RefType> converted = new HashMap<String, RefType>();
+	private Map<String, RefType> converted = new LinkedHashMap<String, RefType>();
 	
 	private void process(String rootXSD, PrintStream output) throws Exception
 	{
@@ -138,34 +140,6 @@ public class Xsd2VDM
 			}
 		}
 		
-		// Look for, and print, a top level comment
-		out: for (XSDElement schema: roots)
-		{
-			for (XSDElement child: schema.getChildren())
-			{
-				if (child.isType("xs:annotation") &&
-					child.getFirstChild().isType("xs:documentation"))
-				{
-					XSDElement doc = child.getFirstChild();
-					
-					for (XSDElement comment: doc.getChildren())
-					{
-						if (comment instanceof XSDContent)
-						{
-							String[] lines = comment.toString().split("\n");
-							
-							for (String line: lines)
-							{
-								output.println("-- " + line);
-							}
-						}
-					}
-					
-					break out;
-				}
-			}
-		}
-		
 		converted.clear();
 		
 		for (XSDElement schema: roots)
@@ -182,7 +156,7 @@ public class Xsd2VDM
 		
 		output.close();
 	}
-
+	
 	private void convertSchema(XSDElement schema)
 	{
 		for (XSDElement child: schema.getChildren())
@@ -197,6 +171,7 @@ public class Xsd2VDM
 					break;
 					
 				case "xs:annotation":
+					convertAnnotation(child);
 					break;
 					
 				case "xs:complexType":
@@ -212,6 +187,36 @@ public class Xsd2VDM
 					System.err.println("Ignoring schema child " + child.getType());
 					break;
 			}
+		}
+	}
+
+	private void convertAnnotation(XSDElement annotation)
+	{
+		assert annotation.isType("xs:annotation");
+		XSDElement doc = annotation.getFirstChild();
+		
+		if (doc.isType("xs:documentation"))
+		{
+			CommentType type = new CommentType();
+			
+			for (XSDElement comment: doc.getChildren())
+			{
+				if (comment instanceof XSDContent)
+				{
+					String[] lines = comment.toString().split("\n");
+					
+					for (String line: lines)
+					{
+						type.add(line);
+					}
+				}
+			}
+	
+			// converted.put("comment" + ++commentCount, new RefType(type));
+		}
+		else
+		{
+			System.err.println("Ignoring annotation type " + doc.getType());
 		}
 	}
 
@@ -393,14 +398,20 @@ public class Xsd2VDM
 	{
 		assert attribute.isType("xs:attribute");
 		
+		if (!attribute.hasAttr("use"))
+		{
+			attribute.getAttrs().put("use", "optional");	// Explicit, for Field.
+		}
+		
 		if (attribute.getFirstChild() != null)
 		{
-			return new Field("$" + attribute.getAttr("name"),
-				convertSimpleType(attribute.getFirstChild()), attribute.getAttrs());
+			return new Field(attrName(attribute.getAttr("name")),
+				convertSimpleType(attribute.getFirstChild(), typeName(attribute.getAttr("name"))),
+				attribute.getAttrs());
 		}
 		else
 		{
-			return new Field("$" + attribute.getAttr("name"),
+			return new Field(attrName(attribute.getAttr("name")),
 				convertBasicType(attribute.getAttr("type")), attribute.getAttrs());
 		}
 	}
@@ -437,7 +448,7 @@ public class Xsd2VDM
 		return fields;
 	}
 
-	private Type convertSimpleType(XSDElement simpleType)
+	private Type convertSimpleType(XSDElement simpleType, String attributeName)
 	{
 		assert simpleType.isType("xs:simpleType");
 		
@@ -446,7 +457,24 @@ public class Xsd2VDM
 		switch (first.getType())
 		{
 			case "xs:restriction":
-				return convertBasicType(first.getAttr("base"));
+				if (first.getAttr("base").equals("xs:normalizedString") &&
+					first.getFirstChild() != null &&
+					first.getFirstChild().isType("xs:enumeration"))
+				{
+					Union union = new Union(attributeName);
+					
+					for (XSDElement e: first.getChildren())
+					{
+						union.addType(new QuoteType(e.getAttr("value")));
+					}
+					
+					converted.put(attributeName, new RefType(union));
+					return union;
+				}
+				else
+				{
+					return convertBasicType(first.getAttr("base"));
+				}
 				
 			case "xs:list":
 				Type itemtype = null;
@@ -457,10 +485,22 @@ public class Xsd2VDM
 				}
 				else
 				{
-					itemtype = convertSimpleType(first.getFirstChild());
+					itemtype = convertSimpleType(first.getFirstChild(), attributeName);
 				}
 				
 				return new SeqType(itemtype);
+			
+			case "xs:union":
+				String[] types = first.getAttr("memberTypes").split("\\s+");
+				Union union = new Union(attributeName);
+				
+				for (String type: types)
+				{
+					union.addType(convertSimpleType(XSDElement.lookup(type), type));
+				}
+				
+				converted.put(attributeName, new RefType(union));
+				return union;
 				
 			default:
 				System.err.println("Ignoring simple type " + first.getType());
@@ -468,6 +508,16 @@ public class Xsd2VDM
 		}
 	}
 	
+	private String typeName(String attribute)
+	{
+		return attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
+	}
+
+	private String attrName(String attribute)
+	{
+		return "$" + attribute;
+	}
+
 	private BasicType convertBasicType(String type)
 	{
 		switch (type)
