@@ -44,6 +44,8 @@ public class XSDElement
 	private final List<XSDElement> children = new Vector<XSDElement>();
 	private final static Map<String, XSDElement> referenceMap = new HashMap<String, XSDElement>();
 	
+	private String annotation;
+	
 	public XSDElement(String qName, Attributes attributes)
 	{
 		this.type = qName;
@@ -175,5 +177,15 @@ public class XSDElement
 	public int hashCode()
 	{
 		return type.hashCode();
+	}
+
+	public void setAnnotation(String text)
+	{
+		this.annotation = text;
+	}
+	
+	public String getAnnotation()
+	{
+		return annotation;
 	}
 }
