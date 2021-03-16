@@ -113,8 +113,16 @@ public class Xsd2VDM
 		}
 	}
 	
+	/**
+	 * A collection of elements that have already been converted or which are in the
+	 * process of being converted, to avoid reference loops.
+	 */
 	private Map<String, RefType> converted = new LinkedHashMap<String, RefType>();
 	
+	/**
+	 * A stack of the elements currently being converted, to allow outer-outer-...
+	 * attributes to be obtained, when the local element does not define one.
+	 */
 	private Stack<XSDElement> stack = new Stack<XSDElement>();
 	
 	private void process(String rootXSD, PrintStream output) throws Exception
@@ -143,12 +151,14 @@ public class Xsd2VDM
 		}
 		
 		converted.clear();
+		stack.clear();
 		
 		for (XSDElement schema: roots)
 		{
 			convertSchema(schema);
 		}
 		
+		assert stack.isEmpty();
 		output.println("types");
 		
 		for (String def: converted.keySet())
@@ -244,6 +254,7 @@ public class Xsd2VDM
 			
 			if (converted.containsKey(elementName))
 			{
+				stack.pop();
 				return converted.get(elementName);
 			}
 	
@@ -256,23 +267,24 @@ public class Xsd2VDM
 			}
 			else
 			{
-				for (XSDElement top: element.getChildren())
+				for (XSDElement child: element.getChildren())
 				{
-					switch (top.getType())
+					switch (child.getType())
 					{
 						case "xs:complexType":
-							ref.set(convertComplexType(top));
+							ref.set(convertComplexType(child));
 							break;
 					
 						case "xs:group":
-							ref.set(convertGroup(top));
+							ref.set(convertGroup(child));
 							break;
 							
 						case "xs:annotation":
+							convertAnnotation(child);
 							break;
 
 						default:
-							System.err.println("Ignoring element child " + top.getType());
+							System.err.println("Ignoring element child " + child.getType());
 							break;
 					}
 				}
@@ -293,35 +305,36 @@ public class Xsd2VDM
 		String typename = stackAttr("name");
 		Record rec = new Record(typename);
 		
-		for (XSDElement top: complexType.getChildren())
+		for (XSDElement child: complexType.getChildren())
 		{
-			switch (top.getType())
+			switch (child.getType())
 			{
 				case "xs:sequence":
-					convertSequence(top, rec);
+					convertSequence(child, rec);
 					break;
 	
 				case "xs:group":
-					rec.addField(typename.toLowerCase(), convertGroup(top), top.getAttrs());
+					rec.addField(typename.toLowerCase(), convertGroup(child), child.getAttrs());
 					break;
 					
 				case "xs:complexContent":
-					rec = convertComplexContent(top);
+					rec = convertComplexContent(child);
 					break;
 					
 				case "xs:attribute":
-					rec.addField(convertAttribute(top));
+					rec.addField(convertAttribute(child));
 					break;
 
 				case "xs:attributeGroup":
-					rec.addFields(convertAttributeGroup(top));
+					rec.addFields(convertAttributeGroup(child));
 					break;
 					
 				case "xs:annotation":
+					convertAnnotation(child);
 					break;
 					
 				default:
-					System.err.println("Ignoring complex child " + top.getType());
+					System.err.println("Ignoring complex child " + child.getType());
 					break;
 			}
 		}
@@ -335,25 +348,25 @@ public class Xsd2VDM
 		assert sequence.getType().equals("xs:sequence");
 		stack.push(sequence);
 		
-		for (XSDElement seq: sequence.getChildren())
+		for (XSDElement child: sequence.getChildren())
 		{
 			Map<String, String> effective = sequence.getAttrs();
-			effective.putAll(seq.getAttrs());
+			effective.putAll(child.getAttrs());
 			
-			switch (seq.getType())
+			switch (child.getType())
 			{
 				case "xs:element":
-					String fname = seq.getAttr("name");
-					if (fname == null) fname = seq.getAttr("ref");
-					rec.addField(fname.toLowerCase(), convertElement(seq), effective);
+					String fname = child.getAttr("name");
+					if (fname == null) fname = child.getAttr("ref");
+					rec.addField(fname.toLowerCase(), convertElement(child), effective);
 					break;
 					
 				case "xs:sequence":
-					convertSequence(seq, rec);
+					convertSequence(child, rec);
 					break;
 			
 				case "xs:attribute":
-					rec.addField(convertAttribute(seq));
+					rec.addField(convertAttribute(child));
 					break;
 			
 				case "xs:any":
@@ -361,14 +374,15 @@ public class Xsd2VDM
 					break;
 					
 				case "xs:annotation":
+					convertAnnotation(child);
 					break;
 					
 				case "xs:choice":
-					rec.addField(new Field(stackAttr("name"), convertChoice(seq), seq.getAttrs()));
+					rec.addField(new Field(stackAttr("name"), convertChoice(child), child.getAttrs()));
 					break;
 
 				default:
-					System.err.println("Ignoring sequence child " + seq.getType());
+					System.err.println("Ignoring sequence child " + child.getType());
 					break;
 			}
 		}
@@ -403,18 +417,21 @@ public class Xsd2VDM
 	{
 		assert complex.isType("xs:complexContent");
 		stack.push(complex);
-
 		Record rec = null;
-		XSDElement first = complex.getFirstChild();
-		
-		if (first.isType("xs:extension"))
+
+		for (XSDElement child: complex.getChildren())
 		{
-			rec = convertComplexType(XSDElement.lookup(first.getAttr("base")));
-			rec.addFields(convertComplexType(first));
-		}
-		else
-		{
-			System.err.println("Expecting xs:extension " + complex.getType());
+			switch (child.getType())
+			{
+				case "xs:extension":
+					rec = convertComplexType(XSDElement.lookup(child.getAttr("base")));
+					rec.addFields(convertComplexType(child));
+					break;
+					
+				default:
+					System.err.println("Ignoring complex content " + child.getType());
+					break;
+			}
 		}
 		
 		stack.pop();
@@ -438,20 +455,25 @@ public class Xsd2VDM
 			
 			if (converted.containsKey(unionName))
 			{
+				stack.pop();
 				return converted.get(unionName);
 			}
 			
 			RefType ref = new RefType(new Union(unionName));
 			converted.put(unionName, ref);
-			XSDElement first = group.getFirstChild();
 			
-			if (first.isType("xs:choice"))
+			for (XSDElement child: group.getChildren())
 			{
-				ref.set(convertChoice(first));
-			}
-			else
-			{
-				System.err.println("Ignoring group type " + first.getType());
+				switch (child.getType())
+				{
+					case "xs:choice":
+						ref.set(convertChoice(child));
+						break;
+						
+					default:
+						System.err.println("Ignoring group child " + child.getType());
+						break;
+				}
 			}
 			
 			result = ref;
@@ -484,12 +506,12 @@ public class Xsd2VDM
 				switch (child.getType())
 				{
 					case "xs:annotation":
+						convertAnnotation(child);
 						break;
 						
 					case "xs:simpleType":
 						result = new Field(attrName(attribute.getAttr("name")),
-								convertSimpleType(child),
-								attribute.getAttrs());
+								convertSimpleType(child), attribute.getAttrs());
 						break;
 						
 					default:
@@ -610,7 +632,7 @@ public class Xsd2VDM
 	
 	private String stackAttr(String attr)
 	{
-		for (int i=stack.size()-1; i > 0; i--)
+		for (int i = stack.size() - 1; i > 0; i--)
 		{
 			XSDElement e = stack.get(i);
 			
