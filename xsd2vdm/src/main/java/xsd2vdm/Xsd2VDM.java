@@ -50,6 +50,7 @@ import types.RefType;
 import types.SeqType;
 import types.Type;
 import types.Union;
+import types.UnknownType;
 
 public class Xsd2VDM
 {
@@ -241,25 +242,32 @@ public class Xsd2VDM
 			RefType ref = new RefType(new Record(elementName));
 			converted.put(elementName, ref);
 			
-			if (element.isReference())
-			{
-				ref.set(convertElement(XSDElement.lookup(element.getAttr("ref"))));
-			}
-			else if (element.isComplexElement())
-			{
-				ref.set(convertComplexType(element.getFirstChild(), elementName));
-			}
-			else if (element.isTypedElement())
+			if (element.hasAttr("type"))
 			{
 				ref.set(convertComplexType(XSDElement.lookup(element.getAttr("type")), elementName));
 			}
-			else if (element.isType("xs:group"))
-			{
-				ref.set(convertGroup(element, elementName));
-			}
 			else
 			{
-				System.err.println("Ignoring element " + element.getAttr("name"));
+				for (XSDElement top: element.getChildren())
+				{
+					switch (top.getType())
+					{
+						case "xs:complexType":
+							ref.set(convertComplexType(top, elementName));
+							break;
+					
+						case "xs:group":
+							ref.set(convertGroup(top, elementName));
+							break;
+							
+						case "xs:annotation":
+							break;
+
+						default:
+							System.err.println("Ignoring element child " + top.getType());
+							break;
+					}
+				}
 			}
 			
 			return ref;
@@ -278,30 +286,7 @@ public class Xsd2VDM
 			switch (top.getType())
 			{
 				case "xs:sequence":
-					for (XSDElement seq: top.getChildren())
-					{
-						Map<String, String> effective = top.getAttrs();
-						effective.putAll(seq.getAttrs());
-						
-						if (seq.isType("xs:element"))
-						{
-							String fname = seq.getAttr("name");
-							if (fname == null) fname = seq.getAttr("ref");
-							rec.addField(fname.toLowerCase(), convertElement(seq), effective);
-						}
-						else if (seq.isType("xs:attribute"))
-						{
-							rec.addField(convertAttribute(seq));
-						}
-						else if (seq.isType("xs:any"))
-						{
-							rec.addField("any", new BasicType("token"), effective);
-						}
-						else
-						{
-							System.err.println("Ignoring sequence child " + seq.getType());
-						}
-					}
+					convertSequence(top, rec);
 					break;
 	
 				case "xs:group":
@@ -320,6 +305,9 @@ public class Xsd2VDM
 					rec.addFields(convertAttributeGroup(top));
 					break;
 					
+				case "xs:annotation":
+					break;
+					
 				default:
 					System.err.println("Ignoring complex child " + top.getType());
 					break;
@@ -329,6 +317,70 @@ public class Xsd2VDM
 		return rec;
 	}
 	
+	private void convertSequence(XSDElement top, Record rec)
+	{
+		assert top.getType().equals("xs:sequence");
+		
+		for (XSDElement seq: top.getChildren())
+		{
+			Map<String, String> effective = top.getAttrs();
+			effective.putAll(seq.getAttrs());
+			
+			switch (seq.getType())
+			{
+				case "xs:element":
+					String fname = seq.getAttr("name");
+					if (fname == null) fname = seq.getAttr("ref");
+					rec.addField(fname.toLowerCase(), convertElement(seq), effective);
+					break;
+					
+				case "xs:sequence":
+					convertSequence(seq, rec);
+					break;
+			
+				case "xs:attribute":
+					rec.addField(convertAttribute(seq));
+					break;
+			
+				case "xs:any":
+					rec.addField("any", new BasicType("token"), effective);
+					break;
+					
+				case "xs:annotation":
+					break;
+					
+				case "xs:choice":
+					rec.addField(new Field("?", convertChoice(seq, rec.getName()), seq.getAttrs()));
+					break;
+
+				default:
+					System.err.println("Ignoring sequence child " + seq.getType());
+					break;
+			}
+		}
+	}
+	
+	private Type convertChoice(XSDElement choice, String typename)
+	{
+		assert choice.getType().equals("xs:choice");
+		Union union = new Union(typename);
+	
+		for (XSDElement child: choice.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:element":
+					union.addType(convertElement(child));
+					break;
+					
+				default:
+					System.err.println("Ignoring choice child " + child.getType());
+			}
+		}
+		
+		return union;
+	}
+
 	private Record convertComplexContent(XSDElement element, String outerName)
 	{
 		assert element.isType("xs:complexContent");
@@ -367,30 +419,20 @@ public class Xsd2VDM
 				return converted.get(unionName);
 			}
 			
-			Union rec = new Union(unionName);
-			converted.put(unionName, new RefType(rec));
+			RefType ref = new RefType(new Union(unionName));
+			converted.put(unionName, ref);
 			XSDElement first = element.getFirstChild();
 			
 			if (first.isType("xs:choice"))
 			{
-				for (XSDElement field: first.getChildren())
-				{
-					if (field.isType("xs:element"))
-					{
-						rec.addType(convertElement(field));
-					}
-					else
-					{
-						System.err.println("Ignoring group child " + field.getType());
-					}
-				}
+				ref.set(convertChoice(first, unionName));
 			}
 			else
 			{
 				System.err.println("Ignoring group type " + first.getType());
 			}
 			
-			return rec;
+			return ref;
 		}
 	}
 
@@ -400,19 +442,34 @@ public class Xsd2VDM
 		
 		if (!attribute.hasAttr("use"))
 		{
-			attribute.getAttrs().put("use", "optional");	// Explicit, for Field.
+			attribute.getAttrs().put("use", "optional");	// Explicit, for Field qualifier
 		}
 		
-		if (attribute.getFirstChild() != null)
+		if (attribute.hasAttr("type"))
 		{
 			return new Field(attrName(attribute.getAttr("name")),
-				convertSimpleType(attribute.getFirstChild(), typeName(attribute.getAttr("name"))),
-				attribute.getAttrs());
+					convertBasicType(attribute.getAttr("type")), attribute.getAttrs());
 		}
 		else
 		{
-			return new Field(attrName(attribute.getAttr("name")),
-				convertBasicType(attribute.getAttr("type")), attribute.getAttrs());
+			for (XSDElement child: attribute.getChildren())
+			{
+				switch (child.getType())
+				{
+					case "xs:annotation":
+						break;
+						
+					case "xs:simpleType":
+						return new Field(attrName(attribute.getAttr("name")),
+								convertSimpleType(child, typeName(attribute.getAttr("name"))),
+								attribute.getAttrs());
+						
+					default:
+						System.err.println("Ignoring attribute child " + child.getType());
+				}
+			}
+			
+			return new Field(attrName(attribute.getAttr("name")), new UnknownType(), attribute.getAttrs());
 		}
 	}
 	

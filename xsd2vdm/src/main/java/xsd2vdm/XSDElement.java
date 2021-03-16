@@ -99,17 +99,6 @@ public class XSDElement
 		return referenceMap.get(ref);
 	}
 
-	public boolean isComplexElement()
-	{
-		return children.size() == 1 &&
-			children.get(0).getType().equals("xs:complexType");
-	}
-	
-	public boolean isTypedElement()
-	{
-		return isType("xs:element") && hasAttr("type");
-	}
-	
 	public boolean isReference()
 	{
 		return attributes.get("ref") != null;
@@ -166,5 +155,25 @@ public class XSDElement
 		}
 
 		return sb.toString();
+	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		if (other instanceof XSDElement)
+		{
+			XSDElement e = (XSDElement)other;
+			return type.equals(e.type);
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return type.hashCode();
 	}
 }
