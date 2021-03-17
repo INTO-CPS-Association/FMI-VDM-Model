@@ -91,6 +91,19 @@ public class XSDElement
 		return children;
 	}
 	
+	public boolean hasChild(String string)
+	{
+		for (XSDElement child: children)
+		{
+			if (child.isType(string))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 	public void add(XSDElement element)
 	{
 		children.add(element);

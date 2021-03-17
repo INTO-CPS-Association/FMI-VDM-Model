@@ -51,26 +51,28 @@ public class Union extends Type
 	@Override
 	protected String signature()
 	{
-		return name;
+		return name == null ? pipes() : name;
 	}
 	
 	@Override
 	public String toString()
 	{
+		return name == null ? "" : name + " = " + pipes() + ";\n";
+	}
+	
+	private String pipes()
+	{
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append(name);
-		sb.append(" =");
-		String sep = "\n    ";
+		String sep = "";
 		
 		for (Type type: types)
 		{
 			sb.append(sep);
 			sb.append(type.signature());
-			sep = " |\n    ";
+			sep = " | ";
 		}
 		
-		sb.append("\n;\n");
 		return sb.toString();
 	}
 }

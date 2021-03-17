@@ -29,8 +29,6 @@
 
 package types;
 
-import java.util.Map;
-
 public class Field
 {
 	private final String name;
@@ -38,20 +36,12 @@ public class Field
 	private final boolean optional;
 	private final String aggregate;
 	
-	public Field(String name, Type type, Map<String, String> attributes)
+	public Field(String name, Type type, boolean optional, String aggregate)
 	{
 		this.name = name;
 		this.type = type;
-
-		String minOccurs = attributes.get("minOccurs");
-		String maxOccurs = attributes.get("maxOccurs");
-		String use = attributes.get("use");
-		
-		int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
-		int max = maxOccurs == null ? 1 : maxOccurs.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(maxOccurs);
-		
-		optional = min == 0 || "optional".equals(use);
-		aggregate = min > 1 ? "seq1 of " : max > 1 ? (min == 1 ? "seq1 of " : "seq of ") : ""; 
+		this.optional = optional;
+		this.aggregate = aggregate;
 	}
 	
 	public String getName()

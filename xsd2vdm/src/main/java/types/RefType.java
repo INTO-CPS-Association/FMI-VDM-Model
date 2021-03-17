@@ -48,6 +48,18 @@ public class RefType extends Type
 		this.ref = type;
 	}
 
+	public Type deref()
+	{
+		Type t = ref;
+		
+		while (t instanceof RefType)
+		{
+			t = ((RefType)t).ref;
+		}
+		
+		return t;
+	}
+
 	@Override
 	protected String signature()
 	{

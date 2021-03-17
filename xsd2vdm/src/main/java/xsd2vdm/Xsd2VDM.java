@@ -47,7 +47,6 @@ import types.Field;
 import types.QuoteType;
 import types.Record;
 import types.RefType;
-import types.SeqType;
 import types.Type;
 import types.Union;
 
@@ -228,8 +227,8 @@ public class Xsd2VDM
 					}
 				}
 			}
-	
-			stack.peek().setAnnotation(text.toString());
+
+			// TODO What do we annotate?
 		}
 		else
 		{
@@ -263,7 +262,8 @@ public class Xsd2VDM
 			
 			if (element.hasAttr("type"))
 			{
-				ref.set(convertComplexType(XSDElement.lookup(element.getAttr("type"))));
+				Record r = convertComplexType(XSDElement.lookup(element.getAttr("type")));
+				ref.set(new Record(elementName, r.getFields()));
 			}
 			else
 			{
@@ -297,6 +297,51 @@ public class Xsd2VDM
 		return result;
 	}
 
+	private Type convertGroup(XSDElement group)
+	{
+		assert group.isType("xs:group");
+		stack.push(group);
+		Type result = null;
+	
+		if (group.isReference())
+		{
+			String ref = group.getAttr("ref");
+			result = convertGroup(XSDElement.lookup(ref));
+		}
+		else
+		{
+			String unionName = stackAttr("name");
+			
+			if (converted.containsKey(unionName))
+			{
+				stack.pop();
+				return converted.get(unionName);
+			}
+			
+			RefType ref = new RefType(new Union(unionName));
+			converted.put(unionName, ref);
+			
+			for (XSDElement child: group.getChildren())
+			{
+				switch (child.getType())
+				{
+					case "xs:choice":
+						ref.set(convertChoice(child).getType());
+						break;
+						
+					default:
+						System.err.println("Ignoring group child " + child.getType());
+						break;
+				}
+			}
+			
+			result = ref;
+		}
+		
+		stack.pop();
+		return result;
+	}
+
 	private Record convertComplexType(XSDElement complexType)
 	{
 		assert complexType.isType("xs:complexType") || complexType.isType("xs:extension");
@@ -305,20 +350,36 @@ public class Xsd2VDM
 		String typename = stackAttr("name");
 		Record rec = new Record(typename);
 		
+		if (complexType.hasAttr("name"))
+		{
+			String complexName = complexType.getAttr("name");
+			
+			if (converted.containsKey(complexName))
+			{
+				stack.pop();
+				return (Record) converted.get(complexName).deref();
+			}
+	
+			RefType ref = new RefType(rec);
+			converted.put(complexName, ref);
+		}
+		
 		for (XSDElement child: complexType.getChildren())
 		{
 			switch (child.getType())
 			{
 				case "xs:sequence":
-					convertSequence(child, rec);
+					rec.addFields(convertSequence(child).getFields());
 					break;
 	
 				case "xs:group":
-					rec.addField(typename.toLowerCase(), convertGroup(child), child.getAttrs());
+					stack.push(child);
+					rec.addField(new Field(typename.toLowerCase(), convertGroup(child), isOptional(), aggregate()));
+					stack.pop();
 					break;
 					
 				case "xs:complexContent":
-					rec = convertComplexContent(child);
+					rec.addFields(convertComplexContent(child).getFields());
 					break;
 					
 				case "xs:attribute":
@@ -343,26 +404,24 @@ public class Xsd2VDM
 		return rec;
 	}
 	
-	private void convertSequence(XSDElement sequence, Record rec)
+	private Record convertSequence(XSDElement sequence)
 	{
 		assert sequence.getType().equals("xs:sequence");
 		stack.push(sequence);
+		Record rec = new Record(stackAttr("name"));
 		
 		for (XSDElement child: sequence.getChildren())
 		{
-			Map<String, String> effective = sequence.getAttrs();
-			effective.putAll(child.getAttrs());
-			
 			switch (child.getType())
 			{
 				case "xs:element":
 					String fname = child.getAttr("name");
 					if (fname == null) fname = child.getAttr("ref");
-					rec.addField(fname.toLowerCase(), convertElement(child), effective);
+					rec.addField(new Field(fname.toLowerCase(), convertElement(child), isOptional(), aggregate()));
 					break;
 					
 				case "xs:sequence":
-					convertSequence(child, rec);
+					rec.addFields(convertSequence(child).getFields());
 					break;
 			
 				case "xs:attribute":
@@ -370,7 +429,9 @@ public class Xsd2VDM
 					break;
 			
 				case "xs:any":
-					rec.addField("any", new BasicType("token"), effective);
+					stack.push(child);
+					rec.addField(new Field("any", new BasicType("token"), isOptional(), aggregate()));
+					stack.pop();
 					break;
 					
 				case "xs:annotation":
@@ -378,7 +439,7 @@ public class Xsd2VDM
 					break;
 					
 				case "xs:choice":
-					rec.addField(new Field(stackAttr("name"), convertChoice(child), child.getAttrs()));
+					rec.addField(convertChoice(child));
 					break;
 
 				default:
@@ -388,13 +449,14 @@ public class Xsd2VDM
 		}
 		
 		stack.pop();
+		return rec;
 	}
 	
-	private Type convertChoice(XSDElement choice)
+	private Field convertChoice(XSDElement choice)
 	{
 		assert choice.getType().equals("xs:choice");
 		stack.push(choice);
-		Union union = new Union(stackAttr("name"));
+		Union union = new Union(choice.getAttr("name"));
 	
 		for (XSDElement child: choice.getChildren())
 		{
@@ -410,7 +472,7 @@ public class Xsd2VDM
 		}
 		
 		stack.pop();
-		return union;
+		return new Field(attrName(stackAttr("name")), union, isOptional(), aggregate());
 	}
 
 	private Record convertComplexContent(XSDElement complex)
@@ -438,51 +500,6 @@ public class Xsd2VDM
 		return rec;
 	}
 	
-	private Type convertGroup(XSDElement group)
-	{
-		assert group.isType("xs:group");
-		stack.push(group);
-		Type result = null;
-
-		if (group.isReference())
-		{
-			String ref = group.getAttr("ref");
-			result = convertGroup(XSDElement.lookup(ref));
-		}
-		else
-		{
-			String unionName = stackAttr("name");
-			
-			if (converted.containsKey(unionName))
-			{
-				stack.pop();
-				return converted.get(unionName);
-			}
-			
-			RefType ref = new RefType(new Union(unionName));
-			converted.put(unionName, ref);
-			
-			for (XSDElement child: group.getChildren())
-			{
-				switch (child.getType())
-				{
-					case "xs:choice":
-						ref.set(convertChoice(child));
-						break;
-						
-					default:
-						System.err.println("Ignoring group child " + child.getType());
-						break;
-				}
-			}
-			
-			result = ref;
-		}
-		
-		stack.pop();
-		return result;
-	}
-
 	private Field convertAttribute(XSDElement attribute)
 	{
 		assert attribute.isType("xs:attribute");
@@ -496,8 +513,7 @@ public class Xsd2VDM
 		
 		if (attribute.hasAttr("type"))
 		{
-			result = new Field(attrName(attribute.getAttr("name")),
-					convertBasicType(attribute.getAttr("type")), attribute.getAttrs());
+			result = convertBasicType(attribute.getAttr("type"));
 		}
 		else
 		{
@@ -510,8 +526,7 @@ public class Xsd2VDM
 						break;
 						
 					case "xs:simpleType":
-						result = new Field(attrName(attribute.getAttr("name")),
-								convertSimpleType(child), attribute.getAttrs());
+						result = convertSimpleType(child);
 						break;
 						
 					default:
@@ -562,11 +577,11 @@ public class Xsd2VDM
 		return fields;
 	}
 
-	private Type convertSimpleType(XSDElement simpleType)
+	private Field convertSimpleType(XSDElement simpleType)
 	{
 		assert simpleType.isType("xs:simpleType");
 		stack.push(simpleType);
-		Type result = null;
+		Field result = null;
 		
 		XSDElement first = simpleType.getFirstChild();
 		
@@ -574,8 +589,7 @@ public class Xsd2VDM
 		{
 			case "xs:restriction":
 				if (first.getAttr("base").equals("xs:normalizedString") &&
-					first.getFirstChild() != null &&
-					first.getFirstChild().isType("xs:enumeration"))
+					first.hasChild("xs:enumeration"))
 				{
 					Union union = new Union(typeName(stackAttr("name")));
 					
@@ -585,7 +599,7 @@ public class Xsd2VDM
 					}
 					
 					converted.put(stackAttr("name"), new RefType(union));
-					result = union;
+					result = new Field(attrName(stackAttr("name")), union, isOptional(), aggregate());
 				}
 				else
 				{
@@ -594,18 +608,15 @@ public class Xsd2VDM
 				break;
 				
 			case "xs:list":
-				Type itemtype = null;
-				
 				if (first.hasAttr("itemType"))
 				{
-					itemtype = convertBasicType(first.getAttr("itemType"));
+					result = new Field(attrName(stackAttr("name")),
+						vdmTypeOf(first.getAttr("itemType")), isOptional(), "seq1 of ");
 				}
 				else
 				{
-					itemtype = convertSimpleType(first.getFirstChild());
+					result = convertSimpleType(first.getFirstChild());
 				}
-				
-				result = new SeqType(itemtype);
 				break;
 			
 			case "xs:union":
@@ -614,11 +625,12 @@ public class Xsd2VDM
 				
 				for (String type: types)
 				{
-					union.addType(convertSimpleType(XSDElement.lookup(type)));
+					Field f = convertSimpleType(XSDElement.lookup(type));
+					union.addType(f.getType());
 				}
 				
 				converted.put(stackAttr("name"), new RefType(union));
-				result = union;
+				result = new Field(attrName(stackAttr("name")), union, isOptional(), aggregate());
 				break;
 				
 			default:
@@ -629,33 +641,13 @@ public class Xsd2VDM
 		stack.pop();
 		return result;
 	}
+
+	private Field convertBasicType(String type)
+	{
+		return new Field(attrName(stackAttr("name")), vdmTypeOf(type), isOptional(), aggregate());
+	}
 	
-	private String stackAttr(String attr)
-	{
-		for (int i = stack.size() - 1; i > 0; i--)
-		{
-			XSDElement e = stack.get(i);
-			
-			if (e.hasAttr(attr))
-			{
-				return e.getAttr(attr);
-			}
-		}
-		
-		return null;
-	}
-
-	private String typeName(String attribute)
-	{
-		return attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
-	}
-
-	private String attrName(String attribute)
-	{
-		return "$" + attribute;
-	}
-
-	private BasicType convertBasicType(String type)
+	private BasicType vdmTypeOf(String type)
 	{
 		switch (type)
 		{
@@ -684,9 +676,95 @@ public class Xsd2VDM
 			
 			case "xs:boolean":
 				return new BasicType("bool");
-
+	
 			default:
 				return new BasicType(type);
 		}
+	}
+	
+	/**
+	 * Search the stack for attributes which make the current type optional
+	 * in VDM. 
+	 */
+	private boolean isOptional()
+	{
+		XSDElement elem = stack.peek();
+		
+		if (elem.isType("xs:attribute"))
+		{
+			String use = elem.getAttr("use");
+			return use == null || use.equals("optional");
+		}
+		else
+		{
+			String minOccurs = stackAttr("minOccurs");
+			int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
+			return min == 0;
+		}
+	}
+	
+	/**
+	 * Search the stack for attributes which make sequences in VDM.
+	 * Return value is VDM qualifier: "seq1 of ", "seq of " or "".
+	 */
+	private String aggregate()
+	{
+		XSDElement elem = stack.peek();
+		
+		if (elem.isType("xs:attribute"))
+		{
+			return (elem.hasChild("xs:list")) ? "seq1 of " : "";
+		}
+		else
+		{
+			String minOccurs = stackAttr("minOccurs");
+			String maxOccurs = stackAttr("maxOccurs");
+			int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
+			int max = maxOccurs == null ? 1 : maxOccurs.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(maxOccurs);
+			
+			return min > 1 ? "seq1 of " : max > 1 ? (min == 1 ? "seq1 of " : "seq of ") : ""; 
+		}
+	}
+
+	/**
+	 * Look for a specific attribute in the enclosing elements, until you reach an
+	 * xs:element or xs:attribute (ie. limit the search to the enclosing type, but
+	 * consider complexTypes, complexContent, sequences and so on).
+	 */
+	private String stackAttr(String attr)
+	{
+		for (int i = stack.size() - 1; i > 0; i--)
+		{
+			XSDElement e = stack.get(i);
+			
+			if (e.hasAttr(attr))
+			{
+				return e.getAttr(attr);
+			}
+			
+			if (e.isType("xs:element") || e.isType("xs:attribute"))
+			{
+				break;	// Not found within local "type"
+			}
+		}
+		
+		return null;
+	}
+
+	/**
+	 * Convert a string into a name with an uppercase initial letter. 
+	 */
+	private String typeName(String attribute)
+	{
+		return attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
+	}
+
+	/**
+	 * Convert an attribute name into something guaranteed to be a legal VDM
+	 * identifier. XSD names like "inverse" are illegal in VDM.
+	 */
+	private String attrName(String attribute)
+	{
+		return "$" + attribute;
 	}
 }

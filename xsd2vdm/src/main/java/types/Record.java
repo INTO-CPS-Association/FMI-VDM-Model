@@ -30,7 +30,6 @@
 package types;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
 
 public class Record extends Type
@@ -52,14 +51,37 @@ public class Record extends Type
 
 	public void addField(Field field)
 	{
-		this.fields.add(field);
+		boolean found = false;
+		
+		for (int i=0; i<fields.size(); i++)
+		{
+			if (fields.get(i).getName().equals(field.getName()))
+			{
+				fields.set(i, field);
+				found = true;
+				break;
+			}
+		}
+		
+		if (!found)
+		{
+			this.fields.add(field);
+		}
 	}
 
-	public void addField(String name, Type type, Map<String, String> attributes)
+	public void addFields(Record other)
 	{
-		this.fields.add(new Field(name, type, attributes));
+		addFields(other.fields);
 	}
-	
+
+	public void addFields(List<Field> group)
+	{
+		for (Field f: group)
+		{
+			addField(f);
+		}
+	}
+
 	@Override
 	public String toString()
 	{
@@ -125,18 +147,5 @@ public class Record extends Type
 	public List<Field> getFields()
 	{
 		return fields;
-	}
-
-	public void addFields(Record other)
-	{
-		addFields(other.fields);
-	}
-
-	public void addFields(List<Field> group)
-	{
-		for (Field f: group)
-		{
-			addField(f);
-		}
 	}
 }
