@@ -154,6 +154,7 @@ public class Xsd2VDM
 		
 		for (XSDElement schema: roots)
 		{
+			// System.out.println(schema);
 			convertSchema(schema);
 		}
 		
@@ -205,37 +206,6 @@ public class Xsd2VDM
 		stack.pop();
 	}
 
-	private void convertAnnotation(XSDElement annotation)
-	{
-		assert annotation.isType("xs:annotation");
-		XSDElement doc = annotation.getFirstChild();
-		
-		if (doc.isType("xs:documentation"))
-		{
-			StringBuilder text = new StringBuilder();
-			
-			for (XSDElement comment: doc.getChildren())
-			{
-				if (comment instanceof XSDContent)
-				{
-					String[] lines = comment.toString().split("\n");
-					
-					for (String line: lines)
-					{
-						text.append(line);
-						text.append("\n");
-					}
-				}
-			}
-
-			// TODO What do we annotate?
-		}
-		else
-		{
-			System.err.println("Ignoring annotation type " + doc.getType());
-		}
-	}
-
 	private Type convertElement(XSDElement element)
 	{
 		assert element.isType("xs:element");
@@ -275,10 +245,6 @@ public class Xsd2VDM
 							ref.set(convertComplexType(child));
 							break;
 					
-						case "xs:group":
-							ref.set(convertGroup(child));
-							break;
-							
 						case "xs:annotation":
 							convertAnnotation(child);
 							break;
@@ -310,7 +276,7 @@ public class Xsd2VDM
 		}
 		else
 		{
-			String unionName = stackAttr("name");
+			String unionName = group.getAttr("name");
 			
 			if (converted.containsKey(unionName))
 			{
@@ -344,50 +310,47 @@ public class Xsd2VDM
 
 	private Record convertComplexType(XSDElement complexType)
 	{
-		assert complexType.isType("xs:complexType") || complexType.isType("xs:extension");
-		stack.push(complexType);
+		assert complexType.isType("xs:complexType");
 
-		String typename = stackAttr("name");
-		Record rec = new Record(typename);
+		stack.push(complexType);
+		Record rec = new Record(stackAttr("name"), convertComplexChildren(complexType.getChildren()));
+		stack.pop();
+
+		return rec;
+	}
+
+	/**
+	 * This is used by complexType and by complexContent, which seem similar. 
+	 */
+	private List<Field> convertComplexChildren(List<XSDElement> children)
+	{
+		List<Field> fields = new Vector<Field>();
 		
-		if (complexType.hasAttr("name"))
-		{
-			String complexName = complexType.getAttr("name");
-			
-			if (converted.containsKey(complexName))
-			{
-				stack.pop();
-				return (Record) converted.get(complexName).deref();
-			}
-	
-			RefType ref = new RefType(rec);
-			converted.put(complexName, ref);
-		}
-		
-		for (XSDElement child: complexType.getChildren())
+		for (XSDElement child: children)
 		{
 			switch (child.getType())
 			{
 				case "xs:sequence":
-					rec.addFields(convertSequence(child).getFields());
+					fields.addAll(convertSequence(child));
 					break;
 	
 				case "xs:group":
 					stack.push(child);
-					rec.addField(new Field(typename.toLowerCase(), convertGroup(child), isOptional(), aggregate()));
+					fields.add(new Field(attrName(stackAttr("name")),
+								convertGroup(child), isOptional(), aggregate()));
 					stack.pop();
 					break;
 					
 				case "xs:complexContent":
-					rec.addFields(convertComplexContent(child).getFields());
+					fields.addAll(convertComplexContent(child));
 					break;
 					
 				case "xs:attribute":
-					rec.addField(convertAttribute(child));
+					fields.add(convertAttribute(child));
 					break;
 
 				case "xs:attributeGroup":
-					rec.addFields(convertAttributeGroup(child));
+					fields.addAll(convertAttributeGroup(child));
 					break;
 					
 				case "xs:annotation":
@@ -400,15 +363,14 @@ public class Xsd2VDM
 			}
 		}
 
-		stack.pop();
-		return rec;
+		return fields;
 	}
 	
-	private Record convertSequence(XSDElement sequence)
+	private List<Field> convertSequence(XSDElement sequence)
 	{
 		assert sequence.getType().equals("xs:sequence");
 		stack.push(sequence);
-		Record rec = new Record(stackAttr("name"));
+		List<Field> fields = new Vector<Field>();
 		
 		for (XSDElement child: sequence.getChildren())
 		{
@@ -417,20 +379,22 @@ public class Xsd2VDM
 				case "xs:element":
 					String fname = child.getAttr("name");
 					if (fname == null) fname = child.getAttr("ref");
-					rec.addField(new Field(fname.toLowerCase(), convertElement(child), isOptional(), aggregate()));
+					// stack.push(child);
+					fields.add(new Field(fname.toLowerCase(), convertElement(child), isOptional(), aggregate()));
+					// stack.pop();
 					break;
 					
 				case "xs:sequence":
-					rec.addFields(convertSequence(child).getFields());
+					fields.addAll(convertSequence(child));
 					break;
 			
 				case "xs:attribute":
-					rec.addField(convertAttribute(child));
+					fields.add(convertAttribute(child));
 					break;
 			
 				case "xs:any":
 					stack.push(child);
-					rec.addField(new Field("any", new BasicType("token"), isOptional(), aggregate()));
+					fields.add(new Field("any", new BasicType("token"), isOptional(), aggregate()));
 					stack.pop();
 					break;
 					
@@ -439,7 +403,7 @@ public class Xsd2VDM
 					break;
 					
 				case "xs:choice":
-					rec.addField(convertChoice(child));
+					fields.add(convertChoice(child));
 					break;
 
 				default:
@@ -449,7 +413,7 @@ public class Xsd2VDM
 		}
 		
 		stack.pop();
-		return rec;
+		return fields;
 	}
 	
 	private Field convertChoice(XSDElement choice)
@@ -475,19 +439,23 @@ public class Xsd2VDM
 		return new Field(attrName(stackAttr("name")), union, isOptional(), aggregate());
 	}
 
-	private Record convertComplexContent(XSDElement complex)
+	private List<Field> convertComplexContent(XSDElement complex)
 	{
 		assert complex.isType("xs:complexContent");
 		stack.push(complex);
-		Record rec = null;
+		List<Field> fields = new Vector<Field>();
 
 		for (XSDElement child: complex.getChildren())
 		{
 			switch (child.getType())
 			{
 				case "xs:extension":
-					rec = convertComplexType(XSDElement.lookup(child.getAttr("base")));
-					rec.addFields(convertComplexType(child));
+					fields.addAll(convertComplexType(XSDElement.lookup(child.getAttr("base"))).getFields());
+					fields.addAll(convertComplexChildren(child.getChildren()));
+					break;
+					
+				case "xs:annotation":
+					convertAnnotation(child);
 					break;
 					
 				default:
@@ -497,7 +465,7 @@ public class Xsd2VDM
 		}
 		
 		stack.pop();
-		return rec;
+		return fields;
 	}
 	
 	private Field convertAttribute(XSDElement attribute)
@@ -647,6 +615,37 @@ public class Xsd2VDM
 		return new Field(attrName(stackAttr("name")), vdmTypeOf(type), isOptional(), aggregate());
 	}
 	
+	private void convertAnnotation(XSDElement annotation)
+	{
+		assert annotation.isType("xs:annotation");
+		XSDElement doc = annotation.getFirstChild();
+		
+		if (doc.isType("xs:documentation"))
+		{
+			StringBuilder text = new StringBuilder();
+			
+			for (XSDElement comment: doc.getChildren())
+			{
+				if (comment instanceof XSDContent)
+				{
+					String[] lines = comment.toString().split("\n");
+					
+					for (String line: lines)
+					{
+						text.append(line);
+						text.append("\n");
+					}
+				}
+			}
+	
+			// What do we annotate?
+		}
+		else
+		{
+			System.err.println("Ignoring annotation type " + doc.getType());
+		}
+	}
+
 	private BasicType vdmTypeOf(String type)
 	{
 		switch (type)
