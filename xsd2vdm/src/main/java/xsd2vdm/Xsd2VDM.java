@@ -191,6 +191,9 @@ public class Xsd2VDM
 				case "xs:complexType":
 					break;
 					
+				case "xs:simpleType":
+					break;
+					
 				case "xs:group":
 					break;
 					
@@ -232,8 +235,9 @@ public class Xsd2VDM
 			
 			if (element.hasAttr("type"))
 			{
-				Record r = convertComplexType(XSDElement.lookup(element.getAttr("type")));
-				ref.set(new Record(elementName, r.getFields()));
+				Record r = new Record(elementName);
+				r.addFields(convertType(element, "type"));
+				ref.set(r);
 			}
 			else
 			{
@@ -343,6 +347,10 @@ public class Xsd2VDM
 					
 				case "xs:complexContent":
 					fields.addAll(convertComplexContent(child));
+					break;
+					
+				case "xs:simpleContent":
+					fields.addAll(convertSimpleContent(child));
 					break;
 					
 				case "xs:attribute":
@@ -468,6 +476,34 @@ public class Xsd2VDM
 		return fields;
 	}
 	
+	private List<Field> convertSimpleContent(XSDElement simple)
+	{
+		assert simple.isType("xs:simpleContent");
+		stack.push(simple);
+		List<Field> fields = new Vector<Field>();
+
+		for (XSDElement child: simple.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:extension":
+					fields.addAll(convertType(child, "base"));
+					break;
+					
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				default:
+					System.err.println("Ignoring simple content " + child.getType());
+					break;
+			}
+		}
+		
+		stack.pop();
+		return fields;
+	}
+
 	private Field convertAttribute(XSDElement attribute)
 	{
 		assert attribute.isType("xs:attribute");
@@ -481,7 +517,7 @@ public class Xsd2VDM
 		
 		if (attribute.hasAttr("type"))
 		{
-			result = convertBasicType(attribute.getAttr("type"));
+			result = convertType(attribute, "type").get(0);
 		}
 		else
 		{
@@ -506,6 +542,34 @@ public class Xsd2VDM
 		
 		stack.pop();
 		return result;
+	}
+	
+	private List<Field> convertType(XSDElement element, String typeattr)
+	{
+		BasicType vtype = vdmTypeOf(element.getAttr(typeattr));
+		String elementName = element.getAttr("name");
+		List<Field> results = new Vector<Field>();
+		
+		if (vtype != null)
+		{
+			results.add(new Field(elementName, vtype, isOptional(), aggregate()));
+		}
+		else
+		{
+			XSDElement etype = XSDElement.lookup(element.getAttr(typeattr));
+			
+			if (etype.isType("xs:complexType"))
+			{
+				Record r = convertComplexType(etype);
+				results.addAll(r.getFields());
+			}
+			else
+			{
+				results.add(convertSimpleType(etype));
+			}
+		}
+		
+		return results;
 	}
 	
 	private List<Field> convertAttributeGroup(XSDElement attributeGroup)
@@ -551,71 +615,85 @@ public class Xsd2VDM
 		stack.push(simpleType);
 		Field result = null;
 		
-		XSDElement first = simpleType.getFirstChild();
-		
-		switch (first.getType())
+		for (XSDElement first: simpleType.getChildren())
 		{
-			case "xs:restriction":
-				if (first.getAttr("base").equals("xs:normalizedString") &&
-					first.hasChild("xs:enumeration"))
-				{
+			switch (first.getType())
+			{
+				case "xs:restriction":
+					if (first.hasChild("xs:enumeration"))
+					{
+						Union union = new Union(typeName(stackAttr("name")));
+						
+						for (XSDElement e: first.getChildren())
+						{
+							union.addType(new QuoteType(e.getAttr("value")));
+						}
+						
+						converted.put(stackAttr("name"), new RefType(union));
+						result = new Field(attrName(stackAttr("name")), union, isOptional(), aggregate());
+					}
+					else
+					{
+						BasicType vtype = vdmTypeOf(first.getAttr("base"));
+						
+						if (vtype != null)
+						{
+							result = new Field(stackAttr("name"), vtype, isOptional(), aggregate());
+						}
+						else
+						{
+							XSDElement etype = XSDElement.lookup(first.getAttr("base"));
+							result = convertSimpleType(etype);
+						}
+					}
+					break;
+					
+				case "xs:list":
+					if (first.hasAttr("itemType"))
+					{
+						result = new Field(attrName(stackAttr("name")),
+							vdmTypeOf(first.getAttr("itemType")), isOptional(), "seq1 of ");
+					}
+					else
+					{
+						Field f = convertSimpleType(first.getFirstChild());
+						result = new Field(f.getName(), f.getType(), f.isOptional(), "seq1 of ");
+					}
+					break;
+				
+				case "xs:union":
+					String[] types = first.getAttr("memberTypes").split("\\s+");
 					Union union = new Union(typeName(stackAttr("name")));
 					
-					for (XSDElement e: first.getChildren())
+					for (String type: types)
 					{
-						union.addType(new QuoteType(e.getAttr("value")));
+						Field f = convertSimpleType(XSDElement.lookup(type));
+						union.addType(f.getType());
 					}
 					
 					converted.put(stackAttr("name"), new RefType(union));
 					result = new Field(attrName(stackAttr("name")), union, isOptional(), aggregate());
-				}
-				else
-				{
-					result = convertBasicType(first.getAttr("base"));
-				}
-				break;
-				
-			case "xs:list":
-				if (first.hasAttr("itemType"))
-				{
-					result = new Field(attrName(stackAttr("name")),
-						vdmTypeOf(first.getAttr("itemType")), isOptional(), "seq1 of ");
-				}
-				else
-				{
-					Field f = convertSimpleType(first.getFirstChild());
-					result = new Field(f.getName(), f.getType(), f.isOptional(), "seq1 of ");
-				}
-				break;
+					break;
+					
+				case "xs:annotation":
+					convertAnnotation(first);
+					break;
+					
+				default:
+					System.err.println("Ignoring simple type " + first.getType());
+					break;
+			}
 			
-			case "xs:union":
-				String[] types = first.getAttr("memberTypes").split("\\s+");
-				Union union = new Union(typeName(stackAttr("name")));
-				
-				for (String type: types)
-				{
-					Field f = convertSimpleType(XSDElement.lookup(type));
-					union.addType(f.getType());
-				}
-				
-				converted.put(stackAttr("name"), new RefType(union));
-				result = new Field(attrName(stackAttr("name")), union, isOptional(), aggregate());
+			if (result != null)
+			{
 				break;
-				
-			default:
-				System.err.println("Ignoring simple type " + first.getType());
-				break;
+			}
 		}
 		
 		stack.pop();
 		return result;
 	}
 
-	private Field convertBasicType(String type)
-	{
-		return new Field(attrName(stackAttr("name")), vdmTypeOf(type), isOptional(), aggregate());
-	}
-	
 	private void convertAnnotation(XSDElement annotation)
 	{
 		assert annotation.isType("xs:annotation");
@@ -655,10 +733,12 @@ public class Xsd2VDM
 			case "xs:string":
 			case "xs:dateTime":
 			case "xs:hexBinary":
+			case "xs:date":
 				return new BasicType("seq1 of char");
 				
 			case "xs:double":
 			case "xs:float":
+			case "xs:decimal":
 				return new BasicType("real");
 			
 			case "xs:nonNegativeInteger":
@@ -672,13 +752,14 @@ public class Xsd2VDM
 			case "xs:int":
 			case "xs:short":
 			case "xs:byte":
+			case "xs:integer":
 				return new BasicType("int");
 			
 			case "xs:boolean":
 				return new BasicType("bool");
 	
 			default:
-				return new BasicType(type);
+				return null;
 		}
 	}
 	

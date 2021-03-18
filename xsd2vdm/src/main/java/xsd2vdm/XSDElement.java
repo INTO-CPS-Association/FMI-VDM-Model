@@ -109,9 +109,16 @@ public class XSDElement
 		children.add(element);
 	}
 	
-	public static XSDElement lookup(String ref)
+	public static XSDElement lookup(String name)
 	{
-		return referenceMap.get(ref);
+		XSDElement e = referenceMap.get(name);
+		
+		if (e == null)
+		{
+			throw new RuntimeException("Cannot find element base/ref/name " + name);
+		}
+		
+		return e;
 	}
 
 	public boolean isReference()
