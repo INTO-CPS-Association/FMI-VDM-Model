@@ -56,13 +56,15 @@ public class Field
 
 	public String getVDMType()
 	{
-		if (optional)
-		{
-			return "[" + aggregate + type.signature() + "]";
-		}
-		else
-		{
-			return aggregate + type.signature();
-		}
+		String agg = aggregate.isEmpty() ?
+			type.signature() : 
+			aggregate + "(" + type.signature() + ")";
+
+		return optional ? "[" + agg + "]" : agg;
+	}
+
+	public boolean isOptional()
+	{
+		return optional;
 	}
 }

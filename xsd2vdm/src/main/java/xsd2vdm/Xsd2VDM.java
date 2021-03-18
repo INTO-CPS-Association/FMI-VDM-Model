@@ -379,9 +379,9 @@ public class Xsd2VDM
 				case "xs:element":
 					String fname = child.getAttr("name");
 					if (fname == null) fname = child.getAttr("ref");
-					// stack.push(child);
+					stack.push(child);
 					fields.add(new Field(fname.toLowerCase(), convertElement(child), isOptional(), aggregate()));
-					// stack.pop();
+					stack.pop();
 					break;
 					
 				case "xs:sequence":
@@ -583,7 +583,8 @@ public class Xsd2VDM
 				}
 				else
 				{
-					result = convertSimpleType(first.getFirstChild());
+					Field f = convertSimpleType(first.getFirstChild());
+					result = new Field(f.getName(), f.getType(), f.isOptional(), "seq1 of ");
 				}
 				break;
 			
@@ -741,7 +742,23 @@ public class Xsd2VDM
 				return e.getAttr(attr);
 			}
 			
-			if (e.isType("xs:element") || e.isType("xs:attribute"))
+			if (e.isType("xs:element"))
+			{
+				if (i > 0)
+				{
+					// eg. an element may have maxOccurs set on an enclosing sequence
+					XSDElement prev = stack.get(i-1);
+					
+					if (prev.isType("xs:sequence") && prev.hasAttr(attr))
+					{
+						return prev.getAttr(attr);
+					}
+				}
+				
+				break;
+			}
+			
+			if (e.isType("xs:attribute"))
 			{
 				break;	// Not found within local "type"
 			}
