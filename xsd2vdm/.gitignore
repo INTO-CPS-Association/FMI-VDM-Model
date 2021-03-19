@@ -1,2 +1,3 @@
-/*.xsd
+*.xsd
 /.project
+/test*
