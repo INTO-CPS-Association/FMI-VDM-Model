@@ -29,58 +29,26 @@
 
 package types;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
-public class Union extends Type
+public class Keywords
 {
-	private final String name;
-	private final List<Type> types;
+	private static String[] keywords = { "abs", "all", "always", "and", "atomic", "be", "bool", "by", "card", "cases",
+			"char", "comp", "compose", "conc", "dcl", "def", "definitions", "dinter", "div", "do", "dom", "dunion",
+			"elems", "else", "elseif", "end", "eq", "error", "errs", "exists", "exists1", "exit", "exports", "ext",
+			"false", "floor", "for", "forall", "from", "functions", "hd", "if", "imports", "in", "inds", "init",
+			"inmap", "in set", "int", "inter", "inv", "inverse", "iota", "is", "lambda", "len", "let", "map",
+			"measure", "merge", "mod", "module", "munion", "nat", "nat1", "nil", "not", "not in set", "of",
+			"operations", "or", "ord", "others", "post", "power", "pre", "psubset", "pure", "rat", "rd", "real", "rem",
+			"renamed", "return", "reverse", "rng", "seq", "seq1", "set", "set1", "skip", "specified", "st", "state",
+			"struct", "subset", "then", "tixe", "tl", "to", "token", "traces", "trap", "true", "types", "undefined",
+			"union", "uselib", "using", "values", "while", "with", "wr", "yet" };
 	
-	public Union(String name)
-	{
-		this.name = name;
-		this.types = new Vector<Type>();
-	}
-
-	public void addType(Type type)
-	{
-		if (type instanceof Union)
-		{
-			Union u = (Union)type;
-			this.types.addAll(u.types);
-		}
-		else
-		{
-			this.types.add(type);
-		}
-	}
-
-	@Override
-	protected String signature()
-	{
-		return name == null ? pipes() : name;
-	}
+	private static List<String> list = (List<String>) Arrays.asList(keywords);
 	
-	@Override
-	public String toString()
+	public static boolean isKeyword(String word)
 	{
-		return name == null ? "" : name + " = " + pipes() + ";\n";
-	}
-	
-	private String pipes()
-	{
-		StringBuilder sb = new StringBuilder();
-		
-		String sep = "";
-		
-		for (Type type: types)
-		{
-			sb.append(sep);
-			sb.append(type.signature());
-			sep = " | ";
-		}
-		
-		return sb.toString();
+		return list.contains(word);
 	}
 }

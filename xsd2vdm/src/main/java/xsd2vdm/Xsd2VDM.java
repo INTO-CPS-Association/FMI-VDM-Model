@@ -95,10 +95,10 @@ public class Xsd2VDM
 			usage();
 		}
 		
+		PrintStream vdmout = System.out;
+
 		try
 		{
-			PrintStream vdmout = System.out;
-			
 			if (vdmFile != null)
 			{
 				vdmout = new PrintStream(new FileOutputStream(vdmFile));
@@ -109,6 +109,10 @@ public class Xsd2VDM
 		catch (Exception e)
 		{
 			System.err.println("Exception: " + e.getMessage());
+		}
+		finally
+		{
+			vdmout.close();
 		}
 	}
 	
@@ -124,6 +128,14 @@ public class Xsd2VDM
 	 */
 	private Stack<XSDElement> stack = new Stack<XSDElement>();
 	
+	/**
+	 * True if errors are found in type conversion. No output is produced.
+	 */
+	private boolean errors = false;
+	
+	/**
+	 * Convert the root schema file passed in and write out VDM-SL to the output. 
+	 */
 	private void process(String rootXSD, PrintStream output) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -151,6 +163,7 @@ public class Xsd2VDM
 		
 		converted.clear();
 		stack.clear();
+		errors = false;
 		
 		for (XSDElement schema: roots)
 		{
@@ -159,14 +172,20 @@ public class Xsd2VDM
 		}
 		
 		assert stack.isEmpty();
-		output.println("types");
 		
-		for (String def: converted.keySet())
+		if (!errors)
 		{
-			output.println(converted.get(def));
+			output.println("types");
+			
+			for (String def: converted.keySet())
+			{
+				output.println(converted.get(def));
+			}
 		}
-		
-		output.close();
+		else
+		{
+			System.err.println("Errors found.");
+		}
 	}
 	
 	private void convertSchema(XSDElement schema)
@@ -201,7 +220,7 @@ public class Xsd2VDM
 					break;
 					
 				default:
-					System.err.println("Ignoring schema child " + child.getType());
+					dumpStack("Unexpected schema child " + child.getType());
 					break;
 			}
 		}
@@ -254,7 +273,7 @@ public class Xsd2VDM
 							break;
 
 						default:
-							System.err.println("Ignoring element child " + child.getType());
+							dumpStack("Unexpected element child " + child.getType());
 							break;
 					}
 				}
@@ -300,7 +319,7 @@ public class Xsd2VDM
 						break;
 						
 					default:
-						System.err.println("Ignoring group child " + child.getType());
+						dumpStack("Unexpected group child " + child.getType());
 						break;
 				}
 			}
@@ -340,7 +359,7 @@ public class Xsd2VDM
 	
 				case "xs:group":
 					stack.push(child);
-					fields.add(new Field(attrName(stackAttr("name")),
+					fields.add(new Field(stackAttr("name"),
 								convertGroup(child), isOptional(), aggregate()));
 					stack.pop();
 					break;
@@ -353,7 +372,7 @@ public class Xsd2VDM
 					fields.addAll(convertSimpleContent(child));
 					break;
 					
-				case "xs:attribute":
+ 				case "xs:attribute":
 					fields.add(convertAttribute(child));
 					break;
 
@@ -365,8 +384,12 @@ public class Xsd2VDM
 					convertAnnotation(child);
 					break;
 					
+				case "xs:anyAttribute":
+					fields.add(new Field("any", new BasicType("token"), isOptional(), aggregate()));
+					break;
+					
 				default:
-					System.err.println("Ignoring complex child " + child.getType());
+					dumpStack("Unexpected complex child " + child.getType());
 					break;
 			}
 		}
@@ -415,7 +438,7 @@ public class Xsd2VDM
 					break;
 
 				default:
-					System.err.println("Ignoring sequence child " + child.getType());
+					dumpStack("Unexpected sequence child " + child.getType());
 					break;
 			}
 		}
@@ -438,13 +461,26 @@ public class Xsd2VDM
 					union.addType(convertElement(child));
 					break;
 					
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				case "xs:choice":
+					Field ch = convertChoice(child);
+					union.addType(ch.getType());
+					break;
+					
+				case "xs:any":
+					union.addType(new BasicType("token"));
+					break;
+					
 				default:
-					System.err.println("Ignoring choice child " + child.getType());
+					dumpStack("Unexpected choice child " + child.getType());
 			}
 		}
 		
 		stack.pop();
-		return new Field(attrName(stackAttr("name")), union, isOptional(), aggregate());
+		return new Field(stackAttr("name"), union, isOptional(), aggregate());
 	}
 
 	private List<Field> convertComplexContent(XSDElement complex)
@@ -467,7 +503,7 @@ public class Xsd2VDM
 					break;
 					
 				default:
-					System.err.println("Ignoring complex content " + child.getType());
+					dumpStack("Unexpected complex content " + child.getType());
 					break;
 			}
 		}
@@ -495,7 +531,7 @@ public class Xsd2VDM
 					break;
 					
 				default:
-					System.err.println("Ignoring simple content " + child.getType());
+					dumpStack("Unexpected simple content " + child.getType());
 					break;
 			}
 		}
@@ -534,7 +570,7 @@ public class Xsd2VDM
 						break;
 						
 					default:
-						System.err.println("Ignoring attribute child " + child.getType());
+						dumpStack("Unexpected attribute child " + child.getType());
 						break;
 				}
 			}
@@ -562,6 +598,15 @@ public class Xsd2VDM
 			{
 				Record r = convertComplexType(etype);
 				results.addAll(r.getFields());
+			}
+			else if (etype.isType("xs:attribute"))
+			{
+				results.add(convertAttribute(etype));
+			}
+			else if (etype.isType("xs:element"))
+			{
+				Type e = convertElement(etype);
+				results.add(new Field(stackAttr("name"), e, isOptional(), aggregate()));
 			}
 			else
 			{
@@ -599,7 +644,7 @@ public class Xsd2VDM
 						break;
 						
 					default:
-						System.err.println("Unexpected attributeGroup child " + attr.getType());
+						dumpStack("Unexpected attributeGroup child " + attr.getType());
 						break;
 				}
 			}
@@ -630,7 +675,7 @@ public class Xsd2VDM
 						}
 						
 						converted.put(stackAttr("name"), new RefType(union));
-						result = new Field(attrName(stackAttr("name")), union, isOptional(), aggregate());
+						result = new Field(stackAttr("name"), union, isOptional(), aggregate());
 					}
 					else
 					{
@@ -651,7 +696,7 @@ public class Xsd2VDM
 				case "xs:list":
 					if (first.hasAttr("itemType"))
 					{
-						result = new Field(attrName(stackAttr("name")),
+						result = new Field(stackAttr("name"),
 							vdmTypeOf(first.getAttr("itemType")), isOptional(), "seq1 of ");
 					}
 					else
@@ -672,7 +717,7 @@ public class Xsd2VDM
 					}
 					
 					converted.put(stackAttr("name"), new RefType(union));
-					result = new Field(attrName(stackAttr("name")), union, isOptional(), aggregate());
+					result = new Field(stackAttr("name"), union, isOptional(), aggregate());
 					break;
 					
 				case "xs:annotation":
@@ -680,7 +725,7 @@ public class Xsd2VDM
 					break;
 					
 				default:
-					System.err.println("Ignoring simple type " + first.getType());
+					dumpStack("Unexpected simple type " + first.getType());
 					break;
 			}
 			
@@ -721,7 +766,7 @@ public class Xsd2VDM
 		}
 		else
 		{
-			System.err.println("Ignoring annotation type " + doc.getType());
+			dumpStack("Unexpected annotation type " + doc.getType());
 		}
 	}
 
@@ -733,7 +778,10 @@ public class Xsd2VDM
 			case "xs:string":
 			case "xs:dateTime":
 			case "xs:hexBinary":
+			case "xs:base64Binary":
 			case "xs:date":
+			case "xs:gYear":
+			case "xs:time":
 				return new BasicType("seq1 of char");
 				
 			case "xs:double":
@@ -847,6 +895,32 @@ public class Xsd2VDM
 		
 		return null;
 	}
+	
+	/**
+	 * Dump the stack to assist with location of problems.
+	 */
+	private void dumpStack(String message)
+	{
+		System.err.println(message);
+		String indent = " ";
+		
+		for (XSDElement e: stack)
+		{
+			System.err.print(indent + "<" + e.getType());
+			Map<String, String> attrs = e.getAttrs();
+			
+			for (String aname: attrs.keySet())
+			{
+				System.err.print(" " + aname + "=" + "\"" + attrs.get(aname) + "\"");
+			}
+
+			System.err.println(">");
+			indent = indent + " ";
+		}
+		
+		System.err.println();
+		errors = true;
+	}
 
 	/**
 	 * Convert a string into a name with an uppercase initial letter. 
@@ -854,14 +928,5 @@ public class Xsd2VDM
 	private String typeName(String attribute)
 	{
 		return attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
-	}
-
-	/**
-	 * Convert an attribute name into something guaranteed to be a legal VDM
-	 * identifier. XSD names like "inverse" are illegal in VDM.
-	 */
-	private String attrName(String attribute)
-	{
-		return "$" + attribute;
 	}
 }

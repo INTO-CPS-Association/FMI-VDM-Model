@@ -97,49 +97,27 @@ public class Record extends Type
 		{
 			sb.append(name + " ::\n");
 			int longest = 0;
-			int attrCount = 0;
-			int elemCount = 0;
 
 			for (Field field: fields)
 			{
 				if (field.getName().length() > longest)
 				{
-					longest = field.getName().length();
-				}
-				
-				if (field.getName().startsWith("$"))
-				{
-					attrCount++;
-				}
-				else
-				{
-					elemCount++;
+					longest = field.getName().length() + 1;
 				}
 			}
 			
 			String format = "    %-" + longest + "s : %s\n";
 			
-			if (attrCount > 0)
+			for (Field field: fields)
 			{
-				for (Field field: fields)
+				String name = field.getName();
+				
+				if (Keywords.isKeyword(name))
 				{
-					if (field.getName().startsWith("$"))
-					{
-						sb.append(String.format(format, field.getName(), field.getVDMType()));
-						attrCount++;
-					}
+					name = "$" + name;
 				}
-			}
-			
-			if (elemCount > 0)
-			{
-				for (Field field: fields)
-				{
-					if (!field.getName().startsWith("$"))
-					{
-						sb.append(String.format(format, field.getName(), field.getVDMType()));
-					}
-				}
+				
+				sb.append(String.format(format, name, field.getVDMType()));
 			}
 		}
 		
