@@ -35,6 +35,7 @@ public class Field
 	private final Type type;
 	private final boolean optional;
 	private final String aggregate;
+	private boolean isAttribute;
 	
 	public Field(String name, Type type, boolean optional, String aggregate)
 	{
@@ -66,5 +67,15 @@ public class Field
 	public boolean isOptional()
 	{
 		return optional;
+	}
+	
+	public void setIsAttribute(boolean isAttribute)
+	{
+		this.isAttribute = isAttribute;
+	}
+	
+	public boolean isAttribute()
+	{
+		return isAttribute;
 	}
 }

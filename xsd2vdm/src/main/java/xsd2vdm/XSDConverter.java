@@ -478,6 +478,7 @@ public class XSDConverter
 		}
 		
 		stack.pop();
+		result.setIsAttribute(true);
 		return result;
 	}
 	

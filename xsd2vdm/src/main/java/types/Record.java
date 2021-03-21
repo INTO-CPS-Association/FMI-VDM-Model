@@ -110,14 +110,32 @@ public class Record extends Type
 			
 			for (Field field: fields)
 			{
-				String name = field.getName();
-				
-				if (Keywords.isKeyword(name))
+				if (field.isAttribute())
 				{
-					name = "$" + name;
+					String name = field.getName();
+					
+					if (Keywords.isKeyword(name))
+					{
+						name = "$" + name;
+					}
+					
+					sb.append(String.format(format, name, field.getVDMType()));
 				}
-				
-				sb.append(String.format(format, name, field.getVDMType()));
+			}
+			
+			for (Field field: fields)
+			{
+				if (!field.isAttribute())
+				{
+					String name = field.getName();
+					
+					if (Keywords.isKeyword(name))
+					{
+						name = "$" + name;
+					}
+					
+					sb.append(String.format(format, name, field.getVDMType()));
+				}
 			}
 		}
 		
