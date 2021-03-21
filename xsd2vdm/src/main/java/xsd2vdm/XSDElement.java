@@ -36,9 +36,11 @@ import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 
 public class XSDElement
 {
+	private final int line;
 	private final String type;
 	private final Map<String, String> attributes = new HashMap<String, String>();;
 	private final List<XSDElement> children = new Vector<XSDElement>();
@@ -46,8 +48,9 @@ public class XSDElement
 	
 	private String annotation;
 	
-	public XSDElement(String qName, Attributes attributes)
+	public XSDElement(String qName, Attributes attributes, Locator locator)
 	{
+		this.line = locator.getLineNumber();
 		this.type = qName;
 		
 		for (int i=0; i<attributes.getLength(); i++)
@@ -61,8 +64,9 @@ public class XSDElement
 		}
 	}
 	
-	public XSDElement()
+	public XSDElement(Locator locator)
 	{
+		this.line = locator.getLineNumber();
 		this.type = null;	// eg. a Content string
 	}
 
@@ -207,5 +211,10 @@ public class XSDElement
 	public String getAnnotation()
 	{
 		return annotation;
+	}
+	
+	public int getLineNumber()
+	{
+		return line;
 	}
 }

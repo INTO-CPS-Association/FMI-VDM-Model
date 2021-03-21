@@ -121,7 +121,7 @@ public class XSDConverter
 					break;
 					
 				default:
-					dumpStack("Unexpected schema child " + child.getType());
+					dumpStack("Unexpected schema child", child);
 					break;
 			}
 		}
@@ -174,7 +174,7 @@ public class XSDConverter
 							break;
 
 						default:
-							dumpStack("Unexpected element child " + child.getType());
+							dumpStack("Unexpected element child", child);
 							break;
 					}
 				}
@@ -220,7 +220,7 @@ public class XSDConverter
 						break;
 						
 					default:
-						dumpStack("Unexpected group child " + child.getType());
+						dumpStack("Unexpected group child", child);
 						break;
 				}
 			}
@@ -290,7 +290,7 @@ public class XSDConverter
 					break;
 					
 				default:
-					dumpStack("Unexpected complex child " + child.getType());
+					dumpStack("Unexpected complex child", child);
 					break;
 			}
 		}
@@ -339,7 +339,7 @@ public class XSDConverter
 					break;
 
 				default:
-					dumpStack("Unexpected sequence child " + child.getType());
+					dumpStack("Unexpected sequence child", child);
 					break;
 			}
 		}
@@ -376,7 +376,7 @@ public class XSDConverter
 					break;
 					
 				default:
-					dumpStack("Unexpected choice child " + child.getType());
+					dumpStack("Unexpected choice child", child);
 			}
 		}
 		
@@ -404,7 +404,7 @@ public class XSDConverter
 					break;
 					
 				default:
-					dumpStack("Unexpected complex content " + child.getType());
+					dumpStack("Unexpected complex content", child);
 					break;
 			}
 		}
@@ -432,7 +432,7 @@ public class XSDConverter
 					break;
 					
 				default:
-					dumpStack("Unexpected simple content " + child.getType());
+					dumpStack("Unexpected simple content", child);
 					break;
 			}
 		}
@@ -471,7 +471,7 @@ public class XSDConverter
 						break;
 						
 					default:
-						dumpStack("Unexpected attribute child " + child.getType());
+						dumpStack("Unexpected attribute child", child);
 						break;
 				}
 			}
@@ -546,7 +546,7 @@ public class XSDConverter
 						break;
 						
 					default:
-						dumpStack("Unexpected attributeGroup child " + attr.getType());
+						dumpStack("Unexpected attributeGroup child", attr);
 						break;
 				}
 			}
@@ -627,7 +627,7 @@ public class XSDConverter
 					break;
 					
 				default:
-					dumpStack("Unexpected simple type " + first.getType());
+					dumpStack("Unexpected simple type", first);
 					break;
 			}
 			
@@ -668,7 +668,7 @@ public class XSDConverter
 		}
 		else
 		{
-			dumpStack("Unexpected annotation type " + doc.getType());
+			dumpStack("Unexpected annotation type " , doc);
 		}
 	}
 
@@ -800,10 +800,11 @@ public class XSDConverter
 	
 	/**
 	 * Dump the stack to assist with location of problems.
+	 * @param child 
 	 */
-	private void dumpStack(String message)
+	private void dumpStack(String message, XSDElement element)
 	{
-		System.err.println(message);
+		System.err.println(element.getType() + ": " + message + " at line " + element.getLineNumber());
 		String indent = " ";
 		
 		for (XSDElement e: stack)

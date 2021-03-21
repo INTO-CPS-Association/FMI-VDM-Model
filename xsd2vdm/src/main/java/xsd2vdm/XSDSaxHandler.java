@@ -34,6 +34,7 @@ import java.util.Stack;
 import java.util.Vector;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -42,6 +43,7 @@ public class XSDSaxHandler extends DefaultHandler
 	private Stack<XSDElement> stack = new Stack<XSDElement>();
 	private List<XSDElement> roots = new Vector<XSDElement>();
 	private List<String> includes = new Vector<String>();
+	private Locator locator = null;
 
 	public XSDSaxHandler()
 	{
@@ -58,9 +60,15 @@ public class XSDSaxHandler extends DefaultHandler
 	}
 
 	@Override
+	public void setDocumentLocator(Locator locator)
+	{
+		this.locator = locator;
+	}
+
+	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes)
 	{
-		stack.push(new XSDElement(qName, attributes));
+		stack.push(new XSDElement(qName, attributes, locator));
 		
 		if (qName.equals("xs:include"))
 		{
@@ -75,7 +83,7 @@ public class XSDSaxHandler extends DefaultHandler
 		
 		if (!string.isEmpty())
 		{
-			stack.peek().add(new XSDContent(string));
+			stack.peek().add(new XSDContent(string, locator));
 		}
 	}
 
