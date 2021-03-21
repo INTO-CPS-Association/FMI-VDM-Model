@@ -805,7 +805,7 @@ public class XSDConverter
 	 */
 	private void dumpStack(String message, XSDElement element)
 	{
-		File f = new File(element.getURI());
+		File f = element.getFile();
 		System.err.println(element.getType() + ": " + message + " in " + f.getName() + " line " + element.getLineNumber());
 		String indent = " ";
 		

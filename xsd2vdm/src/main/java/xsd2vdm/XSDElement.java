@@ -29,6 +29,7 @@
 
 package xsd2vdm;
 
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ import org.xml.sax.Locator;
 public class XSDElement
 {
 	private final int line;
-	private final URI uri;
+	private final File file;
 	private final String type;
 	private final Map<String, String> attributes = new HashMap<String, String>();;
 	private final List<XSDElement> children = new Vector<XSDElement>();
@@ -51,10 +52,10 @@ public class XSDElement
 	
 	private String annotation;
 	
-	public XSDElement(String qName, Attributes attributes, Locator locator) throws URISyntaxException
+	public XSDElement(String qName, Attributes attributes, Locator locator)
 	{
 		this.line = locator.getLineNumber();
-		this.uri = new URI(locator.getSystemId());
+		this.file = getFile(locator);
 		this.type = qName;
 		
 		for (int i=0; i<attributes.getLength(); i++)
@@ -68,11 +69,23 @@ public class XSDElement
 		}
 	}
 	
-	public XSDElement(Locator locator) throws URISyntaxException
+	public XSDElement(Locator locator)
 	{
 		this.line = locator.getLineNumber();
-		this.uri = new URI(locator.getSystemId());
+		this.file = getFile(locator);
 		this.type = null;	// eg. a Content string
+	}
+	
+	private File getFile(Locator locator)
+	{
+		try
+		{
+			return new File(new URI(locator.getSystemId()));
+		}
+		catch (URISyntaxException e)
+		{
+			return new File("?");
+		}
 	}
 
 	public String getType()
@@ -223,8 +236,8 @@ public class XSDElement
 		return line;
 	}
 	
-	public URI getURI()
+	public File getFile()
 	{
-		return uri;
+		return file;
 	}
 }

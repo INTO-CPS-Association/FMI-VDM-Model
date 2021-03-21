@@ -29,15 +29,13 @@
 
 package xsd2vdm;
 
-import java.net.URISyntaxException;
-
 import org.xml.sax.Locator;
 
 public class XSDContent extends XSDElement
 {
 	private String content;
 
-	public XSDContent(String string, Locator locator) throws URISyntaxException
+	public XSDContent(String string, Locator locator)
 	{
 		super(locator);
 		this.content = string;
