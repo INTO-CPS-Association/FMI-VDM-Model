@@ -29,6 +29,8 @@
 
 package xsd2vdm;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ import org.xml.sax.Locator;
 public class XSDElement
 {
 	private final int line;
+	private final URI uri;
 	private final String type;
 	private final Map<String, String> attributes = new HashMap<String, String>();;
 	private final List<XSDElement> children = new Vector<XSDElement>();
@@ -48,9 +51,10 @@ public class XSDElement
 	
 	private String annotation;
 	
-	public XSDElement(String qName, Attributes attributes, Locator locator)
+	public XSDElement(String qName, Attributes attributes, Locator locator) throws URISyntaxException
 	{
 		this.line = locator.getLineNumber();
+		this.uri = new URI(locator.getSystemId());
 		this.type = qName;
 		
 		for (int i=0; i<attributes.getLength(); i++)
@@ -64,9 +68,10 @@ public class XSDElement
 		}
 	}
 	
-	public XSDElement(Locator locator)
+	public XSDElement(Locator locator) throws URISyntaxException
 	{
 		this.line = locator.getLineNumber();
+		this.uri = new URI(locator.getSystemId());
 		this.type = null;	// eg. a Content string
 	}
 
@@ -216,5 +221,10 @@ public class XSDElement
 	public int getLineNumber()
 	{
 		return line;
+	}
+	
+	public URI getURI()
+	{
+		return uri;
 	}
 }

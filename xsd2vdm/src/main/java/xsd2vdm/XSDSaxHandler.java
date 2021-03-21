@@ -29,6 +29,7 @@
 
 package xsd2vdm;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
@@ -68,7 +69,14 @@ public class XSDSaxHandler extends DefaultHandler
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes)
 	{
-		stack.push(new XSDElement(qName, attributes, locator));
+		try
+		{
+			stack.push(new XSDElement(qName, attributes, locator));
+		}
+		catch (URISyntaxException e)
+		{
+			throw new RuntimeException(e);
+		}
 		
 		if (qName.equals("xs:include"))
 		{
@@ -83,7 +91,14 @@ public class XSDSaxHandler extends DefaultHandler
 		
 		if (!string.isEmpty())
 		{
-			stack.peek().add(new XSDContent(string, locator));
+			try
+			{
+				stack.peek().add(new XSDContent(string, locator));
+			}
+			catch (URISyntaxException e)
+			{
+				throw new RuntimeException(e);
+			}
 		}
 	}
 

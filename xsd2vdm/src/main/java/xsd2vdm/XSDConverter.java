@@ -29,6 +29,7 @@
 
 package xsd2vdm;
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -804,7 +805,8 @@ public class XSDConverter
 	 */
 	private void dumpStack(String message, XSDElement element)
 	{
-		System.err.println(element.getType() + ": " + message + " at line " + element.getLineNumber());
+		File f = new File(element.getURI());
+		System.err.println(element.getType() + ": " + message + " in " + f.getName() + " line " + element.getLineNumber());
 		String indent = " ";
 		
 		for (XSDElement e: stack)
