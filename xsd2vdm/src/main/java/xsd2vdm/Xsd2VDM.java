@@ -88,31 +88,22 @@ public class Xsd2VDM
 			usage();
 		}
 		
-		PrintStream vdmout = System.out;
-
 		try
 		{
-			if (vdmFile != null)
-			{
-				vdmout = new PrintStream(new FileOutputStream(vdmFile));
-			}
-			
-			new Xsd2VDM().process(xsdFile, vdmout);
+			int exitCode = new Xsd2VDM().process(xsdFile, vdmFile);
+			System.exit(exitCode);
 		}
 		catch (Exception e)
 		{
 			System.err.println("Exception: " + e.getMessage());
-		}
-		finally
-		{
-			vdmout.close();
+			System.exit(1);
 		}
 	}
 	
 	/**
 	 * Convert the root schema file passed in and write out VDM-SL to the output. 
 	 */
-	private void process(String rootXSD, PrintStream output) throws Exception
+	private int process(String rootXSD, String vdmFile) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
@@ -142,6 +133,10 @@ public class Xsd2VDM
 
 		if (vdmSchema != null)
 		{
+			PrintStream output = (vdmFile != null) ?
+				new PrintStream(new FileOutputStream(vdmFile)) :
+				System.out;
+
 			output.println("/**");
 			output.println(" * VDM schema created from " + rootXSD);
 			output.println(" * " + new Date());
@@ -153,10 +148,14 @@ public class Xsd2VDM
 			{
 				output.println(vdmSchema.get(def));
 			}
+			
+			output.close();
+			return 0;
 		}
 		else
 		{
 			System.err.println("Errors found.");
+			return 1;
 		}
 	}
 }

@@ -84,6 +84,7 @@ public class XSDConverter
 		
 		for (XSDElement schema: schemas)
 		{
+			// System.out.println(schema);
 			convertSchema(schema);
 		}
 		
