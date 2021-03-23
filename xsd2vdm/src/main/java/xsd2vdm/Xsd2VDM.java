@@ -47,7 +47,7 @@ public class Xsd2VDM
 {
 	private static void usage()
 	{
-		System.err.println("Usage: Xsd2VDM -xsd <XSD schema> [-vdm <output>]");
+		System.err.println("Usage: Xsd2VDM -xsd <XSD schema> [-vdm <output>] [-xml <XML file>]");
 		System.exit(1);
 	}
 	
@@ -56,6 +56,7 @@ public class Xsd2VDM
 		int arg = 0;
 		String xsdFile = null;
 		String vdmFile = null;
+		String xmlFile = null;
 		
 		while (arg < args.length)
 		{
@@ -69,6 +70,10 @@ public class Xsd2VDM
 						
 					case "-vdm":
 						vdmFile = args[++arg];
+						break;
+						
+					case "-xml":
+						xmlFile = args[++arg];
 						break;
 						
 					default:
@@ -90,8 +95,13 @@ public class Xsd2VDM
 		
 		try
 		{
-			int exitCode = new Xsd2VDM().process(xsdFile, vdmFile);
-			System.exit(exitCode);
+			Xsd2VDM xsd2vdm = new Xsd2VDM();
+			Map<String, RefType> schema = xsd2vdm.createVDMSchema(xsdFile, vdmFile);
+			
+			if (xmlFile != null)
+			{
+				xsd2vdm.createVDMValue(schema, vdmFile, xmlFile);
+			}
 		}
 		catch (Exception e)
 		{
@@ -99,11 +109,11 @@ public class Xsd2VDM
 			System.exit(1);
 		}
 	}
-	
+
 	/**
 	 * Convert the root schema file passed in and write out VDM-SL to the output. 
 	 */
-	private int process(String rootXSD, String vdmFile) throws Exception
+	private Map<String, RefType> createVDMSchema(String rootXSD, String vdmFile) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
@@ -149,13 +159,32 @@ public class Xsd2VDM
 				output.println(vdmSchema.get(def));
 			}
 			
-			output.close();
-			return 0;
+			if (vdmFile != null) output.close();
 		}
 		else
 		{
 			System.err.println("Errors found.");
-			return 1;
+			System.exit(1);
 		}
+		
+		return vdmSchema;
+	}
+	
+	private void createVDMValue(Map<String, RefType> schema, String vdmFile, String xmlFile) throws Exception
+	{
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser saxParser = factory.newSAXParser();
+		XMLSaxHandler handler = new XMLSaxHandler(schema);
+		saxParser.parse(xmlFile, handler);
+		
+		PrintStream output = (vdmFile != null) ?
+				new PrintStream(new FileOutputStream(vdmFile, true)) :
+				System.out;
+
+		output.println("/**");
+		output.println(" * VDM value created from " + xmlFile);
+		output.println(" */");
+		output.println("values");
+		output.println(handler.getVDMValue());
 	}
 }

@@ -27,74 +27,63 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-package types;
+package xsd2vdm;
 
-import java.util.List;
-import java.util.Vector;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class Union extends Type
+import org.xml.sax.Locator;
+
+import types.Field;
+import types.Record;
+
+public class VDMValue
 {
-	private final String name;
-	private final List<Type> types;
+	private final Record type;
+	private final Map<String, String> source = new LinkedHashMap<String, String>();
 	
-	public Union(String name)
+	public VDMValue(Record type, Locator locator)
 	{
-		this.name = name;
-		this.types = new Vector<Type>();
+		this.type = type;
 	}
 
-	@Override
-	public boolean matches(Type type)
+	public boolean setField(String name, String value)
 	{
-		for (Type t: types)
+		boolean found = false;
+		
+		for (Field f: type.getFields())
 		{
-			if (t.matches(type))
+			if (f.getName().equalsIgnoreCase(name))
 			{
-				return true;
+				source.put(name, value);
+				found = true;
+				break;
 			}
 		}
+
+		return found;
+	}
+
+	public boolean setField(String qName, VDMValue value)
+	{
+		boolean found = false;
 		
-		return false;
+		for (Field f: type.getFields())
+		{
+			if (f.getType().matches(value.type))
+			{
+				source.put(qName, value.toString());
+				found = true;
+				break;
+			}
+		}
+
+		return found;
 	}
 
-	public void addType(Type type)
-	{
-		if (type instanceof Union)
-		{
-			Union u = (Union)type;
-			this.types.addAll(u.types);
-		}
-		else
-		{
-			this.types.add(type);
-		}
-	}
-
-	@Override
-	protected String signature()
-	{
-		return name == null ? pipes() : name;
-	}
-	
 	@Override
 	public String toString()
 	{
-		return name == null ? "" : name + " = " + pipes() + ";\n";
-	}
-	
-	private String pipes()
-	{
-		StringBuilder sb = new StringBuilder();
-		
-		String sep = "";
-		
-		for (Type type: types)
-		{
-			sb.append(sep);
-			sb.append(type.signature());
-			sep = " | ";
-		}
-		
-		return sb.toString();
+		return type.getName() + " :: " + source.toString();
 	}
 }

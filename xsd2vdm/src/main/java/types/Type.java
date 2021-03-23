@@ -32,4 +32,9 @@ package types;
 abstract public class Type
 {
 	protected abstract String signature();
+
+	public boolean matches(Type type)
+	{
+		return this.equals(type);
+	}
 }
