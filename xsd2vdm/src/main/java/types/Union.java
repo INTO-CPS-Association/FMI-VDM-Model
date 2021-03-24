@@ -64,7 +64,7 @@ public class Union extends Type
 			Union u = (Union)type;
 			this.types.addAll(u.types);
 		}
-		else
+		else if (!this.types.contains(type))
 		{
 			this.types.add(type);
 		}

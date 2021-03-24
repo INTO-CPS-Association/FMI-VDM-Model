@@ -37,4 +37,16 @@ abstract public class Type
 	{
 		return this.equals(type);
 	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		return toString().equals(other.toString());
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return toString().hashCode();
+	}
 }

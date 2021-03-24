@@ -54,6 +54,12 @@ public class Field
 	{
 		return type;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return name + " : " + getVDMType();
+	}
 
 	public String getVDMType()
 	{

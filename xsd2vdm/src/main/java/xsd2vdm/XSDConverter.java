@@ -387,7 +387,7 @@ public class XSDConverter
 		}
 		
 		stack.pop();
-		return new Field(stackAttr("name"), union, isOptional(), aggregate());
+		return new Field(stackAttr("name").toLowerCase(), union, isOptional(), aggregate());
 	}
 
 	private List<Field> convertComplexContent(XSDElement complex)
@@ -854,7 +854,7 @@ public class XSDConverter
 			indent = indent + " ";
 		}
 		
-		System.err.println();
+		System.err.println(indent + "<" + element.getType() + ">?");
 		errors = true;
 	}
 
