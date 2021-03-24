@@ -88,7 +88,7 @@ public class VDMValue
 		
 		for (Field f: type.getFields())
 		{
-			if (f.getName().equals(attrName))
+			if (f.getElementName().equals(attrName))
 			{
 				source.put(attrName, value);
 				found = true;
@@ -105,7 +105,7 @@ public class VDMValue
 		
 		for (Field f: type.getFields())
 		{
-			if (f.getElementName().equals(qName))
+			if (f.getElementName().equals(qName) || f.getType().matches(value.type))
 			{
 				source.put(qName, value);
 				found = true;
@@ -119,6 +119,12 @@ public class VDMValue
 	public void setContent(String string)
 	{
 		this.content = string;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return type == null ? content : type.toString();
 	}
 
 	public String toVDM(String indent)
@@ -152,7 +158,7 @@ public class VDMValue
 				}
 				else
 				{
-					sb.append(indent + "    Missing value for mandatory field " + field);
+					sb.append(indent + "    ? -- Missing value for mandatory field " + field);
 				}
 			}
 			

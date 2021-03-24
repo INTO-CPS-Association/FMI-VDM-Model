@@ -579,14 +579,14 @@ public class XSDConverter
 				case "xs:restriction":
 					if (first.hasChild("xs:enumeration"))
 					{
-						Union union = new Union(typeName(stackAttr("name")));
+						String name = stackAttr("name");
+						Union union = new Union(typeName(name));
 						
 						for (XSDElement e: first.getChildren())
 						{
 							union.addType(new QuoteType(e.getAttr("value")));
 						}
 						
-						String name = stackAttr("name");
 						converted.put(name, new RefType(union));
 						result = new Field(name.toLowerCase(), name, union, isOptional(), aggregate());
 					}
@@ -617,7 +617,7 @@ public class XSDConverter
 					else
 					{
 						Field f = convertSimpleType(first.getFirstChild());
-						result = new Field(f.getName(), f.getElementName(), f.getType(), f.isOptional(), "seq1 of ");
+						result = new Field(f.getName(), f.getElementName(), f.getType(), isOptional(), "seq1 of ");
 					}
 					break;
 				
@@ -759,12 +759,11 @@ public class XSDConverter
 	 */
 	private boolean isOptional()
 	{
-		XSDElement elem = stack.peek();
+		String use = stackAttr("use");
 		
-		if (elem.isType("xs:attribute"))
+		if (use != null)
 		{
-			String use = elem.getAttr("use");
-			return use == null || use.equals("optional");
+			return use.equals("optional");
 		}
 		else
 		{

@@ -121,6 +121,5 @@ public class XMLSaxHandler extends DefaultHandler
 	private void dumpStack(String message)
 	{
 		System.err.println(message);
-		System.exit(1);
 	}
 }
