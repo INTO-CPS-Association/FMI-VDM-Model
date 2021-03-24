@@ -31,15 +31,17 @@ package types;
 
 public class Field
 {
-	private final String name;
+	private final String name;			// The VDM field name, typically lower case
+	private final String elementName;	// the XML element name for the matching value
 	private final Type type;
 	private final boolean optional;
 	private final String aggregate;
 	private boolean isAttribute;
 	
-	public Field(String name, Type type, boolean optional, String aggregate)
+	public Field(String name, String elementName, Type type, boolean optional, String aggregate)
 	{
 		this.name = name;
+		this.elementName = elementName;
 		this.type = type;
 		this.optional = optional;
 		this.aggregate = aggregate;
@@ -50,11 +52,26 @@ public class Field
 		return name;
 	}
 	
+	public String getElementName()
+	{
+		return elementName;
+	}
+	
 	public Type getType()
 	{
 		return type;
 	}
 	
+	public boolean isOptional()
+	{
+		return optional;
+	}
+
+	public boolean isAttribute()
+	{
+		return isAttribute;
+	}
+
 	@Override
 	public String toString()
 	{
@@ -70,18 +87,8 @@ public class Field
 		return optional ? "[" + agg + "]" : agg;
 	}
 
-	public boolean isOptional()
-	{
-		return optional;
-	}
-	
 	public void setIsAttribute(boolean isAttribute)
 	{
 		this.isAttribute = isAttribute;
-	}
-	
-	public boolean isAttribute()
-	{
-		return isAttribute;
 	}
 }

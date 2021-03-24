@@ -255,6 +255,7 @@ public class XSDConverter
 	private List<Field> convertComplexChildren(List<XSDElement> children)
 	{
 		List<Field> fields = new Vector<Field>();
+		String name = null;
 		
 		for (XSDElement child: children)
 		{
@@ -266,7 +267,8 @@ public class XSDConverter
 	
 				case "xs:group":
 					stack.push(child);
-					fields.add(new Field(stackAttr("name"),
+					name = stackAttr("name");
+					fields.add(new Field(name.toLowerCase(), name,
 								convertGroup(child), isOptional(), aggregate()));
 					stack.pop();
 					break;
@@ -292,7 +294,7 @@ public class XSDConverter
 					break;
 					
 				case "xs:anyAttribute":
-					fields.add(new Field("any", new BasicType("token"), isOptional(), aggregate()));
+					fields.add(new Field("any", "any", new BasicType("token"), isOptional(), aggregate()));
 					break;
 					
 				default:
@@ -318,7 +320,7 @@ public class XSDConverter
 					String fname = child.getAttr("name");
 					if (fname == null) fname = child.getAttr("ref");
 					stack.push(child);
-					fields.add(new Field(fname.toLowerCase(), convertElement(child), isOptional(), aggregate()));
+					fields.add(new Field(fname.toLowerCase(), fname, convertElement(child), isOptional(), aggregate()));
 					stack.pop();
 					break;
 					
@@ -332,7 +334,7 @@ public class XSDConverter
 			
 				case "xs:any":
 					stack.push(child);
-					fields.add(new Field("any", new BasicType("token"), isOptional(), aggregate()));
+					fields.add(new Field("any", "any", new BasicType("token"), isOptional(), aggregate()));
 					stack.pop();
 					break;
 					
@@ -387,7 +389,8 @@ public class XSDConverter
 		}
 		
 		stack.pop();
-		return new Field(stackAttr("name").toLowerCase(), union, isOptional(), aggregate());
+		String name = stackAttr("name");
+		return new Field(name.toLowerCase(), name, union, isOptional(), aggregate());
 	}
 
 	private List<Field> convertComplexContent(XSDElement complex)
@@ -496,7 +499,7 @@ public class XSDConverter
 		
 		if (vtype != null)
 		{
-			results.add(new Field(elementName, vtype, isOptional(), aggregate()));
+			results.add(new Field(elementName.toLowerCase(), elementName, vtype, isOptional(), aggregate()));
 		}
 		else
 		{
@@ -513,7 +516,8 @@ public class XSDConverter
 					break;
 			
 				case "xs:element":
-					results.add(new Field(stackAttr("name"), convertElement(etype), isOptional(), aggregate()));
+					String name = stackAttr("name");
+					results.add(new Field(name.toLowerCase(), name, convertElement(etype), isOptional(), aggregate()));
 					break;
 
 				default:
@@ -582,8 +586,9 @@ public class XSDConverter
 							union.addType(new QuoteType(e.getAttr("value")));
 						}
 						
-						converted.put(stackAttr("name"), new RefType(union));
-						result = new Field(stackAttr("name"), union, isOptional(), aggregate());
+						String name = stackAttr("name");
+						converted.put(name, new RefType(union));
+						result = new Field(name.toLowerCase(), name, union, isOptional(), aggregate());
 					}
 					else
 					{
@@ -591,7 +596,8 @@ public class XSDConverter
 						
 						if (vtype != null)
 						{
-							result = new Field(stackAttr("name"), vtype, isOptional(), aggregate());
+							String name = stackAttr("name");
+							result = new Field(name.toLowerCase(), name, vtype, isOptional(), aggregate());
 						}
 						else
 						{
@@ -604,13 +610,14 @@ public class XSDConverter
 				case "xs:list":
 					if (first.hasAttr("itemType"))
 					{
-						result = new Field(stackAttr("name"),
+						String name = stackAttr("name");
+						result = new Field(name.toLowerCase(), name,
 							vdmTypeOf(first.getAttr("itemType")), isOptional(), "seq1 of ");
 					}
 					else
 					{
 						Field f = convertSimpleType(first.getFirstChild());
-						result = new Field(f.getName(), f.getType(), f.isOptional(), "seq1 of ");
+						result = new Field(f.getName(), f.getElementName(), f.getType(), f.isOptional(), "seq1 of ");
 					}
 					break;
 				
@@ -624,8 +631,9 @@ public class XSDConverter
 						union.addType(f.getType());
 					}
 					
-					converted.put(stackAttr("name"), new RefType(union));
-					result = new Field(stackAttr("name"), union, isOptional(), aggregate());
+					String name = stackAttr("name");
+					converted.put(name, new RefType(union));
+					result = new Field(name.toLowerCase(), name, union, isOptional(), aggregate());
 					break;
 					
 				case "xs:annotation":

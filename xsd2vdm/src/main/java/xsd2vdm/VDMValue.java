@@ -29,6 +29,8 @@
 
 package xsd2vdm;
 
+import java.io.File;
+import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,23 +41,56 @@ import types.Record;
 
 public class VDMValue
 {
+	private final String file;
+	private final int line;
 	private final Record type;
-	private final Map<String, String> source = new LinkedHashMap<String, String>();
+	private final Map<String, VDMValue> source = new LinkedHashMap<String, VDMValue>();
+	private String content = "nil";
 	
 	public VDMValue(Record type, Locator locator)
 	{
+		if (locator != null)
+		{
+			this.file = getFile(locator);
+			this.line = locator.getLineNumber();
+		}
+		else
+		{
+			this.file = "?";
+			this.line = 0;
+		}
+		
 		this.type = type;
 	}
+	
+	public VDMValue(String content)
+	{
+		this(null, null);
+		this.content = content;
+	}
+	
+	private String getFile(Locator locator)
+	{
+		try
+		{
+			String uri = locator.getSystemId();
+			return new File(new URI(uri)).getName();
+		}
+		catch (Exception e)
+		{
+			return "?";
+		}
+	}
 
-	public boolean setField(String name, String value)
+	public boolean setAttribute(String attrName, VDMValue value)
 	{
 		boolean found = false;
 		
 		for (Field f: type.getFields())
 		{
-			if (f.getName().equalsIgnoreCase(name))
+			if (f.getName().equals(attrName))
 			{
-				source.put(name, value);
+				source.put(attrName, value);
 				found = true;
 				break;
 			}
@@ -70,9 +105,9 @@ public class VDMValue
 		
 		for (Field f: type.getFields())
 		{
-			if (f.getType().matches(value.type))
+			if (f.getElementName().equals(qName))
 			{
-				source.put(qName, value.toString());
+				source.put(qName, value);
 				found = true;
 				break;
 			}
@@ -81,9 +116,48 @@ public class VDMValue
 		return found;
 	}
 
-	@Override
-	public String toString()
+	public void setContent(String string)
 	{
-		return type.getName() + " :: " + source.toString();
+		this.content = string;
+	}
+
+	public String toVDM(String indent)
+	{
+		StringBuilder sb = new StringBuilder();
+		
+		if (source.isEmpty())
+		{
+			sb.append(indent + "\"" + content + "\"");
+		}
+		else
+		{
+			sb.append(indent);
+			sb.append("mk_");
+			sb.append(type.getName());
+			sb.append("\n");
+			sb.append(indent + "(\n");
+			sb.append(indent + "    mk_Location(\"" + file + "\", " + line + ")");
+			
+			for (Field field: type.getFields())
+			{
+				sb.append(",\n");
+				
+				if (source.containsKey(field.getElementName()))
+				{
+					sb.append(source.get(field.getElementName()).toVDM(indent + "    "));
+				}
+				else if (field.isOptional())
+				{
+					sb.append(indent + "    nil");
+				}
+				else
+				{
+					sb.append(indent + "    Missing value for mandatory field " + field);
+				}
+			}
+			
+			sb.append("\n" + indent + ")");
+		}
+		return sb.toString();
 	}
 }

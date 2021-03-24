@@ -70,7 +70,7 @@ public class XMLSaxHandler extends DefaultHandler
 				String aname = attributes.getQName(i);
 				String avalue = attributes.getValue(i);
 				
-				if (!value.setField(aname, avalue))
+				if (!value.setAttribute(aname, new VDMValue(avalue)))
 				{
 					dumpStack("Attribute not found: " + aname);
 				}
@@ -84,12 +84,6 @@ public class XMLSaxHandler extends DefaultHandler
 		}
 	}
 	
-	private void dumpStack(String message)
-	{
-		System.err.println(message);
-		System.exit(1);
-	}
-
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException
 	{
@@ -97,7 +91,7 @@ public class XMLSaxHandler extends DefaultHandler
 		
 		if (!string.isEmpty())
 		{
-			// stack.peek().addContent(string);
+			stack.peek().setContent(string);
 		}
 	}
 
@@ -122,5 +116,11 @@ public class XMLSaxHandler extends DefaultHandler
 	public VDMValue getVDMValue()
 	{
 		return finalValue;
+	}
+
+	private void dumpStack(String message)
+	{
+		System.err.println(message);
+		System.exit(1);
 	}
 }

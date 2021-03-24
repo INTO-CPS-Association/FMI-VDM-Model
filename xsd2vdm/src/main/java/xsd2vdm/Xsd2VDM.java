@@ -188,6 +188,6 @@ public class Xsd2VDM
 		output.println(" * VDM value created from " + xmlFile);
 		output.println(" */");
 		output.println("values");
-		output.println(handler.getVDMValue());
+		output.println("xmlFileValue =\n" + handler.getVDMValue().toVDM("    ") + ";\n");
 	}
 }
