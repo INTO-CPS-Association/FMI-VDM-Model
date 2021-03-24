@@ -48,7 +48,7 @@ public class Record extends Type
 		this.name = name;
 		this.fields = fields;
 	}
-
+	
 	public void addField(Field field)
 	{
 		boolean found = false;
@@ -96,7 +96,7 @@ public class Record extends Type
 		else
 		{
 			sb.append(name + " ::\n");
-			int longest = 0;
+			int longest = "location".length() + 1;
 
 			for (Field field: fields)
 			{
@@ -107,6 +107,7 @@ public class Record extends Type
 			}
 			
 			String format = "    %-" + longest + "s : %s\n";
+			sb.append(String.format(format, "location", "Location"));
 			
 			for (Field field: fields)
 			{

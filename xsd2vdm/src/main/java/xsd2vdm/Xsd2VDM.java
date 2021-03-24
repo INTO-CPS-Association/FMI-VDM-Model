@@ -151,7 +151,7 @@ public class Xsd2VDM
 			output.println(" * VDM schema created from " + rootXSD + " on " + new Date());
 			output.println(" * DO NOT EDIT!");
 			output.println(" */");
-			output.println("types");
+			output.println("types\n");
 			output.println("Location ::");
 			output.println("    file : seq1 of char");
 			output.println("    line : nat1");
