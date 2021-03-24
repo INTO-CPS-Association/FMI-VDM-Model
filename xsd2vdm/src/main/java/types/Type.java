@@ -49,4 +49,10 @@ abstract public class Type
 	{
 		return toString().hashCode();
 	}
+	
+	@Override
+	public String toString()
+	{
+		return signature();
+	}
 }
