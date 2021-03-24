@@ -148,11 +148,14 @@ public class Xsd2VDM
 				System.out;
 
 			output.println("/**");
-			output.println(" * VDM schema created from " + rootXSD);
-			output.println(" * " + new Date());
+			output.println(" * VDM schema created from " + rootXSD + " on " + new Date());
 			output.println(" * DO NOT EDIT!");
 			output.println(" */");
 			output.println("types");
+			output.println("Location ::");
+			output.println("    file : seq1 of char");
+			output.println("    line : nat1");
+			output.println(";\n");
 			
 			for (String def: vdmSchema.keySet())
 			{

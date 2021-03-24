@@ -171,6 +171,10 @@ public class XSDConverter
 							ref.set(convertComplexType(child));
 							break;
 					
+						case "xs:simpleType":
+							rec.addField(convertSimpleType(child));
+							break;
+					
 						case "xs:annotation":
 							convertAnnotation(child);
 							break;
@@ -680,12 +684,35 @@ public class XSDConverter
 		{
 			case "xs:normalizedString":
 			case "xs:string":
-			case "xs:dateTime":
+			case "xs:token":
+			case "xs:lanuage":
+			case "xs:NAME":
+			case "xs:NMTOKEN":
+			case "xs:NCName":
+			case "xs:NMTOKENS":
+			case "xs:ID":
+			case "xs:IDREF":
+			case "xs:ENTITY":
+				return new BasicType("seq1 of char");
+
+			case "xs:anyURI":
+			case "xs:QName":
+			case "xs:NOTATION":
+				return new BasicType("seq1 of char");
+				
 			case "xs:hexBinary":
 			case "xs:base64Binary":
+				return new BasicType("seq1 of char");
+			
+			case "xs:duration":
+			case "xs:dateTime":
 			case "xs:date":
-			case "xs:gYear":
 			case "xs:time":
+			case "xs:gYearMonth":
+			case "xs:gYear":
+			case "xs:gMonthDay":
+			case "xs:gDay":
+			case "xs:gMonth":
 				return new BasicType("seq1 of char");
 				
 			case "xs:double":
@@ -698,6 +725,7 @@ public class XSDConverter
 			case "xs:unsignedInt":
 			case "xs:unsignedByte":
 			case "xs:unsignedShort":
+			case "xs:positiveInteger":
 				return new BasicType("nat");
 				
 			case "xs:long":
@@ -705,6 +733,8 @@ public class XSDConverter
 			case "xs:short":
 			case "xs:byte":
 			case "xs:integer":
+			case "xs:nonPositiveInteger":
+			case "xs:negativeInteger":
 				return new BasicType("int");
 			
 			case "xs:boolean":
