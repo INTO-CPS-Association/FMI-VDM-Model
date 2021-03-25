@@ -29,6 +29,10 @@
 
 package types;
 
+import org.xml.sax.Locator;
+
+import values.VDMValue;
+
 abstract public class Type
 {
 	protected abstract String signature();
@@ -54,5 +58,10 @@ abstract public class Type
 	public String toString()
 	{
 		return signature();
+	}
+
+	public VDMValue valueOf(String avalue, Locator locator)
+	{
+		throw new IllegalArgumentException();
 	}
 }

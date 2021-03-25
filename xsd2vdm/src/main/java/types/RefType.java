@@ -29,6 +29,10 @@
 
 package types;
 
+import org.xml.sax.Locator;
+
+import values.VDMValue;
+
 /**
  * RefTypes are added to the "converted" map early as a placeholder for recursive
  * element definitions. They allow a type to be updated and referred to by a
@@ -82,5 +86,11 @@ public class RefType extends Type
 	public boolean equals(Object other)
 	{
 		return ref.equals(other);
+	}
+
+	@Override
+	public VDMValue valueOf(String avalue, Locator locator)
+	{
+		return ref.valueOf(avalue, locator);
 	}
 }

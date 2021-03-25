@@ -27,10 +27,8 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-package xsd2vdm;
+package values;
 
-import java.io.File;
-import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -39,54 +37,22 @@ import org.xml.sax.Locator;
 import types.Field;
 import types.Record;
 
-public class VDMValue
+public class RecordValue extends VDMValue
 {
-	private final String file;
-	private final int line;
-	private final Record type;
 	private final Map<String, VDMValue> source = new LinkedHashMap<String, VDMValue>();
-	private String content = "nil";
-	
-	public VDMValue(Record type, Locator locator)
-	{
-		if (locator != null)
-		{
-			this.file = getFile(locator);
-			this.line = locator.getLineNumber();
-		}
-		else
-		{
-			this.file = "?";
-			this.line = 0;
-		}
-		
-		this.type = type;
-	}
-	
-	public VDMValue(String content)
-	{
-		this(null, null);
-		this.content = content;
-	}
-	
-	private String getFile(Locator locator)
-	{
-		try
-		{
-			String uri = locator.getSystemId();
-			return new File(new URI(uri)).getName();
-		}
-		catch (Exception e)
-		{
-			return "?";
-		}
-	}
+	private final Record recordType;
 
+	public RecordValue(Record type, Locator locator)
+	{
+		super(type, locator);
+		this.recordType = type;
+	}
+	
 	public boolean setAttribute(String attrName, VDMValue value)
 	{
 		boolean found = false;
 		
-		for (Field f: type.getFields())
+		for (Field f: recordType.getFields())
 		{
 			if (f.getElementName().equals(attrName))
 			{
@@ -103,12 +69,28 @@ public class VDMValue
 	{
 		boolean found = false;
 		
-		for (Field f: type.getFields())
+		for (Field f: recordType.getFields())
 		{
 			if (f.getElementName().equals(qName) || f.getType().matches(value.type))
 			{
-				source.put(qName, value);
 				found = true;
+
+				if (f.isSequence())
+				{
+					SeqValue seq = (SeqValue) source.get(qName);
+
+					if (seq == null)
+					{
+						seq = new SeqValue(f.getType(), null);
+						source.put(qName, seq);
+					}
+					
+					seq.add(value);
+				}
+				else
+				{
+					source.put(f.getElementName(), value);
+				}
 				break;
 			}
 		}
@@ -116,54 +98,39 @@ public class VDMValue
 		return found;
 	}
 
-	public void setContent(String string)
-	{
-		this.content = string;
-	}
-	
 	@Override
 	public String toString()
 	{
-		return type == null ? content : type.toString();
+		return recordType.toString();
 	}
 
+	@Override
 	public String toVDM(String indent)
 	{
 		StringBuilder sb = new StringBuilder();
+		sb.append(indent + "mk_" + recordType.getName() + "\n");
+		sb.append(indent + "(\n");
+		sb.append(indent + "    mk_Location(\"" + file + "\", " + line + ")");
 		
-		if (source.isEmpty())
+		for (Field field: recordType.getFields())
 		{
-			sb.append(indent + "\"" + content + "\"");
-		}
-		else
-		{
-			sb.append(indent);
-			sb.append("mk_");
-			sb.append(type.getName());
-			sb.append("\n");
-			sb.append(indent + "(\n");
-			sb.append(indent + "    mk_Location(\"" + file + "\", " + line + ")");
+			sb.append(",\n");
 			
-			for (Field field: type.getFields())
+			if (source.containsKey(field.getElementName()))
 			{
-				sb.append(",\n");
-				
-				if (source.containsKey(field.getElementName()))
-				{
-					sb.append(source.get(field.getElementName()).toVDM(indent + "    "));
-				}
-				else if (field.isOptional())
-				{
-					sb.append(indent + "    nil");
-				}
-				else
-				{
-					sb.append(indent + "    ? -- Missing value for mandatory field " + field);
-				}
+				sb.append(source.get(field.getElementName()).toVDM(indent + "    "));
 			}
-			
-			sb.append("\n" + indent + ")");
+			else if (field.isOptional())
+			{
+				sb.append(indent + "    nil");
+			}
+			else
+			{
+				sb.append(indent + "    ? -- Missing value for mandatory field " + field);
+			}
 		}
+		
+		sb.append("\n" + indent + ")");
 		return sb.toString();
 	}
 }

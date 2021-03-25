@@ -27,96 +27,44 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-package types;
+package values;
 
 import java.util.List;
 import java.util.Vector;
 
 import org.xml.sax.Locator;
 
-import values.VDMValue;
+import types.Type;
 
-public class Union extends Type
+public class SeqValue extends VDMValue
 {
-	private final String name;
-	private final List<Type> types;
-	
-	public Union(String name)
+	private final List<VDMValue> values = new Vector<VDMValue>();
+
+	protected SeqValue(Type type, Locator locator)
 	{
-		this.name = name;
-		this.types = new Vector<Type>();
+		super(type, locator);
 	}
 
 	@Override
-	public boolean matches(Type type)
-	{
-		for (Type t: types)
-		{
-			if (t.matches(type))
-			{
-				return true;
-			}
-		}
-		
-		return false;
-	}
-
-	public void addType(Type type)
-	{
-		if (type instanceof Union)
-		{
-			Union u = (Union)type;
-			this.types.addAll(u.types);
-		}
-		else if (!this.types.contains(type))
-		{
-			this.types.add(type);
-		}
-	}
-
-	@Override
-	protected String signature()
-	{
-		return name == null ? pipes() : name;
-	}
-	
-	@Override
-	public String toString()
-	{
-		return name == null ? "" : name + " = " + pipes() + ";\n";
-	}
-	
-	private String pipes()
+	public String toVDM(String indent)
 	{
 		StringBuilder sb = new StringBuilder();
-		
+		sb.append(indent + "[\n");
 		String sep = "";
 		
-		for (Type type: types)
+		for (VDMValue value: values)
 		{
 			sb.append(sep);
-			sb.append(type.signature());
-			sep = " | ";
+			sb.append(value.toVDM(indent + "    "));
+			sep = ",\n";
 		}
 		
+		sb.append("\n" + indent + "]");
 		return sb.toString();
 	}
-	
-	@Override
-	public VDMValue valueOf(String avalue, Locator locator)
+
+	public void add(VDMValue value)
 	{
-		for (Type type: types)
-		{
-			try
-			{
-				return type.valueOf(avalue, locator);
-			}
-			catch (IllegalArgumentException e)
-			{
-				// Not this type!
-			}
-		}
-		
-		throw new IllegalArgumentException("Value does not match union: " + avalue);
+		values.add(value);
 	}
 }

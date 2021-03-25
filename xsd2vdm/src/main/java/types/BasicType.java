@@ -29,6 +29,11 @@
 
 package types;
 
+import org.xml.sax.Locator;
+
+import values.SimpleValue;
+import values.VDMValue;
+
 public class BasicType extends Type
 {
 	private final String typestring;
@@ -42,5 +47,18 @@ public class BasicType extends Type
 	protected String signature()
 	{
 		return typestring;
+	}
+
+	@Override
+	public VDMValue valueOf(String avalue, Locator locator)
+	{
+		try
+		{
+			return new SimpleValue(this, locator, Integer.parseInt(avalue));
+		}
+		catch (NumberFormatException e)
+		{
+			return new SimpleValue(this, locator, avalue);
+		}
 	}
 }

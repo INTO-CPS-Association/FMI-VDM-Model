@@ -27,73 +27,48 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-package types;
+package values;
 
-public class Field
+import org.xml.sax.Locator;
+
+import types.QuoteType;
+import types.Type;
+
+public class SimpleValue extends VDMValue
 {
-	private final String name;			// The VDM field name, typically lower case
-	private final String elementName;	// the XML element name for the matching value
-	private final Type type;
-	private final boolean optional;
-	private final String aggregate;
-	private boolean isAttribute;
-	
-	public Field(String name, String elementName, Type type, boolean optional, String aggregate)
+	private String value;		// a VDM literal, like "hello" or 1.234 etc.
+
+	public SimpleValue(Type type, Locator locator, String value)
 	{
-		this.name = name;
-		this.elementName = elementName;
-		this.type = type;
-		this.optional = optional;
-		this.aggregate = aggregate;
-	}
-	
-	public String getName()
-	{
-		return name;
-	}
-	
-	public String getElementName()
-	{
-		return elementName;
-	}
-	
-	public Type getType()
-	{
-		return type;
-	}
-	
-	public boolean isOptional()
-	{
-		return optional;
+		super(type, locator);
+		this.value = "\"" + value + "\"";
 	}
 
-	public boolean isAttribute()
+	public SimpleValue(Type type, Locator locator, QuoteType quote)
 	{
-		return isAttribute;
+		super(type, locator);
+		this.value = quote.toString();
 	}
 
-	public boolean isSequence()
+	public SimpleValue(Type type, Locator locator, int value)
 	{
-		return !aggregate.isEmpty();
+		super(type, locator);
+		this.value = Integer.toString(value);
 	}
 
 	@Override
-	public String toString()
+	public String toVDM(String indent)
 	{
-		return name + " : " + getVDMType();
+		return indent + value;
 	}
 
-	public String getVDMType()
+	public void setValue(String value)
 	{
-		String agg = aggregate.isEmpty() ?
-			type.signature() : 
-			aggregate + "(" + type.signature() + ")";
-
-		return optional ? "[" + agg + "]" : agg;
+		this.value = value;
 	}
 
-	public void setIsAttribute(boolean isAttribute)
+	public void setValue(int value)
 	{
-		this.isAttribute = isAttribute;
+		this.value = Integer.toString(value);
 	}
 }

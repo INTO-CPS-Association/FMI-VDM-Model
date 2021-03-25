@@ -38,6 +38,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import types.Record;
 import types.RefType;
+import types.Type;
+import values.RecordValue;
+import values.SimpleValue;
+import values.VDMValue;
 
 public class XMLSaxHandler extends DefaultHandler
 {
@@ -62,21 +66,23 @@ public class XMLSaxHandler extends DefaultHandler
 	{
 		if (schema.containsKey(qName))
 		{
-			Record type = (Record) schema.get(qName).deref();
-			VDMValue value = new VDMValue(type, locator);
+			Record recordType = (Record) schema.get(qName).deref();
+			RecordValue recordValue = new RecordValue(recordType, locator);
 			
 			for (int i=0; i<attributes.getLength(); i++)
 			{
 				String aname = attributes.getQName(i);
 				String avalue = attributes.getValue(i);
+				Type atype = recordType.getField(aname).getType();
+				VDMValue vdmValue = atype.valueOf(avalue, locator);
 				
-				if (!value.setAttribute(aname, new VDMValue(avalue)))
+				if (!recordValue.setAttribute(aname, vdmValue))
 				{
 					dumpStack("Attribute not found: " + aname);
 				}
 			}
 
-			stack.push(value);
+			stack.push(recordValue);
 		}
 		else
 		{
@@ -87,11 +93,19 @@ public class XMLSaxHandler extends DefaultHandler
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException
 	{
-		String string = new String(ch, start, length).trim();
+		String value = new String(ch, start, length).trim();
 		
-		if (!string.isEmpty())
+		if (!value.isEmpty())
 		{
-			stack.peek().setContent(string);
+			if (stack.peek() instanceof SimpleValue)
+			{
+				SimpleValue simple = (SimpleValue)stack.peek();
+				simple.setValue(value);
+			}
+			else
+			{
+				dumpStack("Cannot add character content to " + stack.peek().getType());
+			}
 		}
 	}
 
@@ -102,9 +116,18 @@ public class XMLSaxHandler extends DefaultHandler
 
 		if (!stack.isEmpty())
 		{
-			if (!stack.peek().setField(qName, value))
+			if (stack.peek() instanceof RecordValue)
 			{
-				dumpStack("Cannot add sub-element: " + value);
+				RecordValue recordValue = (RecordValue)stack.peek();
+				
+				if (!recordValue.setField(qName, value))
+				{
+					dumpStack("Cannot add sub-element: " + value);
+				}
+			}
+			else
+			{
+				dumpStack("Cannot add sub-element to " + stack.peek().getType());
 			}
 		}
 		else

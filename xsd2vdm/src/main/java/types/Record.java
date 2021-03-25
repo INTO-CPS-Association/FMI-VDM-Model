@@ -155,8 +155,39 @@ public class Record extends Type
 		return name;
 	}
 	
-	public List<Field> getFields()
+	public List<Field> getFields()	// In attribute/element order
 	{
-		return fields;
+		List<Field> ordered = new Vector<Field>();
+		
+		for (Field field: fields)
+		{
+			if (field.isAttribute())
+			{
+				ordered.add(field);
+			}
+		}
+		
+		for (Field field: fields)
+		{
+			if (!field.isAttribute())
+			{
+				ordered.add(field);
+			}
+		}
+		
+		return ordered;
+	}
+
+	public Field getField(String aname)
+	{
+		for (Field field: fields)
+		{
+			if (field.getElementName().equals(aname))
+			{
+				return field;
+			}
+		}
+		
+		return null;
 	}
 }

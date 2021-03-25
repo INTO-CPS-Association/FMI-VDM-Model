@@ -27,73 +27,54 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-package types;
+package values;
 
-public class Field
+import java.io.File;
+import java.net.URI;
+
+import org.xml.sax.Locator;
+
+import types.Type;
+
+abstract public class VDMValue
 {
-	private final String name;			// The VDM field name, typically lower case
-	private final String elementName;	// the XML element name for the matching value
-	private final Type type;
-	private final boolean optional;
-	private final String aggregate;
-	private boolean isAttribute;
+	protected final String file;
+	protected final int line;
+	protected final Type type;
 	
-	public Field(String name, String elementName, Type type, boolean optional, String aggregate)
+	protected VDMValue(Type type, Locator locator)
 	{
-		this.name = name;
-		this.elementName = elementName;
 		this.type = type;
-		this.optional = optional;
-		this.aggregate = aggregate;
+		
+		if (locator != null)
+		{
+			this.file = getFile(locator);
+			this.line = locator.getLineNumber();
+		}
+		else
+		{
+			this.file = "?";
+			this.line = 0;
+		}
 	}
-	
-	public String getName()
+
+	private String getFile(Locator locator)
 	{
-		return name;
+		try
+		{
+			String uri = locator.getSystemId();
+			return new File(new URI(uri)).getName();
+		}
+		catch (Exception e)
+		{
+			return "?";
+		}
 	}
-	
-	public String getElementName()
-	{
-		return elementName;
-	}
-	
+
+	abstract public String toVDM(String indent);
+
 	public Type getType()
 	{
 		return type;
-	}
-	
-	public boolean isOptional()
-	{
-		return optional;
-	}
-
-	public boolean isAttribute()
-	{
-		return isAttribute;
-	}
-
-	public boolean isSequence()
-	{
-		return !aggregate.isEmpty();
-	}
-
-	@Override
-	public String toString()
-	{
-		return name + " : " + getVDMType();
-	}
-
-	public String getVDMType()
-	{
-		String agg = aggregate.isEmpty() ?
-			type.signature() : 
-			aggregate + "(" + type.signature() + ")";
-
-		return optional ? "[" + agg + "]" : agg;
-	}
-
-	public void setIsAttribute(boolean isAttribute)
-	{
-		this.isAttribute = isAttribute;
 	}
 }

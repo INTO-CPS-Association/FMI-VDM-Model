@@ -29,6 +29,11 @@
 
 package types;
 
+import org.xml.sax.Locator;
+
+import values.SimpleValue;
+import values.VDMValue;
+
 public class QuoteType extends Type
 {
 	private final String tag;
@@ -44,4 +49,16 @@ public class QuoteType extends Type
 		return "<" + tag + ">";
 	}
 
+	@Override
+	public VDMValue valueOf(String avalue, Locator locator)
+	{
+		if (avalue.equals(tag))
+		{
+			return new SimpleValue(this, locator, this);
+		}
+		else
+		{
+			throw new IllegalArgumentException();
+		}
+	}
 }
