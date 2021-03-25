@@ -37,7 +37,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import types.Record;
-import types.RefType;
 import types.Type;
 import values.RecordValue;
 import values.SimpleValue;
@@ -45,12 +44,12 @@ import values.VDMValue;
 
 public class XMLSaxHandler extends DefaultHandler
 {
-	private final Map<String, RefType> schema;
+	private final Map<String, Type> schema;
 	private final Stack<VDMValue> stack = new Stack<VDMValue>();
 	private Locator locator = null;
 	private VDMValue finalValue = null;
 
-	public XMLSaxHandler(Map<String, RefType> schema)
+	public XMLSaxHandler(Map<String, Type> schema)
 	{
 		this.schema = schema;
 	}
@@ -66,7 +65,7 @@ public class XMLSaxHandler extends DefaultHandler
 	{
 		if (schema.containsKey(qName))
 		{
-			Record recordType = (Record) schema.get(qName).deref();
+			Record recordType = (Record) schema.get(qName);
 			RecordValue recordValue = new RecordValue(recordType, locator);
 			
 			for (int i=0; i<attributes.getLength(); i++)

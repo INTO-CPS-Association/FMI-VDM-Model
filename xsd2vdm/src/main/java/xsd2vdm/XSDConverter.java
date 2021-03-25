@@ -76,7 +76,7 @@ public class XSDConverter
 	/**
 	 * Convert the root schemas passed in and return VDM-SL schema types. 
 	 */
-	public Map<String, RefType> convertSchemas(List<XSDElement> schemas)
+	public Map<String, Type> convertSchemas(List<XSDElement> schemas)
 	{
 		converted.clear();
 		stack.clear();
@@ -88,7 +88,14 @@ public class XSDConverter
 			convertSchema(schema);
 		}
 		
-		return errors ? null : converted;
+		Map<String, Type> derefed = new LinkedHashMap<String, Type>();
+		
+		for (String name: converted.keySet())
+		{
+			derefed.put(name, converted.get(name).deref());
+		}
+		
+		return errors ? null : derefed;
 	}
 	
 	private void convertSchema(XSDElement schema)

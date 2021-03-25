@@ -41,7 +41,7 @@ import java.util.Vector;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import types.RefType;
+import types.Type;
 
 public class Xsd2VDM
 {
@@ -96,7 +96,7 @@ public class Xsd2VDM
 		try
 		{
 			Xsd2VDM xsd2vdm = new Xsd2VDM();
-			Map<String, RefType> schema = xsd2vdm.createVDMSchema(xsdFile, vdmFile);
+			Map<String, Type> schema = xsd2vdm.createVDMSchema(xsdFile, vdmFile);
 			
 			if (xmlFile != null)
 			{
@@ -113,7 +113,7 @@ public class Xsd2VDM
 	/**
 	 * Convert the root schema file passed in and write out VDM-SL to the output. 
 	 */
-	private Map<String, RefType> createVDMSchema(String rootXSD, String vdmFile) throws Exception
+	private Map<String, Type> createVDMSchema(String rootXSD, String vdmFile) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
@@ -139,7 +139,7 @@ public class Xsd2VDM
 		}
 
 		XSDConverter converter = new XSDConverter();
-		Map<String, RefType> vdmSchema = converter.convertSchemas(roots);
+		Map<String, Type> vdmSchema = converter.convertSchemas(roots);
 
 		if (vdmSchema != null)
 		{
@@ -173,7 +173,7 @@ public class Xsd2VDM
 		return vdmSchema;
 	}
 	
-	private void createVDMValue(Map<String, RefType> schema, String vdmFile, String xmlFile) throws Exception
+	private void createVDMValue(Map<String, Type> schema, String vdmFile, String xmlFile) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
