@@ -56,7 +56,24 @@ public class RecordValue extends VDMValue
 		{
 			if (f.getElementName().equals(attrName))
 			{
-				source.put(attrName, value);
+				if (f.isSequence())
+				{
+					SeqValue seq = (SeqValue) source.get(attrName);
+
+					if (seq == null)
+					{
+						seq = new SeqValue(f.getType(), null);
+						source.put(f.getElementName(), seq);
+					}
+					
+					seq.add(value);
+				}
+				else
+				{
+					source.put(f.getElementName(), value);
+				}
+
+				// source.put(attrName, value);
 				found = true;
 				break;
 			}
@@ -108,29 +125,39 @@ public class RecordValue extends VDMValue
 	public String toVDM(String indent)
 	{
 		StringBuilder sb = new StringBuilder();
-		sb.append(indent + "mk_" + recordType.getName() + "\n");
-		sb.append(indent + "(\n");
-		sb.append(indent + "    mk_Location(\"" + file + "\", " + line + ")");
 		
-		for (Field field: recordType.getFields())
+		if (recordType.getFields().size() == 1)
 		{
-			sb.append(",\n");
+			Field field = recordType.getFields().get(0);
+			sb.append(source.get(field.getElementName()).toVDM(indent));
+		}
+		else
+		{
+			sb.append(indent + "mk_" + recordType.getName() + "\n");
+			sb.append(indent + "(\n");
+			sb.append(indent + "    mk_Location(\"" + file + "\", " + line + ")");
 			
-			if (source.containsKey(field.getElementName()))
+			for (Field field: recordType.getFields())
 			{
-				sb.append(source.get(field.getElementName()).toVDM(indent + "    "));
+				sb.append(",\n");
+				
+				if (source.containsKey(field.getElementName()))
+				{
+					sb.append(source.get(field.getElementName()).toVDM(indent + "    "));
+				}
+				else if (field.isOptional())
+				{
+					sb.append(indent + "    nil");
+				}
+				else
+				{
+					sb.append(indent + "    ? -- Missing value for mandatory field " + field);
+				}
 			}
-			else if (field.isOptional())
-			{
-				sb.append(indent + "    nil");
-			}
-			else
-			{
-				sb.append(indent + "    ? -- Missing value for mandatory field " + field);
-			}
+			
+			sb.append("\n" + indent + ")");
 		}
 		
-		sb.append("\n" + indent + ")");
 		return sb.toString();
 	}
 }
