@@ -82,7 +82,7 @@ public class RecordValue extends VDMValue
 					if (seq == null)
 					{
 						seq = new SeqValue(f.getType(), null);
-						source.put(qName, seq);
+						source.put(f.getElementName(), seq);
 					}
 					
 					seq.add(value);

@@ -63,6 +63,12 @@ public class RefType extends Type
 		
 		return t;
 	}
+	
+	@Override
+	public boolean matches(Type type)
+	{
+		return ref.matches(type);
+	}
 
 	@Override
 	protected String signature()

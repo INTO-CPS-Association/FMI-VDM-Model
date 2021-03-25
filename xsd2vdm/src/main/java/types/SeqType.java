@@ -43,4 +43,10 @@ public class SeqType extends Type
 	{
 		return "seq of " + itemtype.signature();
 	}
+	
+	@Override
+	public boolean matches(Type type)
+	{
+		return itemtype.matches(type);
+	}
 }

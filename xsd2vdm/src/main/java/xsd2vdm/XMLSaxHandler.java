@@ -122,12 +122,12 @@ public class XMLSaxHandler extends DefaultHandler
 				
 				if (!recordValue.setField(qName, value))
 				{
-					dumpStack("Cannot add sub-element: " + value);
+					dumpStack("Cannot add sub-element: " + qName + " to " + stack.peek().getType());
 				}
 			}
 			else
 			{
-				dumpStack("Cannot add sub-element to " + stack.peek().getType());
+				dumpStack("Cannot add sub-element " + value + " to " + stack.peek().getType());
 			}
 		}
 		else
