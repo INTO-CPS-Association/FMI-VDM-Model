@@ -873,10 +873,12 @@ public class XSDConverter
 	}
 
 	/**
-	 * Convert a string into a name with an uppercase initial letter. 
+	 * Convert a string into a name with an uppercase initial letter.
+	 * (or not, as this can confuse Element and Attribute type names)
 	 */
 	private String typeName(String attribute)
 	{
-		return attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
+		// return attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
+		return attribute;
 	}
 }
