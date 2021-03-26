@@ -35,14 +35,14 @@ import java.util.Map;
 import org.xml.sax.Locator;
 
 import types.Field;
-import types.Record;
+import types.RecordType;
 
 public class RecordValue extends VDMValue
 {
 	private final Map<String, VDMValue> source = new LinkedHashMap<String, VDMValue>();
-	private final Record recordType;
+	private final RecordType recordType;
 
-	public RecordValue(Record type, Locator locator)
+	public RecordValue(RecordType type, Locator locator)
 	{
 		super(type, locator);
 		this.recordType = type;

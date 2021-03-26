@@ -36,7 +36,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import types.Record;
+import types.RecordType;
 import types.Type;
 import values.RecordValue;
 import values.SimpleValue;
@@ -65,7 +65,7 @@ public class XMLSaxHandler extends DefaultHandler
 	{
 		if (schema.containsKey(qName))
 		{
-			Record recordType = (Record) schema.get(qName);
+			RecordType recordType = (RecordType) schema.get(qName);
 			RecordValue recordValue = new RecordValue(recordType, locator);
 			
 			for (int i=0; i<attributes.getLength(); i++)

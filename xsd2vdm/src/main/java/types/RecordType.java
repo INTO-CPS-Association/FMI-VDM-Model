@@ -32,18 +32,18 @@ package types;
 import java.util.List;
 import java.util.Vector;
 
-public class Record extends Type
+public class RecordType extends Type
 {
 	private final String name;
 	private final List<Field> fields;
 
-	public Record(String name)
+	public RecordType(String name)
 	{
 		this.name = name;
 		this.fields = new Vector<Field>();
 	}
 
-	public Record(String name, List<Field> fields)
+	public RecordType(String name, List<Field> fields)
 	{
 		this.name = name;
 		this.fields = fields;
@@ -55,7 +55,7 @@ public class Record extends Type
 		
 		for (int i=0; i<fields.size(); i++)
 		{
-			if (fields.get(i).getName().equals(field.getName()))
+			if (fields.get(i).getFieldName().equals(field.getFieldName()))
 			{
 				fields.set(i, field);
 				found = true;
@@ -69,7 +69,7 @@ public class Record extends Type
 		}
 	}
 
-	public void addFields(Record other)
+	public void addFields(RecordType other)
 	{
 		addFields(other.fields);
 	}
@@ -100,9 +100,9 @@ public class Record extends Type
 
 			for (Field field: fields)
 			{
-				if (field.getName().length() > longest)
+				if (field.getFieldName().length() > longest)
 				{
-					longest = field.getName().length() + 1;
+					longest = field.getFieldName().length() + 1;
 				}
 			}
 			
@@ -113,7 +113,7 @@ public class Record extends Type
 			{
 				if (field.isAttribute())
 				{
-					String name = field.getName();
+					String name = field.getFieldName();
 					
 					if (Keywords.isKeyword(name))
 					{
@@ -128,7 +128,7 @@ public class Record extends Type
 			{
 				if (!field.isAttribute())
 				{
-					String name = field.getName();
+					String name = field.getFieldName();
 					
 					if (Keywords.isKeyword(name))
 					{

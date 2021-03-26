@@ -36,12 +36,12 @@ import org.xml.sax.Locator;
 
 import values.VDMValue;
 
-public class Union extends Type
+public class UnionType extends Type
 {
 	private final String name;
 	private final List<Type> types;
 	
-	public Union(String name)
+	public UnionType(String name)
 	{
 		this.name = name;
 		this.types = new Vector<Type>();
@@ -63,9 +63,9 @@ public class Union extends Type
 
 	public void addType(Type type)
 	{
-		if (type instanceof Union)
+		if (type instanceof UnionType)
 		{
-			Union u = (Union)type;
+			UnionType u = (UnionType)type;
 			this.types.addAll(u.types);
 		}
 		else if (!this.types.contains(type))

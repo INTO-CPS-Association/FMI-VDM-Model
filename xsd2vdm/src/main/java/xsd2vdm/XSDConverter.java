@@ -39,10 +39,10 @@ import java.util.Vector;
 import types.BasicType;
 import types.Field;
 import types.QuoteType;
-import types.Record;
+import types.RecordType;
 import types.RefType;
 import types.Type;
-import types.Union;
+import types.UnionType;
 
 public class XSDConverter
 {
@@ -147,8 +147,7 @@ public class XSDConverter
 		
 		if (element.isReference())
 		{
-			String ref = element.getAttr("ref");
-			result = convertElement(XSDElement.lookup(ref));
+			result = convertElement(XSDElement.lookup(element.getAttr("ref")));
 		}
 		else
 		{
@@ -160,7 +159,7 @@ public class XSDConverter
 				return converted.get(elementName);
 			}
 	
-			Record rec = new Record(elementName);
+			RecordType rec = new RecordType(elementName);
 			RefType ref = new RefType(rec);
 			converted.put(elementName, ref);
 			
@@ -208,8 +207,7 @@ public class XSDConverter
 	
 		if (group.isReference())
 		{
-			String ref = group.getAttr("ref");
-			result = convertGroup(XSDElement.lookup(ref));
+			result = convertGroup(XSDElement.lookup(group.getAttr("ref")));
 		}
 		else
 		{
@@ -221,7 +219,7 @@ public class XSDConverter
 				return converted.get(unionName);
 			}
 			
-			RefType ref = new RefType(new Union(unionName));
+			RefType ref = new RefType(new UnionType(unionName));
 			converted.put(unionName, ref);
 			
 			for (XSDElement child: group.getChildren())
@@ -245,12 +243,12 @@ public class XSDConverter
 		return result;
 	}
 
-	private Record convertComplexType(XSDElement complexType)
+	private RecordType convertComplexType(XSDElement complexType)
 	{
 		assert complexType.isType("xs:complexType");
 
 		stack.push(complexType);
-		Record rec = new Record(stackAttr("name"), convertComplexChildren(complexType.getChildren()));
+		RecordType rec = new RecordType(stackAttr("name"), convertComplexChildren(complexType.getChildren()));
 		stack.pop();
 
 		return rec;
@@ -367,7 +365,7 @@ public class XSDConverter
 	{
 		assert choice.getType().equals("xs:choice");
 		stack.push(choice);
-		Union union = new Union(choice.getAttr("name"));
+		UnionType union = new UnionType(choice.getAttr("name"));
 	
 		for (XSDElement child: choice.getChildren())
 		{
@@ -463,32 +461,39 @@ public class XSDConverter
 		stack.push(attribute);
 		Field result = null;
 		
-		if (!attribute.hasAttr("use"))
+		if (attribute.isReference())
 		{
-			attribute.getAttrs().put("use", "optional");	// Explicit, for Field qualifier
-		}
-		
-		if (attribute.hasAttr("type"))
-		{
-			result = convertType(attribute, "type").get(0);
+			result = convertAttribute(XSDElement.lookup(attribute.getAttr("ref")));
 		}
 		else
 		{
-			for (XSDElement child: attribute.getChildren())
+			if (!attribute.hasAttr("use"))
 			{
-				switch (child.getType())
+				attribute.getAttrs().put("use", "optional");	// Explicit, for Field qualifier
+			}
+
+			if (attribute.hasAttr("type"))
+			{
+				result = convertType(attribute, "type").get(0);
+			}
+			else
+			{
+				for (XSDElement child: attribute.getChildren())
 				{
-					case "xs:annotation":
-						convertAnnotation(child);
-						break;
-						
-					case "xs:simpleType":
-						result = convertSimpleType(child);
-						break;
-						
-					default:
-						dumpStack("Unexpected attribute child", child);
-						break;
+					switch (child.getType())
+					{
+						case "xs:annotation":
+							convertAnnotation(child);
+							break;
+							
+						case "xs:simpleType":
+							result = convertSimpleType(child);
+							break;
+							
+						default:
+							dumpStack("Unexpected attribute child", child);
+							break;
+					}
 				}
 			}
 		}
@@ -501,11 +506,11 @@ public class XSDConverter
 	private List<Field> convertType(XSDElement element, String typeattr)
 	{
 		BasicType vtype = vdmTypeOf(element.getAttr(typeattr));
-		String elementName = element.getAttr("name");
 		List<Field> results = new Vector<Field>();
 		
 		if (vtype != null)
 		{
+			String elementName = element.getAttr("name");
 			results.add(new Field(elementName.toLowerCase(), elementName, vtype, isOptional(), aggregate()));
 		}
 		else
@@ -587,7 +592,7 @@ public class XSDConverter
 					if (first.hasChild("xs:enumeration"))
 					{
 						String name = stackAttr("name");
-						Union union = new Union(typeName(name));
+						UnionType union = new UnionType(typeName(name));
 						
 						for (XSDElement e: first.getChildren())
 						{
@@ -624,13 +629,13 @@ public class XSDConverter
 					else
 					{
 						Field f = convertSimpleType(first.getFirstChild());
-						result = new Field(f.getName(), f.getElementName(), f.getType(), isOptional(), "seq1 of ");
+						result = new Field(f.getFieldName(), f.getElementName(), f.getType(), isOptional(), "seq1 of ");
 					}
 					break;
 				
 				case "xs:union":
 					String[] types = first.getAttr("memberTypes").split("\\s+");
-					Union union = new Union(typeName(stackAttr("name")));
+					UnionType union = new UnionType(typeName(stackAttr("name")));
 					
 					for (String type: types)
 					{
@@ -878,7 +883,7 @@ public class XSDConverter
 	 */
 	private String typeName(String attribute)
 	{
-		// return attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
-		return attribute;
+		String name = attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
+		return (converted.containsKey(name)) ? attribute : name;
 	}
 }

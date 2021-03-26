@@ -31,25 +31,25 @@ package types;
 
 public class Field
 {
-	private final String name;			// The VDM field name, typically lower case
+	private final String fieldName;		// The VDM field name, typically lower case
 	private final String elementName;	// the XML element name for the matching value
 	private final Type type;
 	private final boolean optional;
 	private final String aggregate;
 	private boolean isAttribute;
 	
-	public Field(String name, String elementName, Type type, boolean optional, String aggregate)
+	public Field(String fieldName, String elementName, Type type, boolean optional, String aggregate)
 	{
-		this.name = name;
+		this.fieldName = fieldName;
 		this.elementName = elementName;
 		this.type = type;
 		this.optional = optional;
 		this.aggregate = aggregate;
 	}
 	
-	public String getName()
+	public String getFieldName()
 	{
-		return name;
+		return fieldName;
 	}
 	
 	public String getElementName()
@@ -80,7 +80,7 @@ public class Field
 	@Override
 	public String toString()
 	{
-		return name + " : " + getVDMType();
+		return fieldName + " : " + getVDMType();
 	}
 
 	public String getVDMType()
