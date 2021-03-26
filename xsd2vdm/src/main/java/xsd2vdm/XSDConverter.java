@@ -510,7 +510,7 @@ public class XSDConverter
 		
 		if (vtype != null)
 		{
-			String elementName = element.getAttr("name");
+			String elementName = stackAttr("name");
 			results.add(new Field(elementName.toLowerCase(), elementName, vtype, isOptional(), aggregate()));
 		}
 		else
