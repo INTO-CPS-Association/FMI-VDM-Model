@@ -68,7 +68,7 @@ public class XSDSaxHandler extends DefaultHandler
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes)
 	{
-		stack.push(new XSDElement(qName, attributes, locator));
+		stack.push(map(new XSDElement(qName, attributes, locator)));
 		
 		if (qName.equals("xs:include"))
 		{
@@ -100,5 +100,55 @@ public class XSDSaxHandler extends DefaultHandler
 		{
 			roots.add(element);
 		}
+	}
+	
+	/**
+	 * Map the name of any element or attribute to avoid clashes. The hierarchical
+	 * name is composed of dot-separated names of XSD elements that have a "name"
+	 * attribute, like:
+	 * 
+	 * fmiModelDescription
+	 * fmiModelDescription.ModelExchange
+	 * fmiModelDescription.ModelExchange.SourceFiles
+	 * fmiModelDescription.ModelExchange.SourceFiles.File
+	 * fmiModelDescription.ModelExchange.SourceFiles.File.name
+	 * etc.
+	 * 
+	 * Properties with such a name are used to update the name property of the final
+	 * item. For example:
+	 * 
+	 * -Dfmi2SimpleType.Real=RealType
+	 * -Dfmi2SimpleType.Integer=IntegerType
+	 */
+	private XSDElement map(XSDElement element)
+	{
+		if (element.hasAttr("name"))
+		{
+			StringBuilder path = new StringBuilder();
+			String sep = "";
+			
+			for (XSDElement e: stack)
+			{
+				if (e.hasAttr("name"))
+				{
+					path.append(sep);
+					path.append(e.getAttr("name"));
+					sep = ".";
+				}
+			}
+			
+			path.append(sep);
+			path.append(element.getAttr("name"));
+			// System.out.println("Path = " + path);
+	
+			String mapped = System.getProperty(path.toString());
+			
+			if (mapped != null)
+			{
+				element.getAttrs().put("name", mapped);
+			}
+		}
+		
+		return element;
 	}
 }
