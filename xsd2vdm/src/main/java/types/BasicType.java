@@ -52,20 +52,25 @@ public class BasicType extends Type
 	@Override
 	public VDMValue valueOf(String avalue, Locator locator)
 	{
-		try
+		switch (typestring)
 		{
-			return new SimpleValue(this, locator, Integer.parseInt(avalue));
-		}
-		catch (NumberFormatException e)
-		{
-			try
-			{
+			case "nat":
+			case "nat1":
+			case "int":
+				return new SimpleValue(this, locator, Integer.parseInt(avalue));
+				
+			case "real":
 				return new SimpleValue(this, locator, Double.parseDouble(avalue));
-			}
-			catch (NumberFormatException e1)
-			{
+
+			case "seq of char":
+			case "seq1 of char":
 				return new SimpleValue(this, locator, avalue);
-			}
+				
+			case "bool":
+				return new SimpleValue(this, locator, Boolean.parseBoolean(avalue));
+				
+			default:
+				throw new IllegalArgumentException("Unknown type string for BasicValue: " + typestring);
 		}
 	}
 }

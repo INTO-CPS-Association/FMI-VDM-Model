@@ -704,6 +704,8 @@ public class XSDConverter
 		{
 			case "xs:normalizedString":
 			case "xs:string":
+				return new BasicType("seq of char");
+
 			case "xs:token":
 			case "xs:lanuage":
 			case "xs:NAME":
@@ -713,8 +715,6 @@ public class XSDConverter
 			case "xs:ID":
 			case "xs:IDREF":
 			case "xs:ENTITY":
-				return new BasicType("seq1 of char");
-
 			case "xs:anyURI":
 			case "xs:QName":
 			case "xs:NOTATION":

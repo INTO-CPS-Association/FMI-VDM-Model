@@ -63,6 +63,12 @@ public class SimpleValue extends VDMValue
 		this.value = Double.toString(real);
 	}
 
+	public SimpleValue(BasicType type, Locator locator, boolean bool)
+	{
+		super(type, locator);
+		this.value = Boolean.toString(bool);
+	}
+
 	@Override
 	public String toVDM(String indent)
 	{
