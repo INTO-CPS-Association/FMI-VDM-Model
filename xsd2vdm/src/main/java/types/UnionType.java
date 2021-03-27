@@ -117,6 +117,7 @@ public class UnionType extends Type
 			}
 		}
 		
-		throw new IllegalArgumentException("Value does not match union: " + avalue);
+		throw new IllegalArgumentException(
+				"Value \"" + avalue + "\" does not match " + name + " union at line " + locator.getLineNumber());
 	}
 }

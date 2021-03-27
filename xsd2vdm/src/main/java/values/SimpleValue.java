@@ -31,6 +31,7 @@ package values;
 
 import org.xml.sax.Locator;
 
+import types.BasicType;
 import types.QuoteType;
 import types.Type;
 
@@ -50,10 +51,16 @@ public class SimpleValue extends VDMValue
 		this.value = quote.toString();
 	}
 
-	public SimpleValue(Type type, Locator locator, int value)
+	public SimpleValue(Type type, Locator locator, Integer value)
 	{
 		super(type, locator);
 		this.value = Integer.toString(value);
+	}
+
+	public SimpleValue(BasicType type, Locator locator, Double real)
+	{
+		super(type, locator);
+		this.value = Double.toString(real);
 	}
 
 	@Override

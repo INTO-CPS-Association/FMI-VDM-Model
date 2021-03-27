@@ -58,7 +58,14 @@ public class BasicType extends Type
 		}
 		catch (NumberFormatException e)
 		{
-			return new SimpleValue(this, locator, avalue);
+			try
+			{
+				return new SimpleValue(this, locator, Double.parseDouble(avalue));
+			}
+			catch (NumberFormatException e1)
+			{
+				return new SimpleValue(this, locator, avalue);
+			}
 		}
 	}
 }

@@ -62,6 +62,28 @@ public class Field
 		return type;
 	}
 	
+	public Type getVDMType()
+	{
+		Type agg = null;
+		
+		switch (aggregate)
+		{
+			case "":
+				agg = type;
+				break;
+				
+			case "seq of ":
+				agg = new SeqType(type, 0);
+				break;
+
+			case "seq1 of ":
+				agg = new SeqType(type, 1);
+				break;
+		}
+		
+		return optional ? new OptionalType(agg) : agg;
+	}
+
 	public boolean isOptional()
 	{
 		return optional;
@@ -81,15 +103,6 @@ public class Field
 	public String toString()
 	{
 		return fieldName + " : " + getVDMType();
-	}
-
-	public String getVDMType()
-	{
-		String agg = aggregate.isEmpty() ?
-			type.signature() : 
-			aggregate + "(" + type.signature() + ")";
-
-		return optional ? "[" + agg + "]" : agg;
 	}
 
 	public void setIsAttribute(boolean isAttribute)

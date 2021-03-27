@@ -72,7 +72,7 @@ public class XMLSaxHandler extends DefaultHandler
 			{
 				String aname = attributes.getQName(i);
 				String avalue = attributes.getValue(i);
-				Type atype = recordType.getField(aname).getType();
+				Type atype = recordType.getField(aname).getVDMType();
 				VDMValue vdmValue = atype.valueOf(avalue, locator);
 				
 				if (!recordValue.setAttribute(aname, vdmValue))

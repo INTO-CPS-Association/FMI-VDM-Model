@@ -40,7 +40,7 @@ public class SeqValue extends VDMValue
 {
 	private final List<VDMValue> values = new Vector<VDMValue>();
 
-	protected SeqValue(Type type, Locator locator)
+	public SeqValue(Type type, Locator locator)
 	{
 		super(type, locator);
 	}

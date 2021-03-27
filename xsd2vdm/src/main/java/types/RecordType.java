@@ -32,6 +32,10 @@ package types;
 import java.util.List;
 import java.util.Vector;
 
+import org.xml.sax.Locator;
+
+import values.VDMValue;
+
 public class RecordType extends Type
 {
 	private final String name;
@@ -91,7 +95,7 @@ public class RecordType extends Type
 		{
 			sb.append(name);
 			sb.append(" = ");
-			sb.append(fields.get(0).getVDMType());
+			sb.append(fields.get(0).getVDMType().signature());
 		}
 		else
 		{
@@ -120,7 +124,7 @@ public class RecordType extends Type
 						name = "$" + name;
 					}
 					
-					sb.append(String.format(format, name, field.getVDMType()));
+					sb.append(String.format(format, name, field.getVDMType().signature()));
 				}
 			}
 			
@@ -135,7 +139,7 @@ public class RecordType extends Type
 						name = "$" + name;
 					}
 					
-					sb.append(String.format(format, name, field.getVDMType()));
+					sb.append(String.format(format, name, field.getVDMType().signature()));
 				}
 			}
 		}
@@ -189,5 +193,11 @@ public class RecordType extends Type
 		}
 		
 		return null;
+	}
+
+	@Override
+	public VDMValue valueOf(String avalue, Locator locator)
+	{
+		throw new IllegalArgumentException("Cannot get valueOf a record type");
 	}
 }

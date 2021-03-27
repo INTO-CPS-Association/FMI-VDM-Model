@@ -31,43 +31,44 @@ package types;
 
 import org.xml.sax.Locator;
 
-import values.SeqValue;
 import values.VDMValue;
 
-public class SeqType extends Type
+public class OptionalType extends Type
 {
-	private final Type itemtype;
-	private final int minOccurs;
+	private final Type type;
 	
-	public SeqType(Type itemtype, int minOccurs)
+	public OptionalType(Type ref)
 	{
-		this.itemtype = itemtype;
-		this.minOccurs = minOccurs;
-	}
-
-	@Override
-	protected String signature()
-	{
-		return (minOccurs == 0 ? "seq of (" : "seq1 of (") + itemtype.signature() + ")";
+		this.type = ref;
 	}
 	
 	@Override
 	public boolean matches(Type type)
 	{
-		return itemtype.matches(type);
+		return type.matches(type);
+	}
+
+	@Override
+	protected String signature()
+	{
+		return "[" + type.signature() + "]";
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return type.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object other)
+	{
+		return type.equals(other);
 	}
 
 	@Override
 	public VDMValue valueOf(String avalue, Locator locator)
 	{
-		String[] values = avalue.split("\\s+");
-		SeqValue result = new SeqValue(itemtype, locator);
-		
-		for (String value: values)
-		{
-			result.add(itemtype.valueOf(value, locator));
-		}
-		
-		return result;
+		return type.valueOf(avalue, locator);
 	}
 }

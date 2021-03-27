@@ -60,8 +60,5 @@ abstract public class Type
 		return signature();
 	}
 
-	public VDMValue valueOf(String avalue, Locator locator)
-	{
-		throw new IllegalArgumentException();
-	}
+	abstract public VDMValue valueOf(String avalue, Locator locator);
 }

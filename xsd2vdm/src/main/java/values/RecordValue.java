@@ -56,24 +56,7 @@ public class RecordValue extends VDMValue
 		{
 			if (f.getElementName().equals(attrName))
 			{
-				if (f.isSequence())
-				{
-					SeqValue seq = (SeqValue) source.get(attrName);
-
-					if (seq == null)
-					{
-						seq = new SeqValue(f.getType(), null);
-						source.put(f.getElementName(), seq);
-					}
-					
-					seq.add(value);
-				}
-				else
-				{
-					source.put(f.getElementName(), value);
-				}
-
-				// source.put(attrName, value);
+				source.put(f.getElementName(), value);
 				found = true;
 				break;
 			}
