@@ -9,6 +9,7 @@
 		<version>1.0.3-SNAPSHOT</version>
 	</parent>
 
+	<groupId>org.into-cps.xsd2vdm</groupId>
 	<artifactId>xsd2vdm</artifactId>
 	
 	<properties>
