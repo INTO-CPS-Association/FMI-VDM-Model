@@ -273,7 +273,7 @@ public class XSDConverter
 				case "xs:group":
 					stack.push(child);
 					name = stackAttr("name");
-					fields.add(new Field(name.toLowerCase(), name,
+					fields.add(new Field(fieldName(name), name,
 								convertGroup(child), isOptional(), aggregate()));
 					stack.pop();
 					break;
@@ -325,7 +325,7 @@ public class XSDConverter
 					String fname = child.getAttr("name");
 					if (fname == null) fname = child.getAttr("ref");
 					stack.push(child);
-					fields.add(new Field(fname.toLowerCase(), fname, convertElement(child), isOptional(), aggregate()));
+					fields.add(new Field(fieldName(fname), fname, convertElement(child), isOptional(), aggregate()));
 					stack.pop();
 					break;
 					
@@ -395,7 +395,7 @@ public class XSDConverter
 		
 		stack.pop();
 		String name = stackAttr("name");
-		return new Field(name.toLowerCase(), name, union, isOptional(), aggregate());
+		return new Field(fieldName(name), name, union, isOptional(), aggregate());
 	}
 
 	private List<Field> convertComplexContent(XSDElement complex)
@@ -511,7 +511,7 @@ public class XSDConverter
 		if (vtype != null)
 		{
 			String elementName = stackAttr("name");
-			results.add(new Field(elementName.toLowerCase(), elementName, vtype, isOptional(), aggregate()));
+			results.add(new Field(fieldName(elementName), elementName, vtype, isOptional(), aggregate()));
 		}
 		else
 		{
@@ -529,7 +529,7 @@ public class XSDConverter
 			
 				case "xs:element":
 					String name = stackAttr("name");
-					results.add(new Field(name.toLowerCase(), name, convertElement(etype), isOptional(), aggregate()));
+					results.add(new Field(fieldName(name), name, convertElement(etype), isOptional(), aggregate()));
 					break;
 
 				default:
@@ -600,7 +600,7 @@ public class XSDConverter
 						}
 						
 						converted.put(name, new RefType(union));
-						result = new Field(name.toLowerCase(), name, union, isOptional(), aggregate());
+						result = new Field(fieldName(name), name, union, isOptional(), aggregate());
 					}
 					else
 					{
@@ -609,7 +609,7 @@ public class XSDConverter
 						if (vtype != null)
 						{
 							String name = stackAttr("name");
-							result = new Field(name.toLowerCase(), name, vtype, isOptional(), aggregate());
+							result = new Field(fieldName(name), name, vtype, isOptional(), aggregate());
 						}
 						else
 						{
@@ -623,7 +623,7 @@ public class XSDConverter
 					if (first.hasAttr("itemType"))
 					{
 						String name = stackAttr("name");
-						result = new Field(name.toLowerCase(), name,
+						result = new Field(fieldName(name), name,
 							vdmTypeOf(first.getAttr("itemType")), isOptional(), "seq1 of ");
 					}
 					else
@@ -645,7 +645,7 @@ public class XSDConverter
 					
 					String name = stackAttr("name");
 					converted.put(name, new RefType(union));
-					result = new Field(name.toLowerCase(), name, union, isOptional(), aggregate());
+					result = new Field(fieldName(name), name, union, isOptional(), aggregate());
 					break;
 					
 				case "xs:annotation":
@@ -885,5 +885,15 @@ public class XSDConverter
 	{
 		String name = attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
 		return (converted.containsKey(name)) ? attribute : name;
+	}
+
+	/**
+	 * Convert a string into a name with an uppercase initial letter.
+	 * (or not, as this can confuse Element and Attribute type names)
+	 */
+	private String fieldName(String fname)
+	{
+		String name = fname.substring(0, 1).toLowerCase() + fname.substring(1);
+		return (converted.containsKey(name)) ? name : name;
 	}
 }
