@@ -143,4 +143,18 @@ public class RecordValue extends VDMValue
 		
 		return sb.toString();
 	}
+	
+	@Override
+	public boolean hasAny()
+	{
+		for (Field field: recordType.getFields())
+		{
+			if (field.getFieldName().equals("any"))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
 }

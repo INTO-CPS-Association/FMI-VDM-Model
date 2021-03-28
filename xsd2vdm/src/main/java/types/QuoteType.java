@@ -58,7 +58,7 @@ public class QuoteType extends Type
 		}
 		else
 		{
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Value does not match type: " + signature());
 		}
 	}
 }

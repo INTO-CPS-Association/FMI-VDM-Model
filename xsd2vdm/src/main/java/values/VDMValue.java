@@ -77,4 +77,9 @@ abstract public class VDMValue
 	{
 		return type;
 	}
+
+	public boolean hasAny()
+	{
+		return false;
+	}
 }

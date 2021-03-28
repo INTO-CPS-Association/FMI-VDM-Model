@@ -26,68 +26,57 @@
  *
  * See the full INTO-CPS Association Public License conditions for more details.
  */
-
 package values;
 
+import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
 import types.BasicType;
-import types.QuoteType;
-import types.Type;
 
-public class SimpleValue extends VDMValue
+public class AnyValue extends VDMValue
 {
-	private String value;		// a VDM literal, like "hello" or 1.234 etc.
-
-	public SimpleValue(Type type, Locator locator)
+	private String token;
+	
+	public AnyValue(String qName, Attributes attributes, Locator locator)
 	{
-		super(type, locator);
-		this.value = "nil";
+		super(new BasicType("token"), locator);
+		
+		StringBuilder sb = new StringBuilder();
+		String sep = "";
+		sb.append(qName);
+		
+		for (int i=0; i<attributes.getLength(); i++)
+		{
+			sb.append(sep);
+			sb.append(attributes.getType(i));
+			sb.append("=");
+			sb.append(attributes.getValue(i));
+			sep = " ";
+		}
+		
+		this.token = sb.toString();
 	}
-
-	public SimpleValue(Type type, Locator locator, String value)
+	
+	@Override
+	public String toString()
 	{
-		super(type, locator);
-		this.value = "\"" + value + "\"";
-	}
-
-	public SimpleValue(Type type, Locator locator, QuoteType quote)
-	{
-		super(type, locator);
-		this.value = quote.toString();
-	}
-
-	public SimpleValue(Type type, Locator locator, Integer value)
-	{
-		super(type, locator);
-		this.value = Integer.toString(value);
-	}
-
-	public SimpleValue(BasicType type, Locator locator, Double real)
-	{
-		super(type, locator);
-		this.value = Double.toString(real);
-	}
-
-	public SimpleValue(BasicType type, Locator locator, boolean bool)
-	{
-		super(type, locator);
-		this.value = Boolean.toString(bool);
+		return "mk_token(\"" + token + "\")";
 	}
 
 	@Override
 	public String toVDM(String indent)
 	{
-		return indent + value;
+		return indent + toString();
 	}
 
-	public void setValue(String value)
+	public void setField(String qName, VDMValue value)
 	{
-		this.value = value;
+		token = token + "; " + qName;
 	}
-
-	public void setValue(int value)
+	
+	@Override
+	public boolean hasAny()
 	{
-		this.value = Integer.toString(value);
+		return true;
 	}
 }

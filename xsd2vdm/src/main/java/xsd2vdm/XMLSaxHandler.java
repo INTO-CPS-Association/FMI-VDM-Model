@@ -38,6 +38,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import types.RecordType;
 import types.Type;
+import values.AnyValue;
 import values.RecordValue;
 import values.SimpleValue;
 import values.VDMValue;
@@ -72,20 +73,28 @@ public class XMLSaxHandler extends DefaultHandler
 			{
 				String aname = attributes.getQName(i);
 				String avalue = attributes.getValue(i);
-				Type atype = recordType.getField(aname).getVDMType();
-				VDMValue vdmValue = atype.valueOf(avalue, locator);
 				
-				if (!recordValue.setAttribute(aname, vdmValue))
+				if (!aname.startsWith("xmlns:"))	// Ignore embedded xmlns?
 				{
-					dumpStack("Attribute not found: " + aname);
+					Type atype = recordType.getField(aname).getVDMType();
+					VDMValue vdmValue = atype.valueOf(avalue, locator);
+					
+					if (!recordValue.setAttribute(aname, vdmValue))
+					{
+						dumpStack("Attribute not found: " + aname);
+					}
 				}
 			}
 
 			stack.push(recordValue);
 		}
+		else if (stack.peek().hasAny())
+		{
+			stack.push(new AnyValue(qName, attributes, locator));
+		}
 		else
 		{
-			dumpStack("Unknown qName " + qName);
+			dumpStack("VDM schema does not contain type qName " + qName);
 		}
 	}
 	
@@ -123,6 +132,11 @@ public class XMLSaxHandler extends DefaultHandler
 				{
 					dumpStack("Cannot add sub-element: " + qName + " to " + stack.peek().getType());
 				}
+			}
+			else if (stack.peek() instanceof AnyValue)
+			{
+				AnyValue any = (AnyValue)stack.peek();
+				any.setField(qName, value);
 			}
 			else
 			{

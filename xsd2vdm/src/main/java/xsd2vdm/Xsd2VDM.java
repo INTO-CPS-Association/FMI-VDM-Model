@@ -105,7 +105,15 @@ public class Xsd2VDM
 		}
 		catch (Exception e)
 		{
-			System.err.println("Exception: " + e.getMessage());
+			if (e.getMessage() != null)
+			{
+				System.err.println("Exception: " + e.getMessage());
+			}
+			else
+			{
+				e.printStackTrace();
+			}
+			
 			System.exit(1);
 		}
 	}

@@ -31,6 +31,7 @@ package types;
 
 import org.xml.sax.Locator;
 
+import values.SimpleValue;
 import values.VDMValue;
 
 public class OptionalType extends Type
@@ -69,6 +70,13 @@ public class OptionalType extends Type
 	@Override
 	public VDMValue valueOf(String avalue, Locator locator)
 	{
-		return type.valueOf(avalue, locator);
+		if (avalue == null || avalue.isEmpty())
+		{
+			return new SimpleValue(type, locator);
+		}
+		else
+		{
+			return type.valueOf(avalue, locator);
+		}
 	}
 }
