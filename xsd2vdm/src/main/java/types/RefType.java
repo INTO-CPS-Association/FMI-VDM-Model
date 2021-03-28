@@ -71,7 +71,7 @@ public class RefType extends Type
 	}
 
 	@Override
-	protected String signature()
+	public String signature()
 	{
 		return ref.signature();
 	}

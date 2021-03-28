@@ -44,7 +44,7 @@ public class QuoteType extends Type
 	}
 	
 	@Override
-	protected String signature()
+	public String signature()
 	{
 		return "<" + tag + ">";
 	}

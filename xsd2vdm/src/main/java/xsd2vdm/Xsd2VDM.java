@@ -29,12 +29,17 @@
 
 package xsd2vdm;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -45,6 +50,8 @@ import types.Type;
 
 public class Xsd2VDM
 {
+	private static Properties xsd2vdmProperties = null;
+	
 	private static void usage()
 	{
 		System.err.println("Usage: Xsd2VDM -xsd <XSD schema> [-vdm <output>] [-xml <XML file>]");
@@ -95,6 +102,7 @@ public class Xsd2VDM
 		
 		try
 		{
+			loadProperties(xsdFile);
 			Xsd2VDM xsd2vdm = new Xsd2VDM();
 			Map<String, Type> schema = xsd2vdm.createVDMSchema(xsdFile, vdmFile);
 			
@@ -116,6 +124,37 @@ public class Xsd2VDM
 			
 			System.exit(1);
 		}
+	}
+
+	private static void loadProperties(String xsdFile) throws IOException
+	{
+		xsd2vdmProperties = new Properties();
+		File xsd = new File(xsdFile);
+		File properties = System.getProperty("properties") == null ?
+				new File(xsd.getParent(), "xsd2vdm.properties") :
+				new File(System.getProperty("properties"));
+		
+		if (properties.exists())
+		{
+			InputStream is = new FileInputStream(properties);
+			
+			if (is != null)
+			{
+				xsd2vdmProperties.load(is);
+			}
+			
+			is.close();
+		}
+	}
+	
+	public static String getProperty(String name)
+	{
+		if (xsd2vdmProperties.containsKey(name))
+		{
+			return xsd2vdmProperties.getProperty(name);
+		}
+		
+		return System.getProperty(name);
 	}
 
 	/**

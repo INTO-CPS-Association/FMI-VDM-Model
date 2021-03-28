@@ -64,6 +64,13 @@ public class XMLSaxHandler extends DefaultHandler
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes)
 	{
+		String mapped = map(qName);
+		
+		if (mapped != null)
+		{
+			qName = mapped;
+		}
+		
 		if (schema.containsKey(qName))
 		{
 			RecordType recordType = (RecordType) schema.get(qName);
@@ -157,5 +164,28 @@ public class XMLSaxHandler extends DefaultHandler
 	private void dumpStack(String message)
 	{
 		System.err.println(message);
+	}
+	
+	private String map(String qName)
+	{
+		StringBuilder path = new StringBuilder();
+		String sep = "";
+		
+		for (VDMValue v: stack)
+		{
+			if (v instanceof RecordValue)
+			{
+				RecordValue rv = (RecordValue)v;
+				path.append(sep);
+				path.append(rv.getType().signature());
+				sep = ".";
+			}
+		}
+		
+		path.append(sep);
+		path.append(qName);
+		// System.out.println("Path = " + path);
+
+		return Xsd2VDM.getProperty(path.toString());
 	}
 }

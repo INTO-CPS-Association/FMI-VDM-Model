@@ -141,7 +141,7 @@ public class XSDSaxHandler extends DefaultHandler
 			path.append(element.getAttr("name"));
 			// System.out.println("Path = " + path);
 	
-			String mapped = System.getProperty(path.toString());
+			String mapped = Xsd2VDM.getProperty(path.toString());
 			
 			if (mapped != null)
 			{

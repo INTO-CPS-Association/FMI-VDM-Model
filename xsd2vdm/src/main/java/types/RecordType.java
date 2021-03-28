@@ -149,7 +149,7 @@ public class RecordType extends Type
 	}
 
 	@Override
-	protected String signature()
+	public String signature()
 	{
 		return name;
 	}

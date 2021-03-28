@@ -44,7 +44,7 @@ public class BasicType extends Type
 	}
 
 	@Override
-	protected String signature()
+	public String signature()
 	{
 		return typestring;
 	}
@@ -57,7 +57,7 @@ public class BasicType extends Type
 			case "nat":
 			case "nat1":
 			case "int":
-				return new SimpleValue(this, locator, Integer.parseInt(avalue));
+				return new SimpleValue(this, locator, Long.parseLong(avalue));
 				
 			case "real":
 				return new SimpleValue(this, locator, Double.parseDouble(avalue));

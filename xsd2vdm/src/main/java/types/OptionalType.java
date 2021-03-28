@@ -50,7 +50,7 @@ public class OptionalType extends Type
 	}
 
 	@Override
-	protected String signature()
+	public String signature()
 	{
 		return "[" + type.signature() + "]";
 	}

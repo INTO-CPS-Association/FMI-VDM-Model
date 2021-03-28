@@ -46,7 +46,7 @@ public class SeqType extends Type
 	}
 
 	@Override
-	protected String signature()
+	public String signature()
 	{
 		return (minOccurs == 0 ? "seq of (" : "seq1 of (") + itemtype.signature() + ")";
 	}

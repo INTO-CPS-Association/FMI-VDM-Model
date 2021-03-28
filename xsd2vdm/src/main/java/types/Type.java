@@ -35,7 +35,7 @@ import values.VDMValue;
 
 abstract public class Type
 {
-	protected abstract String signature();
+	public abstract String signature();
 
 	public boolean matches(Type type)
 	{

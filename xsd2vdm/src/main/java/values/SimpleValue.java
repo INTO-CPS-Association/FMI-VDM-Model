@@ -57,10 +57,10 @@ public class SimpleValue extends VDMValue
 		this.value = quote.toString();
 	}
 
-	public SimpleValue(Type type, Locator locator, Integer value)
+	public SimpleValue(Type type, Locator locator, Long value)
 	{
 		super(type, locator);
-		this.value = Integer.toString(value);
+		this.value = Long.toString(value);
 	}
 
 	public SimpleValue(BasicType type, Locator locator, Double real)
