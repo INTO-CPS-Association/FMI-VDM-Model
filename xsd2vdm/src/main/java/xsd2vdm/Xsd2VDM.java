@@ -50,20 +50,20 @@ import types.Type;
 
 public class Xsd2VDM
 {
-	private static Properties xsd2vdmProperties = null;
+	private static Properties mappingsProperties = null;
 	
 	private static void usage()
 	{
-		System.err.println("Usage: Xsd2VDM -xsd <XSD schema> [-vdm <output>] [-xml <XML file>]");
+		System.err.println("Usage: Xsd2VDM [-Dmappings=<file>] -xsd <XSD schema> [-vdm <output>] [-xml <XML file>]");
 		System.exit(1);
 	}
 	
 	public static void main(String[] args)
 	{
 		int arg = 0;
-		String xsdFile = null;
-		String vdmFile = null;
-		String xmlFile = null;
+		File xsdFile = null;
+		File vdmFile = null;
+		File xmlFile = null;
 		
 		while (arg < args.length)
 		{
@@ -72,15 +72,15 @@ public class Xsd2VDM
 				switch (args[arg])
 				{
 					case "-xsd":
-						xsdFile = args[++arg];
+						xsdFile = new File(args[++arg]);
 						break;
 						
 					case "-vdm":
-						vdmFile = args[++arg];
+						vdmFile = new File(args[++arg]);
 						break;
 						
 					case "-xml":
-						xmlFile = args[++arg];
+						xmlFile = new File(args[++arg]);
 						break;
 						
 					default:
@@ -126,13 +126,11 @@ public class Xsd2VDM
 		}
 	}
 
-	private static void loadProperties(String xsdFile) throws IOException
+	private static void loadProperties(File xsdFile) throws IOException
 	{
-		xsd2vdmProperties = new Properties();
-		File xsd = new File(xsdFile);
-		File properties = System.getProperty("properties") == null ?
-				new File(xsd.getParent(), "xsd2vdm.properties") :
-				new File(System.getProperty("properties"));
+		mappingsProperties = new Properties();
+		File properties = new File(xsdFile.getParent(),
+				System.getProperty("mappings", "xsd2vdm.properties"));
 		
 		if (properties.exists())
 		{
@@ -140,7 +138,7 @@ public class Xsd2VDM
 			
 			if (is != null)
 			{
-				xsd2vdmProperties.load(is);
+				mappingsProperties.load(is);
 			}
 			
 			is.close();
@@ -149,9 +147,9 @@ public class Xsd2VDM
 	
 	public static String getProperty(String name)
 	{
-		if (xsd2vdmProperties.containsKey(name))
+		if (mappingsProperties.containsKey(name))
 		{
-			return xsd2vdmProperties.getProperty(name);
+			return mappingsProperties.getProperty(name);
 		}
 		
 		return System.getProperty(name);
@@ -160,19 +158,21 @@ public class Xsd2VDM
 	/**
 	 * Convert the root schema file passed in and write out VDM-SL to the output. 
 	 */
-	private Map<String, Type> createVDMSchema(String rootXSD, String vdmFile) throws Exception
+	private Map<String, Type> createVDMSchema(File xsdFile, File vdmFile) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
 		
-		Set<String> processed = new HashSet<String>();
+		Set<File> processed = new HashSet<File>();
 		List<String> includes = new Vector<String>();
 		List<XSDElement> roots = new Vector<XSDElement>();
-		includes.add(rootXSD);
+
+		File parent = xsdFile.getParentFile();
+		includes.add(xsdFile.getName());
 		
 		while (!includes.isEmpty())
 		{
-			String file = includes.remove(0);
+			File file = new File(parent, includes.remove(0));
 			
 			if (!processed.contains(file))
 			{
@@ -195,7 +195,7 @@ public class Xsd2VDM
 				System.out;
 
 			output.println("/**");
-			output.println(" * VDM schema created from " + rootXSD + " on " + new Date());
+			output.println(" * VDM schema created from " + xsdFile + " on " + new Date());
 			output.println(" * DO NOT EDIT!");
 			output.println(" */");
 			output.println("types\n");
@@ -220,7 +220,7 @@ public class Xsd2VDM
 		return vdmSchema;
 	}
 	
-	private void createVDMValue(Map<String, Type> schema, String vdmFile, String xmlFile) throws Exception
+	private void createVDMValue(Map<String, Type> schema, File vdmFile, File xmlFile) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
