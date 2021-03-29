@@ -9,7 +9,7 @@
 		<version>1.0.3-SNAPSHOT</version>
 	</parent>
 
-	<groupId>org.into-cps.xsd2vdm</groupId>
+	<groupId>org.into-cps.vdmcheck</groupId>
 	<artifactId>xsd2vdm</artifactId>
 	<packaging>jar</packaging>
 	
