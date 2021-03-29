@@ -43,8 +43,16 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
+import org.xml.sax.SAXException;
 
 import types.Type;
 
@@ -108,6 +116,7 @@ public class Xsd2VDM
 			
 			if (xmlFile != null)
 			{
+				validate(xmlFile, xsdFile);
 				xsd2vdm.createVDMValue(schema, vdmFile, xmlFile);
 			}
 		}
@@ -153,6 +162,34 @@ public class Xsd2VDM
 		}
 		
 		return System.getProperty(name);
+	}
+
+	private static void validate(File xml, File xsd)
+	{
+		try
+		{
+			// Note that we pass a stream to allow the validator to determine the
+			// encoding, rather than passing a File, which seems to use default encoding.
+			Source xmlFile = new StreamSource(new FileInputStream(xml));
+			xmlFile.setSystemId(xml.toURI().toASCIIString());
+			Source xsdFile = new StreamSource(new FileInputStream(xsd));
+			xsdFile.setSystemId(xsd.toURI().toASCIIString());
+			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			
+			Schema schema = schemaFactory.newSchema(xsdFile);
+			Validator validator = schema.newValidator();
+			validator.validate(xmlFile);
+		}
+		catch (SAXException e)
+		{
+			System.err.println("XML validation: " + e);		// Raw exception gives file/line/col
+			System.exit(1);
+		}
+		catch (Exception e)
+		{
+			System.err.println("XML validation: " + e.getMessage());
+			System.exit(1);
+		}
 	}
 
 	/**
