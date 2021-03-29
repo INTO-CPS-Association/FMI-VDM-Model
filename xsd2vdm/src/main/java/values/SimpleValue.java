@@ -29,6 +29,9 @@
 
 package values;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import org.xml.sax.Locator;
 
 import types.BasicType;
@@ -45,10 +48,18 @@ public class SimpleValue extends VDMValue
 		this.value = "nil";
 	}
 
-	public SimpleValue(Type type, Locator locator, String value)
+	public SimpleValue(Type type, Locator locator, String value, boolean quoted)
 	{
 		super(type, locator);
-		this.value = "\"" + value + "\"";
+		
+		if (quoted)
+		{
+			this.value = "\"" + value + "\"";
+		}
+		else
+		{
+			this.value = value;
+		}
 	}
 
 	public SimpleValue(Type type, Locator locator, QuoteType quote)
@@ -57,32 +68,16 @@ public class SimpleValue extends VDMValue
 		this.value = quote.toString();
 	}
 
-	public SimpleValue(Type type, Locator locator, Long value)
+	public SimpleValue(Type type, Locator locator, BigInteger integer)
 	{
 		super(type, locator);
-		this.value = Long.toString(value);
+		this.value = integer.toString();
 	}
 
-	public SimpleValue(BasicType type, Locator locator, Double real)
+	public SimpleValue(BasicType type, Locator locator, BigDecimal real)
 	{
 		super(type, locator);
-		
-		if (real.isInfinite() && real > 0)
-		{
-			this.value = "POSITIVE_INFINITY";
-		}
-		else if (real.isInfinite() && real < 0)
-		{
-			this.value = "NEGATIVE_INFINITY";
-		}
-		else if (real.isNaN())
-		{
-			this.value = "NOT_A_NUMBER";
-		}
-		else
-		{
-			this.value = Double.toString(real);
-		}
+		this.value = real.toString();
 	}
 
 	public SimpleValue(BasicType type, Locator locator, boolean bool)
@@ -100,10 +95,5 @@ public class SimpleValue extends VDMValue
 	public void setValue(String value)
 	{
 		this.value = value;
-	}
-
-	public void setValue(int value)
-	{
-		this.value = Integer.toString(value);
 	}
 }

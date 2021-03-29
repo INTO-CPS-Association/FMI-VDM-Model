@@ -29,6 +29,9 @@
 
 package types;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 import org.xml.sax.Locator;
 
 import values.SimpleValue;
@@ -57,24 +60,24 @@ public class BasicType extends Type
 			case "nat":
 			case "nat1":
 			case "int":
-				return new SimpleValue(this, locator, Long.parseLong(avalue));
+				return new SimpleValue(this, locator, new BigInteger(avalue));
 				
 			case "real":
 				switch (avalue)
 				{
 					case "INF":
-						return new SimpleValue(this, locator, Double.POSITIVE_INFINITY);
+						return new SimpleValue(this, locator, "POSITIVE_INFINITY", false);
 					case "-INF":
-						return new SimpleValue(this, locator, Double.NEGATIVE_INFINITY);
+						return new SimpleValue(this, locator, "NEGATIVE_INFINITY", false);
 					case "NaN":
-						return new SimpleValue(this, locator, Double.NaN);
+						return new SimpleValue(this, locator, "NOT_A_NUMBER", false);
 					default:
-						return new SimpleValue(this, locator, Double.parseDouble(avalue));
+						return new SimpleValue(this, locator, new BigDecimal(avalue));
 				}
 
 			case "seq of char":
 			case "seq1 of char":
-				return new SimpleValue(this, locator, avalue);
+				return new SimpleValue(this, locator, avalue, true);
 				
 			case "bool":
 				return new SimpleValue(this, locator, Boolean.parseBoolean(avalue));

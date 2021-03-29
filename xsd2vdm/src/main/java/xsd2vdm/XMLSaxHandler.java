@@ -95,7 +95,7 @@ public class XMLSaxHandler extends DefaultHandler
 
 			stack.push(recordValue);
 		}
-		else if (stack.peek().hasAny())
+		else if (!stack.isEmpty() && stack.peek().hasAny())
 		{
 			stack.push(new AnyValue(qName, attributes, locator));
 		}
@@ -112,7 +112,7 @@ public class XMLSaxHandler extends DefaultHandler
 		
 		if (!value.isEmpty())
 		{
-			if (stack.peek() instanceof SimpleValue)
+			if (!stack.isEmpty() && stack.peek() instanceof SimpleValue)
 			{
 				SimpleValue simple = (SimpleValue)stack.peek();
 				simple.setValue(value);
