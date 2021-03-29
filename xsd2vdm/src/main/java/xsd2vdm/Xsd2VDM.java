@@ -235,6 +235,9 @@ public class Xsd2VDM
 		output.println(" * VDM value created from " + xmlFile);
 		output.println(" */");
 		output.println("values");
-		output.println("xmlFileValue =\n" + handler.getVDMValue().toVDM("    ") + ";\n");
+		output.println("    POSITIVE_INFINITY : real = 0x7ff0000000000000;");
+		output.println("    NEGATIVE_INFINITY : real = 0xfff0000000000000;");
+		output.println("    NOT_A_NUMBER : real = 0x7ff8000000000000;");
+		output.println("    xmlFileValue =\n" + handler.getVDMValue().toVDM("    ") + ";\n");
 	}
 }

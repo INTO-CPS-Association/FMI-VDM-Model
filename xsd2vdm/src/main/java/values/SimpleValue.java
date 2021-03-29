@@ -66,7 +66,23 @@ public class SimpleValue extends VDMValue
 	public SimpleValue(BasicType type, Locator locator, Double real)
 	{
 		super(type, locator);
-		this.value = Double.toString(real);
+		
+		if (real.isInfinite() && real > 0)
+		{
+			this.value = "POSITIVE_INFINITY";
+		}
+		else if (real.isInfinite() && real < 0)
+		{
+			this.value = "NEGATIVE_INFINITY";
+		}
+		else if (real.isNaN())
+		{
+			this.value = "NOT_A_NUMBER";
+		}
+		else
+		{
+			this.value = Double.toString(real);
+		}
 	}
 
 	public SimpleValue(BasicType type, Locator locator, boolean bool)

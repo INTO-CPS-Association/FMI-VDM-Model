@@ -60,7 +60,17 @@ public class BasicType extends Type
 				return new SimpleValue(this, locator, Long.parseLong(avalue));
 				
 			case "real":
-				return new SimpleValue(this, locator, Double.parseDouble(avalue));
+				switch (avalue)
+				{
+					case "INF":
+						return new SimpleValue(this, locator, Double.POSITIVE_INFINITY);
+					case "-INF":
+						return new SimpleValue(this, locator, Double.NEGATIVE_INFINITY);
+					case "NaN":
+						return new SimpleValue(this, locator, Double.NaN);
+					default:
+						return new SimpleValue(this, locator, Double.parseDouble(avalue));
+				}
 
 			case "seq of char":
 			case "seq1 of char":
