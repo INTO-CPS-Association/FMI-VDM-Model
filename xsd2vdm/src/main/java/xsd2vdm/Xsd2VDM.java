@@ -62,7 +62,11 @@ public class Xsd2VDM
 	
 	private static void usage()
 	{
-		System.err.println("Usage: Xsd2VDM [-Dmappings=<file>] -xsd <XSD schema> [-vdm <output>] [-xml <XML file>]");
+		System.err.println("Usage: Xsd2VDM -xsd <XSD schema> [-vdm <output>] [-xml <XML file> [-name <varname>]]");
+		System.err.println("Default mapping file is 'xsd2vdm.properties' located in same dir as XSD.");
+		System.err.println("Properties:");
+		System.err.println("    -Dmappings=<file>  Set an alternative mappings file");
+		System.err.println("    -Dmappings.debug   List possible mapping paths");
 		System.exit(1);
 	}
 	
@@ -72,6 +76,7 @@ public class Xsd2VDM
 		File xsdFile = null;
 		File vdmFile = null;
 		File xmlFile = null;
+		String varName = null;
 		
 		while (arg < args.length)
 		{
@@ -91,6 +96,10 @@ public class Xsd2VDM
 						xmlFile = new File(args[++arg]);
 						break;
 						
+					case "-name":
+						varName = args[++arg];
+						break;
+						
 					default:
 						usage();
 				}
@@ -103,7 +112,7 @@ public class Xsd2VDM
 			arg++;
 		}
 		
-		if (xsdFile == null)
+		if (xsdFile == null || (varName != null && xmlFile == null))
 		{
 			usage();
 		}
@@ -112,12 +121,12 @@ public class Xsd2VDM
 		{
 			loadProperties(xsdFile);
 			Xsd2VDM xsd2vdm = new Xsd2VDM();
-			Map<String, Type> schema = xsd2vdm.createVDMSchema(xsdFile, vdmFile);
+			Map<String, Type> schema = xsd2vdm.createVDMSchema(xsdFile, vdmFile, (xmlFile == null));
 			
 			if (xmlFile != null)
 			{
 				validate(xmlFile, xsdFile);
-				xsd2vdm.createVDMValue(schema, vdmFile, xmlFile);
+				xsd2vdm.createVDMValue(schema, vdmFile, xmlFile, varName);
 			}
 		}
 		catch (Exception e)
@@ -156,6 +165,11 @@ public class Xsd2VDM
 	
 	public static String getProperty(String name)
 	{
+		if (System.getProperty("mappings.debug") != null)
+		{
+			System.err.println(name);
+		}
+
 		if (mappingsProperties.containsKey(name))
 		{
 			return mappingsProperties.getProperty(name);
@@ -194,8 +208,9 @@ public class Xsd2VDM
 
 	/**
 	 * Convert the root schema file passed in and write out VDM-SL to the output. 
+	 * @param b 
 	 */
-	private Map<String, Type> createVDMSchema(File xsdFile, File vdmFile) throws Exception
+	private Map<String, Type> createVDMSchema(File xsdFile, File vdmFile, boolean writeVDM) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
@@ -225,7 +240,7 @@ public class Xsd2VDM
 		XSDConverter converter = new XSDConverter();
 		Map<String, Type> vdmSchema = converter.convertSchemas(roots);
 
-		if (vdmSchema != null)
+		if (vdmSchema != null && writeVDM)
 		{
 			PrintStream output = (vdmFile != null) ?
 				new PrintStream(new FileOutputStream(vdmFile)) :
@@ -248,7 +263,7 @@ public class Xsd2VDM
 			
 			if (vdmFile != null) output.close();
 		}
-		else
+		else if (vdmSchema == null)
 		{
 			System.err.println("Errors found.");
 			System.exit(1);
@@ -257,7 +272,7 @@ public class Xsd2VDM
 		return vdmSchema;
 	}
 	
-	private void createVDMValue(Map<String, Type> schema, File vdmFile, File xmlFile) throws Exception
+	private void createVDMValue(Map<String, Type> schema, File vdmFile, File xmlFile, String varName) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
@@ -265,9 +280,11 @@ public class Xsd2VDM
 		saxParser.parse(xmlFile, handler);
 		
 		PrintStream output = (vdmFile != null) ?
-				new PrintStream(new FileOutputStream(vdmFile, true)) :
+				new PrintStream(new FileOutputStream(vdmFile)) :
 				System.out;
 
+		String name = (varName == null) ? "modelDescription" : varName;
+		
 		output.println("/**");
 		output.println(" * VDM value created from " + xmlFile);
 		output.println(" */");
@@ -275,6 +292,8 @@ public class Xsd2VDM
 		output.println("    POSITIVE_INFINITY : real = 0x7ff0000000000000;");
 		output.println("    NEGATIVE_INFINITY : real = 0xfff0000000000000;");
 		output.println("    NOT_A_NUMBER : real = 0x7ff8000000000000;");
-		output.println("    xmlFileValue =\n" + handler.getVDMValue().toVDM("    ") + ";\n");
+		output.println("    " + name + " =\n" + handler.getVDMValue().toVDM("    ") + ";\n");
+
+		if (vdmFile != null) output.close();
 	}
 }

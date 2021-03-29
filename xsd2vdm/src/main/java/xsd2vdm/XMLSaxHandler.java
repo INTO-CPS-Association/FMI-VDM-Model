@@ -184,7 +184,6 @@ public class XMLSaxHandler extends DefaultHandler
 		
 		path.append(sep);
 		path.append(qName);
-		// System.out.println("Path = " + path);
 
 		return Xsd2VDM.getProperty(path.toString());
 	}

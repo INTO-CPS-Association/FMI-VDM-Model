@@ -120,25 +120,38 @@ public class RecordValue extends VDMValue
 			sb.append(indent + "(\n");
 			sb.append(indent + "    mk_Location(\"" + file + "\", " + line + ")");
 			
+			String comment = "\n";	// Field comment for nil values
+			
 			for (Field field: recordType.getFields())
 			{
-				sb.append(",\n");
+				sb.append(",");
+				sb.append(comment);
+				comment = "\n";
 				
 				if (source.containsKey(field.getElementName()))
 				{
-					sb.append(source.get(field.getElementName()).toVDM(indent + "    "));
+					String value = source.get(field.getElementName()).toVDM(indent + "    ");
+
+					if (value.trim().startsWith("["))	// Sequence
+					{
+						sb.append(indent + "    -- " + field.getFieldName() +  "\n");
+					}
+					
+					sb.append(value);
 				}
 				else if (field.isOptional())
 				{
 					sb.append(indent + "    nil");
+					comment = "  -- " + field.getFieldName() + "\n";
 				}
 				else
 				{
-					sb.append(indent + "    ? -- Missing value for mandatory field " + field);
+					sb.append(indent + "    ?");	// Compiles as an error
+					comment = "  -- Missing value for mandatory " + field.getFieldName() + "\n";
 				}
 			}
 			
-			sb.append("\n" + indent + ")");
+			sb.append(" " + comment + indent + ")");
 		}
 		
 		return sb.toString();
