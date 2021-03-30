@@ -84,6 +84,11 @@ public class Field
 		return optional ? new OptionalType(agg) : agg;
 	}
 
+	public String getAggregate()
+	{
+		return aggregate;
+	}
+
 	public boolean isOptional()
 	{
 		return optional;
@@ -108,5 +113,10 @@ public class Field
 	public void setIsAttribute(boolean isAttribute)
 	{
 		this.isAttribute = isAttribute;
+	}
+	
+	public Field modified(String fieldName, String elementName)
+	{
+		return new Field(fieldName, elementName, type, optional, aggregate);
 	}
 }

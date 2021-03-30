@@ -63,9 +63,14 @@ public class XSDElement
 			this.attributes.put(attributes.getQName(i), attributes.getValue(i));
 		}
 		
-		if (attributes.getValue("name") != null)
+		if (!qName.equals("xs:attribute"))	// Only reference non-attributes?
 		{
-			referenceMap.put(attributes.getValue("name"), this);
+			String name = attributes.getValue("name");
+			
+			if (name != null)
+			{
+				referenceMap.put(name, this);
+			}
 		}
 	}
 	
@@ -207,7 +212,7 @@ public class XSDElement
 		if (other instanceof XSDElement)
 		{
 			XSDElement e = (XSDElement)other;
-			return type.equals(e.type);
+			return type.equals(e.type) && attributes.equals(e.attributes);
 		}
 		else
 		{

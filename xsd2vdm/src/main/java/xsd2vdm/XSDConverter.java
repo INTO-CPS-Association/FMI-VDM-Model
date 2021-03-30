@@ -84,8 +84,15 @@ public class XSDConverter
 		
 		for (XSDElement schema: schemas)
 		{
-			// System.out.println(schema);
-			convertSchema(schema);
+			try
+			{
+				convertSchema(schema);
+			}
+			catch (StackOverflowError e)
+			{
+				dumpStack("overflow", null);
+				System.exit(1);
+			}
 		}
 		
 		Map<String, Type> derefed = new LinkedHashMap<String, Type>();
@@ -460,10 +467,12 @@ public class XSDConverter
 		assert attribute.isType("xs:attribute");
 		stack.push(attribute);
 		Field result = null;
+		String name = attribute.getAttr("name");
 		
 		if (attribute.isReference())
 		{
 			result = convertAttribute(XSDElement.lookup(attribute.getAttr("ref")));
+			result = result.modified(name, name);
 		}
 		else
 		{
@@ -474,7 +483,7 @@ public class XSDConverter
 
 			if (attribute.hasAttr("type"))
 			{
-				result = convertType(attribute, "type").get(0);
+				result = convertType(attribute, "type").get(0).modified(fieldName(name), name);
 			}
 			else
 			{
@@ -487,7 +496,7 @@ public class XSDConverter
 							break;
 							
 						case "xs:simpleType":
-							result = convertSimpleType(child);
+							result = convertSimpleType(child).modified(fieldName(name), name);
 							break;
 							
 						default:
@@ -505,12 +514,39 @@ public class XSDConverter
 	
 	private List<Field> convertType(XSDElement element, String typeattr)
 	{
+		assert element.hasAttr(typeattr);	// attribute, extension or element
 		BasicType vtype = vdmTypeOf(element.getAttr(typeattr));
 		List<Field> results = new Vector<Field>();
 		
 		if (vtype != null)
 		{
 			String elementName = stackAttr("name");
+			
+			for (XSDElement child: element.getChildren())
+			{
+				switch (child.getType())
+				{
+					case "xs:attribute":
+						results.add(convertAttribute(child));
+						break;
+						
+					case "xs:attributeGroup":
+						results.addAll(convertAttributeGroup(child));
+						break;
+						
+					case "xs:annotation":
+						convertAnnotation(child);
+						break;
+						
+					case "xs:anyAttribute":		// ignore?
+						break;
+						
+					default:
+						dumpStack("Unexpected xs:extension child", child);
+						break;
+				}
+			}
+			
 			results.add(new Field(fieldName(elementName), elementName, vtype, isOptional(), aggregate()));
 		}
 		else
@@ -605,47 +641,51 @@ public class XSDConverter
 					else
 					{
 						BasicType vtype = vdmTypeOf(first.getAttr("base"));
+						String name = stackAttr("name");
 						
 						if (vtype != null)
 						{
-							String name = stackAttr("name");
 							result = new Field(fieldName(name), name, vtype, isOptional(), aggregate());
 						}
 						else
 						{
 							XSDElement etype = XSDElement.lookup(first.getAttr("base"));
-							result = convertSimpleType(etype);
+							result = convertSimpleType(etype).modified(fieldName(name), name);
 						}
 					}
 					break;
 					
 				case "xs:list":
-					if (first.hasAttr("itemType"))
 					{
 						String name = stackAttr("name");
-						result = new Field(fieldName(name), name,
-							vdmTypeOf(first.getAttr("itemType")), isOptional(), "seq1 of ");
-					}
-					else
-					{
-						Field f = convertSimpleType(first.getFirstChild());
-						result = new Field(f.getFieldName(), f.getElementName(), f.getType(), isOptional(), "seq1 of ");
+						if (first.hasAttr("itemType"))
+						{
+							result = new Field(fieldName(name), name,
+								vdmTypeOf(first.getAttr("itemType")), isOptional(), "seq1 of ");
+						}
+						else
+						{
+							Field f = convertSimpleType(first.getFirstChild());
+							result = new Field(fieldName(name), name, f.getType(), isOptional(), "seq1 of ");
+						}
 					}
 					break;
 				
 				case "xs:union":
-					String[] types = first.getAttr("memberTypes").split("\\s+");
-					UnionType union = new UnionType(typeName(stackAttr("name")));
-					
-					for (String type: types)
 					{
-						Field f = convertSimpleType(XSDElement.lookup(type));
-						union.addType(f.getType());
+						String[] types = first.getAttr("memberTypes").split("\\s+");
+						UnionType union = new UnionType(typeName(stackAttr("name")));
+						
+						for (String type: types)
+						{
+							Field f = convertSimpleType(XSDElement.lookup(type));
+							union.addType(f.getType());
+						}
+						
+						String name = stackAttr("name");
+						converted.put(name, new RefType(union));
+						result = new Field(fieldName(name), name, union, isOptional(), aggregate());
 					}
-					
-					String name = stackAttr("name");
-					converted.put(name, new RefType(union));
-					result = new Field(fieldName(name), name, union, isOptional(), aggregate());
 					break;
 					
 				case "xs:annotation":
@@ -855,8 +895,16 @@ public class XSDConverter
 	 */
 	private void dumpStack(String message, XSDElement element)
 	{
-		File f = element.getFile();
-		System.err.println(element.getType() + ": " + message + " in " + f.getName() + " line " + element.getLineNumber());
+		if (element != null)
+		{
+			File f = element.getFile();
+			System.err.println(element.getType() + ": " + message + " in " + f.getName() + " line " + element.getLineNumber());
+		}
+		else
+		{
+			System.err.println(message);
+		}
+		
 		String indent = " ";
 		
 		for (XSDElement e: stack)
@@ -873,7 +921,11 @@ public class XSDConverter
 			indent = indent + " ";
 		}
 		
-		System.err.println(indent + "<" + element.getType() + ">?");
+		if (element != null)
+		{
+			System.err.println(indent + "<" + element.getType() + ">?");
+		}
+		
 		errors = true;
 	}
 
