@@ -36,6 +36,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import types.Field;
 import types.RecordType;
 import types.Type;
 import values.AnyValue;
@@ -83,12 +84,21 @@ public class XMLSaxHandler extends DefaultHandler
 				
 				if (!aname.startsWith("xmlns:"))	// Ignore embedded xmlns?
 				{
-					Type atype = recordType.getField(aname).getVDMType();
-					VDMValue vdmValue = atype.valueOf(avalue, locator);
+					Field field = recordType.getField(aname);
 					
-					if (!recordValue.setAttribute(aname, vdmValue))
+					if (field != null)
 					{
-						dumpStack("Attribute not found: " + aname);
+						Type atype = field.getVDMType();
+						VDMValue vdmValue = atype.valueOf(avalue, locator);
+						
+						if (!recordValue.setAttribute(aname, vdmValue))
+						{
+							dumpStack("Attribute not found: " + aname, recordValue);
+						}
+					}
+					else
+					{
+						dumpStack("Field not found: " + qName + "." + aname, recordValue);
 					}
 				}
 			}
@@ -101,7 +111,7 @@ public class XMLSaxHandler extends DefaultHandler
 		}
 		else
 		{
-			dumpStack("VDM schema does not contain type qName " + qName);
+			dumpStack("VDM schema does not contain type qName " + qName, null);
 		}
 	}
 	
@@ -119,7 +129,7 @@ public class XMLSaxHandler extends DefaultHandler
 			}
 			else
 			{
-				dumpStack("Cannot add character content to " + stack.peek().getType());
+				dumpStack("Cannot add character content to " + stack.peek().getType(), null);
 			}
 		}
 	}
@@ -137,7 +147,7 @@ public class XMLSaxHandler extends DefaultHandler
 				
 				if (!recordValue.setField(qName, value))
 				{
-					dumpStack("Cannot add sub-element: " + qName + " to " + stack.peek().getType());
+					dumpStack("Cannot add sub-element: " + qName + " to " + stack.peek().getType(), recordValue);
 				}
 			}
 			else if (stack.peek() instanceof AnyValue)
@@ -147,7 +157,7 @@ public class XMLSaxHandler extends DefaultHandler
 			}
 			else
 			{
-				dumpStack("Cannot add sub-element " + value + " to " + stack.peek().getType());
+				dumpStack("Cannot add sub-element " + value + " to " + stack.peek().getType(), null);
 			}
 		}
 		else
@@ -161,9 +171,23 @@ public class XMLSaxHandler extends DefaultHandler
 		return finalValue;
 	}
 
-	private void dumpStack(String message)
+	private void dumpStack(String message, VDMValue topValue)
 	{
 		System.err.println(message);
+		String indent = "";
+		
+		for (VDMValue v: stack)
+		{
+			System.err.println(indent + v.getType().signature());
+			indent = indent + " ";
+		}
+		
+		if (topValue != null)
+		{
+			System.err.println(indent + topValue.getType().signature());
+		}
+		
+		System.exit(1);
 	}
 	
 	private String map(String qName)
