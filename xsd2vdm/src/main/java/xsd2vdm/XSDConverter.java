@@ -519,24 +519,22 @@ public class XSDConverter
 			{
 				result = convertType(attribute, "type").get(0).modified(fieldName(name), name);
 			}
-			else
+
+			for (XSDElement child: attribute.getChildren())
 			{
-				for (XSDElement child: attribute.getChildren())
+				switch (child.getType())
 				{
-					switch (child.getType())
-					{
-						case "xs:annotation":
-							annotation = convertAnnotation(child);
-							break;
-							
-						case "xs:simpleType":
-							result = convertSimpleType(child).modified(fieldName(name), name);
-							break;
-							
-						default:
-							dumpStack("Unexpected attribute child", child);
-							break;
-					}
+					case "xs:annotation":
+						annotation = convertAnnotation(child);
+						break;
+						
+					case "xs:simpleType":
+						result = convertSimpleType(child).modified(fieldName(name), name);
+						break;
+						
+					default:
+						dumpStack("Unexpected attribute child", child);
+						break;
 				}
 			}
 		}

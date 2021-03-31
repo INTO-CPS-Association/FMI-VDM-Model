@@ -82,15 +82,38 @@ abstract public class Type
 	{
 		if (comments != null)
 		{
+			if (prefix.isEmpty())
+			{
+				sb.append("/**\n");
+			}
+			
 			for (String comment: comments)
 			{
 				while (comment.length() > MAXLINE)
 				{
-					sb.append(prefix + "-- " + comment.substring(0, MAXLINE).trim() + "\n");
-					comment = comment.substring(MAXLINE);
+					int space = 0;
+					
+					for (space = MAXLINE; space > 0; space--)
+					{
+						if (Character.isWhitespace(comment.charAt(space)))
+						{
+							break;
+						}
+					}
+					
+					
+					sb.append(prefix.isEmpty() ? " * " : prefix + "-- ");
+					sb.append(comment.substring(0, space).trim() + "\n");
+					comment = comment.substring(space);
 				}
 				
-				sb.append(prefix + "-- " + comment.trim() + "\n");
+				sb.append(prefix.isEmpty() ? " * " : prefix + "-- ");
+				sb.append(comment.trim() + "\n");
+			}
+			
+			if (prefix.isEmpty())
+			{
+				sb.append(" */\n");
 			}
 		}
 	}

@@ -53,12 +53,12 @@ public class CommentType extends Type
 	@Override
 	public String signature()
 	{
-		return null;
+		throw new IllegalArgumentException("CommentType has no signature");
 	}
 
 	@Override
 	public VDMValue valueOf(String avalue, Locator locator)
 	{
-		return null;
+		throw new IllegalArgumentException("CommentType has no value");
 	}
 }
