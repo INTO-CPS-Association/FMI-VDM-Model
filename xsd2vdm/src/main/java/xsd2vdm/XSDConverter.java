@@ -30,6 +30,7 @@
 package xsd2vdm;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import java.util.Stack;
 import java.util.Vector;
 
 import types.BasicType;
+import types.CommentField;
 import types.Field;
 import types.QuoteType;
 import types.RecordType;
@@ -81,12 +83,18 @@ public class XSDConverter
 		converted.clear();
 		stack.clear();
 		errors = false;
+		CommentField commentHeader = null;
 		
 		for (XSDElement schema: schemas)
 		{
 			try
 			{
-				convertSchema(schema);
+				CommentField comment = convertSchema(schema);
+				
+				if (commentHeader == null && comment != null)	// Only 1st top level comment
+				{
+					commentHeader = comment;
+				}
 			}
 			catch (StackOverflowError e)
 			{
@@ -95,19 +103,25 @@ public class XSDConverter
 			}
 		}
 		
-		Map<String, Type> derefed = new LinkedHashMap<String, Type>();
+		Map<String, Type> derefMap = new LinkedHashMap<String, Type>();
+		
+		if (commentHeader != null)
+		{
+			derefMap.put("__COMMENT_HEADER__", commentHeader.getType());
+		}
 		
 		for (String name: converted.keySet())
 		{
-			derefed.put(name, converted.get(name).deref());
+			derefMap.put(name, converted.get(name).deref());
 		}
 		
-		return errors ? null : derefed;
+		return errors ? null : derefMap;
 	}
 	
-	private void convertSchema(XSDElement schema)
+	private CommentField convertSchema(XSDElement schema)
 	{
 		stack.push(schema);
+		CommentField annotation = null;
 		
 		for (XSDElement child: schema.getChildren())
 		{
@@ -121,7 +135,7 @@ public class XSDConverter
 					break;
 					
 				case "xs:annotation":
-					convertAnnotation(child);
+					annotation = convertAnnotation(child);
 					break;
 					
 				case "xs:complexType":
@@ -144,6 +158,7 @@ public class XSDConverter
 		
 		stack.pop();
 		assert stack.isEmpty();
+		return annotation;
 	}
 
 	private Type convertElement(XSDElement element)
@@ -176,6 +191,8 @@ public class XSDConverter
 			}
 			else
 			{
+				CommentField annotation = null;
+				
 				for (XSDElement child: element.getChildren())
 				{
 					switch (child.getType())
@@ -189,7 +206,7 @@ public class XSDConverter
 							break;
 					
 						case "xs:annotation":
-							convertAnnotation(child);
+							annotation = convertAnnotation(child);
 							break;
 
 						default:
@@ -197,6 +214,8 @@ public class XSDConverter
 							break;
 					}
 				}
+
+				ref.setComments(annotation);
 			}
 			
 			result = ref;
@@ -228,6 +247,7 @@ public class XSDConverter
 			
 			RefType ref = new RefType(new UnionType(unionName));
 			converted.put(unionName, ref);
+			CommentField annotation = null;
 			
 			for (XSDElement child: group.getChildren())
 			{
@@ -237,12 +257,17 @@ public class XSDConverter
 						ref.set(convertChoice(child).getType());
 						break;
 						
+					case "xs:annotation":
+						annotation = convertAnnotation(child);
+						break;
+						
 					default:
 						dumpStack("Unexpected group child", child);
 						break;
 				}
 			}
 			
+			ref.setComments(annotation);
 			result = ref;
 		}
 		
@@ -255,7 +280,8 @@ public class XSDConverter
 		assert complexType.isType("xs:complexType");
 
 		stack.push(complexType);
-		RecordType rec = new RecordType(stackAttr("name"), convertComplexChildren(complexType.getChildren()));
+		List<Field> fields = convertComplexChildren(complexType.getChildren());
+		RecordType rec = new RecordType(stackAttr("name"), fields);
 		stack.pop();
 
 		return rec;
@@ -302,7 +328,7 @@ public class XSDConverter
 					break;
 					
 				case "xs:annotation":
-					convertAnnotation(child);
+					fields.add(convertAnnotation(child));
 					break;
 					
 				case "xs:anyAttribute":
@@ -315,6 +341,7 @@ public class XSDConverter
 			}
 		}
 
+		applyAnnotations(fields);
 		return fields;
 	}
 	
@@ -351,7 +378,7 @@ public class XSDConverter
 					break;
 					
 				case "xs:annotation":
-					convertAnnotation(child);
+					fields.add(convertAnnotation(child));
 					break;
 					
 				case "xs:choice":
@@ -365,6 +392,7 @@ public class XSDConverter
 		}
 		
 		stack.pop();
+		applyAnnotations(fields);
 		return fields;
 	}
 	
@@ -373,6 +401,7 @@ public class XSDConverter
 		assert choice.getType().equals("xs:choice");
 		stack.push(choice);
 		UnionType union = new UnionType(choice.getAttr("name"));
+		CommentField annotation = null;
 	
 		for (XSDElement child: choice.getChildren())
 		{
@@ -383,7 +412,7 @@ public class XSDConverter
 					break;
 					
 				case "xs:annotation":
-					convertAnnotation(child);
+					annotation = convertAnnotation(child);
 					break;
 					
 				case "xs:choice":
@@ -402,7 +431,9 @@ public class XSDConverter
 		
 		stack.pop();
 		String name = stackAttr("name");
-		return new Field(fieldName(name), name, union, isOptional(), aggregate());
+		Field result = new Field(fieldName(name), name, union, isOptional(), aggregate());
+		result.setComments(annotation);
+		return result;
 	}
 
 	private List<Field> convertComplexContent(XSDElement complex)
@@ -421,7 +452,7 @@ public class XSDConverter
 					break;
 					
 				case "xs:annotation":
-					convertAnnotation(child);
+					fields.add(convertAnnotation(child));
 					break;
 					
 				default:
@@ -431,6 +462,7 @@ public class XSDConverter
 		}
 		
 		stack.pop();
+		applyAnnotations(fields);
 		return fields;
 	}
 	
@@ -449,7 +481,7 @@ public class XSDConverter
 					break;
 					
 				case "xs:annotation":
-					convertAnnotation(child);
+					fields.add(convertAnnotation(child));
 					break;
 					
 				default:
@@ -459,6 +491,7 @@ public class XSDConverter
 		}
 		
 		stack.pop();
+		applyAnnotations(fields);
 		return fields;
 	}
 
@@ -468,6 +501,7 @@ public class XSDConverter
 		stack.push(attribute);
 		Field result = null;
 		String name = attribute.getAttr("name");
+		CommentField annotation = null;
 		
 		if (attribute.isReference())
 		{
@@ -492,7 +526,7 @@ public class XSDConverter
 					switch (child.getType())
 					{
 						case "xs:annotation":
-							convertAnnotation(child);
+							annotation = convertAnnotation(child);
 							break;
 							
 						case "xs:simpleType":
@@ -509,6 +543,7 @@ public class XSDConverter
 		
 		stack.pop();
 		result.setIsAttribute(true);
+		result.setComments(annotation);
 		return result;
 	}
 	
@@ -535,7 +570,7 @@ public class XSDConverter
 						break;
 						
 					case "xs:annotation":
-						convertAnnotation(child);
+						results.add(convertAnnotation(child));
 						break;
 						
 					case "xs:anyAttribute":		// ignore?
@@ -574,6 +609,7 @@ public class XSDConverter
 			}
 		}
 		
+		applyAnnotations(results);
 		return results;
 	}
 	
@@ -611,6 +647,7 @@ public class XSDConverter
 		}
 		
 		stack.pop();
+		applyAnnotations(fields);
 		return fields;
 	}
 
@@ -619,6 +656,7 @@ public class XSDConverter
 		assert simpleType.isType("xs:simpleType");
 		stack.push(simpleType);
 		Field result = null;
+		CommentField annotation = null;
 		
 		for (XSDElement first: simpleType.getChildren())
 		{
@@ -689,7 +727,7 @@ public class XSDConverter
 					break;
 					
 				case "xs:annotation":
-					convertAnnotation(first);
+					annotation = convertAnnotation(first);
 					break;
 					
 				default:
@@ -704,18 +742,18 @@ public class XSDConverter
 		}
 		
 		stack.pop();
+		result.setComments(annotation);
 		return result;
 	}
 
-	private void convertAnnotation(XSDElement annotation)
+	private CommentField convertAnnotation(XSDElement annotation)
 	{
 		assert annotation.isType("xs:annotation");
 		XSDElement doc = annotation.getFirstChild();
+		List<String> comments = new Vector<String>();
 		
 		if (doc.isType("xs:documentation"))
 		{
-			StringBuilder text = new StringBuilder();
-			
 			for (XSDElement comment: doc.getChildren())
 			{
 				if (comment instanceof XSDContent)
@@ -724,17 +762,36 @@ public class XSDConverter
 					
 					for (String line: lines)
 					{
-						text.append(line);
-						text.append("\n");
+						comments.add(line);
 					}
 				}
 			}
-	
-			// What do we annotate?
 		}
 		else
 		{
 			dumpStack("Unexpected annotation type " , doc);
+		}
+		
+		return new CommentField(comments);
+	}
+
+	private void applyAnnotations(List<Field> fields)
+	{
+		Iterator<Field> iter = fields.iterator();
+		
+		while (iter.hasNext())
+		{
+			Field field = iter.next();
+			
+			if (field instanceof CommentField)
+			{
+				iter.remove();	// Remove and apply comments to following field
+				
+				if (iter.hasNext())
+				{
+					iter.next().setComments((CommentField)field);
+				}
+			}
 		}
 	}
 

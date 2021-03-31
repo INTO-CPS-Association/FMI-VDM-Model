@@ -29,13 +29,27 @@
 
 package types;
 
+import java.util.List;
+
 import org.xml.sax.Locator;
 
 import values.VDMValue;
 
 abstract public class Type
 {
+	protected List<String> comments = null;
+	
 	public abstract String signature();
+	
+	public List<String> getComments()
+	{
+		return comments;
+	}
+	
+	public void setComments(List<String> comments)
+	{
+		this.comments = comments;
+	}
 
 	public boolean matches(Type type)
 	{
@@ -61,4 +75,24 @@ abstract public class Type
 	}
 
 	abstract public VDMValue valueOf(String avalue, Locator locator);
+
+	private static final int MAXLINE = 100;
+	
+	protected void appendComments(StringBuilder sb, List<String> comments, String prefix)
+	{
+		if (comments != null)
+		{
+			for (String comment: comments)
+			{
+				while (comment.length() > MAXLINE)
+				{
+					sb.append(prefix + "-- " + comment.substring(0, MAXLINE).trim() + "\n");
+					comment = comment.substring(MAXLINE);
+				}
+				
+				sb.append(prefix + "-- " + comment.trim() + "\n");
+			}
+		}
+	}
+
 }

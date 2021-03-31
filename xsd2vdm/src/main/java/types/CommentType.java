@@ -29,82 +29,36 @@
 
 package types;
 
+import java.util.List;
+
 import org.xml.sax.Locator;
 
 import values.VDMValue;
 
-/**
- * RefTypes are added to the "converted" map early as a placeholder for recursive
- * element definitions. They allow a type to be updated and referred to by a
- * consistent reference.
- */
-public class RefType extends Type
+public class CommentType extends Type
 {
-	private Type ref;
-	
-	public RefType(Type ref)
+	public CommentType(List<String> comments)
 	{
-		this.ref = ref;
-	}
-	
-	public void set(Type type)
-	{
-		this.ref = type;
-	}
-
-	public Type deref()
-	{
-		Type t = ref;
-		
-		while (t instanceof RefType)
-		{
-			t = ((RefType)t).ref;
-		}
-		
-		return t;
-	}
-	
-	public void setComments(CommentField annotation)
-	{
-		if (annotation != null)
-		{
-			ref.setComments(annotation.getComments());
-		}
-	}
-
-	@Override
-	public boolean matches(Type type)
-	{
-		return ref.matches(type);
-	}
-
-	@Override
-	public String signature()
-	{
-		return ref.signature();
+		this.comments = comments;
 	}
 	
 	@Override
 	public String toString()
 	{
-		return ref.toString();
+		StringBuilder sb = new StringBuilder();
+		appendComments(sb, comments, "");
+		return sb.toString();
 	}
-	
+
 	@Override
-	public int hashCode()
+	public String signature()
 	{
-		return ref.hashCode();
-	}
-	
-	@Override
-	public boolean equals(Object other)
-	{
-		return ref.equals(other);
+		return null;
 	}
 
 	@Override
 	public VDMValue valueOf(String avalue, Locator locator)
 	{
-		return ref.valueOf(avalue, locator);
+		return null;
 	}
 }

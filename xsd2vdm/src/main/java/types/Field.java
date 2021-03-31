@@ -29,6 +29,8 @@
 
 package types;
 
+import java.util.List;
+
 public class Field
 {
 	private final String fieldName;		// The VDM field name, typically lower case
@@ -36,7 +38,9 @@ public class Field
 	private final Type type;
 	private final boolean optional;
 	private final String aggregate;
-	private boolean isAttribute;
+	
+	private boolean isAttribute = false;
+	private List<String> comments = null;
 	
 	public Field(String fieldName, String elementName, Type type, boolean optional, String aggregate)
 	{
@@ -88,6 +92,11 @@ public class Field
 	{
 		return aggregate;
 	}
+	
+	public List<String> getComments()
+	{
+		return comments;
+	}
 
 	public boolean isOptional()
 	{
@@ -115,6 +124,14 @@ public class Field
 		this.isAttribute = isAttribute;
 	}
 	
+	public void setComments(CommentField annotation)
+	{
+		if (annotation != null)
+		{
+			this.comments = annotation.getComments();
+		}
+	}
+
 	public Field modified(String fieldName, String elementName)
 	{
 		return new Field(fieldName, elementName, type, optional, aggregate);

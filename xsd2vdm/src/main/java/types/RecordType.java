@@ -38,6 +38,8 @@ import values.VDMValue;
 
 public class RecordType extends Type
 {
+	private static final String INDENT = "    ";
+	
 	private final String name;
 	private final List<Field> fields;
 
@@ -91,11 +93,15 @@ public class RecordType extends Type
 	{
 		StringBuilder sb = new StringBuilder();
 		
+		appendComments(sb, comments, "");
+		
 		if (fields.size() == 1)
 		{
+			Field f = fields.get(0);
+			appendComments(sb, f.getComments(), "");
 			sb.append(name);
 			sb.append(" = ");
-			sb.append(fields.get(0).getVDMType().signature());
+			sb.append(f.getVDMType().signature());
 		}
 		else
 		{
@@ -124,6 +130,7 @@ public class RecordType extends Type
 						name = "$" + name;
 					}
 					
+					appendComments(sb, field.getComments(), INDENT);
 					sb.append(String.format(format, name, field.getVDMType().signature()));
 				}
 			}
@@ -139,6 +146,7 @@ public class RecordType extends Type
 						name = "$" + name;
 					}
 					
+					appendComments(sb, field.getComments(), INDENT);
 					sb.append(String.format(format, name, field.getVDMType().signature()));
 				}
 			}
@@ -147,7 +155,7 @@ public class RecordType extends Type
 		sb.append(";\n");
 		return sb.toString();
 	}
-
+	
 	@Override
 	public String signature()
 	{
@@ -199,5 +207,13 @@ public class RecordType extends Type
 	public VDMValue valueOf(String avalue, Locator locator)
 	{
 		throw new IllegalArgumentException("Cannot get valueOf a record type");
+	}
+
+	public void setComments(CommentField annotation)
+	{
+		if (annotation != null)
+		{
+			this.comments = annotation.getComments();
+		}
 	}
 }
