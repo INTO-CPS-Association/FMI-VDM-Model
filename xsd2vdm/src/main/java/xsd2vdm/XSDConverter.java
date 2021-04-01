@@ -30,6 +30,7 @@
 package xsd2vdm;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -64,6 +65,13 @@ public class XSDConverter
 	 * True if errors are found in type conversion. No output is produced.
 	 */
 	private boolean errors = false;
+
+	/**
+	 * Set to the schema target namespace, if set.
+	 */
+	private String targetNamespace = null;
+	private Map<String, String> namespaces = new HashMap<String, String>();
+	private String targetPrefix = null;
 	
 	/**
 	 * Create and initialize a schema converter.
@@ -122,12 +130,44 @@ public class XSDConverter
 	{
 		stack.push(schema);
 		CommentField annotation = null;
+		Map<String, String> attributes = schema.getAttrs();
+		
+		targetNamespace = null;
+		targetPrefix = "";
+		namespaces.clear();
+		
+		for (String attr: attributes.keySet())
+		{
+			switch (attr)
+			{
+				case "targetNamespace":
+					targetNamespace = attributes.get(attr);
+					break;
+					
+				default:
+					if (attr.startsWith("xmlns:"))
+					{
+						String abbreviation = attr.substring(6);	// eg. "xs"
+						String namespace = attributes.get(attr);
+						namespaces.put(namespace, abbreviation);
+					}
+					break;	// ignore
+			}
+		}
+		
+		if (targetNamespace != null && namespaces.containsKey(targetNamespace))
+		{
+			targetPrefix = namespaces.get(targetNamespace);
+		}
 		
 		for (XSDElement child: schema.getChildren())
 		{
 			switch (child.getType())
 			{
 				case "xs:include":
+					break;
+					
+				case "xs:import":
 					break;
 					
 				case "xs:element":
@@ -169,7 +209,7 @@ public class XSDConverter
 		
 		if (element.isReference())
 		{
-			result = convertElement(XSDElement.lookup(element.getAttr("ref")));
+			result = convertElement(lookup(element.getAttr("ref")));
 		}
 		else
 		{
@@ -233,7 +273,7 @@ public class XSDConverter
 	
 		if (group.isReference())
 		{
-			result = convertGroup(XSDElement.lookup(group.getAttr("ref")));
+			result = convertGroup(lookup(group.getAttr("ref")));
 		}
 		else
 		{
@@ -447,7 +487,7 @@ public class XSDConverter
 			switch (child.getType())
 			{
 				case "xs:extension":
-					fields.addAll(convertComplexType(XSDElement.lookup(child.getAttr("base"))).getFields());
+					fields.addAll(convertComplexType(lookup(child.getAttr("base"))).getFields());
 					fields.addAll(convertComplexChildren(child.getChildren()));
 					break;
 					
@@ -505,7 +545,7 @@ public class XSDConverter
 		
 		if (attribute.isReference())
 		{
-			result = convertAttribute(XSDElement.lookup(attribute.getAttr("ref")));
+			result = convertAttribute(lookup(attribute.getAttr("ref")));
 			result = result.modified(name, name);
 		}
 		else
@@ -584,7 +624,7 @@ public class XSDConverter
 		}
 		else
 		{
-			XSDElement etype = XSDElement.lookup(element.getAttr(typeattr));
+			XSDElement etype = lookup(element.getAttr(typeattr));
 			
 			switch (etype.getType())
 			{
@@ -619,7 +659,7 @@ public class XSDConverter
 		
 		if (attributeGroup.isReference())
 		{
-			fields = convertAttributeGroup(XSDElement.lookup(attributeGroup.getAttr("ref")));
+			fields = convertAttributeGroup(lookup(attributeGroup.getAttr("ref")));
 		}
 		else
 		{
@@ -685,7 +725,7 @@ public class XSDConverter
 						}
 						else
 						{
-							XSDElement etype = XSDElement.lookup(first.getAttr("base"));
+							XSDElement etype = lookup(first.getAttr("base"));
 							result = convertSimpleType(etype).modified(fieldName(name), name);
 						}
 					}
@@ -709,16 +749,29 @@ public class XSDConverter
 				
 				case "xs:union":
 					{
-						String[] types = first.getAttr("memberTypes").split("\\s+");
-						UnionType union = new UnionType(typeName(stackAttr("name")));
-						
-						for (String type: types)
-						{
-							Field f = convertSimpleType(XSDElement.lookup(type));
-							union.addType(f.getType());
-						}
-						
 						String name = stackAttr("name");
+						UnionType union = new UnionType(typeName(stackAttr("name")));
+						String mtypes = first.getAttr("memberTypes");
+						
+						if (mtypes != null)
+						{
+							String[] types = mtypes.split("\\s+");
+							
+							for (String type: types)
+							{
+								Field f = convertSimpleType(lookup(type));
+								union.addType(f.getType());
+							}
+						}
+						else
+						{
+							for (XSDElement child: first.getChildren())
+							{
+								Field f = convertSimpleType(child);
+								union.addType(f.getType());
+							}
+						}
+
 						converted.put(name, new RefType(union));
 						result = new Field(fieldName(name), name, union, isOptional(), aggregate());
 					}
@@ -771,6 +824,18 @@ public class XSDConverter
 		}
 		
 		return new CommentField(comments);
+	}
+	
+	private XSDElement lookup(String name)
+	{
+		if (name.startsWith(targetPrefix + ":"))
+		{
+			return XSDElement.lookup(name.substring(targetPrefix.length() + 1));
+		}
+		else
+		{
+			return XSDElement.lookup(name);
+		}
 	}
 
 	private void applyAnnotations(List<Field> fields)
@@ -981,6 +1046,7 @@ public class XSDConverter
 			System.err.println(indent + "<" + element.getType() + ">?");
 		}
 		
+		System.err.println();
 		errors = true;
 	}
 
