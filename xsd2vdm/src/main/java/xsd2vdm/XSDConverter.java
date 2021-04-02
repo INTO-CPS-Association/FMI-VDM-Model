@@ -130,35 +130,8 @@ public class XSDConverter
 	{
 		stack.push(schema);
 		CommentField annotation = null;
-		Map<String, String> attributes = schema.getAttrs();
 		
-		targetNamespace = null;
-		targetPrefix = "";
-		namespaces.clear();
-		
-		for (String attr: attributes.keySet())
-		{
-			switch (attr)
-			{
-				case "targetNamespace":
-					targetNamespace = attributes.get(attr);
-					break;
-					
-				default:
-					if (attr.startsWith("xmlns:"))
-					{
-						String abbreviation = attr.substring(6);	// eg. "xs"
-						String namespace = attributes.get(attr);
-						namespaces.put(namespace, abbreviation);
-					}
-					break;	// ignore
-			}
-		}
-		
-		if (targetNamespace != null && namespaces.containsKey(targetNamespace))
-		{
-			targetPrefix = namespaces.get(targetNamespace);
-		}
+		setNamespaces(schema);
 		
 		for (XSDElement child: schema.getChildren())
 		{
@@ -199,6 +172,39 @@ public class XSDConverter
 		stack.pop();
 		assert stack.isEmpty();
 		return annotation;
+	}
+
+	private void setNamespaces(XSDElement schema)
+	{
+		assert schema.getType().equals("xs:schema");
+		targetNamespace = null;
+		targetPrefix = "";
+		namespaces.clear();
+		Map<String, String> attributes = schema.getAttrs();
+		
+		for (String attr: attributes.keySet())
+		{
+			switch (attr)
+			{
+				case "targetNamespace":
+					targetNamespace = attributes.get(attr);
+					break;
+					
+				default:
+					if (attr.startsWith("xmlns:"))
+					{
+						String abbreviation = attr.substring(6);	// eg. "xs"
+						String namespace = attributes.get(attr);
+						namespaces.put(namespace, abbreviation);
+					}
+					break;	// ignore
+			}
+		}
+		
+		if (targetNamespace != null && namespaces.containsKey(targetNamespace))
+		{
+			targetPrefix = namespaces.get(targetNamespace);
+		}
 	}
 
 	private Type convertElement(XSDElement element)
@@ -359,6 +365,10 @@ public class XSDConverter
 					fields.addAll(convertSimpleContent(child));
 					break;
 					
+				case "xs:choice":
+					fields.add(convertChoice(child));
+					break;
+					
  				case "xs:attribute":
 					fields.add(convertAttribute(child));
 					break;
@@ -486,9 +496,18 @@ public class XSDConverter
 		{
 			switch (child.getType())
 			{
+				case "xs:restriction":
+					fields.addAll(convertComplexType(lookup(child.getAttr("base"))).getFields());
+					fields.addAll(convertComplexChildren(child.getChildren()));
+					break;
+					
 				case "xs:extension":
 					fields.addAll(convertComplexType(lookup(child.getAttr("base"))).getFields());
 					fields.addAll(convertComplexChildren(child.getChildren()));
+					break;
+					
+				case "xs:choice":
+					fields.add(convertChoice(child));
 					break;
 					
 				case "xs:annotation":
@@ -815,6 +834,11 @@ public class XSDConverter
 					{
 						comments.add(line);
 					}
+				}
+				else
+				{
+					String text = comment.toString().replaceAll("\n", " ");
+					comments.add(text);
 				}
 			}
 		}
