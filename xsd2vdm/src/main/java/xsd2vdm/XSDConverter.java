@@ -565,7 +565,6 @@ public class XSDConverter
 		if (attribute.isReference())
 		{
 			result = convertAttribute(lookup(attribute.getAttr("ref")));
-			result = result.modified(name, name);
 		}
 		else
 		{
@@ -856,6 +855,10 @@ public class XSDConverter
 		{
 			return XSDElement.lookup(name.substring(targetPrefix.length() + 1));
 		}
+		else if (name.equals("xml:lang"))
+		{
+			return XSDElement.XML_LANG;
+		}
 		else
 		{
 			return XSDElement.lookup(name);
@@ -1090,6 +1093,7 @@ public class XSDConverter
 	 */
 	private String fieldName(String fname)
 	{
+		fname = fname.replace(":", "_");	// for names like "xml:lang"
 		String name = fname.substring(0, 1).toLowerCase() + fname.substring(1);
 		return (converted.containsKey(name)) ? name : name;
 	}

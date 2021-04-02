@@ -52,6 +52,11 @@ public class XSDElement
 	
 	private String annotation;
 	
+	/**
+	 * Constant for xml:lang attribute.
+	 */
+	public final static XSDElement XML_LANG = new XSDElement("xml:lang", "xs:string");
+	
 	public XSDElement(String qName, Attributes attributes, Locator locator)
 	{
 		this.line = locator.getLineNumber();
@@ -79,6 +84,16 @@ public class XSDElement
 		this.line = locator.getLineNumber();
 		this.file = getFile(locator);
 		this.type = null;	// eg. a Content string
+	}
+	
+	private XSDElement(String xmlName, String xmlType)
+	{
+		this.file = new File("xml");
+		this.line = 0;
+		this.type = "xs:attribute";
+		
+		attributes.put("name", xmlName);
+		attributes.put("type", xmlType);
 	}
 	
 	private File getFile(Locator locator)
