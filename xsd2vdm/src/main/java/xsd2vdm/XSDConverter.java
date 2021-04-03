@@ -143,6 +143,9 @@ public class XSDConverter
 				case "xs:import":
 					break;
 					
+				case "xs:notation":
+					break;
+					
 				case "xs:element":
 					convertElement(child);
 					break;
@@ -215,7 +218,22 @@ public class XSDConverter
 		
 		if (element.isReference())
 		{
-			result = convertElement(lookup(element.getAttr("ref")));
+			XSDElement ref = lookup(element.getAttr("ref"));
+			
+			switch (ref.getType())
+			{
+				case "xs:element":
+					result = convertElement(ref);
+					break;
+					
+				case "xs:complexType":
+					result = convertComplexType(ref);
+					break;
+					
+				default:
+					dumpStack("Unexpected xs:element ref type", ref);
+					break;
+			}
 		}
 		else
 		{
@@ -254,6 +272,9 @@ public class XSDConverter
 						case "xs:annotation":
 							annotation = convertAnnotation(child);
 							break;
+							
+						case "xs:key":	// Ignore for now?
+							break;
 
 						default:
 							dumpStack("Unexpected element child", child);
@@ -291,8 +312,8 @@ public class XSDConverter
 				return converted.get(unionName);
 			}
 			
-			RefType ref = new RefType(new UnionType(unionName));
-			converted.put(unionName, ref);
+			UnionType union = new UnionType(unionName);
+			converted.put(unionName, new RefType(union));
 			CommentField annotation = null;
 			
 			for (XSDElement child: group.getChildren())
@@ -300,7 +321,14 @@ public class XSDConverter
 				switch (child.getType())
 				{
 					case "xs:choice":
-						ref.set(convertChoice(child).getType());
+						union.addType(convertChoice(child).getType());
+						break;
+						
+					case "xs:sequence":
+						for (Field f: convertSequence(child))
+						{
+							union.addType(f.getType());
+						}
 						break;
 						
 					case "xs:annotation":
@@ -313,8 +341,12 @@ public class XSDConverter
 				}
 			}
 			
-			ref.setComments(annotation);
-			result = ref;
+			if (annotation != null)
+			{
+				union.setComments(annotation.getComments());
+			}
+			
+			result = union;
 		}
 		
 		stack.pop();
@@ -416,6 +448,14 @@ public class XSDConverter
 				case "xs:sequence":
 					fields.addAll(convertSequence(child));
 					break;
+					
+				case "xs:group":
+					stack.push(child);
+					String name = stackAttr("name");
+					fields.add(new Field(fieldName(name), name,
+								convertGroup(child), isOptional(), aggregate()));
+					stack.pop();
+					break;
 			
 				case "xs:attribute":
 					fields.add(convertAttribute(child));
@@ -470,6 +510,19 @@ public class XSDConverter
 					union.addType(ch.getType());
 					break;
 					
+				case "xs:sequence":
+					for (Field f: convertSequence(child))
+					{
+						union.addType(f.getType());
+					}
+					break;
+					
+				case "xs:group":
+					stack.push(child);
+					union.addType(convertGroup(child));
+					stack.pop();
+					break;
+
 				case "xs:any":
 					union.addType(new BasicType("token"));
 					break;
@@ -497,13 +550,36 @@ public class XSDConverter
 			switch (child.getType())
 			{
 				case "xs:restriction":
-					fields.addAll(convertComplexType(lookup(child.getAttr("base"))).getFields());
-					fields.addAll(convertComplexChildren(child.getChildren()));
-					break;
-					
 				case "xs:extension":
-					fields.addAll(convertComplexType(lookup(child.getAttr("base"))).getFields());
-					fields.addAll(convertComplexChildren(child.getChildren()));
+					{
+						XSDElement base = lookup(child.getAttr("base"));
+						
+						switch (base.getType())
+						{
+							case "xs:complexType":
+								fields.addAll(convertComplexType(base).getFields());
+								break;
+								
+							case "xs:simpleType":
+								fields.add(convertSimpleType(base));
+								break;
+								
+							case "xs:element":
+								stack.push(base);
+								Type etype = convertElement(base);
+								String name = stackAttr("name");
+								fields.add(new Field(fieldName(name), name, etype, isOptional(), aggregate()));
+								stack.pop();
+								break;
+								
+								
+							default:
+								dumpStack("Unexpected " + child.getType() + " child", base);
+								break;
+						}
+						
+						fields.addAll(convertComplexChildren(child.getChildren()));
+					}
 					break;
 					
 				case "xs:choice":
@@ -577,6 +653,12 @@ public class XSDConverter
 			{
 				result = convertType(attribute, "type").get(0).modified(fieldName(name), name);
 			}
+			
+			// If an attribute has no type... defaults to xs:any?
+			if (result == null)
+			{
+				result = new Field(fieldName(name), name, new BasicType("token"), isOptional(), aggregate());
+			}
 
 			for (XSDElement child: attribute.getChildren())
 			{
@@ -598,8 +680,10 @@ public class XSDConverter
 		}
 		
 		stack.pop();
+		
 		result.setIsAttribute(true);
 		result.setComments(annotation);
+		
 		return result;
 	}
 	
@@ -769,24 +853,32 @@ public class XSDConverter
 					{
 						String name = stackAttr("name");
 						UnionType union = new UnionType(typeName(stackAttr("name")));
-						String mtypes = first.getAttr("memberTypes");
 						
-						if (mtypes != null)
-						{
-							String[] types = mtypes.split("\\s+");
-							
-							for (String type: types)
-							{
-								Field f = convertSimpleType(lookup(type));
-								union.addType(f.getType());
-							}
-						}
-						else
+						if (!first.getChildren().isEmpty())
 						{
 							for (XSDElement child: first.getChildren())
 							{
 								Field f = convertSimpleType(child);
 								union.addType(f.getType());
+							}
+						}
+						else
+						{
+							String mtypes = first.getAttr("memberTypes");
+							
+							if (mtypes != null)
+							{
+								String[] types = mtypes.split("\\s+");
+								
+								for (String type: types)
+								{
+									Field f = convertSimpleType(lookup(type));
+									union.addType(f.getType());
+								}
+							}
+							else
+							{
+								dumpStack("Unexpected xs:union", first);
 							}
 						}
 
@@ -905,6 +997,7 @@ public class XSDConverter
 			case "xs:anyURI":
 			case "xs:QName":
 			case "xs:NOTATION":
+			case "xs:typeDerivationControl":
 				return new BasicType("seq1 of char");
 				
 			case "xs:hexBinary":
