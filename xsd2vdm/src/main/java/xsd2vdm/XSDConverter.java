@@ -29,12 +29,314 @@
 
 package xsd2vdm;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
+import types.BasicType;
 import types.Type;
 
-public interface XSDConverter
+abstract public class XSDConverter
 {
-	public Map<String, Type> convertSchemas(List<XSDElement> roots);
+	/**
+	 * A stack of the elements currently being converted, to allow outer-outer-...
+	 * attributes to be obtained, when the local element does not define one.
+	 */
+	protected Stack<XSDElement> stack = new Stack<XSDElement>();
+	
+	/**
+	 * True if errors are found in type conversion. No output is produced.
+	 */
+	protected boolean errors = false;
+	
+	/**
+	 * Set to the schema target namespace, if set.
+	 */
+	protected String targetNamespace = null;
+	protected Map<String, String> namespaces = new HashMap<String, String>();
+	protected String targetPrefix = null;
+
+	/**
+	 * Initialize data.
+	 */
+	protected void initConverter()
+	{
+		stack.clear();
+		errors = false;
+		namespaces.clear();
+	}
+	
+	
+	/**
+	 * Convert a list of schemas.
+	 * @param roots
+	 * @return schema map
+	 */
+	abstract public Map<String, Type> convertSchemas(List<XSDElement> roots);
+	
+	/**
+	 * Set current namespace data from schema element.
+	 */
+	protected void setNamespaces(XSDElement schema)
+	{
+		assert schema.getType().equals("xs:schema");
+		targetNamespace = null;
+		targetPrefix = "";
+		namespaces.clear();
+		Map<String, String> attributes = schema.getAttrs();
+		
+		for (String attr: attributes.keySet())
+		{
+			switch (attr)
+			{
+				case "targetNamespace":
+					targetNamespace = attributes.get(attr);
+					break;
+					
+				default:
+					if (attr.startsWith("xmlns:"))
+					{
+						String abbreviation = attr.substring(6);	// eg. "xs"
+						String namespace = attributes.get(attr);
+						namespaces.put(namespace, abbreviation);
+					}
+					break;	// ignore
+			}
+		}
+		
+		if (targetNamespace != null && namespaces.containsKey(targetNamespace))
+		{
+			targetPrefix = namespaces.get(targetNamespace);
+		}
+	}
+	
+	/**
+	 * Search the stack for attributes which make the current type optional
+	 * in VDM. 
+	 */
+	protected boolean isOptional()
+	{
+		String use = stackAttr("use");
+		
+		if (use != null)
+		{
+			return use.equals("optional");
+		}
+		else
+		{
+			String minOccurs = stackAttr("minOccurs");
+			int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
+			return min == 0;
+		}
+	}
+	
+	/**
+	 * Search the stack for attributes which make sequences in VDM.
+	 * Return value is VDM qualifier: "seq1 of ", "seq of " or "".
+	 */
+	protected String aggregate()
+	{
+		switch (aggregateType())
+		{
+			case 0:	return "";
+			case 1: return "seq of ";
+			case 2: return "seq1 of ";
+			
+			default: throw new IllegalArgumentException("Unknown aggregation");
+		}
+	}
+
+	protected int aggregateType()
+	{
+		XSDElement elem = stack.peek();
+		
+		if (elem.isType("xs:attribute"))
+		{
+			return (elem.hasChild("xs:list")) ? 2 : 0;
+		}
+		else
+		{
+			String minOccurs = stackAttr("minOccurs");
+			String maxOccurs = stackAttr("maxOccurs");
+			int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
+			int max = maxOccurs == null ? 1 : maxOccurs.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(maxOccurs);
+			
+			return min > 1 ? 2 : max > 1 ? (min == 1 ? 2 : 1) : 0; 
+		}
+	}
+	
+	/**
+	 * Look for a specific attribute in the enclosing elements, until you reach an
+	 * xs:element or xs:attribute (ie. limit the search to the enclosing type, but
+	 * consider complexTypes, complexContent, sequences and so on).
+	 */
+	protected String stackAttr(String attr)
+	{
+		for (int i = stack.size() - 1; i > 0; i--)
+		{
+			XSDElement e = stack.get(i);
+			
+			if (e.hasAttr(attr))
+			{
+				return e.getAttr(attr);
+			}
+			
+			if (e.isType("xs:element"))
+			{
+				if (i > 0)
+				{
+					// eg. an element may have maxOccurs set on an enclosing sequence
+					XSDElement prev = stack.get(i-1);
+					
+					if (prev.isType("xs:sequence") && prev.hasAttr(attr))
+					{
+						return prev.getAttr(attr);
+					}
+				}
+				
+				break;
+			}
+			
+			if (e.isType("xs:attribute"))
+			{
+				break;	// Not found within local "type"
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Convert a basic XML/XSD type into VDM-SL.
+	 */
+	protected BasicType vdmTypeOf(String type)
+	{
+		switch (type)
+		{
+			case "xs:normalizedString":
+			case "xs:string":
+				return new BasicType("seq of char");
+
+			case "xs:token":
+			case "xs:lanuage":
+			case "xs:NAME":
+			case "xs:NMTOKEN":
+			case "xs:NCName":
+			case "xs:NMTOKENS":
+			case "xs:ID":
+			case "xs:IDREF":
+			case "xs:ENTITY":
+			case "xs:anyURI":
+			case "xs:QName":
+			case "xs:NOTATION":
+			case "xs:typeDerivationControl":
+				return new BasicType("seq1 of char");
+				
+			case "xs:hexBinary":
+			case "xs:base64Binary":
+				return new BasicType("seq1 of char");
+			
+			case "xs:duration":
+			case "xs:dateTime":
+			case "xs:date":
+			case "xs:time":
+			case "xs:gYearMonth":
+			case "xs:gYear":
+			case "xs:gMonthDay":
+			case "xs:gDay":
+			case "xs:gMonth":
+				return new BasicType("seq1 of char");
+				
+			case "xs:double":
+			case "xs:float":
+			case "xs:decimal":
+				return new BasicType("real");
+			
+			case "xs:nonNegativeInteger":
+			case "xs:unsignedLong":
+			case "xs:unsignedInt":
+			case "xs:unsignedByte":
+			case "xs:unsignedShort":
+			case "xs:positiveInteger":
+				return new BasicType("nat");
+				
+			case "xs:long":
+			case "xs:int":
+			case "xs:short":
+			case "xs:byte":
+			case "xs:integer":
+			case "xs:nonPositiveInteger":
+			case "xs:negativeInteger":
+				return new BasicType("int");
+			
+			case "xs:boolean":
+				return new BasicType("bool");
+	
+			default:
+				return null;
+		}
+	}
+	
+
+	/**
+	 * Lookup a name, allowing for targetPrefix.
+	 */
+	protected XSDElement lookup(String name)
+	{
+		if (name.startsWith(targetPrefix + ":"))
+		{
+			return XSDElement.lookup(name.substring(targetPrefix.length() + 1));
+		}
+		else if (name.equals("xml:lang"))
+		{
+			return XSDElement.XML_LANG;
+		}
+		else
+		{
+			return XSDElement.lookup(name);
+		}
+	}
+
+	/**
+	 * Dump the stack to assist with location of problems.
+	 */
+	protected void dumpStack(String message, XSDElement element)
+	{
+		if (element != null)
+		{
+			File file = element.getFile();
+			System.err.println(element.getType() + ": " + message +
+					" in " + file.getName() + " line " + element.getLineNumber());
+		}
+		else
+		{
+			System.err.println(message);
+		}
+		
+		String indent = " ";
+		
+		for (XSDElement e: stack)
+		{
+			System.err.print(indent + "<" + e.getType());
+			Map<String, String> attrs = e.getAttrs();
+			
+			for (String aname: attrs.keySet())
+			{
+				System.err.print(" " + aname + "=" + "\"" + attrs.get(aname) + "\"");
+			}
+
+			System.err.println(">");
+			indent = indent + " ";
+		}
+		
+		if (element != null)
+		{
+			System.err.println(indent + "<" + element.getType() + ">?");
+		}
+		
+		System.err.println();
+		errors = true;
+	}
 }

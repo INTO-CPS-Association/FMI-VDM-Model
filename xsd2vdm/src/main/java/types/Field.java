@@ -51,6 +51,15 @@ public class Field
 		this.aggregate = aggregate;
 	}
 	
+	public Field(String fieldName, String elementName, Type type)
+	{
+		this.fieldName = fieldName;
+		this.elementName = elementName;
+		this.type = type;
+		this.optional = false;
+		this.aggregate = "";
+	}
+	
 	public String getFieldName()
 	{
 		return fieldName;

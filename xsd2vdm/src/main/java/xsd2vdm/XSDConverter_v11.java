@@ -29,30 +29,40 @@
 
 package xsd2vdm;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
+import java.util.Vector;
 
+import types.BasicType;
 import types.CommentField;
+import types.Facet;
 import types.Field;
+import types.OptionalType;
+import types.QuoteType;
 import types.RecordType;
+import types.SeqType;
 import types.Type;
+import types.UnionType;
 
 /**
  * Convert a list of XSD Schemas to VDM-SL types. The methods correspond to the
  * <!ELEMENT> types in the XSD 1.1 DTD(s).
  */
-public class XSDConverter_v11 implements XSDConverter
+public class XSDConverter_v11 extends XSDConverter
 {
-	private final Stack<XSDElement> stack;
+	/**
+	 * A collection of elements that have already been converted or which are in the
+	 * process of being converted, to avoid reference loops.
+	 */
+	private Map<String, Type> converted = new LinkedHashMap<String, Type>();
 	
 	/**
 	 * Create and initialize a schema converter.
 	 */
 	public XSDConverter_v11()
 	{
-		stack = new Stack<XSDElement>();
+		initConverter();
 	}
 	
 	/**
@@ -61,13 +71,14 @@ public class XSDConverter_v11 implements XSDConverter
 	@Override
 	public Map<String, Type> convertSchemas(List<XSDElement> schemas)
 	{
-		stack.clear();
+		converted.clear();
 		
 		for (XSDElement schema: schemas)
 		{
 			try
 			{
 				convertSchema(schema);
+				assert stack.isEmpty();
 			}
 			catch (StackOverflowError e)
 			{
@@ -75,7 +86,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return new HashMap<>();
+		return errors ? null : converted;
 	}
 	
 	/**
@@ -84,63 +95,67 @@ public class XSDConverter_v11 implements XSDConverter
 	 *		((%simpleType; | %complexType; | %element; | %attribute; | %attributeGroup; | %group; | %notation; ),
 	 *		 (%annotation;)*)* )>
 	 */
-	private void convertSchema(XSDElement schema)
+	private void convertSchema(XSDElement element)
 	{
-		assert schema.isType("xs:schema");
+		assert element.isType("xs:schema");
+		stack.push(element);
+		
+		setNamespaces(element);
 
-		for (XSDElement child: schema.getChildren())
+		for (XSDElement child: element.getChildren())
 		{
-			if (isComposition(child))
+			switch (child.getType())
 			{
-				convertComposition(child);
-			}
-			else
-			{
-				switch (child.getType())
-				{
-					case "xs:annotation":
-						convertAnnotation(child);
-						break;
-						
-					case "xs:defaultOpenContent":
-						convertDefaultOpenContent(child);
-						break;
-						
-					case "xs:simpleType":
-						convertSimpleType(child);
-						break;
-						
-					case "xs:complexType":
-						convertComplexType(child);
-						break;
-						
-					case "xs:element":
-						convertElement(child);
-						break;
-						
-					case "xs:attribute":
-						convertAttribute(child);
-						break;
-						
-					case "xs:attributeGroup":
-						convertAttributeGroup(child);
-						break;
-						
-					case "xs:group":
-						convertGroup(child);
-						break;
-						
-					case "xs:notation":
-						convertNotation(child);
-						break;
-						
-					default:
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				case "xs:defaultOpenContent":
+					convertDefaultOpenContent(child);
+					break;
+					
+				case "xs:simpleType":
+					convertSimpleType(child);
+					break;
+					
+				case "xs:complexType":
+					convertComplexType(child);
+					break;
+					
+				case "xs:element":
+					convertElement(child);
+					break;
+					
+				case "xs:attribute":
+					convertAttribute(child);
+					break;
+					
+				case "xs:attributeGroup":
+					convertAttributeGroup(child);
+					break;
+					
+				case "xs:group":
+					convertGroup(child);
+					break;
+					
+				case "xs:notation":
+					convertNotation(child);
+					break;
+					
+				default:
+					if (isComposition(child))
+					{
+						convertComposition(child);
+					}
+					else
+					{
 						dumpStack("Unexpected schema child", child);
-						break;
-				}
+					}
+					break;
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 
@@ -179,10 +194,7 @@ public class XSDConverter_v11 implements XSDConverter
 	
 	private boolean isComposition(XSDElement element)
 	{
-		return element.isType("xs:include") ||
-				element.isType("xs:import") ||
-				element.isType("xs:override") ||
-				element.isType("xs:redefine");
+		return isType(element, "xs:include", "xs:import", "xs:override", "xs:redefine");
 	}
 	
 	/**
@@ -216,9 +228,7 @@ public class XSDConverter_v11 implements XSDConverter
 	
 	private boolean isMgs(XSDElement element)
 	{
-		return element.isType("xs:all") ||
-				element.isType("xs:choice") ||
-				element.isType("xs:sequence");
+		return isType(element, "xs:all", "xs:choice", "xs:sequence");
 	}
 	
 	/**
@@ -248,21 +258,22 @@ public class XSDConverter_v11 implements XSDConverter
 	
 	private boolean isChoiceSequence(XSDElement element)
 	{
-		return element.isType("xs:choice") ||
-				element.isType("xs:sequence");
+		return isType(element, "xs:choice", "xs:sequence");
 	}
 	
 	/**
 	 * <!ENTITY % attrDecls '((%attribute; | %attributeGroup;)*, (%anyAttribute;)?)'>
+	 * @return 
 	 */
-	private void convertAttrDecls(XSDElement element)
+	private Field convertAttrDecls(XSDElement element)
 	{
 		assert isAttrDecls(element);
+		Field result = null;
 
 		switch (element.getType())
 		{
 			case "xs:attribute":
-				convertAttribute(element);
+				result = convertAttribute(element);
 				break;
 				
 			case "xs:attributeGroup":
@@ -278,14 +289,12 @@ public class XSDConverter_v11 implements XSDConverter
 				break;
 		}
 			
-		return;
+		return result;
 	}
 	
 	private boolean isAttrDecls(XSDElement element)
 	{
-		return element.isType("xs:attribute") ||
-				element.isType("xs:attributeGroup") ||
-				element.isType("xs:anyAttribute");
+		return isType(element, "xs:attribute", "xs:attributeGroup", "xs:anyAttribute");
 	}
 	
 	/**
@@ -315,9 +324,10 @@ public class XSDConverter_v11 implements XSDConverter
 	/**
 	 * <!ENTITY % particleAndAttrs '(%openContent;?, (%mgs; | %group;)?, %attrDecls;, %assertions;)'>
 	 */
-	private void convertParticleAndAttrs(XSDElement element)
+	private Field convertParticleAndAttrs(XSDElement element)
 	{
 		assert isParticleAndAttrs(element);
+		Field result = null;
 		
 		if (element.isType("xs:openContent"))
 		{
@@ -333,7 +343,7 @@ public class XSDConverter_v11 implements XSDConverter
 		}
 		else if (isAttrDecls(element))
 		{
-			convertAttrDecls(element);
+			result = convertAttrDecls(element);
 		}
 		else if (isAssertions(element))
 		{
@@ -344,14 +354,13 @@ public class XSDConverter_v11 implements XSDConverter
 			dumpStack("Unexpected particleAndAttrs element", element);
 		}
 		
-		return;
+		return result;
 	}
 	
 	private boolean isParticleAndAttrs(XSDElement element)
 	{
-		return 	element.isType("xs:openContent") ||
+		return 	isType(element, "xs:openContent", "xs:group") ||
 			isMgs(element) ||
-			element.isType("xs:group") ||
 			isAttrDecls(element) ||
 			isAssertions(element);
 	}
@@ -385,9 +394,7 @@ public class XSDConverter_v11 implements XSDConverter
 	
 	private boolean isRestriction1(XSDElement element)
 	{
-		return element.isType("xs:openContent") ||
-				isMgs(element) ||
-				element.isType("xs:group");
+		return isType(element, "xs:openContent", "xs:group") || isMgs(element);
 	}
 	
 	/**
@@ -396,6 +403,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private Type convertDefaultOpenContent(XSDElement element)
 	{
 		assert element.isType("xs:defaultOpenContent");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -415,6 +423,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 
+		stack.pop();
 		return null;
 	}
 	
@@ -425,6 +434,8 @@ public class XSDConverter_v11 implements XSDConverter
 	private RecordType convertComplexType(XSDElement element)
 	{
 		assert element.isType("xs:complexType");
+		stack.push(element);
+		List<Field> fields = new Vector<>();
 		
 		for (XSDElement child: element.getChildren())
 		{
@@ -445,7 +456,7 @@ public class XSDConverter_v11 implements XSDConverter
 				default:
 					if (isParticleAndAttrs(child))
 					{
-						convertParticleAndAttrs(child);
+						fields.add(convertParticleAndAttrs(child));
 					}
 					else
 					{
@@ -455,7 +466,8 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return null;
+		stack.pop();
+		return new RecordType(stackAttr("name"), fields);
 	}
 	
 	/**
@@ -464,6 +476,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private List<Field> convertComplexContent(XSDElement element)
 	{
 		assert element.isType("xs:complexContent");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -487,6 +500,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return null;
 	}
 	
@@ -496,6 +510,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertOpenContent(XSDElement element)
 	{
 		assert element.isType("xs:openContent");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -515,6 +530,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 
+		stack.pop();
 		return;
 	}
 	
@@ -524,6 +540,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private List<Field> convertSimpleContent(XSDElement element)
 	{
 		assert element.isType("xs:simpleContent");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -547,6 +564,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return null;
 	}
 	
@@ -556,6 +574,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertExtension(XSDElement element)
 	{
 		assert element.isType("xs:extension");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -573,6 +592,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 
@@ -581,49 +601,90 @@ public class XSDConverter_v11 implements XSDConverter
 	 *		 (%alternative;)*,
 	 *		 (%unique; | %key; | %keyref;)*)>
 	 */
-	private Type convertElement(XSDElement element)
+	private RecordType convertElement(XSDElement element)
 	{
 		assert element.isType("xs:element");
+		stack.push(element);
+		RecordType result;
 
-		for (XSDElement child: element.getChildren())
+		if (element.isReference())
 		{
-			switch (child.getType())
+			XSDElement ref = lookup(element.getAttr("ref"));
+			
+			switch (ref.getType())
 			{
-				case "xs:annotation":
-					convertAnnotation(child);
+				case "xs:element":
+					result = convertElement(ref);
 					break;
 					
 				case "xs:complexType":
-					convertComplexType(child);
-					break;
-					
-				case "xs:simpleType":
-					convertSimpleType(child);
-					break;
-					
-				case "xs:alternative":
-					convertAlternative(child);
-					break;
-					
-				case "xs:unique":
-					convertUnique(child);
-					break;
-					
-				case "xs:key":
-					convertKey(child);
-					break;
-					
-				case "xs:keyref":
-					convertKeyRef(child);
+					result = convertComplexType(ref);
 					break;
 					
 				default:
-					dumpStack("Unexpected element child", child);
+					dumpStack("Unexpected xs:element ref type", ref);
+					result = new RecordType("?");
 					break;
 			}
 		}
+		else
+		{
+			String elementName = element.getAttr("name");
+
+			result = new RecordType(elementName);
+			converted.put(elementName, result);
+			
+			if (element.hasAttr("type"))
+			{
+				result.addFields(convertType(element, element.getAttr("type")));
+			}
+			else
+			{
+				for (XSDElement child: element.getChildren())
+				{
+					switch (child.getType())
+					{
+						case "xs:annotation":
+							convertAnnotation(child);
+							break;
+							
+						case "xs:complexType":
+						{
+							result = convertComplexType(child);
+							converted.put(elementName, result);
+							break;
+						}
+							
+						case "xs:simpleType":
+							result.addField(convertSimpleType(child));
+							break;
+							
+						case "xs:alternative":
+							convertAlternative(child);
+							break;
+							
+						case "xs:unique":
+							convertUnique(child);
+							break;
+							
+						case "xs:key":
+							convertKey(child);
+							break;
+							
+						case "xs:keyref":
+							convertKeyRef(child);
+							break;
+							
+						default:
+							dumpStack("Unexpected element child", child);
+							break;
+					}
+				}
+			}
+		}
 		
-		return null;
+		stack.pop();
+		return result;
 	}
 	
 	/**
@@ -632,6 +693,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertAlternative(XSDElement element)
 	{
 		assert element.isType("xs:alternative");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -655,6 +717,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 					
+		stack.pop();
 		return;
 	}
 	
@@ -664,6 +727,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private Type convertGroup(XSDElement element)
 	{
 		assert element.isType("xs:group");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -681,6 +745,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return null;
 	}
 	
@@ -690,6 +755,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertAll(XSDElement element)
 	{
 		assert element.isType("xs:all");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -717,6 +783,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 
@@ -726,6 +793,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private Field convertChoice(XSDElement element)
 	{
 		assert element.isType("xs:choice");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -760,6 +828,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 
+		stack.pop();
 		return null;
 	}
 
@@ -769,6 +838,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private List<Field> convertSequence(XSDElement element)
 	{
 		assert element.isType("xs:sequence");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -803,6 +873,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 
+		stack.pop();
 		return null;
 	}
 
@@ -812,6 +883,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private CommentField convertAny(XSDElement element)
 	{
 		assert element.isType("xs:any");
+		stack.push(element);
 		
 		if (!element.getChildren().isEmpty())
 		{
@@ -827,6 +899,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return null;
 	}
 	
@@ -836,6 +909,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertAnyAttribute(XSDElement element)
 	{
 		assert element.isType("xs:anyAttribute");
+		stack.push(element);
 		
 		if (!element.getChildren().isEmpty())
 		{
@@ -851,6 +925,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 
@@ -860,26 +935,53 @@ public class XSDConverter_v11 implements XSDConverter
 	private Field convertAttribute(XSDElement element)
 	{
 		assert element.isType("xs:attribute");
+		stack.push(element);
+		Field result = null;
+		String name = element.getAttr("name");
 		
-		for (XSDElement child: element.getChildren())
+		if (element.isReference())
 		{
-			switch (child.getType())
+			result = convertAttribute(lookup(element.getAttr("ref")));
+		}
+		else
+		{
+			if (!element.hasAttr("use"))
 			{
-				case "xs:annotation":
-					convertAnnotation(child);
-					break;
-					
-				case "xs:simpleType":
-					convertSimpleType(child);
-					break;
-					
-				default:
-					dumpStack("Unexpected attribute child", child);
-					break;
+				element.getAttrs().put("use", "optional");	// Explicit, for Field qualifier
+			}
+
+			if (element.hasAttr("type"))
+			{
+				result = convertType(element, element.getAttr("type")).get(0).modified(fieldName(name), name);
+			}
+			
+			if (result == null)
+			{
+				// If an attribute has no type... defaults to xs:any?
+				result = new Field(fieldName(name), name, new BasicType("token"), isOptional(), aggregate());
+			}
+
+			for (XSDElement child: element.getChildren())
+			{
+				switch (child.getType())
+				{
+					case "xs:annotation":
+						convertAnnotation(child);
+						break;
+						
+					case "xs:simpleType":
+						result = convertSimpleType(child).modified(fieldName(name), name);
+						break;
+						
+					default:
+						dumpStack("Unexpected attribute child", child);
+						break;
+				}
 			}
 		}
 
-		return null;
+		stack.pop();
+		return result;
 	}
 
 	/**
@@ -890,6 +992,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private List<Field> convertAttributeGroup(XSDElement element)
 	{
 		assert element.isType("xs:attributeGroup");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -917,6 +1020,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 			
+		stack.pop();
 		return null;
 	}
 
@@ -926,6 +1030,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertUnique(XSDElement element)
 	{
 		assert element.isType("xs:unique");
+		stack.push(element);
 		
 		for (XSDElement child: element.getChildren())
 		{
@@ -949,6 +1054,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 	
@@ -958,6 +1064,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertKey(XSDElement element)
 	{
 		assert element.isType("xs:key");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -981,6 +1088,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 	
@@ -990,6 +1098,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertKeyRef(XSDElement element)
 	{
 		assert element.isType("xs:keyref");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1013,6 +1122,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 	
@@ -1022,6 +1132,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertSelector(XSDElement element)
 	{
 		assert element.isType("xs:selector");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1037,6 +1148,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 	
@@ -1046,6 +1158,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertField(XSDElement element)
 	{
 		assert element.isType("xs:field");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1061,6 +1174,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 	
@@ -1070,6 +1184,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertAssert(XSDElement element)
 	{
 		assert element.isType("xs:assert");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1085,6 +1200,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 	
@@ -1094,6 +1210,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertInclude(XSDElement element)
 	{
 		assert element.isType("xs:include");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1109,6 +1226,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 	
@@ -1118,6 +1236,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertImport(XSDElement element)
 	{
 		assert element.isType("xs:import");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1133,6 +1252,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 
@@ -1143,6 +1263,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertRedefine(XSDElement element)
 	{
 		assert element.isType("xs:redefine");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1174,6 +1295,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 
@@ -1185,6 +1307,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertOverride(XSDElement element)
 	{
 		assert element.isType("xs:override");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1228,6 +1351,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 	
@@ -1237,6 +1361,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertNotation(XSDElement element)
 	{
 		assert element.isType("xs:notation");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1252,32 +1377,38 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 
 	/**
 	 * <!ELEMENT %annotation; (%appinfo; | %documentation;)*>
 	 */
-	private void convertAnnotation(XSDElement element)
+	private Field convertAnnotation(XSDElement element)
 	{
 		assert element.isType("xs:annotation");
-		XSDElement child = element.getFirstChild();
-		
-		switch (child.getType())
+		stack.push(element);
+
+		for (XSDElement child: element.getChildren())
 		{
-			case "xs:appinfo":
-				convertAppInfo(child);
-				break;
-				
-			case "xs:documentation":
-				convertDocumentation(child);
-				break;
-				
-			default:
-				dumpStack("Unexpected annotation child", element.getFirstChild());
+			switch (child.getType())
+			{
+				case "xs:appinfo":
+					convertAppInfo(child);
+					break;
+					
+				case "xs:documentation":
+					convertDocumentation(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected annotation child", element.getFirstChild());
+					break;
+			}
 		}
 		
-		return;
+		stack.pop();
+		return null;
 	}
 	
 	/**
@@ -1286,7 +1417,9 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertAppInfo(XSDElement element)
 	{
 		assert element.isType("xs:appinfo");
+		stack.push(element);
 		// Anything goes
+		stack.pop();
 		return;
 	}
 	
@@ -1296,7 +1429,9 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertDocumentation(XSDElement element)
 	{
 		assert element.isType("xs:documentation");
+		stack.push(element);
 		// Anything goes
+		stack.pop();
 		return;
 	}
 
@@ -1308,9 +1443,11 @@ public class XSDConverter_v11 implements XSDConverter
 	 * <!ELEMENT %simpleType;
 	 *		((%annotation;)?, (%restriction; | %list; | %union;))>
 	 */
-	private void convertSimpleType(XSDElement element)
+	private Field convertSimpleType(XSDElement element)
 	{
 		assert element.isType("xs:simpleType");
+		stack.push(element);
+		Field result = null;
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1321,7 +1458,7 @@ public class XSDConverter_v11 implements XSDConverter
 					break;
 				
 				case "xs:restriction":
-					convertRestriction(child);
+					result = convertRestriction(child);
 					break;
 					
 				case "xs:list":
@@ -1338,16 +1475,35 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return result;
 	}
 
 	/**
 	 * <!ELEMENT %restriction; ((%annotation;)?,
 	 *		 (%restriction1; | ((%simpleType;)?,(%facet;)*)), (%attrDecls;))>
+	 * @return 
 	 */
-	private void convertRestriction(XSDElement element)
+	private Field convertRestriction(XSDElement element)
 	{
 		assert element.isType("xs:restriction");
+		stack.push(element);
+		Field result = null;
+
+		BasicType vtype = vdmTypeOf(element.getAttr("base"));
+		String name = stackAttr("name");
+		
+		if (vtype != null)
+		{
+			result = new Field(fieldName(name), name, vtype);
+		}
+		else
+		{
+			XSDElement etype = lookup(element.getAttr("base"));
+			result = convertSimpleType(etype).modified(fieldName(name), name);
+		}
+		
+		List<Facet> facets = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1358,7 +1514,7 @@ public class XSDConverter_v11 implements XSDConverter
 					break;
 				
 				case "xs:simpleType":
-					convertSimpleType(child);
+					result = convertSimpleType(child);
 					break;
 					
 				default:
@@ -1368,7 +1524,7 @@ public class XSDConverter_v11 implements XSDConverter
 					}
 					else if (isFacet(child))
 					{
-						convertFacet(child);
+						facets.add(convertFacet(child));
 					}
 					else if (isAttrDecls(child))
 					{
@@ -1382,7 +1538,10 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		result = adjustField(result, facets);
+		
+		stack.pop();
+		return result;
 	}
 	
 	/**
@@ -1391,6 +1550,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertList(XSDElement element)
 	{
 		assert element.isType("xs:list");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1410,6 +1570,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 
@@ -1419,6 +1580,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertUnion(XSDElement element)
 	{
 		assert element.isType("xs:union");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1438,6 +1600,7 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
+		stack.pop();
 		return;
 	}
 	
@@ -1452,99 +1615,77 @@ public class XSDConverter_v11 implements XSDConverter
 	 * <!ENTITY % implementation-defined-facets "">
 	 * <!ENTITY % facet "%ordered; | %unordered; %implementation-defined-facets;">
 	 */
-	private void convertFacet(XSDElement element)
+	private Facet convertFacet(XSDElement element)
 	{
 		assert isFacet(element);
 		
 		switch (element.getType())
 		{
 			case "xs:minExclusive":
-				convertMinExclusive(element);
-				break;
+				return convertMinExclusive(element);
 				
 			case "xs:maxExclusive":
-				convertMaxExclusive(element);
-				break;
+				return convertMaxExclusive(element);
 				
 			case "xs:minInclusive":
-				convertMinInclusive(element);
-				break;
+				return convertMinInclusive(element);
 				
 			case "xs:maxInclusive":
-				convertMaxInclusive(element);
-				break;
+				return convertMaxInclusive(element);
 				
 			case "xs:totalDigits":
-				convertTotalDigits(element);
-				break;
+				return convertTotalDigits(element);
 				
 			case "xs:fractionDigits":
-				convertFractionDigits(element);
-				break;
+				return convertFractionDigits(element);
 				
 			case "xs:pattern":
-				convertPattern(element);
-				break;
+				return convertPattern(element);
 				
 			case "xs:enumeration":
-				convertEnumeration(element);
-				break;
+				return convertEnumeration(element);
 				
 			case "xs:whiteSpace":
-				convertWhiteSpace(element);
-				break;
+				return convertWhiteSpace(element);
 				
 			case "xs:length":
-				convertLength(element);
-				break;
+				return convertLength(element);
 				
 			case "xs:maxLength":
-				convertMaxLength(element);
-				break;
+				return convertMaxLength(element);
 				
 			case "xs:minLength":
-				convertMinLength(element);
-				break;
+				return convertMinLength(element);
 				
 			case "xs:assertion":
-				convertAssertion(element);
-				break;
+				return convertAssertion(element);
 				
 			case "xs:explicitTimezone":
-				convertExplicitTimezone(element);
-				break;
+				return convertExplicitTimezone(element);
 				
 			default:
 				dumpStack("Unexpected facet element", element);
-				break;
+				return new Facet("?", "?");
 		}
 	}
 
 	private boolean isFacet(XSDElement element)
 	{
-		return element.isType("xs:minExclusive") ||
-				element.isType("xs:maxExclusive") ||
-				element.isType("xs:minInclusive") ||
-				element.isType("xs:maxInclusive") ||
-				element.isType("xs:totalDigits") ||
-				element.isType("xs:fractionDigits") ||
-				element.isType("xs:pattern") ||
-				element.isType("xs:enumeration") ||
-				element.isType("xs:whiteSpace") ||
-				element.isType("xs:length") ||
-				element.isType("xs:maxLength") ||
-				element.isType("xs:minLength") ||
-				element.isType("xs:assertion") ||
-				element.isType("xs:explicitTimezone");
+		return isType(element,
+				"xs:minExclusive", "xs:maxExclusive", "xs:minInclusive", "xs:maxInclusive",
+				"xs:totalDigits", "xs:fractionDigits", "xs:pattern", "xs:enumeration",
+				"xs:whiteSpace", "xs:length", "xs:maxLength", "xs:minLength",
+				"xs:assertion", "xs:explicitTimezone");
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %maxExclusive; %facetModel;>
 	 */
-	private void convertMaxExclusive(XSDElement element)
+	private Facet convertMaxExclusive(XSDElement element)
 	{
 		assert element.isType("xs:maxExclusive");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1560,16 +1701,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %minExclusive; %facetModel;>
 	 */
-	private void convertMinExclusive(XSDElement element)
+	private Facet convertMinExclusive(XSDElement element)
 	{
 		assert element.isType("xs:minInclusive");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1585,16 +1728,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %maxInclusive; %facetModel;>
 	 */
-	private void convertMaxInclusive(XSDElement element)
+	private Facet convertMaxInclusive(XSDElement element)
 	{
 		assert element.isType("xs:maxInclusive");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1610,16 +1755,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %minInclusive; %facetModel;>
 	 */
-	private void convertMinInclusive(XSDElement element)
+	private Facet convertMinInclusive(XSDElement element)
 	{
 		assert element.isType("xs:minInclusive");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1635,16 +1782,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %totalDigits; %facetModel;>
 	 */
-	private void convertTotalDigits(XSDElement element)
+	private Facet convertTotalDigits(XSDElement element)
 	{
 		assert element.isType("xs:totalDigits");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1660,16 +1809,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %fractionDigits; %facetModel;>
 	 */
-	private void convertFractionDigits(XSDElement element)
+	private Facet convertFractionDigits(XSDElement element)
 	{
 		assert element.isType("xs:fractionDigits");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1685,16 +1836,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %length; %facetModel;>
 	 */
-	private void convertLength(XSDElement element)
+	private Facet convertLength(XSDElement element)
 	{
 		assert element.isType("xs:length");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1710,16 +1863,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %minLength; %facetModel;>
 	 */
-	private void convertMinLength(XSDElement element)
+	private Facet convertMinLength(XSDElement element)
 	{
 		assert element.isType("xs:minLength");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1735,16 +1890,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %maxLength; %facetModel;>
 	 */
-	private void convertMaxLength(XSDElement element)
+	private Facet convertMaxLength(XSDElement element)
 	{
 		assert element.isType("xs:maxLength");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1760,16 +1917,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %enumeration; %facetModel;>
 	 */
-	private void convertEnumeration(XSDElement element)
+	private Facet convertEnumeration(XSDElement element)
 	{
 		assert element.isType("xs:enumeration");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1785,16 +1944,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %whiteSpace; %facetModel;>
 	 */
-	private void convertWhiteSpace(XSDElement element)
+	private Facet convertWhiteSpace(XSDElement element)
 	{
 		assert element.isType("xs:whiteSpace");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1810,16 +1971,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %pattern; %facetModel;>
 	 */
-	private void convertPattern(XSDElement element)
+	private Facet convertPattern(XSDElement element)
 	{
 		assert element.isType("xs:pattern");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1835,16 +1998,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %assertion; %facetModel;>
 	 */
-	private void convertAssertion(XSDElement element)
+	private Facet convertAssertion(XSDElement element)
 	{
 		assert element.isType("xs:assertion");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1860,16 +2025,18 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %explicitTimezone; %facetModel;>
 	 */
-	private void convertExplicitTimezone(XSDElement element)
+	private Facet convertExplicitTimezone(XSDElement element)
 	{
 		assert element.isType("xs:explicitTimezone");
+		stack.push(element);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1885,14 +2052,166 @@ public class XSDConverter_v11 implements XSDConverter
 			}
 		}
 		
-		return;
+		stack.pop();
+		return new Facet(element.getType(), element.getAttr("value"));
+	}
+	
+	/**********************************************************************************
+	 * Below here, methods are utilities only, not defined in the DTDs.
+	 **********************************************************************************/
+	
+	/**
+	 * Check the element for one of a set of types.
+	 */
+	private boolean isType(XSDElement element, String... types)
+	{
+		for (String type: types)
+		{
+			if (element.getType().equals(type))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private List<Field> convertType(XSDElement element, String typestring)
+	{
+		BasicType vtype = vdmTypeOf(typestring);
+		List<Field> results = new Vector<Field>();
+		
+		if (vtype != null)
+		{
+			String elementName = stackAttr("name");
+			
+			for (XSDElement child: element.getChildren())
+			{
+				switch (child.getType())
+				{
+					case "xs:attribute":
+						results.add(convertAttribute(child));
+						break;
+						
+					case "xs:attributeGroup":
+						results.addAll(convertAttributeGroup(child));
+						break;
+						
+					case "xs:annotation":
+						results.add(convertAnnotation(child));
+						break;
+						
+					case "xs:anyAttribute":		// ignore?
+						break;
+						
+					default:
+						dumpStack("Unexpected xs:extension child", child);
+						break;
+				}
+			}
+			
+			results.add(new Field(fieldName(elementName), elementName, vtype, isOptional(), aggregate()));
+		}
+		else
+		{
+			XSDElement etype = lookup(typestring);
+			
+			switch (etype.getType())
+			{
+				case "xs:complexType":
+					results.addAll(convertComplexType(etype).getFields());
+					break;
+			
+				case "xs:attribute":
+					results.add(convertAttribute(etype));
+					break;
+			
+				case "xs:element":
+					String name = stackAttr("name");
+					results.add(new Field(fieldName(name), name, convertElement(etype), isOptional(), aggregate()));
+					break;
+
+				default:
+					results.add(convertSimpleType(etype));
+					break;
+			}
+		}
+		
+		return results;
 	}
 
 	/**
-	 * Dump the element stack and error message.
+	 * Convert a string into a name with an uppercase initial letter.
+	 * (or not, as this can confuse Element and Attribute type names)
 	 */
-	private void dumpStack(String message, XSDElement child)
+	private String typeName(String attribute)
 	{
-		System.err.println(message + " " + child.getType());
+		String name = attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
+		return (converted.containsKey(name)) ? attribute : name;
+	}
+
+	/**
+	 * Convert a string into a name with an uppercase initial letter.
+	 * (or not, as this can confuse Element and Attribute type names)
+	 */
+	private String fieldName(String fname)
+	{
+		fname = fname.replace(":", "_");	// for names like "xml:lang"
+		String name = fname.substring(0, 1).toLowerCase() + fname.substring(1);
+		return (converted.containsKey(name)) ? name : name;
+	}
+
+	/**
+	 * Adjust a field's type to account for the optionality, aggregation and
+	 * facets that are in scope.
+	 */
+	private Field adjustField(Field field, List<Facet> facets)
+	{
+		Type type = field.getType();
+		
+		if (isOptional())
+		{
+			type = new OptionalType(type);
+		}
+		
+		switch (aggregateType())
+		{
+			case 0:
+				break;
+				
+			case 1:
+				type = new SeqType(type, 0);
+				break;
+				
+			case 2:
+				type = new SeqType(type, 1);
+				break;
+		}
+		
+		List<String> enums = new Vector<>();
+		
+		for (Facet facet: facets)
+		{
+			if (facet.type.equals("xs:enumeration"))
+			{
+				enums.add(facet.value);
+			}
+		}
+		
+		if (!enums.isEmpty())
+		{
+			String typename = typeName(field.getElementName());
+			UnionType union = new UnionType(typename);
+			
+			for (String e: enums)
+			{
+				union.addType(new QuoteType(e));
+			}
+			
+			converted.put(typename, union);
+			type = union;
+		}
+		
+		return new Field(field.getFieldName(), field.getElementName(), type);
 	}
 }	
