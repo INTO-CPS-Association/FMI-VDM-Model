@@ -150,9 +150,29 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertComposition(XSDElement element)
 	{
 		assert isComposition(element);
-		
-		// Ignore all composition elements currently. Includes were processed in
-		// the original SAX parse.
+
+		switch (element.getType())
+		{
+			case "xs:include":
+				convertInclude(element);
+				break;
+				
+			case "xs:import":
+				convertImport(element);
+				break;
+				
+			case "xs:override":
+				convertOverride(element);
+				break;
+				
+			case "xs:redefine":
+				convertRedefine(element);
+				break;
+				
+			default:
+				dumpStack("Unexpected composition element", element);
+				break;
+		}
 		
 		return;
 	}
@@ -171,24 +191,23 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertMgs(XSDElement element)
 	{
 		assert isMgs(element);
-		XSDElement child = element.getFirstChild();
 		
-		switch (child.getType())
+		switch (element.getType())
 		{
 			case "xs:all":
-				convertAll(child);
+				convertAll(element);
 				break;
 				
 			case "xs:choice":
-				convertChoice(child);
+				convertChoice(element);
 				break;
 				
 			case "xs:sequence":
-				convertSequence(child);
+				convertSequence(element);
 				break;
 				
 			default:
-				dumpStack("Unexpected mgs child", child);
+				dumpStack("Unexpected mgs element", element);
 				break;
 		}
 		
@@ -208,22 +227,22 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertChoiceSequence(XSDElement element)
 	{
 		assert isChoiceSequence(element);
-		XSDElement child = element.getFirstChild();
 		
-		switch (child.getType())
+		switch (element.getType())
 		{
 			case "xs:choice":
-				convertChoice(child);
+				convertChoice(element);
 				break;
 				
 			case "xs:sequence":
-				convertSequence(child);
+				convertSequence(element);
 				break;
 				
 			default:
-				dumpStack("Unexpected cs child", child);
+				dumpStack("Unexpected cs element", element);
 				break;
 		}
+		
 		return;
 	}
 	
@@ -240,26 +259,23 @@ public class XSDConverter_v11 implements XSDConverter
 	{
 		assert isAttrDecls(element);
 
-		for (XSDElement child: element.getChildren())
+		switch (element.getType())
 		{
-			switch (child.getType())
-			{
-				case "xs:attribute":
-					convertAttribute(child);
-					break;
-					
-				case "xs:attributeGroup":
-					convertAttributeGroup(child);
-					break;
-					
-				case "xs:anyAttribute":
-					convertAnyAttribute(child);
-					break;
-					
-				default:
-					dumpStack("Unexpected attrdecl child", child);
-					break;
-			}
+			case "xs:attribute":
+				convertAttribute(element);
+				break;
+				
+			case "xs:attributeGroup":
+				convertAttributeGroup(element);
+				break;
+				
+			case "xs:anyAttribute":
+				convertAnyAttribute(element);
+				break;
+				
+			default:
+				dumpStack("Unexpected attrdecl element", element);
+				break;
 		}
 			
 		return;
@@ -279,16 +295,13 @@ public class XSDConverter_v11 implements XSDConverter
 	{
 		assert isAssertions(element);
 		
-		for (XSDElement child: element.getChildren())
+		if (element.isType("xs:assert"))
 		{
-			if (child.isType("xs:assert"))
-			{
-				convertAssert(child);
-			}
-			else
-			{
-				dumpStack("Unexpected assertsions child", child);
-			}
+			convertAssert(element);
+		}
+		else
+		{
+			dumpStack("Unexpected assertsions element", element);
 		}
 		
 		return;
@@ -306,28 +319,29 @@ public class XSDConverter_v11 implements XSDConverter
 	{
 		assert isParticleAndAttrs(element);
 		
-		for (XSDElement child: element.getChildren())
+		if (element.isType("xs:openContent"))
 		{
-			if (child.isType("xs:openContent"))
-			{
-				convertOpenContent(child);
-			}
-			else if (isMgs(child))
-			{
-				convertMgs(child);
-			}
-			else if (child.isType("xs:group"))
-			{
-				convertGroup(child);
-			}
-			else if (isAttrDecls(child))
-			{
-				convertAttrDecls(child);
-			}
-			else if (isAssertions(child))
-			{
-				convertAssertions(child);
-			}
+			convertOpenContent(element);
+		}
+		else if (isMgs(element))
+		{
+			convertMgs(element);
+		}
+		else if (element.isType("xs:group"))
+		{
+			convertGroup(element);
+		}
+		else if (isAttrDecls(element))
+		{
+			convertAttrDecls(element);
+		}
+		else if (isAssertions(element))
+		{
+			convertAssertions(element);
+		}
+		else
+		{
+			dumpStack("Unexpected particleAndAttrs element", element);
 		}
 		
 		return;
@@ -349,20 +363,21 @@ public class XSDConverter_v11 implements XSDConverter
 	{
 		assert isRestriction1(element);
 		
-		for (XSDElement child: element.getChildren())
+		if (element.isType("xs:openContent"))
 		{
-			if (child.isType("xs:openContent"))
-			{
-				convertOpenContent(child);
-			}
-			else if (isMgs(child))
-			{
-				convertMgs(child);
-			}
-			else if (child.isType("xs:group"))
-			{
-				convertGroup(child);
-			}
+			convertOpenContent(element);
+		}
+		else if (isMgs(element))
+		{
+			convertMgs(element);
+		}
+		else if (element.isType("xs:group"))
+		{
+			convertGroup(element);
+		}
+		else
+		{
+			dumpStack("Unexpected particleAndAttrs element", element);
 		}
 		
 		return;
@@ -797,15 +812,19 @@ public class XSDConverter_v11 implements XSDConverter
 	private CommentField convertAny(XSDElement element)
 	{
 		assert element.isType("xs:any");
-		XSDElement child = element.getFirstChild();
 		
-		if (child.isType("xs:annotation"))
+		if (!element.getChildren().isEmpty())
 		{
-			convertAnnotation(child);
-		}
-		else
-		{
-			dumpStack("Unexpected any child", child);
+			XSDElement child = element.getFirstChild();
+			
+			if (child.isType("xs:annotation"))
+			{
+				convertAnnotation(child);
+			}
+			else
+			{
+				dumpStack("Unexpected any child", child);
+			}
 		}
 		
 		return null;
@@ -817,15 +836,19 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertAnyAttribute(XSDElement element)
 	{
 		assert element.isType("xs:anyAttribute");
-		XSDElement child = element.getFirstChild();
 		
-		if (child.isType("xs:annotation"))
+		if (!element.getChildren().isEmpty())
 		{
-			convertAnnotation(child);
-		}
-		else
-		{
-			dumpStack("Unexpected anyAttribute child", child);
+			XSDElement child = element.getFirstChild();
+			
+			if (child.isType("xs:annotation"))
+			{
+				convertAnnotation(child);
+			}
+			else
+			{
+				dumpStack("Unexpected anyAttribute child", child);
+			}
 		}
 		
 		return;
@@ -903,6 +926,29 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertUnique(XSDElement element)
 	{
 		assert element.isType("xs:unique");
+		
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				case "xs:selector":
+					convertSelector(child);
+					break;
+					
+				case "xs:field":
+					convertField(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected unique child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 	
@@ -912,6 +958,29 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertKey(XSDElement element)
 	{
 		assert element.isType("xs:key");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				case "xs:selector":
+					convertSelector(child);
+					break;
+					
+				case "xs:field":
+					convertField(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected key child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 	
@@ -921,6 +990,29 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertKeyRef(XSDElement element)
 	{
 		assert element.isType("xs:keyref");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				case "xs:selector":
+					convertSelector(child);
+					break;
+					
+				case "xs:field":
+					convertField(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected keyref child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 	
@@ -930,6 +1022,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertSelector(XSDElement element)
 	{
 		assert element.isType("xs:selector");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected selector child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 	
@@ -939,6 +1046,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertField(XSDElement element)
 	{
 		assert element.isType("xs:field");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected field child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 	
@@ -948,6 +1070,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertAssert(XSDElement element)
 	{
 		assert element.isType("xs:assert");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected assert child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 	
@@ -957,6 +1094,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertInclude(XSDElement element)
 	{
 		assert element.isType("xs:include");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected include child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 	
@@ -966,6 +1118,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertImport(XSDElement element)
 	{
 		assert element.isType("xs:import");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected import child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -976,6 +1143,37 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertRedefine(XSDElement element)
 	{
 		assert element.isType("xs:redefine");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				case "xs:simpleType":
+					convertSimpleType(child);
+					break;
+					
+				case "xs:complexType":
+					convertComplexType(child);
+					break;
+				
+				case "xs:attributeGroup":
+					convertAttributeGroup(child);
+					break;
+					
+				case "xs:group":
+					convertGroup(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected redefine child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -987,6 +1185,49 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertOverride(XSDElement element)
 	{
 		assert element.isType("xs:override");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+					
+				case "xs:simpleType":
+					convertSimpleType(child);
+					break;
+					
+				case "xs:complexType":
+					convertComplexType(child);
+					break;
+				
+				case "xs:attributeGroup":
+					convertAttributeGroup(child);
+					break;
+					
+				case "xs:group":
+					convertGroup(child);
+					break;
+					
+				case "xs:element":
+					convertElement(child);
+					break;
+					
+				case "xs:attribute":
+					convertAttribute(child);
+					break;
+					
+				case "xs:notation":
+					convertNotation(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected override child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 	
@@ -996,6 +1237,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertNotation(XSDElement element)
 	{
 		assert element.isType("xs:notation");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+
+				default:
+					dumpStack("Unexpected notation child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1030,6 +1286,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertAppInfo(XSDElement element)
 	{
 		assert element.isType("xs:appinfo");
+		// Anything goes
 		return;
 	}
 	
@@ -1039,6 +1296,7 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertDocumentation(XSDElement element)
 	{
 		assert element.isType("xs:documentation");
+		// Anything goes
 		return;
 	}
 
@@ -1053,28 +1311,77 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertSimpleType(XSDElement element)
 	{
 		assert element.isType("xs:simpleType");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				case "xs:restriction":
+					convertRestriction(child);
+					break;
+					
+				case "xs:list":
+					convertList(child);
+					break;
+					
+				case "xs:union":
+					convertUnion(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected key child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
 	/**
-	 * <!ENTITY % minBound "(%minInclusive; | %minExclusive;)">
-	 * <!ENTITY % maxBound "(%maxInclusive; | %maxExclusive;)">
-	 * <!ENTITY % bounds "%minBound; | %maxBound;">
-	 * <!ENTITY % numeric "%totalDigits; | %fractionDigits;"> 
-	 * <!ENTITY % ordered "%bounds; | %numeric;">
-	 * <!ENTITY % unordered "%pattern; | %enumeration; | %whiteSpace; | %length; |
-	 *	%maxLength; | %minLength; | %assertion; | %explicitTimezone;">
-	 * <!ENTITY % implementation-defined-facets "">
-	 * <!ENTITY % facet "%ordered; | %unordered; %implementation-defined-facets;">
-	 *
 	 * <!ELEMENT %restriction; ((%annotation;)?,
-	 *		 (%restriction1; |
-	 *		  ((%simpleType;)?,(%facet;)*)),
-	 *		 (%attrDecls;))>
+	 *		 (%restriction1; | ((%simpleType;)?,(%facet;)*)), (%attrDecls;))>
 	 */
 	private void convertRestriction(XSDElement element)
 	{
 		assert element.isType("xs:restriction");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				case "xs:simpleType":
+					convertSimpleType(child);
+					break;
+					
+				default:
+					if (isRestriction1(child))
+					{
+						convertRestriction1(child);
+					}
+					else if (isFacet(child))
+					{
+						convertFacet(child);
+					}
+					else if (isAttrDecls(child))
+					{
+						convertAttrDecls(child);
+					}
+					else
+					{
+						dumpStack("Unexpected restriction child", child);
+					}
+					break;
+			}
+		}
+		
 		return;
 	}
 	
@@ -1084,6 +1391,25 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertList(XSDElement element)
 	{
 		assert element.isType("xs:list");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				case "xs:simpleType":
+					convertSimpleType(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected key child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1093,7 +1419,123 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertUnion(XSDElement element)
 	{
 		assert element.isType("xs:union");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				case "xs:simpleType":
+					convertSimpleType(child);
+					break;
+					
+				default:
+					dumpStack("Unexpected key child", child);
+					break;
+			}
+		}
+		
 		return;
+	}
+	
+	/**
+	 * <!ENTITY % minBound "(%minInclusive; | %minExclusive;)">
+	 * <!ENTITY % maxBound "(%maxInclusive; | %maxExclusive;)">
+	 * <!ENTITY % bounds "%minBound; | %maxBound;">
+	 * <!ENTITY % numeric "%totalDigits; | %fractionDigits;"> 
+	 * <!ENTITY % ordered "%bounds; | %numeric;">
+	 * <!ENTITY % unordered "%pattern; | %enumeration; | %whiteSpace; | %length; |
+	 *				%maxLength; | %minLength; | %assertion; | %explicitTimezone;">
+	 * <!ENTITY % implementation-defined-facets "">
+	 * <!ENTITY % facet "%ordered; | %unordered; %implementation-defined-facets;">
+	 */
+	private void convertFacet(XSDElement element)
+	{
+		assert isFacet(element);
+		
+		switch (element.getType())
+		{
+			case "xs:minExclusive":
+				convertMinExclusive(element);
+				break;
+				
+			case "xs:maxExclusive":
+				convertMaxExclusive(element);
+				break;
+				
+			case "xs:minInclusive":
+				convertMinInclusive(element);
+				break;
+				
+			case "xs:maxInclusive":
+				convertMaxInclusive(element);
+				break;
+				
+			case "xs:totalDigits":
+				convertTotalDigits(element);
+				break;
+				
+			case "xs:fractionDigits":
+				convertFractionDigits(element);
+				break;
+				
+			case "xs:pattern":
+				convertPattern(element);
+				break;
+				
+			case "xs:enumeration":
+				convertEnumeration(element);
+				break;
+				
+			case "xs:whiteSpace":
+				convertWhiteSpace(element);
+				break;
+				
+			case "xs:length":
+				convertLength(element);
+				break;
+				
+			case "xs:maxLength":
+				convertMaxLength(element);
+				break;
+				
+			case "xs:minLength":
+				convertMinLength(element);
+				break;
+				
+			case "xs:assertion":
+				convertAssertion(element);
+				break;
+				
+			case "xs:explicitTimezone":
+				convertExplicitTimezone(element);
+				break;
+				
+			default:
+				dumpStack("Unexpected facet element", element);
+				break;
+		}
+	}
+
+	private boolean isFacet(XSDElement element)
+	{
+		return element.isType("xs:minExclusive") ||
+				element.isType("xs:maxExclusive") ||
+				element.isType("xs:minInclusive") ||
+				element.isType("xs:maxInclusive") ||
+				element.isType("xs:totalDigits") ||
+				element.isType("xs:fractionDigits") ||
+				element.isType("xs:pattern") ||
+				element.isType("xs:enumeration") ||
+				element.isType("xs:whiteSpace") ||
+				element.isType("xs:length") ||
+				element.isType("xs:maxLength") ||
+				element.isType("xs:minLength") ||
+				element.isType("xs:assertion") ||
+				element.isType("xs:explicitTimezone");
 	}
 
 	/**
@@ -1103,6 +1545,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertMaxExclusive(XSDElement element)
 	{
 		assert element.isType("xs:maxExclusive");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected maxExclusive child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1113,6 +1570,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertMinExclusive(XSDElement element)
 	{
 		assert element.isType("xs:minInclusive");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected minExclusive child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1123,6 +1595,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertMaxInclusive(XSDElement element)
 	{
 		assert element.isType("xs:maxInclusive");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected maxInclusive child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1133,6 +1620,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertMinInclusive(XSDElement element)
 	{
 		assert element.isType("xs:minInclusive");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected minInclusive child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1143,6 +1645,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertTotalDigits(XSDElement element)
 	{
 		assert element.isType("xs:totalDigits");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected totalDigits child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1153,6 +1670,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertFractionDigits(XSDElement element)
 	{
 		assert element.isType("xs:fractionDigits");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected fractionDigits child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1163,6 +1695,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertLength(XSDElement element)
 	{
 		assert element.isType("xs:length");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected length child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1173,6 +1720,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertMinLength(XSDElement element)
 	{
 		assert element.isType("xs:minLength");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected minLength child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1183,6 +1745,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertMaxLength(XSDElement element)
 	{
 		assert element.isType("xs:maxLength");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected maxLength child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1193,6 +1770,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertEnumeration(XSDElement element)
 	{
 		assert element.isType("xs:enumeration");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected enumeration child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1203,6 +1795,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertWhiteSpace(XSDElement element)
 	{
 		assert element.isType("xs:whiteSpace");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected whiteSpace child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1213,6 +1820,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertPattern(XSDElement element)
 	{
 		assert element.isType("xs:pattern");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected pattern child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1223,6 +1845,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertAssertion(XSDElement element)
 	{
 		assert element.isType("xs:assertion");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected assertion child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
@@ -1233,6 +1870,21 @@ public class XSDConverter_v11 implements XSDConverter
 	private void convertExplicitTimezone(XSDElement element)
 	{
 		assert element.isType("xs:explicitTimezone");
+
+		for (XSDElement child: element.getChildren())
+		{
+			switch (child.getType())
+			{
+				case "xs:annotation":
+					convertAnnotation(child);
+					break;
+				
+				default:
+					dumpStack("Unexpected explicitTimezone child", child);
+					break;
+			}
+		}
+		
 		return;
 	}
 
