@@ -498,7 +498,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:extension":
-					convertExtension(child);
+					fields.addAll(convertExtension(child));
 					break;
 					
 				default:
@@ -584,7 +584,7 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		assert element.isType("xs:extension");
 		stack.push(element);
-		List<Field> fields = new Vector<>();
+		List<Field> fields = convertType(element, element.getAttr("base"));
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -647,7 +647,7 @@ public class XSDConverter_v11 extends XSDConverter
 				return (RecordType) converted.get(elementName);
 			}
 
-			result = new RecordType(elementName);
+			result = new RecordType(typeName(elementName));
 			converted.put(elementName, result);
 			
 			if (element.hasAttr("type"))
@@ -666,8 +666,8 @@ public class XSDConverter_v11 extends XSDConverter
 							
 						case "xs:complexType":
 						{
-							result = convertComplexType(child);
-							converted.put(elementName, result);
+							RecordType ctype = convertComplexType(child);
+							result.addFields(ctype.getFields());
 							break;
 						}
 							
@@ -952,7 +952,9 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Field("any", "any", new BasicType("token"));
+		Field field = new Field("any", "any", new BasicType("token"));
+		field.setIsAttribute(true);
+		return field;
 	}
 
 	/**
@@ -1007,6 +1009,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 
 		stack.pop();
+		result.setIsAttribute(true);
 		return result;
 	}
 
@@ -2328,6 +2331,6 @@ public class XSDConverter_v11 extends XSDConverter
 			type = union;
 		}
 		
-		return new Field(field.getFieldName(), field.getElementName(), type);
+		return new Field(fieldName(field.getFieldName()), field.getElementName(), type);
 	}
 }	
