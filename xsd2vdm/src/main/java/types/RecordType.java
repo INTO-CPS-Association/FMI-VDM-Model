@@ -49,11 +49,15 @@ public class RecordType extends Type
 		this.fields = new Vector<Field>();
 	}
 
+	public RecordType(String name, Field field)
+	{
+		this(name);
+		addField(field);
+	}
+
 	public RecordType(String name, List<Field> fields)
 	{
-		this.name = name;
-		this.fields = new Vector<Field>();
-		
+		this(name);
 		addFields(fields);
 	}
 	

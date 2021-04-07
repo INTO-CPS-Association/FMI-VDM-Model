@@ -315,7 +315,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		else
 		{
-			dumpStack("Unexpected assertsions element", element);
+			dumpStack("Unexpected assertions element", element);
 		}
 		
 		return constraint;
@@ -392,7 +392,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		else
 		{
-			dumpStack("Unexpected particleAndAttrs element", element);
+			dumpStack("Unexpected convertRestriction1 element", element);
 		}
 		
 		return fields;
@@ -643,7 +643,7 @@ public class XSDConverter_v11 extends XSDConverter
 		{
 			String elementName = element.getAttr("name");
 			
-			if (converted.containsKey(elementName))
+			if (converted.get(elementName) instanceof RecordType)
 			{
 				stack.pop();
 				return (RecordType)converted.get(elementName);
@@ -883,7 +883,9 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:element":
+					stack.push(child);
 					fields.add(toField(convertElement(child)));
+					stack.pop();
 					break;
 					
 				case "xs:group":
@@ -1698,7 +1700,7 @@ public class XSDConverter_v11 extends XSDConverter
 		stack.push(element);
 		String unionName = stackAttr("name");
 		
-		if (converted.containsKey(unionName))
+		if (converted.get(unionName) instanceof UnionType)
 		{
 			stack.pop();
 			return toField((UnionType)converted.get(unionName));
@@ -1715,10 +1717,8 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 				
 				case "xs:simpleType":
-				{
-					convertSimpleType(child);
+					union.addType(convertSimpleType(child).getType());
 					break;
-				}
 					
 				default:
 					dumpStack("Unexpected key child", child);
@@ -2268,12 +2268,10 @@ public class XSDConverter_v11 extends XSDConverter
 
 	/**
 	 * Convert a string into a name with an uppercase initial letter.
-	 * (or not, as this can confuse Element and Attribute type names)
 	 */
 	private String typeName(String attribute)
 	{
-		String name = attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
-		return (converted.containsKey(name)) ? attribute : name;
+		return attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
 	}
 	
 	/**
@@ -2345,7 +2343,7 @@ public class XSDConverter_v11 extends XSDConverter
 		
 		if (!enums.isEmpty())
 		{
-			String typename = typeName(field.getElementName());
+			String typename = typeName(field.getFieldName());
 			UnionType union = new UnionType(typename);
 			
 			for (String e: enums)
@@ -2357,6 +2355,6 @@ public class XSDConverter_v11 extends XSDConverter
 			type = union;
 		}
 		
-		return new Field(fieldName(field.getFieldName()), field.getElementName(), type);
+		return new Field(field.getFieldName(), field.getElementName(), type);
 	}
 }	
