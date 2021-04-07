@@ -37,7 +37,7 @@ public class CommentField extends Field
 	
 	public CommentField(List<String> comments)
 	{
-		super(null, null, new CommentType(comments), false, "");
+		super("", "", new CommentType(comments), false, "");
 		this.comments = comments;
 	}
 

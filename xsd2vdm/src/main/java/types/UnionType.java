@@ -46,6 +46,11 @@ public class UnionType extends Type
 		this.name = name;
 		this.types = new Vector<Type>();
 	}
+	
+	public String getName()
+	{
+		return name;
+	}
 
 	@Override
 	public boolean matches(Type type)

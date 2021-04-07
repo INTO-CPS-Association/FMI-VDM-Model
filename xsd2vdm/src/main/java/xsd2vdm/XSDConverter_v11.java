@@ -82,6 +82,7 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 			catch (StackOverflowError e)
 			{
+				e.printStackTrace();
 				System.exit(1);
 			}
 		}
@@ -200,22 +201,23 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % mgs '%all; | %choice; | %sequence;'>
 	 */
-	private void convertMgs(XSDElement element)
+	private List<Field> convertMgs(XSDElement element)
 	{
 		assert isMgs(element);
+		List<Field> fields = new Vector<>();
 		
 		switch (element.getType())
 		{
 			case "xs:all":
-				convertAll(element);
+				fields.addAll(convertAll(element));
 				break;
 				
 			case "xs:choice":
-				convertChoice(element);
+				fields.addAll(convertChoice(element));
 				break;
 				
 			case "xs:sequence":
-				convertSequence(element);
+				fields.addAll(convertSequence(element));
 				break;
 				
 			default:
@@ -223,7 +225,7 @@ public class XSDConverter_v11 extends XSDConverter
 				break;
 		}
 		
-		return;
+		return fields;
 	}
 	
 	private boolean isMgs(XSDElement element)
@@ -234,18 +236,19 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % cs '%choice; | %sequence;'>
 	 */
-	private void convertChoiceSequence(XSDElement element)
+	private List<Field> convertChoiceSequence(XSDElement element)
 	{
 		assert isChoiceSequence(element);
+		List<Field> fields = null;
 		
 		switch (element.getType())
 		{
 			case "xs:choice":
-				convertChoice(element);
+				fields = convertChoice(element);
 				break;
 				
 			case "xs:sequence":
-				convertSequence(element);
+				fields = convertSequence(element);
 				break;
 				
 			default:
@@ -253,7 +256,7 @@ public class XSDConverter_v11 extends XSDConverter
 				break;
 		}
 		
-		return;
+		return fields;
 	}
 	
 	private boolean isChoiceSequence(XSDElement element)
@@ -265,23 +268,23 @@ public class XSDConverter_v11 extends XSDConverter
 	 * <!ENTITY % attrDecls '((%attribute; | %attributeGroup;)*, (%anyAttribute;)?)'>
 	 * @return 
 	 */
-	private Field convertAttrDecls(XSDElement element)
+	private List<Field> convertAttrDecls(XSDElement element)
 	{
 		assert isAttrDecls(element);
-		Field result = null;
+		List<Field> fields = new Vector<>();
 
 		switch (element.getType())
 		{
 			case "xs:attribute":
-				result = convertAttribute(element);
+				fields.add(convertAttribute(element));
 				break;
 				
 			case "xs:attributeGroup":
-				convertAttributeGroup(element);
+				fields.addAll(convertAttributeGroup(element));
 				break;
 				
 			case "xs:anyAttribute":
-				convertAnyAttribute(element);
+				fields.add(convertAnyAttribute(element));
 				break;
 				
 			default:
@@ -289,7 +292,7 @@ public class XSDConverter_v11 extends XSDConverter
 				break;
 		}
 			
-		return result;
+		return fields;
 	}
 	
 	private boolean isAttrDecls(XSDElement element)
@@ -324,26 +327,26 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % particleAndAttrs '(%openContent;?, (%mgs; | %group;)?, %attrDecls;, %assertions;)'>
 	 */
-	private Field convertParticleAndAttrs(XSDElement element)
+	private List<Field> convertParticleAndAttrs(XSDElement element)
 	{
 		assert isParticleAndAttrs(element);
-		Field result = null;
+		List<Field> fields = new Vector<>();
 		
 		if (element.isType("xs:openContent"))
 		{
-			convertOpenContent(element);
+			fields = convertOpenContent(element);
 		}
 		else if (isMgs(element))
 		{
-			convertMgs(element);
+			fields = convertMgs(element);
 		}
 		else if (element.isType("xs:group"))
 		{
-			convertGroup(element);
+			fields.add(toField(convertGroup(element)));
 		}
 		else if (isAttrDecls(element))
 		{
-			result = convertAttrDecls(element);
+			fields = convertAttrDecls(element);
 		}
 		else if (isAssertions(element))
 		{
@@ -354,7 +357,7 @@ public class XSDConverter_v11 extends XSDConverter
 			dumpStack("Unexpected particleAndAttrs element", element);
 		}
 		
-		return result;
+		return fields;
 	}
 	
 	private boolean isParticleAndAttrs(XSDElement element)
@@ -368,28 +371,29 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % restriction1 '(%openContent;?, (%mgs; | %group;)?)'>
 	 */
-	private void convertRestriction1(XSDElement element)
+	private List<Field> convertRestriction1(XSDElement element)
 	{
 		assert isRestriction1(element);
+		List<Field> fields = new Vector<>();
 		
 		if (element.isType("xs:openContent"))
 		{
-			convertOpenContent(element);
+			fields.addAll(convertOpenContent(element));
 		}
 		else if (isMgs(element))
 		{
-			convertMgs(element);
+			fields.addAll(convertMgs(element));
 		}
 		else if (element.isType("xs:group"))
 		{
-			convertGroup(element);
+			fields.add(toField(convertGroup(element)));
 		}
 		else
 		{
 			dumpStack("Unexpected particleAndAttrs element", element);
 		}
 		
-		return;
+		return fields;
 	}
 	
 	private boolean isRestriction1(XSDElement element)
@@ -400,10 +404,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ELEMENT %defaultOpenContent; ((%annotation;)?, %any;)>
 	 */
-	private Type convertDefaultOpenContent(XSDElement element)
+	private List<Field> convertDefaultOpenContent(XSDElement element)
 	{
 		assert element.isType("xs:defaultOpenContent");
 		stack.push(element);
+		List<Field> fields = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -414,7 +419,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:any":
-					convertAny(child);
+					fields.addAll(convertAny(child));
 					break;
 					
 				default:
@@ -424,7 +429,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 
 		stack.pop();
-		return null;
+		return fields;
 	}
 	
 	/**
@@ -446,17 +451,17 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:simpleContent":
-					convertSimpleContent(child);
+					fields.addAll(convertSimpleContent(child));
 					break;
 					
 				case "xs:complexContent":
-					convertComplexContent(child);
+					fields.addAll(convertComplexContent(child));
 					break;
 					
 				default:
 					if (isParticleAndAttrs(child))
 					{
-						fields.add(convertParticleAndAttrs(child));
+						fields.addAll(convertParticleAndAttrs(child));
 					}
 					else
 					{
@@ -466,8 +471,9 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
+		RecordType result = new RecordType(stackAttr("name"), fields);
 		stack.pop();
-		return new RecordType(stackAttr("name"), fields);
+		return result;
 	}
 	
 	/**
@@ -477,6 +483,7 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		assert element.isType("xs:complexContent");
 		stack.push(element);
+		List<Field> fields = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -487,7 +494,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:restriction":
-					convertRestriction(child);
+					fields.add(convertRestriction(child));
 					break;
 					
 				case "xs:extension":
@@ -501,16 +508,17 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return null;
+		return fields;
 	}
 	
 	/**
 	 * <!ELEMENT %openContent; ((%annotation;)?, (%any;)?)>
 	 */
-	private void convertOpenContent(XSDElement element)
+	private List<Field> convertOpenContent(XSDElement element)
 	{
 		assert element.isType("xs:openContent");
 		stack.push(element);
+		List<Field> fields = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -521,7 +529,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:any":
-					convertAny(child);
+					fields.addAll(convertAny(child));
 					break;
 					
 				default:
@@ -531,7 +539,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 
 		stack.pop();
-		return;
+		return fields;
 	}
 	
 	/**
@@ -541,6 +549,7 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		assert element.isType("xs:simpleContent");
 		stack.push(element);
+		List<Field> fields = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -551,11 +560,11 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:restriction":
-					convertRestriction(child);
+					fields.add(convertRestriction(child));
 					break;
 					
 				case "xs:extension":
-					convertExtension(child);
+					fields.addAll(convertExtension(child));
 					break;
 					
 				default:
@@ -565,16 +574,17 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return null;
+		return fields;
 	}
 	
 	/**
 	 * <!ELEMENT %extension; ((%annotation;)?, (%particleAndAttrs;))>
 	 */
-	private void convertExtension(XSDElement element)
+	private List<Field> convertExtension(XSDElement element)
 	{
 		assert element.isType("xs:extension");
 		stack.push(element);
+		List<Field> fields = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -584,7 +594,7 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 			else if (isParticleAndAttrs(child))
 			{
-				convertParticleAndAttrs(child);
+				fields.addAll(convertParticleAndAttrs(child));
 			}
 			else
 			{
@@ -593,7 +603,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return fields;
 	}
 
 	/**
@@ -630,6 +640,12 @@ public class XSDConverter_v11 extends XSDConverter
 		else
 		{
 			String elementName = element.getAttr("name");
+			
+			if (converted.containsKey(elementName))
+			{
+				stack.pop();
+				return (RecordType) converted.get(elementName);
+			}
 
 			result = new RecordType(elementName);
 			converted.put(elementName, result);
@@ -724,10 +740,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ELEMENT %group; ((%annotation;)?,(%mgs;)?)>
 	 */
-	private Type convertGroup(XSDElement element)
+	private RecordType convertGroup(XSDElement element)
 	{
 		assert element.isType("xs:group");
 		stack.push(element);
+		RecordType record = new RecordType(stackAttr("name"));
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -737,7 +754,10 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 			else if (isMgs(child))
 			{
-				convertMgs(child);
+				for (Field field: convertMgs(child))
+				{
+					record.addField(field);
+				}
 			}
 			else
 			{
@@ -746,16 +766,17 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return null;
+		return record;
 	}
 	
 	/**
 	 * <!ELEMENT %all; ((%annotation;)?, (%element;| %group;| %any;)*)>
 	 */
-	private void convertAll(XSDElement element)
+	private List<Field> convertAll(XSDElement element)
 	{
 		assert element.isType("xs:all");
 		stack.push(element);
+		List<Field> fields = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -766,15 +787,15 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:element":
-					convertElement(child);
+					fields.add(toField(convertElement(child)));
 					break;
 					
 				case "xs:group":
-					convertGroup(child);
+					fields.add(toField(convertGroup(child)));
 					break;
 					
 				case "xs:any":
-					convertAny(child);
+					fields.addAll(convertAny(child));
 					break;
 					
 				default:
@@ -784,16 +805,17 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return fields;
 	}
 
 	/**
 	 * <!ELEMENT %choice; ((%annotation;)?, (%element; | %group; | %cs; | %any;)*)>
 	 */
-	private Field convertChoice(XSDElement element)
+	private List<Field> convertChoice(XSDElement element)
 	{
 		assert element.isType("xs:choice");
 		stack.push(element);
+		List<Field> fields = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -804,17 +826,17 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:element":
-					convertElement(child);
+					fields.add(toField(convertElement(child)));
 					break;
 					
 				case "xs:group":
-					convertGroup(child);
+					fields.add(toField(convertGroup(child)));
 					break;
 					
 				default:
 					if (child.isType("xs:any"))
 					{
-						convertAny(child);
+						fields.addAll(convertAny(child));
 					}
 					else if (isChoiceSequence(child))
 					{
@@ -829,7 +851,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 
 		stack.pop();
-		return null;
+		return fields;
 	}
 
 	/**
@@ -839,6 +861,7 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		assert element.isType("xs:sequence");
 		stack.push(element);
+		List<Field> fields = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -849,7 +872,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:element":
-					convertElement(child);
+					fields.add(toField(convertElement(child)));
 					break;
 					
 				case "xs:group":
@@ -874,16 +897,17 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 
 		stack.pop();
-		return null;
+		return fields;
 	}
 
 	/**
 	 * <!ELEMENT %any; (%annotation;)?>
 	 */
-	private CommentField convertAny(XSDElement element)
+	private List<Field> convertAny(XSDElement element)
 	{
 		assert element.isType("xs:any");
 		stack.push(element);
+		List<Field> fields = new Vector<>();
 		
 		if (!element.getChildren().isEmpty())
 		{
@@ -899,14 +923,16 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
+		fields.add(new Field("any", "any", new BasicType("token")));
+		
 		stack.pop();
-		return null;
+		return fields;
 	}
 	
 	/**
 	 * <!ELEMENT %anyAttribute; (%annotation;)?>
 	 */
-	private void convertAnyAttribute(XSDElement element)
+	private Field convertAnyAttribute(XSDElement element)
 	{
 		assert element.isType("xs:anyAttribute");
 		stack.push(element);
@@ -926,7 +952,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return new Field("any", "any", new BasicType("token"));
 	}
 
 	/**
@@ -993,6 +1019,7 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		assert element.isType("xs:attributeGroup");
 		stack.push(element);
+		List<Field> fields = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1003,15 +1030,15 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:attribute":
-					convertAttribute(child);
+					fields.add(convertAttribute(child));
 					break;
 					
 				case "xs:attributeGroup":
-					convertAttributeGroup(child);
+					fields.addAll(convertAttributeGroup(child));
 					break;
 					
 				case "xs:anyAttribute":
-					convertAnyAttribute(child);
+					fields.add(convertAnyAttribute(child));
 					break;
 					
 				default:
@@ -1021,7 +1048,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 			
 		stack.pop();
-		return null;
+		return fields;
 	}
 
 	/**
@@ -1388,17 +1415,18 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		assert element.isType("xs:annotation");
 		stack.push(element);
+		List<String> lines = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
 			switch (child.getType())
 			{
 				case "xs:appinfo":
-					convertAppInfo(child);
+					lines.addAll(convertAppInfo(child));
 					break;
 					
 				case "xs:documentation":
-					convertDocumentation(child);
+					lines.addAll(convertDocumentation(child));
 					break;
 					
 				default:
@@ -1408,31 +1436,65 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return null;
+		return new CommentField(lines);
 	}
 	
 	/**
 	 * <!ELEMENT %appinfo; ANY>   <!-- too restrictive -->
 	 */
-	private void convertAppInfo(XSDElement element)
+	private List<String> convertAppInfo(XSDElement element)
 	{
 		assert element.isType("xs:appinfo");
-		stack.push(element);
-		// Anything goes
-		stack.pop();
-		return;
+		List<String> appinfos = new Vector<>();
+		
+		for (XSDElement info: element.getChildren())
+		{
+			if (info instanceof XSDContent)
+			{
+				String[] lines = info.toString().split("\n");
+				
+				for (String line: lines)
+				{
+					appinfos.add(line);
+				}
+			}
+			else
+			{
+				String text = info.toString().replaceAll("\n", " ");
+				appinfos.add(text);
+			}
+		}
+
+		return appinfos;
 	}
 	
 	/**
 	 * <!ELEMENT %documentation; ANY>   <!-- too restrictive -->
 	 */
-	private void convertDocumentation(XSDElement element)
+	private List<String> convertDocumentation(XSDElement element)
 	{
 		assert element.isType("xs:documentation");
-		stack.push(element);
-		// Anything goes
-		stack.pop();
-		return;
+		List<String> comments = new Vector<>();
+		
+		for (XSDElement comment: element.getChildren())
+		{
+			if (comment instanceof XSDContent)
+			{
+				String[] lines = comment.toString().split("\n");
+				
+				for (String line: lines)
+				{
+					comments.add(line);
+				}
+			}
+			else
+			{
+				String text = comment.toString().replaceAll("\n", " ");
+				comments.add(text);
+			}
+		}
+
+		return comments;
 	}
 
 	/**************************************************************************
@@ -1447,7 +1509,7 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		assert element.isType("xs:simpleType");
 		stack.push(element);
-		Field result = null;
+		Field field = null;
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1458,15 +1520,15 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 				
 				case "xs:restriction":
-					result = convertRestriction(child);
+					field = convertRestriction(child);
 					break;
 					
 				case "xs:list":
-					convertList(child);
+					field = convertList(child);
 					break;
 					
 				case "xs:union":
-					convertUnion(child);
+					field = convertUnion(child);
 					break;
 					
 				default:
@@ -1476,7 +1538,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return result;
+		return field;
 	}
 
 	/**
@@ -1500,7 +1562,25 @@ public class XSDConverter_v11 extends XSDConverter
 		else
 		{
 			XSDElement etype = lookup(element.getAttr("base"));
-			result = convertSimpleType(etype).modified(fieldName(name), name);
+			
+			switch (etype.getType())
+			{
+				case "xs:simpleType":
+					result = convertSimpleType(etype).modified(fieldName(name), name);
+					break;
+					
+				case "xs:complexType":
+					result = toField(convertComplexType(etype)).modified(fieldName(name), name);
+					break;
+					
+				case "xs:element":
+					result = toField(convertElement(etype)).modified(fieldName(name), name);
+					break;
+					
+				default:
+					dumpStack("Unexpected restriction base type", element);
+					break;
+			}
 		}
 		
 		List<Facet> facets = new Vector<>();
@@ -1547,10 +1627,16 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ELEMENT %list; ((%annotation;)?,(%simpleType;)?)>
 	 */
-	private void convertList(XSDElement element)
+	private Field convertList(XSDElement element)
 	{
 		assert element.isType("xs:list");
 		stack.push(element);
+		Field field = null;
+		
+		if (element.hasAttr("itemType"))
+		{
+			field = toField(vdmTypeOf(element.getAttr("itemType")));
+		}
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1561,7 +1647,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 				
 				case "xs:simpleType":
-					convertSimpleType(child);
+					field = convertSimpleType(child);
 					break;
 					
 				default:
@@ -1571,16 +1657,25 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return field;
 	}
 
 	/**
 	 * <!ELEMENT %union; ((%annotation;)?,(%simpleType;)*)>
 	 */
-	private void convertUnion(XSDElement element)
+	private Field convertUnion(XSDElement element)
 	{
 		assert element.isType("xs:union");
 		stack.push(element);
+		String unionName = stackAttr("name");
+		
+		if (converted.containsKey(unionName))
+		{
+			stack.pop();
+			return toField((UnionType)converted.get(unionName));
+		}
+		
+		UnionType union = new UnionType(unionName);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1591,8 +1686,10 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 				
 				case "xs:simpleType":
+				{
 					convertSimpleType(child);
 					break;
+				}
 					
 				default:
 					dumpStack("Unexpected key child", child);
@@ -1601,7 +1698,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return toField(union);
 	}
 	
 	/**
@@ -2098,7 +2195,7 @@ public class XSDConverter_v11 extends XSDConverter
 						break;
 						
 					case "xs:annotation":
-						results.add(convertAnnotation(child));
+						convertAnnotation(child);
 						break;
 						
 					case "xs:anyAttribute":		// ignore?
@@ -2148,6 +2245,25 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		String name = attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
 		return (converted.containsKey(name)) ? attribute : name;
+	}
+	
+	/**
+	 * Convert a RecordType to a Field, for processing element subfields.
+	 */
+	private Field toField(RecordType etype)
+	{
+		return new Field(fieldName(etype.getName()), etype.getName(), etype, isOptional(), aggregate());
+	}
+
+	private Field toField(UnionType union)
+	{
+		return new Field(fieldName(union.getName()), union.getName(), union, isOptional(), aggregate());
+	}
+
+	private Field toField(BasicType type)
+	{
+		String name = stackAttr("name");
+		return new Field(fieldName(name), name, type, isOptional(), aggregate());
 	}
 
 	/**

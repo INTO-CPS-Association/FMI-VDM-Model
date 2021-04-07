@@ -59,6 +59,7 @@ public class RecordType extends Type
 	
 	public void addField(Field field)
 	{
+		assert field != null;
 		boolean found = false;
 		
 		for (int i=0; i<fields.size(); i++)
