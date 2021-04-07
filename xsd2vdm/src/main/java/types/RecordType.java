@@ -219,4 +219,9 @@ public class RecordType extends Type
 			this.comments = annotation.getComments();
 		}
 	}
+
+	public void addConstraint(Constraint convertUnique)
+	{
+		// TBD
+	}
 }

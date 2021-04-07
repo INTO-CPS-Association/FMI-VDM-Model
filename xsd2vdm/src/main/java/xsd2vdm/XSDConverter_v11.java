@@ -36,6 +36,7 @@ import java.util.Vector;
 
 import types.BasicType;
 import types.CommentField;
+import types.Constraint;
 import types.Facet;
 import types.Field;
 import types.OptionalType;
@@ -303,25 +304,26 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % assertions '(%assert;)*'>
 	 */
-	private void convertAssertions(XSDElement element)
+	private Constraint convertAssertions(XSDElement element)
 	{
 		assert isAssertions(element);
+		Constraint constraint = null;
 		
 		if (element.isType("xs:assert"))
 		{
-			convertAssert(element);
+			constraint = convertAssert(element);
 		}
 		else
 		{
 			dumpStack("Unexpected assertsions element", element);
 		}
 		
-		return;
+		return constraint;
 	}
 	
 	private boolean isAssertions(XSDElement element)
 	{
-		return element.isType("xs:assertions");
+		return element.isType("xs:assert");
 	}
 	
 	/**
@@ -615,7 +617,7 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		assert element.isType("xs:element");
 		stack.push(element);
-		RecordType result;
+		RecordType record;
 
 		if (element.isReference())
 		{
@@ -624,16 +626,16 @@ public class XSDConverter_v11 extends XSDConverter
 			switch (ref.getType())
 			{
 				case "xs:element":
-					result = convertElement(ref);
+					record = convertElement(ref);
 					break;
 					
 				case "xs:complexType":
-					result = convertComplexType(ref);
+					record = convertComplexType(ref);
 					break;
 					
 				default:
 					dumpStack("Unexpected xs:element ref type", ref);
-					result = new RecordType("?");
+					record = new RecordType("?");
 					break;
 			}
 		}
@@ -644,15 +646,15 @@ public class XSDConverter_v11 extends XSDConverter
 			if (converted.containsKey(elementName))
 			{
 				stack.pop();
-				return (RecordType) converted.get(elementName);
+				return (RecordType)converted.get(elementName);
 			}
 
-			result = new RecordType(typeName(elementName));
-			converted.put(elementName, result);
+			record = new RecordType(typeName(elementName));
+			converted.put(elementName, record);
 			
 			if (element.hasAttr("type"))
 			{
-				result.addFields(convertType(element, element.getAttr("type")));
+				record.addFields(convertType(element, element.getAttr("type")));
 			}
 			else
 			{
@@ -667,12 +669,12 @@ public class XSDConverter_v11 extends XSDConverter
 						case "xs:complexType":
 						{
 							RecordType ctype = convertComplexType(child);
-							result.addFields(ctype.getFields());
+							record.addFields(ctype.getFields());
 							break;
 						}
 							
 						case "xs:simpleType":
-							result.addField(convertSimpleType(child));
+							record.addField(convertSimpleType(child));
 							break;
 							
 						case "xs:alternative":
@@ -680,15 +682,15 @@ public class XSDConverter_v11 extends XSDConverter
 							break;
 							
 						case "xs:unique":
-							convertUnique(child);
+							record.addConstraint(convertUnique(child));
 							break;
 							
 						case "xs:key":
-							convertKey(child);
+							record.addConstraint(convertKey(child));
 							break;
 							
 						case "xs:keyref":
-							convertKeyRef(child);
+							record.addConstraint(convertKeyRef(child));
 							break;
 							
 						default:
@@ -700,7 +702,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return result;
+		return record;
 	}
 	
 	/**
@@ -744,24 +746,33 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		assert element.isType("xs:group");
 		stack.push(element);
-		RecordType record = new RecordType(stackAttr("name"));
+		RecordType record = null;
 
-		for (XSDElement child: element.getChildren())
+		if (element.isReference())
 		{
-			if (child.isType("xs:annotation"))
+			record = convertGroup(lookup(element.getAttr("ref")));
+		}
+		else
+		{
+			record = new RecordType(stackAttr("name"));
+	
+			for (XSDElement child: element.getChildren())
 			{
-				convertAnnotation(child);
-			}
-			else if (isMgs(child))
-			{
-				for (Field field: convertMgs(child))
+				if (child.isType("xs:annotation"))
 				{
-					record.addField(field);
+					convertAnnotation(child);
 				}
-			}
-			else
-			{
-				dumpStack("Unexpected group child", child);
+				else if (isMgs(child))
+				{
+					for (Field field: convertMgs(child))
+					{
+						record.addField(field);
+					}
+				}
+				else
+				{
+					dumpStack("Unexpected group child", child);
+				}
 			}
 		}
 		
@@ -1022,31 +1033,40 @@ public class XSDConverter_v11 extends XSDConverter
 	{
 		assert element.isType("xs:attributeGroup");
 		stack.push(element);
-		List<Field> fields = new Vector<>();
-
-		for (XSDElement child: element.getChildren())
+		List<Field> fields = null;
+		
+		if (element.isReference())
 		{
-			switch (child.getType())
+			fields = convertAttributeGroup(lookup(element.getAttr("ref")));
+		}
+		else
+		{
+			fields = new Vector<>();
+	
+			for (XSDElement child: element.getChildren())
 			{
-				case "xs:annotation":
-					convertAnnotation(child);
-					break;
-					
-				case "xs:attribute":
-					fields.add(convertAttribute(child));
-					break;
-					
-				case "xs:attributeGroup":
-					fields.addAll(convertAttributeGroup(child));
-					break;
-					
-				case "xs:anyAttribute":
-					fields.add(convertAnyAttribute(child));
-					break;
-					
-				default:
-					dumpStack("Unexpected attributeGroup child", child);
-					break;
+				switch (child.getType())
+				{
+					case "xs:annotation":
+						convertAnnotation(child);
+						break;
+						
+					case "xs:attribute":
+						fields.add(convertAttribute(child));
+						break;
+						
+					case "xs:attributeGroup":
+						fields.addAll(convertAttributeGroup(child));
+						break;
+						
+					case "xs:anyAttribute":
+						fields.add(convertAnyAttribute(child));
+						break;
+						
+					default:
+						dumpStack("Unexpected attributeGroup child", child);
+						break;
+				}
 			}
 		}
 			
@@ -1057,10 +1077,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ELEMENT %unique; ((%annotation;)?, %selector;, (%field;)+)>
 	 */
-	private void convertUnique(XSDElement element)
+	private Constraint convertUnique(XSDElement element)
 	{
 		assert element.isType("xs:unique");
 		stack.push(element);
+		Constraint constraint = new Constraint(element.getAttrs());
 		
 		for (XSDElement child: element.getChildren())
 		{
@@ -1071,11 +1092,11 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:selector":
-					convertSelector(child);
+					constraint.addSelector(convertSelector(child));
 					break;
 					
 				case "xs:field":
-					convertField(child);
+					constraint.addField(convertField(child));
 					break;
 					
 				default:
@@ -1085,16 +1106,18 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return constraint;
 	}
 	
 	/**
 	 * <!ELEMENT %key; ((%annotation;)?, %selector;, (%field;)+)>
+	 * @return 
 	 */
-	private void convertKey(XSDElement element)
+	private Constraint convertKey(XSDElement element)
 	{
 		assert element.isType("xs:key");
 		stack.push(element);
+		Constraint constraint = new Constraint(element.getAttrs());
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1105,11 +1128,11 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:selector":
-					convertSelector(child);
+					constraint.addSelector(convertSelector(child));
 					break;
 					
 				case "xs:field":
-					convertField(child);
+					constraint.addField(convertField(child));
 					break;
 					
 				default:
@@ -1119,16 +1142,17 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return constraint;
 	}
 	
 	/**
 	 * <!ELEMENT %keyref; ((%annotation;)?, %selector;, (%field;)+)>
 	 */
-	private void convertKeyRef(XSDElement element)
+	private Constraint convertKeyRef(XSDElement element)
 	{
 		assert element.isType("xs:keyref");
 		stack.push(element);
+		Constraint constraint = new Constraint(element.getAttrs());
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1139,11 +1163,11 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:selector":
-					convertSelector(child);
+					constraint.addSelector(convertSelector(child));
 					break;
 					
 				case "xs:field":
-					convertField(child);
+					constraint.addField(convertField(child));
 					break;
 					
 				default:
@@ -1153,13 +1177,13 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return constraint;
 	}
 	
 	/**
 	 * <!ELEMENT %selector; ((%annotation;)?)>
 	 */
-	private void convertSelector(XSDElement element)
+	private Map<String, String> convertSelector(XSDElement element)
 	{
 		assert element.isType("xs:selector");
 		stack.push(element);
@@ -1179,13 +1203,14 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return element.getAttrs();
 	}
 	
 	/**
 	 * <!ELEMENT %field; ((%annotation;)?)>
+	 * @return 
 	 */
-	private void convertField(XSDElement element)
+	private Map<String, String> convertField(XSDElement element)
 	{
 		assert element.isType("xs:field");
 		stack.push(element);
@@ -1205,13 +1230,14 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return element.getAttrs();
 	}
 	
 	/**
 	 * <!ELEMENT %assert; ((%annotation;)?)>
+	 * @return 
 	 */
-	private void convertAssert(XSDElement element)
+	private Constraint convertAssert(XSDElement element)
 	{
 		assert element.isType("xs:assert");
 		stack.push(element);
@@ -1231,7 +1257,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return;
+		return new Constraint(element.getAttrs());
 	}
 	
 	/**
