@@ -1649,21 +1649,23 @@ public class XSDConverter_v11 extends XSDConverter
 			switch (etype.getType())
 			{
 				case "xs:simpleType":
-					result = convertSimpleType(etype).modified(fieldName(name), name);
+					result = convertSimpleType(etype);
 					break;
 					
 				case "xs:complexType":
-					result = toField(convertComplexType(etype)).modified(fieldName(name), name);
+					result = toField(convertComplexType(etype));
 					break;
 					
 				case "xs:element":
-					result = toField(convertElement(etype)).modified(fieldName(name), name);
+					result = toField(convertElement(etype));
 					break;
 					
 				default:
 					dumpStack("Unexpected restriction base type", element);
 					break;
 			}
+			
+			result = result.modified(fieldName(name), name);
 		}
 		
 		List<Facet> facets = new Vector<>();
@@ -1718,7 +1720,7 @@ public class XSDConverter_v11 extends XSDConverter
 		
 		if (element.hasAttr("itemType"))
 		{
-			field = toField(vdmTypeOf(element.getAttr("itemType")));
+			field = convertType(element, element.getAttr("itemType")).get(0);
 		}
 
 		for (XSDElement child: element.getChildren())
@@ -2415,6 +2417,6 @@ public class XSDConverter_v11 extends XSDConverter
 			type = union;
 		}
 		
-		return new Field(field.getFieldName(), field.getElementName(), type);
+		return new Field(field.getFieldName(), field.getElementName(), type, isOptional(), aggregate());
 	}
 }	
