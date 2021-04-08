@@ -237,7 +237,10 @@ public class Xsd2VDM
 			}
 		}
 
-		XSDConverter converter = new XSDConverter_v11();	// new XSDConverter_v10();
+		// Select a version of the XSD schema to convert...
+		XSDConverter converter = new XSDConverter_v11();
+		// XSDConverter converter = new XSDConverter_v10();
+		
 		Map<String, Type> vdmSchema = converter.convertSchemas(roots);
 
 		if (vdmSchema != null && writeVDM)

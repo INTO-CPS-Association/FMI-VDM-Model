@@ -214,7 +214,7 @@ public class XSDConverter_v11 extends XSDConverter
 				break;
 				
 			case "xs:choice":
-				fields.addAll(convertChoice(element));
+				fields.add(convertChoice(element));
 				break;
 				
 			case "xs:sequence":
@@ -245,7 +245,8 @@ public class XSDConverter_v11 extends XSDConverter
 		switch (element.getType())
 		{
 			case "xs:choice":
-				fields = convertChoice(element);
+				fields = new Vector<>();
+				fields.add(convertChoice(element));
 				break;
 				
 			case "xs:sequence":
@@ -742,20 +743,26 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ELEMENT %group; ((%annotation;)?,(%mgs;)?)>
 	 */
-	private RecordType convertGroup(XSDElement element)
+	private Type convertGroup(XSDElement element)
 	{
 		assert element.isType("xs:group");
 		stack.push(element);
-		RecordType record = null;
+		Type result = null;
 
 		if (element.isReference())
 		{
-			record = convertGroup(lookup(element.getAttr("ref")));
+			result = convertGroup(lookup(element.getAttr("ref")));
 		}
 		else
 		{
-			record = new RecordType(stackAttr("name"));
-	
+			String unionName = stackAttr("name");
+			
+			if (converted.containsKey(unionName))
+			{
+				stack.pop();
+				return converted.get(unionName);
+			}
+			
 			for (XSDElement child: element.getChildren())
 			{
 				if (child.isType("xs:annotation"))
@@ -764,10 +771,43 @@ public class XSDConverter_v11 extends XSDConverter
 				}
 				else if (isMgs(child))
 				{
-					for (Field field: convertMgs(child))
+					List<Field> fields = convertMgs(child);
+					
+					switch (child.getType())
 					{
-						record.addField(field);
+						case "xs:all":
+						case "xs:sequence":
+						{
+							RecordType record = new RecordType(stackAttr("name"));
+							
+							for (Field field: fields)
+							{
+								record.addField(field);
+							}
+							
+							result = record;
+							break;
+						}
+						
+						case "xs:choice":
+						{
+							UnionType union = new UnionType(stackAttr("name"));
+							
+							for (Field field: fields)
+							{
+								union.addType(field.getType());
+							}
+							
+							result = union;
+							break;
+						}
+						
+						default:
+							dumpStack("Unexpected group child", child);
+							break;
 					}
+					
+					converted.put(unionName, result);
 				}
 				else
 				{
@@ -777,7 +817,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return record;
+		return result;
 	}
 	
 	/**
@@ -822,11 +862,12 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ELEMENT %choice; ((%annotation;)?, (%element; | %group; | %cs; | %any;)*)>
 	 */
-	private List<Field> convertChoice(XSDElement element)
+	private Field convertChoice(XSDElement element)
 	{
 		assert element.isType("xs:choice");
 		stack.push(element);
-		List<Field> fields = new Vector<>();
+		String name = element.getAttr("name");
+		UnionType union = new UnionType(name);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -837,21 +878,27 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:element":
-					fields.add(toField(convertElement(child)));
+					union.addType(convertElement(child));
 					break;
 					
 				case "xs:group":
-					fields.add(toField(convertGroup(child)));
+					union.addType(convertGroup(child));
 					break;
 					
 				default:
 					if (child.isType("xs:any"))
 					{
-						fields.addAll(convertAny(child));
+						for (Field f: convertAny(child))
+						{
+							union.addType(f.getType());
+						}
 					}
 					else if (isChoiceSequence(child))
 					{
-						convertChoiceSequence(child);
+						for (Field f: convertChoiceSequence(child))
+						{
+							union.addType(f.getType());
+						}
 					}
 					else
 					{
@@ -862,7 +909,8 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 
 		stack.pop();
-		return fields;
+		name = stackAttr("name");
+		return new Field(fieldName(name), name, union, isOptional(), aggregate());
 	}
 
 	/**
@@ -876,6 +924,8 @@ public class XSDConverter_v11 extends XSDConverter
 
 		for (XSDElement child: element.getChildren())
 		{
+			stack.push(child);
+
 			switch (child.getType())
 			{
 				case "xs:annotation":
@@ -883,14 +933,14 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:element":
-					stack.push(child);
 					fields.add(toField(convertElement(child)));
-					stack.pop();
 					break;
 					
 				case "xs:group":
-					convertGroup(child);
+				{
+					fields.add(toField(convertGroup(child)));
 					break;
+				}
 					
 				default:
 					if (child.isType("xs:any"))
@@ -899,7 +949,7 @@ public class XSDConverter_v11 extends XSDConverter
 					}
 					else if (isChoiceSequence(child))
 					{
-						convertChoiceSequence(child);
+						fields.addAll(convertChoiceSequence(child));
 					}
 					else
 					{
@@ -907,6 +957,8 @@ public class XSDConverter_v11 extends XSDConverter
 					}
 					break;
 			}
+
+			stack.pop();
 		}
 
 		stack.pop();
@@ -2277,20 +2329,28 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * Convert a RecordType to a Field, for processing element subfields.
 	 */
-	private Field toField(RecordType etype)
+	private Field toField(Type type)
 	{
-		return new Field(fieldName(etype.getName()), etype.getName(), etype, isOptional(), aggregate());
-	}
-
-	private Field toField(UnionType union)
-	{
-		return new Field(fieldName(union.getName()), union.getName(), union, isOptional(), aggregate());
-	}
-
-	private Field toField(BasicType type)
-	{
-		String name = stackAttr("name");
-		return new Field(fieldName(name), name, type, isOptional(), aggregate());
+		if (type instanceof RecordType)
+		{
+			RecordType rec = (RecordType)type;
+			return new Field(fieldName(rec.getName()), rec.getName(), type, isOptional(), aggregate());
+		}
+		else if (type instanceof UnionType)
+		{
+			UnionType union = (UnionType)type;
+			return new Field(fieldName(union.getName()), union.getName(), union, isOptional(), aggregate());
+		}
+		else if (type instanceof BasicType)
+		{
+			String name = stackAttr("name");
+			return new Field(fieldName(name), name, type, isOptional(), aggregate());
+		}
+		else
+		{
+			dumpStack("Unable to convert type", null);
+			return null;
+		}
 	}
 
 	/**

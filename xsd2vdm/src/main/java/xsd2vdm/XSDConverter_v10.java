@@ -192,7 +192,7 @@ public class XSDConverter_v10 extends XSDConverter
 				return converted.get(elementName);
 			}
 	
-			RecordType rec = new RecordType(elementName);
+			RecordType rec = new RecordType(typeName(elementName));
 			RefType ref = new RefType(rec);
 			converted.put(elementName, ref);
 			
@@ -306,7 +306,7 @@ public class XSDConverter_v10 extends XSDConverter
 
 		stack.push(complexType);
 		List<Field> fields = convertComplexChildren(complexType.getChildren());
-		RecordType rec = new RecordType(stackAttr("name"), fields);
+		RecordType rec = new RecordType(typeName(stackAttr("name")), fields);
 		stack.pop();
 
 		return rec;
