@@ -114,6 +114,7 @@ public class RecordType extends Type
 		{
 			sb.append(name + " ::\n");
 			int longest = "location".length() + 1;
+			boolean facets = false;
 
 			for (Field field: fields)
 			{
@@ -121,9 +122,14 @@ public class RecordType extends Type
 				{
 					longest = field.getFieldName().length() + 1;
 				}
+				
+				if (field.getFacets() != null && !field.getFacets().isEmpty())
+				{
+					facets = true;
+				}
 			}
 			
-			String format = "    %-" + longest + "s : %s\n";
+			String format = INDENT + "%-" + longest + "s : %s\n";
 			sb.append(String.format(format, "location", "Location"));
 			
 			for (Field field: fields)
@@ -156,6 +162,27 @@ public class RecordType extends Type
 					appendComments(sb, field.getComments(), INDENT);
 					sb.append(String.format(format, name, field.getVDMType().signature()));
 				}
+			}
+
+			if (facets)
+			{
+				sb.append("inv rec ==\n");
+				String sep = INDENT;
+				
+				for (Field field: fields)
+				{
+					if (field.getFacets() != null)
+					{
+						for (Facet facet: field.getFacets())
+						{
+							sb.append(sep);
+							sb.append("(" + facet.toVDM("rec.", field) + ")");
+							sep = " and\n" + INDENT;
+						}
+					}
+				}
+				
+				sb.append("\n");
 			}
 		}
 		
@@ -226,6 +253,6 @@ public class RecordType extends Type
 
 	public void addConstraint(Constraint convertUnique)
 	{
-		// TBD
+		System.err.println("Warning: Element constraint ignored in " + name);
 	}
 }

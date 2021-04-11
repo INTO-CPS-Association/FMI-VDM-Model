@@ -29,56 +29,16 @@
 
 package types;
 
-import org.xml.sax.Locator;
-
-import values.SimpleValue;
-import values.VDMValue;
-
-public class OptionalType extends Type
+public class TimezoneFacet extends Facet
 {
-	private final Type type;
-	
-	public OptionalType(Type type)
+	public TimezoneFacet(String type, String value)
 	{
-		this.type = type;
-	}
-	
-	@Override
-	public boolean matches(Type type)
-	{
-		return type.matches(type);
+		super(type, value);
 	}
 
 	@Override
-	public String signature()
+	public String toVDM(String prefix, Field field)
 	{
-		return (type instanceof OptionalType) ?
-			type.signature() :
-			"[" + type.signature() + "]";
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return type.hashCode();
-	}
-	
-	@Override
-	public boolean equals(Object other)
-	{
-		return type.equals(other);
-	}
-
-	@Override
-	public VDMValue valueOf(String avalue, Locator locator)
-	{
-		if (avalue == null || avalue.isEmpty())
-		{
-			return new SimpleValue(type, locator);
-		}
-		else
-		{
-			return type.valueOf(avalue, locator);
-		}
+		return "xsdExplicitTimezone(" + prefix + field.getFieldName() + ", \"" + value + "\")";
 	}
 }

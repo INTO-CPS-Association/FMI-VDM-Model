@@ -29,56 +29,35 @@
 
 package types;
 
-import org.xml.sax.Locator;
-
-import values.SimpleValue;
-import values.VDMValue;
-
-public class OptionalType extends Type
+public class MinMaxFacet extends Facet
 {
-	private final Type type;
-	
-	public OptionalType(Type type)
+	public MinMaxFacet(String type, String value)
 	{
-		this.type = type;
+		super(type, value);
 	}
 	
 	@Override
-	public boolean matches(Type type)
+	public String toVDM(String prefix, Field field)
 	{
-		return type.matches(type);
-	}
-
-	@Override
-	public String signature()
-	{
-		return (type instanceof OptionalType) ?
-			type.signature() :
-			"[" + type.signature() + "]";
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return type.hashCode();
-	}
-	
-	@Override
-	public boolean equals(Object other)
-	{
-		return type.equals(other);
-	}
-
-	@Override
-	public VDMValue valueOf(String avalue, Locator locator)
-	{
-		if (avalue == null || avalue.isEmpty())
+		String argname = prefix + field.getFieldName();
+		String result = (field.getType() instanceof OptionalType) ? argname + " <> nil => " : "";
+		
+		switch (type)
 		{
-			return new SimpleValue(type, locator);
-		}
-		else
-		{
-			return type.valueOf(avalue, locator);
+			case "xs:minInclusive":
+				return result + argname + " >= " + value;
+				
+			case "xs:minExclusive":
+				return result + argname + " > " + value;
+				
+			case "xs:maxInclusive":
+				return result + argname + " <= " + value;
+				
+			case "xs:maxExclusive":
+				return result + argname + " < " + value;
+				
+			default:
+				return "?";
 		}
 	}
 }

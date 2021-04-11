@@ -29,22 +29,32 @@
 
 package xsd2vdm;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import types.AssertionFacet;
 import types.BasicType;
 import types.CommentField;
 import types.Constraint;
+import types.DigitsFacet;
+import types.EnumFacet;
+import types.ErrorFacet;
 import types.Facet;
 import types.Field;
+import types.LengthFacet;
+import types.MinMaxFacet;
 import types.OptionalType;
+import types.PatternFacet;
 import types.QuoteType;
 import types.RecordType;
 import types.SeqType;
+import types.TimezoneFacet;
 import types.Type;
 import types.UnionType;
+import types.WhitespaceFacet;
 
 /**
  * Convert a list of XSD Schemas to VDM-SL types. The methods correspond to the
@@ -1045,7 +1055,7 @@ public class XSDConverter_v11 extends XSDConverter
 
 			if (element.hasAttr("type"))
 			{
-				result = convertType(element, element.getAttr("type")).get(0).modified(fieldName(name), name);
+				result = convertType(element, element.getAttr("type")).get(0).renamed(fieldName(name), name);
 			}
 			
 			if (result == null)
@@ -1063,7 +1073,7 @@ public class XSDConverter_v11 extends XSDConverter
 						break;
 						
 					case "xs:simpleType":
-						result = convertSimpleType(child).modified(fieldName(name), name);
+						result = convertSimpleType(child).renamed(fieldName(name), name);
 						break;
 						
 					default:
@@ -1665,7 +1675,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 			}
 			
-			result = result.modified(fieldName(name), name);
+			result = result.renamed(fieldName(name), name);
 		}
 		
 		List<Facet> facets = new Vector<>();
@@ -1845,7 +1855,7 @@ public class XSDConverter_v11 extends XSDConverter
 				
 			default:
 				dumpStack("Unexpected facet element", element);
-				return new Facet("?", "?");
+				return new ErrorFacet("?", "?");
 		}
 	}
 
@@ -1882,7 +1892,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new MinMaxFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -1909,7 +1919,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new MinMaxFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -1936,7 +1946,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new MinMaxFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -1963,7 +1973,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new MinMaxFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -1990,7 +2000,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new DigitsFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -2017,7 +2027,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new DigitsFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -2044,7 +2054,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new LengthFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -2071,7 +2081,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new LengthFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -2098,7 +2108,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new LengthFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -2125,7 +2135,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new EnumFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -2152,7 +2162,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new WhitespaceFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -2179,7 +2189,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new PatternFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -2206,7 +2216,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new AssertionFacet(element.getType(), element.getAttr("value"));
 	}
 
 	/**
@@ -2233,7 +2243,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new Facet(element.getType(), element.getAttr("value"));
+		return new TimezoneFacet(element.getType(), element.getAttr("value"));
 	}
 	
 	/**********************************************************************************
@@ -2394,12 +2404,16 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		List<String> enums = new Vector<>();
+		Iterator<Facet> iter = facets.iterator();
 		
-		for (Facet facet: facets)
+		while (iter.hasNext())
 		{
+			Facet facet = iter.next();
+			
 			if (facet.type.equals("xs:enumeration"))
 			{
 				enums.add(facet.value);
+				iter.remove();
 			}
 		}
 		
@@ -2417,6 +2431,8 @@ public class XSDConverter_v11 extends XSDConverter
 			type = union;
 		}
 		
-		return new Field(field.getFieldName(), field.getElementName(), type, isOptional(), aggregate());
+		Field result = new Field(field.getFieldName(), field.getElementName(), type, isOptional(), aggregate());
+		result.setFacets(facets);
+		return result;
 	}
 }	

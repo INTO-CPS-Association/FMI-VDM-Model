@@ -41,6 +41,7 @@ public class Field
 	
 	private boolean isAttribute = false;
 	private List<String> comments = null;
+	private List<Facet> facets = null;
 	
 	public Field(String fieldName, String elementName, Type type, boolean optional, String aggregate)
 	{
@@ -106,6 +107,11 @@ public class Field
 	{
 		return comments;
 	}
+	
+	public List<Facet> getFacets()
+	{
+		return facets;
+	}
 
 	public boolean isOptional()
 	{
@@ -140,9 +146,18 @@ public class Field
 			this.comments = annotation.getComments();
 		}
 	}
-
-	public Field modified(String fieldName, String elementName)
+	
+	public void setFacets(List<Facet> facets)
 	{
-		return new Field(fieldName, elementName, type, optional, aggregate);
+		this.facets = facets;
+	}
+
+	public Field renamed(String fieldName, String elementName)
+	{
+		Field result = new Field(fieldName, elementName, type, optional, aggregate);
+		result.isAttribute = isAttribute;
+		result.comments = comments;
+		result.facets = facets;
+		return result;
 	}
 }

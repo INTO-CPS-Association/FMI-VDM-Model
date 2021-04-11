@@ -29,7 +29,7 @@
 
 package types;
 
-public class Facet
+abstract public class Facet
 {
 	public final String type;
 	public final String value;
@@ -45,4 +45,6 @@ public class Facet
 	{
 		return type + " = " + value;
 	}
+
+	abstract public String toVDM(String prefix, Field field);
 }

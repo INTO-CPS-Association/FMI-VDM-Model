@@ -598,7 +598,7 @@ public class XSDConverter_v10 extends XSDConverter
 
 			if (attribute.hasAttr("type"))
 			{
-				result = convertType(attribute, "type").get(0).modified(fieldName(name), name);
+				result = convertType(attribute, "type").get(0).renamed(fieldName(name), name);
 			}
 			
 			// If an attribute has no type... defaults to xs:any?
@@ -616,7 +616,7 @@ public class XSDConverter_v10 extends XSDConverter
 						break;
 						
 					case "xs:simpleType":
-						result = convertSimpleType(child).modified(fieldName(name), name);
+						result = convertSimpleType(child).renamed(fieldName(name), name);
 						break;
 						
 					default:
@@ -775,7 +775,7 @@ public class XSDConverter_v10 extends XSDConverter
 						else
 						{
 							XSDElement etype = lookup(first.getAttr("base"));
-							result = convertSimpleType(etype).modified(fieldName(name), name);
+							result = convertSimpleType(etype).renamed(fieldName(name), name);
 						}
 					}
 					break;

@@ -58,6 +58,7 @@ import types.Type;
 
 public class Xsd2VDM
 {
+	private static final String INDENT = "    ";
 	private static Properties mappingsProperties = null;
 	
 	private static void usage()
@@ -291,12 +292,40 @@ public class Xsd2VDM
 		output.println("/**");
 		output.println(" * VDM value created from " + xmlFile);
 		output.println(" */");
+		
+		xsdStandardDefinitions(output);
+		
 		output.println("values");
-		output.println("    POSITIVE_INFINITY : real = 0x7ff0000000000000;");
-		output.println("    NEGATIVE_INFINITY : real = 0xfff0000000000000;");
-		output.println("    NOT_A_NUMBER : real = 0x7ff8000000000000;");
 		output.println("    " + name + " =\n" + handler.getVDMValue().toVDM("    ") + ";\n");
 
 		if (vdmFile != null) output.close();
+	}
+
+	private void xsdStandardDefinitions(PrintStream output)
+	{
+		output.println("values");
+		output.println(INDENT + "POSITIVE_INFINITY : real = 0x7ff00000;");
+		output.println(INDENT + "NEGATIVE_INFINITY : real = 0xfff00000;");
+		output.println(INDENT + "NOT_A_NUMBER : real      = 0x7ff80000;");
+		
+		output.println("functions");
+		output.println(INDENT + "xsdTotalDigits: real +> bool");
+		output.println(INDENT + "xsdTotalDigits(value) == is not yet specified;");
+		output.println();
+		output.println(INDENT + "xsdFractionDigits: real +> bool");
+		output.println(INDENT + "xsdFractionDigits(value) == is not yet specified;");
+		output.println();
+		output.println(INDENT + "xsdAssertion: ? * seq of char +> bool");
+		output.println(INDENT + "xsdAssertion(value, test) == is not yet specified;");
+		output.println();
+		output.println(INDENT + "xsdPattern: ? * seq of char +> bool");
+		output.println(INDENT + "xsdPattern(value, pattern) == is not yet specified;");
+		output.println();
+		output.println(INDENT + "xsdExplicitTimezone: ? * seq of char +> bool");
+		output.println(INDENT + "xsdExplicitTimezone(value, setting) == is not yet specified;");
+		output.println();
+		output.println(INDENT + "xsdWhitespace: ? * seq of char +> bool");
+		output.println(INDENT + "xsdWhitespace(value, setting) == is not yet specified;");
+		output.println();
 	}
 }

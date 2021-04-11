@@ -29,56 +29,32 @@
 
 package types;
 
-import org.xml.sax.Locator;
-
-import values.SimpleValue;
-import values.VDMValue;
-
-public class OptionalType extends Type
+public class LengthFacet extends Facet
 {
-	private final Type type;
-	
-	public OptionalType(Type type)
+	public LengthFacet(String type, String value)
 	{
-		this.type = type;
+		super(type, value);
 	}
 	
 	@Override
-	public boolean matches(Type type)
+	public String toVDM(String prefix, Field field)
 	{
-		return type.matches(type);
-	}
-
-	@Override
-	public String signature()
-	{
-		return (type instanceof OptionalType) ?
-			type.signature() :
-			"[" + type.signature() + "]";
-	}
-	
-	@Override
-	public int hashCode()
-	{
-		return type.hashCode();
-	}
-	
-	@Override
-	public boolean equals(Object other)
-	{
-		return type.equals(other);
-	}
-
-	@Override
-	public VDMValue valueOf(String avalue, Locator locator)
-	{
-		if (avalue == null || avalue.isEmpty())
+		String argname = prefix + field.getFieldName();
+		String result = (field.getType() instanceof OptionalType) ? argname + " <> nil => " : "";
+		
+		switch (type)
 		{
-			return new SimpleValue(type, locator);
-		}
-		else
-		{
-			return type.valueOf(avalue, locator);
+			case "xs:minLength":
+				return result + "len " + argname + " >= " + value;
+				
+			case "xs:maxLength":
+				return result + "len " + argname + " <= " + value;
+				
+			case "xs:length":
+				return result + "len " + argname + " = " + value;
+				
+			default:
+				return "?";
 		}
 	}
 }
