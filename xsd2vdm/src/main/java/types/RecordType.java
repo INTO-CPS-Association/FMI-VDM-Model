@@ -109,6 +109,28 @@ public class RecordType extends Type
 			sb.append(name);
 			sb.append(" = ");
 			sb.append(f.getVDMType().signature());
+			
+			if (f.getFacets() != null && !f.getFacets().isEmpty())
+			{
+				String iname = name.substring(0, 1).toLowerCase();
+				sb.append("\ninv " + iname + " ==\n");
+				String sep = INDENT;
+				
+				for (Field field: fields)
+				{
+					if (field.getFacets() != null)
+					{
+						for (Facet facet: field.getFacets())
+						{
+							sb.append(sep);
+							sb.append("(" + facet.toVDM(iname, field) + ")");
+							sep = " and\n" + INDENT;
+						}
+					}
+				}
+				
+				sb.append("\n");
+			}
 		}
 		else
 		{
@@ -176,7 +198,7 @@ public class RecordType extends Type
 						for (Facet facet: field.getFacets())
 						{
 							sb.append(sep);
-							sb.append("(" + facet.toVDM("rec.", field) + ")");
+							sb.append("(" + facet.toVDM("rec." + field.getFieldName(), field) + ")");
 							sep = " and\n" + INDENT;
 						}
 					}

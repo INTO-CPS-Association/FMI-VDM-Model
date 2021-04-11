@@ -37,7 +37,7 @@ public class ErrorFacet extends Facet
 	}
 
 	@Override
-	public String toVDM(String string, Field field)
+	public String toVDM(String var, Field field)
 	{
 		return "Error " + toString();
 	}

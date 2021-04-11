@@ -38,8 +38,8 @@ public class AssertionFacet extends Facet
 	}
 
 	@Override
-	public String toVDM(String prefix, Field field)
+	public String toVDM(String var, Field field)
 	{
-		return "xsdAssertion(" + prefix + field.getFieldName() + ", \"" + value + "\")";
+		return "xsdAssertion(" + var + ", \"" + value + "\")";
 	}
 }

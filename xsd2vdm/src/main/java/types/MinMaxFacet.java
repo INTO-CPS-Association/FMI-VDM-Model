@@ -37,24 +37,23 @@ public class MinMaxFacet extends Facet
 	}
 	
 	@Override
-	public String toVDM(String prefix, Field field)
+	public String toVDM(String var, Field field)
 	{
-		String argname = prefix + field.getFieldName();
-		String result = (field.getType() instanceof OptionalType) ? argname + " <> nil => " : "";
+		String result = (field.getType() instanceof OptionalType) ? var + " <> nil => " : "";
 		
 		switch (type)
 		{
 			case "xs:minInclusive":
-				return result + argname + " >= " + value;
+				return result + var + " >= " + value;
 				
 			case "xs:minExclusive":
-				return result + argname + " > " + value;
+				return result + var + " > " + value;
 				
 			case "xs:maxInclusive":
-				return result + argname + " <= " + value;
+				return result + var + " <= " + value;
 				
 			case "xs:maxExclusive":
-				return result + argname + " < " + value;
+				return result + var + " < " + value;
 				
 			default:
 				return "?";

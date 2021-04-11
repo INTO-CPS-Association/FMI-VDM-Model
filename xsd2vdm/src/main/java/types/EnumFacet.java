@@ -37,7 +37,7 @@ public class EnumFacet extends Facet
 	}
 
 	@Override
-	public String toVDM(String string, Field field)
+	public String toVDM(String var, Field field)
 	{
 		return "?";		// Enums extracted into Unions
 	}

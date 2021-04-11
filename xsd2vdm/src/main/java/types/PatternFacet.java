@@ -38,9 +38,9 @@ public class PatternFacet extends Facet
 	}
 
 	@Override
-	public String toVDM(String prefix, Field field)
+	public String toVDM(String var, Field field)
 	{
-		return "xsdPattern(" + prefix + field.getFieldName() + ", \"" + value + "\")";
+		return "xsdPattern(" + var + ", \"" + value + "\")";
 	}
 
 }

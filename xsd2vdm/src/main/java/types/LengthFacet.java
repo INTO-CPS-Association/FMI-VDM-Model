@@ -37,21 +37,20 @@ public class LengthFacet extends Facet
 	}
 	
 	@Override
-	public String toVDM(String prefix, Field field)
+	public String toVDM(String var, Field field)
 	{
-		String argname = prefix + field.getFieldName();
-		String result = (field.getType() instanceof OptionalType) ? argname + " <> nil => " : "";
+		String result = (field.getType() instanceof OptionalType) ? var + " <> nil => " : "";
 		
 		switch (type)
 		{
 			case "xs:minLength":
-				return result + "len " + argname + " >= " + value;
+				return result + "len " + var + " >= " + value;
 				
 			case "xs:maxLength":
-				return result + "len " + argname + " <= " + value;
+				return result + "len " + var + " <= " + value;
 				
 			case "xs:length":
-				return result + "len " + argname + " = " + value;
+				return result + "len " + var + " = " + value;
 				
 			default:
 				return "?";

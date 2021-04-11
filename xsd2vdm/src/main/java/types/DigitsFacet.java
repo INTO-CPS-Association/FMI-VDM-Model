@@ -38,18 +38,17 @@ public class DigitsFacet extends Facet
 
 	
 	@Override
-	public String toVDM(String prefix, Field field)
+	public String toVDM(String var, Field field)
 	{
-		String argname = prefix + field.getFieldName();
-		String result = (field.getType() instanceof OptionalType) ? argname + " <> nil => " : "";
+		String result = (field.getType() instanceof OptionalType) ? var + " <> nil => " : "";
 		
 		switch (type)
 		{
 			case "xs:totalDigits":
-				return result + "xsdTotalDigits(" + argname + ") <= " + value;
+				return result + "xsdTotalDigits(" + var + ") <= " + value;
 				
 			case "xs:fractionDigits":
-				return result + "xsdFractionDigits(" + argname + ") <= " + value;
+				return result + "xsdFractionDigits(" + var + ") <= " + value;
 				
 			default:
 				return "?";

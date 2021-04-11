@@ -46,5 +46,5 @@ abstract public class Facet
 		return type + " = " + value;
 	}
 
-	abstract public String toVDM(String prefix, Field field);
+	abstract public String toVDM(String var, Field field);
 }
