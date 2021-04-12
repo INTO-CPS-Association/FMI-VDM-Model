@@ -71,6 +71,9 @@ public class Xsd2VDM
 		System.exit(1);
 	}
 	
+	/**
+	 * Static main method for command line XSD to VDM conversion.
+	 */
 	public static void main(String[] args)
 	{
 		int arg = 0;
@@ -118,16 +121,27 @@ public class Xsd2VDM
 			usage();
 		}
 		
+		Xsd2VDM xsd2vdm = new Xsd2VDM();
+		xsd2vdm.convert(xsdFile, vdmFile, xmlFile, varName);
+	}
+	
+	/**
+	 * Method for internal conversions, for example via the VDMCheck tools.
+	 * If vdmFile is null, the VDM is written to standard output. If the
+	 * xmlFile is null, the schema is written, else the XML value mapping.
+	 * Note that the XML is always validated.
+	 */
+	public void convert(File xsdFile, File vdmFile, File xmlFile, String varName)
+	{
 		try
 		{
 			loadProperties(xsdFile);
-			Xsd2VDM xsd2vdm = new Xsd2VDM();
-			Map<String, Type> schema = xsd2vdm.createVDMSchema(xsdFile, vdmFile, (xmlFile == null));
+			Map<String, Type> schema = createVDMSchema(xsdFile, vdmFile, (xmlFile == null));
 			
 			if (xmlFile != null)
 			{
 				validate(xmlFile, xsdFile);
-				xsd2vdm.createVDMValue(schema, vdmFile, xmlFile, varName);
+				createVDMValue(schema, vdmFile, xmlFile, varName);
 			}
 		}
 		catch (Exception e)
@@ -179,7 +193,7 @@ public class Xsd2VDM
 		return System.getProperty(name);
 	}
 
-	private static void validate(File xml, File xsd)
+	private void validate(File xml, File xsd)
 	{
 		try
 		{
@@ -315,8 +329,7 @@ public class Xsd2VDM
 		output.println("AnyString = seq of char;\n");
 
 		output.println("NormalizedString = seq of char");
-		output.println("inv ns ==");
-		output.println(INDENT + "forall c in seq ns & c not in set { \'\\r\', \'\\n\', \'\\t\'};\n");
+		output.println("inv ns == forall c in seq ns & c not in set {\'\\r\', \'\\n\', \'\\t\'};\n");
 		
 		output.println("Location ::");
 		output.println("    file : seq1 of char");

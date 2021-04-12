@@ -77,14 +77,13 @@ public class BasicType extends Type
 
 			case "seq of char":
 			case "seq1 of char":
+			case "AnyString":
+			case "NormalizedString":
 				return new SimpleValue(this, locator, avalue, true);
 				
 			case "bool":
 				return new SimpleValue(this, locator, Boolean.parseBoolean(avalue));
 			
-//			case "token":
-//				return new SimpleValue(this, locator);
-				
 			default:
 				throw new IllegalArgumentException("Unknown type string for BasicValue: " + typestring);
 		}
