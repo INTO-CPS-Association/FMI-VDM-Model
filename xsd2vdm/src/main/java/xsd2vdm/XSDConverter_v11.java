@@ -1808,55 +1808,74 @@ public class XSDConverter_v11 extends XSDConverter
 	private Facet convertFacet(XSDElement element)
 	{
 		assert isFacet(element);
+		Facet facet = null;
 		
 		switch (element.getType())
 		{
 			case "xs:minExclusive":
-				return convertMinExclusive(element);
+				facet = convertMinExclusive(element);
+				break;
 				
 			case "xs:maxExclusive":
-				return convertMaxExclusive(element);
+				facet = convertMaxExclusive(element);
+				break;
 				
 			case "xs:minInclusive":
-				return convertMinInclusive(element);
+				facet = convertMinInclusive(element);
+				break;
 				
 			case "xs:maxInclusive":
-				return convertMaxInclusive(element);
+				facet = convertMaxInclusive(element);
+				break;
 				
 			case "xs:totalDigits":
-				return convertTotalDigits(element);
+				facet = convertTotalDigits(element);
+				break;
 				
 			case "xs:fractionDigits":
-				return convertFractionDigits(element);
+				facet = convertFractionDigits(element);
+				break;
 				
 			case "xs:pattern":
-				return convertPattern(element);
+				facet = convertPattern(element);
+				break;
 				
 			case "xs:enumeration":
-				return convertEnumeration(element);
+				facet = convertEnumeration(element);
+				break;
 				
 			case "xs:whiteSpace":
-				return convertWhiteSpace(element);
+				facet = convertWhiteSpace(element);
+				break;
 				
 			case "xs:length":
-				return convertLength(element);
+				facet = convertLength(element);
+				break;
 				
 			case "xs:maxLength":
-				return convertMaxLength(element);
+				facet = convertMaxLength(element);
+				break;
 				
 			case "xs:minLength":
-				return convertMinLength(element);
+				facet = convertMinLength(element);
+				break;
 				
 			case "xs:assertion":
-				return convertAssertion(element);
+				facet = convertAssertion(element);
+				break;
 				
 			case "xs:explicitTimezone":
-				return convertExplicitTimezone(element);
+				facet = convertExplicitTimezone(element);
+				break;
 				
 			default:
 				dumpStack("Unexpected facet element", element);
-				return new ErrorFacet("?", "?");
+				facet = new ErrorFacet("?", "?");
+				break;
 		}
+		
+		functions.addAll(facet.getFunctions());
+		return facet;
 	}
 
 	private boolean isFacet(XSDElement element)

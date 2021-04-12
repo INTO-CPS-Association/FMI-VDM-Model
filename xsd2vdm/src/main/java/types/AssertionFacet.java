@@ -29,9 +29,10 @@
 
 package types;
 
+import java.util.Set;
+
 public class AssertionFacet extends Facet
 {
-
 	public AssertionFacet(String type, String value)
 	{
 		super(type, value);
@@ -41,5 +42,13 @@ public class AssertionFacet extends Facet
 	public String toVDM(String var, Field field)
 	{
 		return "xsdAssertion(" + var + ", \"" + value + "\")";
+	}
+	
+	@Override
+	public Set<String> getFunctions()
+	{
+		Set<String> all = super.getFunctions();
+		all.add(functionFromType());
+		return all;
 	}
 }

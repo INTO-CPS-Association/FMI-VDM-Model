@@ -29,6 +29,8 @@
 
 package types;
 
+import java.util.Set;
+
 public class DigitsFacet extends Facet
 {
 	public DigitsFacet(String type, String value)
@@ -53,5 +55,13 @@ public class DigitsFacet extends Facet
 			default:
 				return "?";
 		}
+	}
+	
+	@Override
+	public Set<String> getFunctions()
+	{
+		Set<String> all = super.getFunctions();
+		all.add(functionFromType());
+		return all;
 	}
 }

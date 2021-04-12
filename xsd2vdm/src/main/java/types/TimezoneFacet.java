@@ -29,6 +29,8 @@
 
 package types;
 
+import java.util.Set;
+
 public class TimezoneFacet extends Facet
 {
 	public TimezoneFacet(String type, String value)
@@ -40,5 +42,13 @@ public class TimezoneFacet extends Facet
 	public String toVDM(String var, Field field)
 	{
 		return "xsdExplicitTimezone(" + var + ", \"" + value + "\")";
+	}
+	
+	@Override
+	public Set<String> getFunctions()
+	{
+		Set<String> all = super.getFunctions();
+		all.add(functionFromType());
+		return all;
 	}
 }

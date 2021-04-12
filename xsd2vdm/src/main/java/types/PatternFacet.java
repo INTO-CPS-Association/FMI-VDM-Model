@@ -29,9 +29,10 @@
 
 package types;
 
+import java.util.Set;
+
 public class PatternFacet extends Facet
 {
-
 	public PatternFacet(String type, String value)
 	{
 		super(type, value);
@@ -42,5 +43,12 @@ public class PatternFacet extends Facet
 	{
 		return "xsdPattern(" + var + ", \"" + value + "\")";
 	}
-
+	
+	@Override
+	public Set<String> getFunctions()
+	{
+		Set<String> all = super.getFunctions();
+		all.add(functionFromType());
+		return all;
+	}
 }

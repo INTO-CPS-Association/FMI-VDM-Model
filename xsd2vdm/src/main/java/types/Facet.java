@@ -29,6 +29,9 @@
 
 package types;
 
+import java.util.HashSet;
+import java.util.Set;
+
 abstract public class Facet
 {
 	public final String type;
@@ -47,4 +50,19 @@ abstract public class Facet
 	}
 
 	abstract public String toVDM(String var, Field field);
+
+	public Set<String> getFunctions()
+	{
+		return new HashSet<>();
+	}
+	
+	/**
+	 * Generate the name of the facet function for this type.
+	 */
+	protected String functionFromType()
+	{
+		String name = type.substring("xs:".length());
+		name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+		return "xsd" + name;
+	}
 }

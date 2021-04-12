@@ -31,8 +31,10 @@ package xsd2vdm;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import types.BasicType;
@@ -45,6 +47,12 @@ abstract public class XSDConverter
 	 * attributes to be obtained, when the local element does not define one.
 	 */
 	protected Stack<XSDElement> stack = new Stack<XSDElement>();
+	
+	/**
+	 * A set of function names for inclusion in the schema. These are produced
+	 * by Facet conversions.
+	 */
+	protected Set<String> functions = new HashSet<>();	
 	
 	/**
 	 * True if errors are found in type conversion. No output is produced.
@@ -64,6 +72,7 @@ abstract public class XSDConverter
 	protected void initConverter()
 	{
 		stack.clear();
+		functions.clear();
 		errors = false;
 		namespaces.clear();
 	}
@@ -75,6 +84,15 @@ abstract public class XSDConverter
 	 * @return schema map
 	 */
 	abstract public Map<String, Type> convertSchemas(List<XSDElement> roots);
+	
+	
+	/**
+	 * Get the set of functions required.
+	 */
+	public Set<String> getFunctions()
+	{
+		return functions;
+	}
 	
 	/**
 	 * Set current namespace data from schema element.

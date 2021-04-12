@@ -254,6 +254,17 @@ public class Xsd2VDM
 			output.println(" * VDM schema created from " + xsdFile + " on " + new Date());
 			output.println(" * DO NOT EDIT!");
 			output.println(" */");
+			
+			if (!converter.getFunctions().isEmpty())
+			{
+				output.println("functions");
+
+				for (String function: converter.getFunctions())
+				{
+					xsdStandardFunction(output, function);
+				}
+			}
+			
 			output.println("types\n");
 			output.println("Location ::");
 			output.println("    file : seq1 of char");
@@ -304,28 +315,51 @@ public class Xsd2VDM
 	private void xsdStandardDefinitions(PrintStream output)
 	{
 		output.println("values");
-		output.println(INDENT + "POSITIVE_INFINITY : real = 0x7ff00000;");
-		output.println(INDENT + "NEGATIVE_INFINITY : real = 0xfff00000;");
-		output.println(INDENT + "NOT_A_NUMBER : real      = 0x7ff80000;");
+		output.println(INDENT + "POSITIVE_INFINITY : real = 9218868437227405312;  -- 0x7ff0000000000000");
+		output.println(INDENT + "NEGATIVE_INFINITY : real = -4503599627370496;    -- 0xfff0000000000000");
+		output.println(INDENT + "NOT_A_NUMBER : real      = 9221120237041090560;  -- 0x7ff8000000000000");
+		output.println();
+	}
+
+	private void xsdStandardFunction(PrintStream output, String function)
+	{
+		switch (function)
+		{
+			case "xsdTotalDigits":
+				output.println(INDENT + "xsdTotalDigits: real +> bool");
+				output.println(INDENT + "xsdTotalDigits(value) == is not yet specified;");
+				break;
+
+			case "xsdFractionDigits":
+				output.println(INDENT + "xsdFractionDigits: real +> bool");
+				output.println(INDENT + "xsdFractionDigits(value) == is not yet specified;");
+				break;
+
+			case "xsdAssertion":
+				output.println(INDENT + "xsdAssertion: ? * seq of char +> bool");
+				output.println(INDENT + "xsdAssertion(value, test) == is not yet specified;");
+				break;
+
+			case "xsdPattern":
+				output.println(INDENT + "xsdPattern: ? * seq of char +> bool");
+				output.println(INDENT + "xsdPattern(value, pattern) == is not yet specified;");
+				break;
+
+			case "xsdExplicitTimezone":
+				output.println(INDENT + "xsdExplicitTimezone: seq1 of char * seq of char +> bool");
+				output.println(INDENT + "xsdExplicitTimezone(date, setting) == is not yet specified;");
+				break;
+
+			case "xsdWhitespace":
+				output.println(INDENT + "xsdWhitespace: seq of char * seq of char +> bool");
+				output.println(INDENT + "xsdWhitespace(string, setting) == is not yet specified;");
+				break;
+
+			default:
+				System.err.println("Error: unknown facet function: " + function);
+				break;
+		}
 		
-		output.println("functions");
-		output.println(INDENT + "xsdTotalDigits: real +> bool");
-		output.println(INDENT + "xsdTotalDigits(value) == is not yet specified;");
-		output.println();
-		output.println(INDENT + "xsdFractionDigits: real +> bool");
-		output.println(INDENT + "xsdFractionDigits(value) == is not yet specified;");
-		output.println();
-		output.println(INDENT + "xsdAssertion: ? * seq of char +> bool");
-		output.println(INDENT + "xsdAssertion(value, test) == is not yet specified;");
-		output.println();
-		output.println(INDENT + "xsdPattern: ? * seq of char +> bool");
-		output.println(INDENT + "xsdPattern(value, pattern) == is not yet specified;");
-		output.println();
-		output.println(INDENT + "xsdExplicitTimezone: ? * seq of char +> bool");
-		output.println(INDENT + "xsdExplicitTimezone(value, setting) == is not yet specified;");
-		output.println();
-		output.println(INDENT + "xsdWhitespace: ? * seq of char +> bool");
-		output.println(INDENT + "xsdWhitespace(value, setting) == is not yet specified;");
 		output.println();
 	}
 }
