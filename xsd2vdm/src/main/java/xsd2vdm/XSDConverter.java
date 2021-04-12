@@ -234,8 +234,10 @@ abstract public class XSDConverter
 		switch (type)
 		{
 			case "xs:normalizedString":
+				return new BasicType("NormalizedString");
+
 			case "xs:string":
-				return new BasicType("seq of char");
+				return new BasicType("AnyString");
 
 			case "xs:token":
 			case "xs:lanuage":

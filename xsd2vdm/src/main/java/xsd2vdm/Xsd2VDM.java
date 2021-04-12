@@ -265,11 +265,7 @@ public class Xsd2VDM
 				}
 			}
 			
-			output.println("types\n");
-			output.println("Location ::");
-			output.println("    file : seq1 of char");
-			output.println("    line : nat1");
-			output.println(";\n");
+			xsdStandardTypes(output);
 			
 			for (String def: vdmSchema.keySet())
 			{
@@ -310,6 +306,22 @@ public class Xsd2VDM
 		output.println("    " + name + " =\n" + handler.getVDMValue().toVDM("    ") + ";\n");
 
 		if (vdmFile != null) output.close();
+	}
+
+	private void xsdStandardTypes(PrintStream output)
+	{
+		output.println("types\n");
+
+		output.println("AnyString = seq of char;\n");
+
+		output.println("NormalizedString = seq of char");
+		output.println("inv ns ==");
+		output.println(INDENT + "forall c in seq ns & c not in set { \'\\r\', \'\\n\', \'\\t\'};\n");
+		
+		output.println("Location ::");
+		output.println("    file : seq1 of char");
+		output.println("    line : nat1");
+		output.println(";\n");
 	}
 
 	private void xsdStandardDefinitions(PrintStream output)
