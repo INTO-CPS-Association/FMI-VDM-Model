@@ -160,4 +160,13 @@ public class Field
 		result.facets = facets;
 		return result;
 	}
+
+	public Field reaggregate(String aggregate)
+	{
+		Field result = new Field(fieldName, elementName, type, optional, aggregate);
+		result.isAttribute = isAttribute;
+		result.comments = comments;
+		result.facets = facets;
+		return result;
+	}
 }

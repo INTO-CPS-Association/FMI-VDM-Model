@@ -1751,6 +1751,8 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
+		field = field.reaggregate("seq of ");
+		
 		stack.pop();
 		return field;
 	}

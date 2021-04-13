@@ -36,7 +36,7 @@ import values.VDMValue;
 
 public class OptionalType extends Type
 {
-	private final Type type;
+	public final Type type;
 	
 	public OptionalType(Type type)
 	{
