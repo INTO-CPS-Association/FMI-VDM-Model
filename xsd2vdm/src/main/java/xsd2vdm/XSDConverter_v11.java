@@ -824,6 +824,11 @@ public class XSDConverter_v11 extends XSDConverter
 					dumpStack("Unexpected group child", child);
 				}
 			}
+			
+			if (aggregateType() > 0)
+			{
+				result = new SeqType(result, aggregateType() - 1);
+			}
 		}
 		
 		stack.pop();
@@ -2373,6 +2378,12 @@ public class XSDConverter_v11 extends XSDConverter
 		{
 			UnionType union = (UnionType)type;
 			return new Field(fieldName(union.getName()), union.getName(), union, isOptional(), aggregate());
+		}
+		else if (type instanceof SeqType)
+		{
+			SeqType seq = (SeqType)type;
+			Field f = toField(seq.itemtype);
+			return f.reaggregate("seq of ");
 		}
 		else if (type instanceof BasicType)
 		{

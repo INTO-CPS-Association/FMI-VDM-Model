@@ -36,7 +36,7 @@ import values.VDMValue;
 
 public class SeqType extends Type
 {
-	private final Type itemtype;
+	public final Type itemtype;
 	private final int minOccurs;
 	
 	public SeqType(Type itemtype, int minOccurs)
