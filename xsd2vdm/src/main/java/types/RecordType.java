@@ -105,7 +105,7 @@ public class RecordType extends Type
 			Field f = fields.get(0);
 			sb.append(name);
 			sb.append(" = ");
-			sb.append(f.getVDMType().signature());
+			sb.append(f.getFieldType().signature());
 			
 			if (f.getFacets() != null && !f.getFacets().isEmpty())
 			{
@@ -162,7 +162,7 @@ public class RecordType extends Type
 						name = "$" + name;
 					}
 					
-					sb.append(String.format(format, name, field.getVDMType().signature()));
+					sb.append(String.format(format, name, field.getFieldType().signature()));
 				}
 			}
 			
@@ -177,7 +177,7 @@ public class RecordType extends Type
 						name = "$" + name;
 					}
 					
-					sb.append(String.format(format, name, field.getVDMType().signature()));
+					sb.append(String.format(format, name, field.getFieldType().signature()));
 				}
 			}
 

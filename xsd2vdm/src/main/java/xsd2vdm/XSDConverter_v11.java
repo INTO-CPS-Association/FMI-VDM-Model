@@ -45,7 +45,6 @@ import types.Facet;
 import types.Field;
 import types.LengthFacet;
 import types.MinMaxFacet;
-import types.OptionalType;
 import types.PatternFacet;
 import types.QuoteType;
 import types.RecordType;
@@ -532,6 +531,11 @@ public class XSDConverter_v11 extends XSDConverter
 		assert element.isType("xs:complexContent");
 		stack.push(element);
 		List<Field> fields = new Vector<>();
+		
+		if ("true".equals(element.getAttr("mixed")))
+		{
+			warning("ignoring mixed complex content", element);
+		}
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -908,13 +912,11 @@ public class XSDConverter_v11 extends XSDConverter
 					dumpStack("Unexpected group child", child);
 				}
 			}
-			
-			if (aggregateType() > 0)
-			{
-				result = new SeqType(result, aggregateType() - 1);
-			}
 		}
 		
+		result.setMinOccurs(element);
+		result.setMaxOccurs(element);
+
 		stack.pop();
 		return result;
 	}
@@ -1018,6 +1020,9 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 			}
 		}
+		
+		union.setMinOccurs(element);
+		union.setMaxOccurs(element);
 
 		stack.pop();
 		name = stackAttr("name");
@@ -1076,6 +1081,25 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 
 			stack.pop();
+		}
+		
+		if (Type.aggregateTypeOf(element) > 0)
+		{
+			if (fields.size() == 1)
+			{
+				// We can process the min/max for the sequence because there is only
+				// one field within.
+				
+				Type full = fields.get(0).getFieldType();	// Apply inner seq/opt
+				full.setMinOccurs(element);
+				full.setMaxOccurs(element);
+				fields.set(0, new Field(fields.get(0).getFieldName(), fields.get(0).getElementName(), full));
+			}
+			else 
+			{
+				// This would need a new anonymous record to be created.
+				warning("ignoring min/maxOccurs for multi-sequence", element);
+			}
 		}
 
 		stack.pop();
@@ -1195,6 +1219,7 @@ public class XSDConverter_v11 extends XSDConverter
 			{
 				result = convertType(element, element.getAttr("type")).get(0);
 				result.setNames(fieldName(name), name);
+				result.getType().setUse(element);
 			}
 			
 			if (result == null)
@@ -1224,6 +1249,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 
 		stack.pop();
+		result.getType().setUse(element);
 		result.setIsAttribute(true);
 		return result;
 	}
@@ -2719,26 +2745,7 @@ public class XSDConverter_v11 extends XSDConverter
 	 */
 	private Field adjustField(Field field, List<Facet> facets)
 	{
-		Type type = field.getType();
-		
-		if (isOptional())
-		{
-			type = new OptionalType(type);
-		}
-		
-		switch (aggregateType())
-		{
-			case 0:
-				break;
-				
-			case 1:
-				type = new SeqType(type, 0);
-				break;
-				
-			case 2:
-				type = new SeqType(type, 1);
-				break;
-		}
+		Type type = field.getFieldType();
 		
 		List<String> enums = new Vector<>();
 		Iterator<Facet> iter = facets.iterator();

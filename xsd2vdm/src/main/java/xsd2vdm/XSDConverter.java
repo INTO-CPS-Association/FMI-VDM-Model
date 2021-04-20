@@ -129,61 +129,6 @@ abstract public class XSDConverter
 	}
 	
 	/**
-	 * Search the stack for attributes which make the current type optional
-	 * in VDM. 
-	 */
-	protected boolean isOptional()
-	{
-		String use = stackAttr("use");
-		
-		if (use != null)
-		{
-			return use.equals("optional");
-		}
-		else
-		{
-			String minOccurs = stackAttr("minOccurs");
-			int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
-			return min == 0;
-		}
-	}
-	
-	/**
-	 * Search the stack for attributes which make sequences in VDM.
-	 * Return value is VDM qualifier: "seq1 of ", "seq of " or "".
-	 */
-	protected String aggregate()
-	{
-		switch (aggregateType())
-		{
-			case 0:	return "";
-			case 1: return "seq of ";
-			case 2: return "seq1 of ";
-			
-			default: throw new IllegalArgumentException("Unknown aggregation");
-		}
-	}
-
-	protected int aggregateType()
-	{
-		XSDElement elem = stack.peek();
-		
-		if (elem.isType("xs:attribute"))
-		{
-			return (elem.hasChild("xs:list")) ? 2 : 0;
-		}
-		else
-		{
-			String minOccurs = stackAttr("minOccurs");
-			String maxOccurs = stackAttr("maxOccurs");
-			int min = minOccurs == null ? 1 : Integer.parseInt(minOccurs);
-			int max = maxOccurs == null ? 1 : maxOccurs.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(maxOccurs);
-			
-			return min > 1 ? 2 : max > 1 ? (min == 1 ? 2 : 1) : 0; 
-		}
-	}
-	
-	/**
 	 * Look for a specific attribute in the enclosing elements, until you reach an
 	 * xs:element or xs:attribute (ie. limit the search to the enclosing type, but
 	 * consider complexTypes, complexContent, sequences and so on).
@@ -356,5 +301,11 @@ abstract public class XSDConverter
 		
 		System.err.println();
 		errors = true;
+	}
+	
+	protected void warning(String message, XSDElement element)
+	{
+		System.err.println("Warning: " + message +
+			" at " + element.getFile().getName() + " line " + element.getLineNumber());
 	}
 }

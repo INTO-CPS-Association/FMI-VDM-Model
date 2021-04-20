@@ -88,7 +88,7 @@ public class XMLSaxHandler extends DefaultHandler
 					
 					if (field != null)
 					{
-						Type atype = field.getVDMType();
+						Type atype = field.getFieldType();
 						VDMValue vdmValue = atype.valueOf(avalue, locator);
 						
 						if (!recordValue.setAttribute(aname, vdmValue))

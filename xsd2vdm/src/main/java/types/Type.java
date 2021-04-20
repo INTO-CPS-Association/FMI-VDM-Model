@@ -59,7 +59,7 @@ abstract public class Type
 	{
 		if (value != null)
 		{
-			maxOccurs = value.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(value);
+			maxOccurs = occursOf(value);
 		}
 	}
 	
@@ -68,11 +68,35 @@ abstract public class Type
 		setMaxOccurs(element.getAttr("maxOccurs"));
 	}
 	
-	public void setUse(String use)
+	public static Integer occursOf(String value)
 	{
-		this.use = use;
+		if (value == null)
+		{
+			return 1;
+		}
+		else
+		{
+			return value.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(value);
+		}
 	}
 	
+	public void setUse(String use)
+	{
+		if (use == null)
+		{
+			this.use = "optional";
+		}
+		else
+		{
+			this.use = use;
+		}
+	}
+	
+	public void setUse(XSDElement element)
+	{
+		setUse(element.getAttr("use"));
+	}
+
 	public boolean isOptional()
 	{
 		if (use != null)
@@ -94,6 +118,14 @@ abstract public class Type
 	{
 		int min = minOccurs == null ? 1 : minOccurs;
 		int max = maxOccurs == null ? 1 : maxOccurs;
+			
+		return min > 1 ? 2 : max > 1 ? (min == 1 ? 2 : 1) : 0; 
+	}
+	
+	public static int aggregateTypeOf(XSDElement element)
+	{
+		Integer min = occursOf(element.getAttr("minOccurs"));
+		Integer max = occursOf(element.getAttr("maxOccurs"));
 			
 		return min > 1 ? 2 : max > 1 ? (min == 1 ? 2 : 1) : 0; 
 	}

@@ -62,7 +62,10 @@ public class Field
 		return type;
 	}
 	
-	public Type getVDMType()
+	/**
+	 * Get the final type, depending on whether the field is aggregated and optional.
+	 */
+	public Type getFieldType()
 	{
 		Type agg = null;
 		
@@ -97,7 +100,7 @@ public class Field
 	@Override
 	public String toString()
 	{
-		return fieldName + " : " + getVDMType();
+		return fieldName + " : " + getFieldType();
 	}
 
 	public void setIsAttribute(boolean isAttribute)
