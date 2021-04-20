@@ -37,6 +37,56 @@ import values.VDMValue;
 
 abstract public class Type
 {
+	protected Integer minOccurs = null;
+	protected Integer maxOccurs = null;
+	protected String use = null;
+	
+	public void setMinOccurs(String value)
+	{
+		if (value != null)
+		{
+			minOccurs = Integer.parseInt(value);
+		}
+	}
+	
+	public void setMaxOccurs(String value)
+	{
+		if (value != null)
+		{
+			maxOccurs = value.equals("unbounded") ? Integer.MAX_VALUE : Integer.parseInt(value);
+		}
+	}
+	
+	public void setUse(String use)
+	{
+		this.use = use;
+	}
+	
+	protected boolean isOptional()
+	{
+		if (use != null)
+		{
+			return use.equals("optional");
+		}
+		else
+		{
+			return minOccurs != null && minOccurs == 0;
+		}
+	}
+
+	/**
+	 * 0 => single value
+	 * 1 => seq of Type
+	 * 2 => seq1 of Type
+	 */
+	protected int aggregateType()
+	{
+		int min = minOccurs == null ? 1 : minOccurs;
+		int max = maxOccurs == null ? 1 : maxOccurs;
+			
+		return min > 1 ? 2 : max > 1 ? (min == 1 ? 2 : 1) : 0; 
+	}
+	
 	protected List<String> comments = null;
 	
 	public abstract String signature();
@@ -101,7 +151,6 @@ abstract public class Type
 						}
 					}
 					
-					
 					sb.append(prefix.isEmpty() ? " * " : prefix + "-- ");
 					sb.append(comment.substring(0, space).trim() + "\n");
 					comment = comment.substring(space);
@@ -117,5 +166,4 @@ abstract public class Type
 			}
 		}
 	}
-
 }

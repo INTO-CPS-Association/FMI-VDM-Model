@@ -106,6 +106,21 @@ public class XSDConverter_v11 extends XSDConverter
 	 *		(%defaultOpenContent;, (%annotation;)*)?,
 	 *		((%simpleType; | %complexType; | %element; | %attribute; | %attributeGroup; | %group; | %notation; ),
 	 *		 (%annotation;)*)* )>
+	 *
+	 * <!ATTLIST %schema;
+	 *		targetNamespace      %URIref;               #IMPLIED
+	 *		version              CDATA                  #IMPLIED
+	 *		%nds;                %URIref;               #FIXED 'http://www.w3.org/2001/XMLSchema'
+	 *		xmlns                CDATA                  #IMPLIED
+	 *		finalDefault         %complexDerivationSet; ''
+	 *		blockDefault         %blockSet;             ''
+	 *		id                   ID                     #IMPLIED
+	 *		elementFormDefault   %formValues;           'unqualified'
+	 *		attributeFormDefault %formValues;           'unqualified'
+	 *		defaultAttributes    CDATA                  #IMPLIED
+	 *		xpathDefaultNamespace    CDATA              '##local'
+	 *		xml:lang             CDATA                  #IMPLIED
+	 *		%schemaAttrs;>
 	 */
 	private void convertSchema(XSDElement element)
 	{
@@ -416,6 +431,12 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %defaultOpenContent; ((%annotation;)?, %any;)>
+	 * 
+	 * <!ATTLIST %defaultOpenContent;
+     *     appliesToEmpty  (true|false)           'false'
+     *     mode            (interleave|suffix)    'interleave'
+     *     id              ID                     #IMPLIED
+     *     %defaultOpenContentAttrs;>
 	 */
 	private List<Field> convertDefaultOpenContent(XSDElement element)
 	{
@@ -448,6 +469,16 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ELEMENT %complexType; ((%annotation;)?,
 	 *		(%simpleContent; | %complexContent; | %particleAndAttrs;))>
+	 *
+	 * <!ATTLIST %complexType;
+     *     name                    %NCName;                 #IMPLIED
+     *     id                      ID                       #IMPLIED
+     *     abstract                %boolean;                #IMPLIED
+     *     final                   %complexDerivationSet;   #IMPLIED
+     *     block                   %complexDerivationSet;   #IMPLIED
+     *     mixed                   (true|false)             'false'
+     *     defaultAttributesApply  %boolean;                'true'
+     *     %complexTypeAttrs;>
 	 */
 	private RecordType convertComplexType(XSDElement element)
 	{
@@ -491,6 +522,11 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %complexContent; ((%annotation;)?, (%restriction; | %extension;))>
+	 * 
+	 * <!ATTLIST %complexContent;
+     *     mixed (true|false) #IMPLIED
+     *     id    ID           #IMPLIED
+     *     %complexContentAttrs;>
 	 */
 	private List<Field> convertComplexContent(XSDElement element)
 	{
@@ -526,6 +562,11 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %openContent; ((%annotation;)?, (%any;)?)>
+	 * 
+	 * <!ATTLIST %openContent;
+     *     mode            (none|interleave|suffix)  'interleave'
+     *     id              ID                        #IMPLIED
+     *     %openContentAttrs;>
 	 */
 	private List<Field> convertOpenContent(XSDElement element)
 	{
@@ -556,7 +597,11 @@ public class XSDConverter_v11 extends XSDConverter
 	}
 	
 	/**
-	 *	<!ELEMENT %simpleContent; ((%annotation;)?, (%restriction; | %extension;))>
+	 * <!ELEMENT %simpleContent; ((%annotation;)?, (%restriction; | %extension;))>
+	 *
+	 * <!ATTLIST %simpleContent;
+     *     id    ID           #IMPLIED
+     *     %simpleContentAttrs;>
 	 */
 	private List<Field> convertSimpleContent(XSDElement element)
 	{
@@ -592,6 +637,11 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %extension; ((%annotation;)?, (%particleAndAttrs;))>
+	 * 
+	 * <!ATTLIST %extension;
+     *     base  %QName;               #REQUIRED
+     *     id    ID                    #IMPLIED
+     *     %extensionAttrs;>
 	 */
 	private List<Field> convertExtension(XSDElement element)
 	{
@@ -623,6 +673,24 @@ public class XSDConverter_v11 extends XSDConverter
 	 * <!ELEMENT %element; ((%annotation;)?, (%complexType; | %simpleType;)?,
 	 *		 (%alternative;)*,
 	 *		 (%unique; | %key; | %keyref;)*)>
+	 *
+	 * <!ATTLIST %element;
+     *       name               %NCName;               #IMPLIED
+     *       id                 ID                     #IMPLIED
+     *       ref                %QName;                #IMPLIED
+     *       type               %QName;                #IMPLIED
+     *       minOccurs          %nonNegativeInteger;   #IMPLIED
+     *       maxOccurs          CDATA                  #IMPLIED
+     *       nillable           %boolean;              #IMPLIED
+     *       substitutionGroup  %QName;                #IMPLIED
+     *       abstract           %boolean;              #IMPLIED
+     *       final              %complexDerivationSet; #IMPLIED
+     *       block              %blockSet;             #IMPLIED
+     *       default            CDATA                  #IMPLIED
+     *       fixed              CDATA                  #IMPLIED
+     *       form               %formValues;           #IMPLIED
+     *       targetNamespace    %URIref;               #IMPLIED
+     *       %elementAttrs;>
 	 */
 	private RecordType convertElement(XSDElement element)
 	{
@@ -718,6 +786,12 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %alternative; ((%annotation;)?, (%simpleType; | %complexType;)?) >
+	 * 
+	 * <!ATTLIST %alternative; 
+     *       test                     CDATA     #IMPLIED
+     *       type                     %QName;   #IMPLIED
+     *       xpathDefaultNamespace    CDATA     #IMPLIED
+     *       id                       ID        #IMPLIED >
 	 */
 	private void convertAlternative(XSDElement element)
 	{
@@ -752,6 +826,14 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %group; ((%annotation;)?,(%mgs;)?)>
+	 * 
+	 * <!ATTLIST %group; 
+     *     name        %NCName;               #IMPLIED
+     *     ref         %QName;                #IMPLIED
+     *     minOccurs   %nonNegativeInteger;   #IMPLIED
+     *     maxOccurs   CDATA                  #IMPLIED
+     *     id          ID                     #IMPLIED
+     *     %groupAttrs;>
 	 */
 	private Type convertGroup(XSDElement element)
 	{
@@ -837,6 +919,12 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %all; ((%annotation;)?, (%element;| %group;| %any;)*)>
+	 * 
+	 * <!ATTLIST %all;
+     *     minOccurs   (0 | 1)                #IMPLIED
+     *     maxOccurs   (0 | 1)                #IMPLIED
+     *     id          ID                     #IMPLIED
+     *     %allAttrs;>
 	 */
 	private List<Field> convertAll(XSDElement element)
 	{
@@ -876,6 +964,12 @@ public class XSDConverter_v11 extends XSDConverter
 
 	/**
 	 * <!ELEMENT %choice; ((%annotation;)?, (%element; | %group; | %cs; | %any;)*)>
+	 * 
+	 * <!ATTLIST %choice;
+     *     minOccurs   %nonNegativeInteger;   #IMPLIED
+     *     maxOccurs   CDATA                  #IMPLIED
+     *     id          ID                     #IMPLIED
+     *     %choiceAttrs;>
 	 */
 	private Field convertChoice(XSDElement element)
 	{
@@ -930,6 +1024,12 @@ public class XSDConverter_v11 extends XSDConverter
 
 	/**
 	 * <!ELEMENT %sequence; ((%annotation;)?, (%element; | %group; | %cs; | %any;)*)>
+	 * 
+	 * <!ATTLIST %sequence;
+     *     minOccurs   %nonNegativeInteger;   #IMPLIED
+     *     maxOccurs   CDATA                  #IMPLIED
+     *     id          ID                     #IMPLIED
+     *     %sequenceAttrs;>
 	 */
 	private List<Field> convertSequence(XSDElement element)
 	{
@@ -982,6 +1082,16 @@ public class XSDConverter_v11 extends XSDConverter
 
 	/**
 	 * <!ELEMENT %any; (%annotation;)?>
+	 * 
+	 * <!ATTLIST %any;
+     *       namespace       CDATA                  #IMPLIED
+     *       notNamespace    CDATA                  #IMPLIED
+     *       notQName        CDATA                  ''
+     *       processContents (skip|lax|strict)      'strict'
+     *       minOccurs       %nonNegativeInteger;   '1'
+     *       maxOccurs       CDATA                  '1'
+     *       id              ID                     #IMPLIED
+     *       %anyAttrs;>
 	 */
 	private List<Field> convertAny(XSDElement element)
 	{
@@ -1011,6 +1121,14 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %anyAttribute; (%annotation;)?>
+	 * 
+	 * <!ATTLIST %anyAttribute;
+     *       namespace       CDATA              #IMPLIED
+     *       notNamespace    CDATA              #IMPLIED
+     *       notQName        CDATA              ''
+     *       processContents (skip|lax|strict)  'strict'
+     *       id              ID                 #IMPLIED
+     *       %anyAttributeAttrs;>
 	 */
 	private Field convertAnyAttribute(XSDElement element)
 	{
@@ -1039,6 +1157,19 @@ public class XSDConverter_v11 extends XSDConverter
 
 	/**
 	 * <!ELEMENT %attribute; ((%annotation;)?, (%simpleType;)?)>
+	 * 
+	 * <!ATTLIST %attribute;
+     *     name              %NCName;      #IMPLIED
+     *     id                ID            #IMPLIED
+     *     ref               %QName;       #IMPLIED
+     *     type              %QName;       #IMPLIED
+     *     use               (prohibited|optional|required) #IMPLIED
+     *     default           CDATA         #IMPLIED
+     *     fixed             CDATA         #IMPLIED
+     *     form              %formValues;  #IMPLIED
+     *     targetNamespace   %URIref;      #IMPLIED
+     *     inheritable       %boolean;      #IMPLIED
+     *     %attributeAttrs;>
 	 */
 	private Field convertAttribute(XSDElement element)
 	{
@@ -1097,6 +1228,12 @@ public class XSDConverter_v11 extends XSDConverter
 	 * <!ELEMENT %attributeGroup; ((%annotation;)?,
 	 *		   (%attribute; | %attributeGroup;)*,
 	 *		   (%anyAttribute;)?) >
+	 *
+	 * <!ATTLIST %attributeGroup;
+     *            name       %NCName;       #IMPLIED
+     *            id         ID             #IMPLIED
+     *            ref        %QName;        #IMPLIED
+     *            %attributeGroupAttrs;>
 	 */
 	private List<Field> convertAttributeGroup(XSDElement element)
 	{
@@ -1145,6 +1282,12 @@ public class XSDConverter_v11 extends XSDConverter
 
 	/**
 	 * <!ELEMENT %unique; ((%annotation;)?, %selector;, (%field;)+)>
+	 * 
+	 * <!ATTLIST %unique;
+     *     name                     %NCName;       #IMPLIED
+     *     ref                      %QName;        #IMPLIED
+     *     id                       ID             #IMPLIED
+     *     %uniqueAttrs;>
 	 */
 	private Constraint convertUnique(XSDElement element)
 	{
@@ -1180,7 +1323,12 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %key; ((%annotation;)?, %selector;, (%field;)+)>
-	 * @return 
+	 * 
+	 * <!ATTLIST %key;
+     *     name                     %NCName;       #IMPLIED
+     *     ref                      %QName;        #IMPLIED
+     *     id                       ID             #IMPLIED
+     *     %keyAttrs;>
 	 */
 	private Constraint convertKey(XSDElement element)
 	{
@@ -1216,6 +1364,13 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %keyref; ((%annotation;)?, %selector;, (%field;)+)>
+	 * 
+	 * <!ATTLIST %keyref;
+     *     name                     %NCName;       #IMPLIED
+     *     ref                      %QName;        #IMPLIED
+     *     refer                    %QName;        #IMPLIED
+     *     id                       ID             #IMPLIED
+     *     %keyrefAttrs;>
 	 */
 	private Constraint convertKeyRef(XSDElement element)
 	{
@@ -1251,6 +1406,12 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %selector; ((%annotation;)?)>
+	 * 
+	 * <!ATTLIST %selector;
+     *     xpath                    %XPathExpr; #REQUIRED
+     *     xpathDefaultNamespace    CDATA       #IMPLIED
+     *     id                       ID          #IMPLIED
+     *     %selectorAttrs;>
 	 */
 	private Map<String, String> convertSelector(XSDElement element)
 	{
@@ -1277,7 +1438,12 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %field; ((%annotation;)?)>
-	 * @return 
+	 * 
+	 * <!ATTLIST %field;
+     *     xpath                    %XPathExpr; #REQUIRED
+     *     xpathDefaultNamespace    CDATA       #IMPLIED
+     *     id                       ID          #IMPLIED
+     *     %fieldAttrs;>
 	 */
 	private Map<String, String> convertField(XSDElement element)
 	{
@@ -1304,7 +1470,12 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %assert; ((%annotation;)?)>
-	 * @return 
+	 * 
+	 * <!ATTLIST %assert;
+     *     test                     %XPathExpr; #REQUIRED
+     *     id                       ID          #IMPLIED
+     *     xpathDefaultNamespace    CDATA       #IMPLIED
+     *     %assertAttrs;>
 	 */
 	private Constraint convertAssert(XSDElement element)
 	{
@@ -1331,6 +1502,11 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %include; (%annotation;)?>
+	 * 
+	 * <!ATTLIST %include;
+     *     schemaLocation %URIref; #REQUIRED
+     *     id             ID       #IMPLIED
+     *     %includeAttrs;>
 	 */
 	private void convertInclude(XSDElement element)
 	{
@@ -1357,6 +1533,12 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %import; (%annotation;)?>
+	 * 
+	 * <!ATTLIST %import;
+     *     namespace      %URIref; #IMPLIED
+     *     schemaLocation %URIref; #IMPLIED
+     *     id             ID       #IMPLIED
+     *     %importAttrs;>
 	 */
 	private void convertImport(XSDElement element)
 	{
@@ -1384,6 +1566,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ELEMENT %redefine; (%annotation; | %simpleType; | %complexType; |
  	 *	%attributeGroup; | %group;)*>
+ 	 *
+ 	 * <!ATTLIST %redefine;
+     *     schemaLocation %URIref; #REQUIRED
+     *     id             ID       #IMPLIED
+     *     %redefineAttrs;>
 	 */
 	private void convertRedefine(XSDElement element)
 	{
@@ -1428,6 +1615,11 @@ public class XSDConverter_v11 extends XSDConverter
 	 * <!ELEMENT %override; ((%annotation;)?,
 	 *		((%simpleType; | %complexType; | %group; | %attributeGroup;) |
 	 *		 %element; | %attribute; | %notation;)*)>
+	 *
+	 * <!ATTLIST %override;
+     *     schemaLocation %URIref; #REQUIRED
+     *     id             ID       #IMPLIED
+     *     %overrideAttrs;>
 	 */
 	private void convertOverride(XSDElement element)
 	{
@@ -1482,6 +1674,13 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %notation; (%annotation;)?>
+	 * 
+	 * <!ATTLIST %notation;
+	 *  name        %NCName;    #REQUIRED
+	 *  id          ID          #IMPLIED
+	 *  public      CDATA       #REQUIRED
+	 *  system      %URIref;    #IMPLIED
+	 *  %notationAttrs;>
 	 */
 	private void convertNotation(XSDElement element)
 	{
@@ -1508,6 +1707,7 @@ public class XSDConverter_v11 extends XSDConverter
 
 	/**
 	 * <!ELEMENT %annotation; (%appinfo; | %documentation;)*>
+	 * <!ATTLIST %annotation; %annotationAttrs;>
 	 */
 	private Field convertAnnotation(XSDElement element)
 	{
@@ -1539,6 +1739,11 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %appinfo; ANY>   <!-- too restrictive -->
+	 * 
+	 * <!ATTLIST %appinfo;
+     *     source     %URIref;      #IMPLIED
+     *     id         ID         #IMPLIED
+     *     %appinfoAttrs;>
 	 */
 	private List<String> convertAppInfo(XSDElement element)
 	{
@@ -1568,6 +1773,12 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %documentation; ANY>   <!-- too restrictive -->
+	 * 
+	 * <!ATTLIST %documentation;
+     *     source     %URIref;   #IMPLIED
+     *     id         ID         #IMPLIED
+     *     xml:lang   CDATA      #IMPLIED
+     *     %documentationAttrs;>
 	 */
 	private List<String> convertDocumentation(XSDElement element)
 	{
@@ -1602,6 +1813,12 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ELEMENT %simpleType;
 	 *		((%annotation;)?, (%restriction; | %list; | %union;))>
+	 *
+	 * <!ATTLIST %simpleType;
+	 *     name      %NCName;              #IMPLIED
+	 *     final     %simpleDerivationSet; #IMPLIED
+	 *     id        ID                    #IMPLIED
+	 *     %simpleTypeAttrs;>
 	 */
 	private Field convertSimpleType(XSDElement element)
 	{
@@ -1642,7 +1859,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ELEMENT %restriction; ((%annotation;)?,
 	 *		 (%restriction1; | ((%simpleType;)?,(%facet;)*)), (%attrDecls;))>
-	 * @return 
+	 *
+	 * <!ATTLIST %restriction;
+	 *     base      %QName;  #IMPLIED
+	 *     id        ID       #IMPLIED
+	 *     %restrictionAttrs;>
 	 */
 	private Field convertRestriction(XSDElement element)
 	{
@@ -1726,6 +1947,11 @@ public class XSDConverter_v11 extends XSDConverter
 	
 	/**
 	 * <!ELEMENT %list; ((%annotation;)?,(%simpleType;)?)>
+	 * 
+	 * <!ATTLIST %list;
+	 *     itemType  %QName;  #IMPLIED
+	 *     id        ID       #IMPLIED
+	 *     %listAttrs;>
 	 */
 	private Field convertList(XSDElement element)
 	{
@@ -1764,6 +1990,11 @@ public class XSDConverter_v11 extends XSDConverter
 
 	/**
 	 * <!ELEMENT %union; ((%annotation;)?,(%simpleType;)*)>
+	 * 
+	 * <!ATTLIST %union;
+	 *     id            ID       #IMPLIED
+	 *     memberTypes   %QNames; #IMPLIED
+	 *     %unionAttrs;>
 	 */
 	private Field convertUnion(XSDElement element)
 	{
@@ -1897,6 +2128,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %maxExclusive; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %maxExclusiveAttrs;>
 	 */
 	private Facet convertMaxExclusive(XSDElement element)
 	{
@@ -1924,6 +2160,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %minExclusive; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %minExclusiveAttrs;>
 	 */
 	private Facet convertMinExclusive(XSDElement element)
 	{
@@ -1951,6 +2192,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %maxInclusive; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %maxInclusiveAttrs;>
 	 */
 	private Facet convertMaxInclusive(XSDElement element)
 	{
@@ -1978,6 +2224,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %minInclusive; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %minInclusiveAttrs;>
 	 */
 	private Facet convertMinInclusive(XSDElement element)
 	{
@@ -2005,6 +2256,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %totalDigits; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %totalDigitsAttrs;>
 	 */
 	private Facet convertTotalDigits(XSDElement element)
 	{
@@ -2032,6 +2288,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %fractionDigits; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %fractionDigitsAttrs;>
 	 */
 	private Facet convertFractionDigits(XSDElement element)
 	{
@@ -2059,6 +2320,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %length; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %lengthAttrs;>
 	 */
 	private Facet convertLength(XSDElement element)
 	{
@@ -2086,6 +2352,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %minLength; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %minLengthAttrs;>
 	 */
 	private Facet convertMinLength(XSDElement element)
 	{
@@ -2113,6 +2384,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %maxLength; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %maxLengthAttrs;>
 	 */
 	private Facet convertMaxLength(XSDElement element)
 	{
@@ -2140,6 +2416,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %enumeration; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %enumerationAttrs;>
 	 */
 	private Facet convertEnumeration(XSDElement element)
 	{
@@ -2167,6 +2448,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %whiteSpace; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %whiteSpaceAttrs;>
 	 */
 	private Facet convertWhiteSpace(XSDElement element)
 	{
@@ -2194,6 +2480,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %pattern; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %facetModelAttrs;>
 	 */
 	private Facet convertPattern(XSDElement element)
 	{
@@ -2221,6 +2512,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %assertion; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %assertionAttrs;>
 	 */
 	private Facet convertAssertion(XSDElement element)
 	{
@@ -2248,6 +2544,11 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * <!ENTITY % facetModel "(%annotation;)?">
 	 * <!ELEMENT %explicitTimezone; %facetModel;>
+	 * 
+	 * <!ATTLIST %maxExclusive;
+	 *       %facetAttr;
+	 *       %fixedAttr;
+	 *       %explicitTimezoneAttrs;>
 	 */
 	private Facet convertExplicitTimezone(XSDElement element)
 	{

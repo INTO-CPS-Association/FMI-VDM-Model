@@ -74,7 +74,7 @@ public class OptionalType extends Type
 	{
 		if (avalue == null || avalue.isEmpty())
 		{
-			return new SimpleValue(type, locator);
+			return new SimpleValue(type, locator);	// nil
 		}
 		else
 		{

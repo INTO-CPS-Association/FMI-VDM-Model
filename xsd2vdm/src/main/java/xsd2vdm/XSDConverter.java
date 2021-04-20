@@ -77,14 +77,12 @@ abstract public class XSDConverter
 		namespaces.clear();
 	}
 	
-	
 	/**
 	 * Convert a list of schemas.
 	 * @param roots
 	 * @return schema map
 	 */
 	abstract public Map<String, Type> convertSchemas(List<XSDElement> roots);
-	
 	
 	/**
 	 * Get the set of functions required.
