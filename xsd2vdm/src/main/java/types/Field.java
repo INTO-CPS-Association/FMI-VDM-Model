@@ -33,32 +33,18 @@ import java.util.List;
 
 public class Field
 {
-	private final String fieldName;		// The VDM field name, typically lower case
-	private final String elementName;	// the XML element name for the matching value
+	private String fieldName;		// The VDM field name, typically lower case
+	private String elementName;	// the XML element name for the matching value
 	private final Type type;
-	private final boolean optional;
-	private final String aggregate;
 	
 	private boolean isAttribute = false;
-	private List<String> comments = null;
 	private List<Facet> facets = null;
-	
-	public Field(String fieldName, String elementName, Type type, boolean optional, String aggregate)
-	{
-		this.fieldName = fieldName;
-		this.elementName = elementName;
-		this.type = type;
-		this.optional = optional;
-		this.aggregate = aggregate;
-	}
 	
 	public Field(String fieldName, String elementName, Type type)
 	{
 		this.fieldName = fieldName;
 		this.elementName = elementName;
 		this.type = type;
-		this.optional = false;
-		this.aggregate = "";
 	}
 	
 	public String getFieldName()
@@ -80,52 +66,32 @@ public class Field
 	{
 		Type agg = null;
 		
-		switch (aggregate)
+		switch (type.aggregateType())
 		{
-			case "":
+			case 0:
 				agg = type;
 				break;
 				
-			case "seq of ":
+			case 1:
 				agg = new SeqType(type, 0);
 				break;
 
-			case "seq1 of ":
+			case 2:
 				agg = new SeqType(type, 1);
 				break;
 		}
 		
-		return optional ? new OptionalType(agg) : agg;
+		return type.isOptional() ? new OptionalType(agg) : agg;
 	}
 
-	public String getAggregate()
-	{
-		return aggregate;
-	}
-	
-	public List<String> getComments()
-	{
-		return comments;
-	}
-	
 	public List<Facet> getFacets()
 	{
 		return facets;
 	}
 
-	public boolean isOptional()
-	{
-		return optional;
-	}
-
 	public boolean isAttribute()
 	{
 		return isAttribute;
-	}
-
-	public boolean isSequence()
-	{
-		return !aggregate.isEmpty();
 	}
 
 	@Override
@@ -139,34 +105,19 @@ public class Field
 		this.isAttribute = isAttribute;
 	}
 	
-	public void setComments(CommentField annotation)
-	{
-		if (annotation != null)
-		{
-			this.comments = annotation.getComments();
-		}
-	}
-	
 	public void setFacets(List<Facet> facets)
 	{
 		this.facets = facets;
 	}
 
-	public Field renamed(String fieldName, String elementName)
+	public boolean isSequence()
 	{
-		Field result = new Field(fieldName, elementName, type, optional, aggregate);
-		result.isAttribute = isAttribute;
-		result.comments = comments;
-		result.facets = facets;
-		return result;
+		return type.aggregateType() > 0;
 	}
 
-	public Field reaggregate(String aggregate)
+	public void setNames(String fieldName, String elementName)
 	{
-		Field result = new Field(fieldName, elementName, type, optional, aggregate);
-		result.isAttribute = isAttribute;
-		result.comments = comments;
-		result.facets = facets;
-		return result;
+		this.fieldName = fieldName;
+		this.elementName = elementName;
 	}
 }

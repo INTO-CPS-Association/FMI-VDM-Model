@@ -37,7 +37,6 @@ import java.util.Vector;
 
 import types.AssertionFacet;
 import types.BasicType;
-import types.CommentField;
 import types.Constraint;
 import types.DigitsFacet;
 import types.EnumFacet;
@@ -779,6 +778,9 @@ public class XSDConverter_v11 extends XSDConverter
 				}
 			}
 		}
+
+		record.setMinOccurs(element);
+		record.setMaxOccurs(element);
 		
 		stack.pop();
 		return record;
@@ -1019,7 +1021,7 @@ public class XSDConverter_v11 extends XSDConverter
 
 		stack.pop();
 		name = stackAttr("name");
-		return new Field(fieldName(name), name, union, isOptional(), aggregate());
+		return new Field(fieldName(name), name, union);
 	}
 
 	/**
@@ -1191,13 +1193,14 @@ public class XSDConverter_v11 extends XSDConverter
 
 			if (element.hasAttr("type"))
 			{
-				result = convertType(element, element.getAttr("type")).get(0).renamed(fieldName(name), name);
+				result = convertType(element, element.getAttr("type")).get(0);
+				result.setNames(fieldName(name), name);
 			}
 			
 			if (result == null)
 			{
 				// If an attribute has no type... defaults to xs:any?
-				result = new Field(fieldName(name), name, new BasicType("token"), isOptional(), aggregate());
+				result = new Field(fieldName(name), name, new BasicType("token"));
 			}
 
 			for (XSDElement child: element.getChildren())
@@ -1209,7 +1212,8 @@ public class XSDConverter_v11 extends XSDConverter
 						break;
 						
 					case "xs:simpleType":
-						result = convertSimpleType(child).renamed(fieldName(name), name);
+						result = convertSimpleType(child);
+						result.setNames(fieldName(name), name);
 						break;
 						
 					default:
@@ -1709,7 +1713,7 @@ public class XSDConverter_v11 extends XSDConverter
 	 * <!ELEMENT %annotation; (%appinfo; | %documentation;)*>
 	 * <!ATTLIST %annotation; %annotationAttrs;>
 	 */
-	private Field convertAnnotation(XSDElement element)
+	private void convertAnnotation(XSDElement element)
 	{
 		assert element.isType("xs:annotation");
 		stack.push(element);
@@ -1734,7 +1738,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		return new CommentField(lines);
+		return;
 	}
 	
 	/**
@@ -1901,7 +1905,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 			}
 			
-			result = result.renamed(fieldName(name), name);
+			result.setNames(fieldName(name), name);
 		}
 		
 		List<Facet> facets = new Vector<>();
@@ -1982,7 +1986,8 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
-		field = field.reaggregate("seq of ");
+		field.getType().setMinOccurs("1");
+		field.getType().setMaxOccurs("2");
 		
 		stack.pop();
 		return field;
@@ -2627,7 +2632,7 @@ public class XSDConverter_v11 extends XSDConverter
 				}
 			}
 			
-			results.add(new Field(fieldName(elementName), elementName, vtype, isOptional(), aggregate()));
+			results.add(new Field(fieldName(elementName), elementName, vtype));
 		}
 		else
 		{
@@ -2645,7 +2650,7 @@ public class XSDConverter_v11 extends XSDConverter
 			
 				case "xs:element":
 					String name = stackAttr("name");
-					results.add(new Field(fieldName(name), name, convertElement(etype), isOptional(), aggregate()));
+					results.add(new Field(fieldName(name), name, convertElement(etype)));
 					break;
 
 				default:
@@ -2666,30 +2671,29 @@ public class XSDConverter_v11 extends XSDConverter
 	}
 	
 	/**
-	 * Convert a RecordType to a Field, for processing element subfields.
+	 * Convert a Type to a Field, for processing element subfields.
 	 */
 	private Field toField(Type type)
 	{
 		if (type instanceof RecordType)
 		{
 			RecordType rec = (RecordType)type;
-			return new Field(fieldName(rec.getName()), rec.getName(), type, isOptional(), aggregate());
+			return new Field(fieldName(rec.getName()), rec.getName(), type);
 		}
 		else if (type instanceof UnionType)
 		{
 			UnionType union = (UnionType)type;
-			return new Field(fieldName(union.getName()), union.getName(), union, isOptional(), aggregate());
+			return new Field(fieldName(union.getName()), union.getName(), union);
 		}
 		else if (type instanceof SeqType)
 		{
 			SeqType seq = (SeqType)type;
-			Field f = toField(seq.itemtype);
-			return f.reaggregate("seq of ");
+			return toField(seq.itemtype);
 		}
 		else if (type instanceof BasicType)
 		{
 			String name = stackAttr("name");
-			return new Field(fieldName(name), name, type, isOptional(), aggregate());
+			return new Field(fieldName(name), name, type);
 		}
 		else
 		{
@@ -2764,7 +2768,7 @@ public class XSDConverter_v11 extends XSDConverter
 			type = union;
 		}
 		
-		Field result = new Field(field.getFieldName(), field.getElementName(), type, isOptional(), aggregate());
+		Field result = new Field(field.getFieldName(), field.getElementName(), type);
 		result.setFacets(facets);
 		return result;
 	}

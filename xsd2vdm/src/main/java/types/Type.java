@@ -34,6 +34,7 @@ import java.util.List;
 import org.xml.sax.Locator;
 
 import values.VDMValue;
+import xsd2vdm.XSDElement;
 
 abstract public class Type
 {
@@ -49,6 +50,11 @@ abstract public class Type
 		}
 	}
 	
+	public void setMinOccurs(XSDElement element)
+	{
+		setMinOccurs(element.getAttr("minOccurs"));
+	}
+	
 	public void setMaxOccurs(String value)
 	{
 		if (value != null)
@@ -57,12 +63,17 @@ abstract public class Type
 		}
 	}
 	
+	public void setMaxOccurs(XSDElement element)
+	{
+		setMaxOccurs(element.getAttr("maxOccurs"));
+	}
+	
 	public void setUse(String use)
 	{
 		this.use = use;
 	}
 	
-	protected boolean isOptional()
+	public boolean isOptional()
 	{
 		if (use != null)
 		{
@@ -79,7 +90,7 @@ abstract public class Type
 	 * 1 => seq of Type
 	 * 2 => seq1 of Type
 	 */
-	protected int aggregateType()
+	public int aggregateType()
 	{
 		int min = minOccurs == null ? 1 : minOccurs;
 		int max = maxOccurs == null ? 1 : maxOccurs;
@@ -87,19 +98,7 @@ abstract public class Type
 		return min > 1 ? 2 : max > 1 ? (min == 1 ? 2 : 1) : 0; 
 	}
 	
-	protected List<String> comments = null;
-	
 	public abstract String signature();
-	
-	public List<String> getComments()
-	{
-		return comments;
-	}
-	
-	public void setComments(List<String> comments)
-	{
-		this.comments = comments;
-	}
 
 	public boolean matches(Type type)
 	{

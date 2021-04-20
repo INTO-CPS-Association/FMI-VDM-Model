@@ -139,7 +139,7 @@ public class RecordValue extends VDMValue
 					
 					sb.append(value);
 				}
-				else if (field.isOptional())
+				else if (field.getType().isOptional())
 				{
 					sb.append(indent + "    nil");
 					comment = "  -- " + field.getFieldName() + "\n";
