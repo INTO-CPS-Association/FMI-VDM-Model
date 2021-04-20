@@ -37,14 +37,26 @@ public class DigitsFacet extends Facet
 	{
 		super(type, value);
 	}
-
 	
 	@Override
-	public String toVDM(String var, Field field)
+	public String toVDM(String var, Type fieldtype)
 	{
-		String result = (field.getType() instanceof OptionalType) ? var + " <> nil => " : "";
+		String result = "";
 		
-		switch (type)
+		if (fieldtype.isOptional())
+		{
+			result = var + " <> nil => ";
+			OptionalType otype = (OptionalType)fieldtype;
+			fieldtype = otype.type;
+		}
+		
+		if (fieldtype instanceof SeqType)
+		{
+			result = result + "forall " + var + "' in seq " + var + " & ";
+			var = var + "'";
+		}
+		
+		switch (kind)
 		{
 			case "xs:totalDigits":
 				return result + "xsdTotalDigits(" + var + ") <= " + value;

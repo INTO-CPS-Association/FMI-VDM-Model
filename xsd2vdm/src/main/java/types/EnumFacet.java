@@ -31,13 +31,13 @@ package types;
 
 public class EnumFacet extends Facet
 {
-	public EnumFacet(String type, String value)
+	public EnumFacet(String kind, String value)
 	{
-		super(type, value);
+		super(kind, value);
 	}
 
 	@Override
-	public String toVDM(String var, Field field)
+	public String toVDM(String var, Type fieldtype)
 	{
 		return "?";		// Enums extracted into Unions
 	}

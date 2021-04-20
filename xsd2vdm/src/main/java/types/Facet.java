@@ -34,22 +34,22 @@ import java.util.Set;
 
 abstract public class Facet
 {
-	public final String type;
+	public final String kind;
 	public final String value;
 	
-	public Facet(String type, String value)
+	public Facet(String kind, String value)
 	{
-		this.type = type;
+		this.kind = kind;
 		this.value = value;
 	}
 	
 	@Override
 	public String toString()
 	{
-		return type + " = " + value;
+		return kind + " = " + value;
 	}
 
-	abstract public String toVDM(String var, Field field);
+	abstract public String toVDM(String var, Type fieldtype);
 
 	public Set<String> getFunctions()
 	{
@@ -61,7 +61,7 @@ abstract public class Facet
 	 */
 	protected String functionFromType()
 	{
-		String name = type.substring("xs:".length());
+		String name = kind.substring("xs:".length());
 		name = Character.toUpperCase(name.charAt(0)) + name.substring(1);
 		return "xsd" + name;
 	}

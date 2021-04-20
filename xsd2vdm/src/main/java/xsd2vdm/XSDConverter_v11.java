@@ -962,6 +962,25 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
+		if (Type.aggregateTypeOf(element) > 0)
+		{
+			if (fields.size() == 1)
+			{
+				// We can process the min/max for the xs:all because there is only
+				// one field within.
+				
+				Type full = fields.get(0).getFieldType();	// Apply inner seq/opt
+				full.setMinOccurs(element);
+				full.setMaxOccurs(element);
+				fields.set(0, new Field(fields.get(0).getFieldName(), fields.get(0).getElementName(), full));
+			}
+			else 
+			{
+				// This would need a new anonymous record to be created.
+				warning("ignoring min/maxOccurs for multi-all", element);
+			}
+		}
+
 		stack.pop();
 		return fields;
 	}
@@ -1139,7 +1158,10 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
-		fields.add(new Field("any", "any", new BasicType("token")));
+		Type type = new BasicType("token");
+		type.setMinOccurs(element);
+		type.setMaxOccurs(element);
+		fields.add(new Field("any", "any", type));
 		
 		stack.pop();
 		return fields;
@@ -1935,6 +1957,11 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		List<Facet> facets = new Vector<>();
+		
+		if (result.getFacets() != null)
+		{
+			facets.addAll(result.getFacets());
+		}
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -2012,6 +2039,7 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
+		// Set min/max to produce a simple "seq of" (can be empty)
 		field.getType().setMinOccurs("1");
 		field.getType().setMaxOccurs("2");
 		
@@ -2745,7 +2773,7 @@ public class XSDConverter_v11 extends XSDConverter
 	 */
 	private Field adjustField(Field field, List<Facet> facets)
 	{
-		Type type = field.getFieldType();
+		Type type = field.getFieldType();	// ie. optional/aggregated
 		
 		List<String> enums = new Vector<>();
 		Iterator<Facet> iter = facets.iterator();
@@ -2754,7 +2782,7 @@ public class XSDConverter_v11 extends XSDConverter
 		{
 			Facet facet = iter.next();
 			
-			if (facet.type.equals("xs:enumeration"))
+			if (facet.kind.equals("xs:enumeration"))
 			{
 				enums.add(facet.value);
 				iter.remove();

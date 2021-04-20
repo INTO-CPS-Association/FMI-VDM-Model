@@ -33,13 +33,13 @@ import java.util.Set;
 
 public class PatternFacet extends Facet
 {
-	public PatternFacet(String type, String value)
+	public PatternFacet(String kind, String value)
 	{
-		super(type, value);
+		super(kind, value);
 	}
 
 	@Override
-	public String toVDM(String var, Field field)
+	public String toVDM(String var, Type fieldtype)
 	{
 		return "xsdPattern(" + var + ", \"" + value + "\")";
 	}

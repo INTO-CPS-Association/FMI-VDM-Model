@@ -33,13 +33,13 @@ import java.util.Set;
 
 public class TimezoneFacet extends Facet
 {
-	public TimezoneFacet(String type, String value)
+	public TimezoneFacet(String kind, String value)
 	{
-		super(type, value);
+		super(kind, value);
 	}
 
 	@Override
-	public String toVDM(String var, Field field)
+	public String toVDM(String var, Type fieldtype)
 	{
 		return "xsdExplicitTimezone(" + var + ", \"" + value + "\")";
 	}

@@ -120,7 +120,7 @@ public class RecordType extends Type
 						for (Facet facet: field.getFacets())
 						{
 							sb.append(sep);
-							sb.append("(" + facet.toVDM(iname, field) + ")");
+							sb.append("(" + facet.toVDM(iname, field.getFieldType()) + ")");
 							sep = " and\n" + INDENT;
 						}
 					}
@@ -193,7 +193,7 @@ public class RecordType extends Type
 						for (Facet facet: field.getFacets())
 						{
 							sb.append(sep);
-							sb.append("(" + facet.toVDM("rec." + field.getFieldName(), field) + ")");
+							sb.append("(" + facet.toVDM("rec." + field.getFieldName(), field.getFieldType()) + ")");
 							sep = " and\n" + INDENT;
 						}
 					}

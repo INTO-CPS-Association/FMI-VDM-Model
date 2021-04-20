@@ -31,17 +31,17 @@ package types;
 
 public class MinMaxFacet extends Facet
 {
-	public MinMaxFacet(String type, String value)
+	public MinMaxFacet(String kind, String value)
 	{
-		super(type, value);
+		super(kind, value);
 	}
 	
 	@Override
-	public String toVDM(String var, Field field)
+	public String toVDM(String var, Type fieldtype)
 	{
-		String result = (field.getType() instanceof OptionalType) ? var + " <> nil => " : "";
+		String result = fieldtype.isOptional() ? var + " <> nil => " : "";
 		
-		switch (type)
+		switch (kind)
 		{
 			case "xs:minInclusive":
 				return result + var + " >= " + value;

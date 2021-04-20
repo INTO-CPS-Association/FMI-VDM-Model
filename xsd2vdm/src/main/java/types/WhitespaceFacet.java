@@ -33,13 +33,13 @@ import java.util.Set;
 
 public class WhitespaceFacet extends Facet
 {
-	public WhitespaceFacet(String type, String value)
+	public WhitespaceFacet(String kind, String value)
 	{
-		super(type, value);
+		super(kind, value);
 	}
 
 	@Override
-	public String toVDM(String var, Field field)
+	public String toVDM(String var, Type fieldtype)
 	{
 		return "xsdWhiteSpace(" + var + ", \"" + value + "\")";
 	}

@@ -31,13 +31,13 @@ package types;
 
 public class ErrorFacet extends Facet
 {
-	public ErrorFacet(String type, String value)
+	public ErrorFacet(String kind, String value)
 	{
-		super(type, value);
+		super(kind, value);
 	}
 
 	@Override
-	public String toVDM(String var, Field field)
+	public String toVDM(String var, Type fieldtype)
 	{
 		return "Error " + toString();
 	}

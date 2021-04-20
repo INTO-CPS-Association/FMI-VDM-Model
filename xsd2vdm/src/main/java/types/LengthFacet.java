@@ -31,17 +31,17 @@ package types;
 
 public class LengthFacet extends Facet
 {
-	public LengthFacet(String type, String value)
+	public LengthFacet(String kind, String value)
 	{
-		super(type, value);
+		super(kind, value);
 	}
 	
 	@Override
-	public String toVDM(String var, Field field)
+	public String toVDM(String var, Type fieldtype)
 	{
-		String result = (field.getType() instanceof OptionalType) ? var + " <> nil => " : "";
+		String result = fieldtype.isOptional() ? var + " <> nil => " : "";
 		
-		switch (type)
+		switch (kind)
 		{
 			case "xs:minLength":
 				return result + "len " + var + " >= " + value;

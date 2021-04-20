@@ -33,13 +33,13 @@ import java.util.Set;
 
 public class AssertionFacet extends Facet
 {
-	public AssertionFacet(String type, String value)
+	public AssertionFacet(String kind, String value)
 	{
-		super(type, value);
+		super(kind, value);
 	}
 
 	@Override
-	public String toVDM(String var, Field field)
+	public String toVDM(String var, Type fieldtype)
 	{
 		return "xsdAssertion(" + var + ", \"" + value + "\")";
 	}
