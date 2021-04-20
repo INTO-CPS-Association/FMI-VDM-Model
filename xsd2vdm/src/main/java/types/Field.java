@@ -115,7 +115,7 @@ public class Field
 
 	public boolean isSequence()
 	{
-		return type.aggregateType() > 0;
+		return type.isSequence();
 	}
 
 	public void setNames(String fieldName, String elementName)

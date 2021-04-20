@@ -108,6 +108,11 @@ abstract public class Type
 			return minOccurs != null && minOccurs == 0;
 		}
 	}
+	
+	public boolean isSequence()
+	{
+		return aggregateType() > 0;
+	}
 
 	/**
 	 * 0 => single value
