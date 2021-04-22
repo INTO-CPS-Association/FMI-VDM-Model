@@ -48,7 +48,6 @@ import types.MinMaxFacet;
 import types.PatternFacet;
 import types.QuoteType;
 import types.RecordType;
-import types.SeqType;
 import types.TimezoneFacet;
 import types.Type;
 import types.UnionType;
@@ -106,18 +105,18 @@ public class XSDConverter_v11 extends XSDConverter
 	 *		 (%annotation;)*)* )>
 	 *
 	 * <!ATTLIST %schema;
-	 *		targetNamespace      %URIref;               #IMPLIED
-	 *		version              CDATA                  #IMPLIED
-	 *		%nds;                %URIref;               #FIXED 'http://www.w3.org/2001/XMLSchema'
-	 *		xmlns                CDATA                  #IMPLIED
-	 *		finalDefault         %complexDerivationSet; ''
-	 *		blockDefault         %blockSet;             ''
-	 *		id                   ID                     #IMPLIED
-	 *		elementFormDefault   %formValues;           'unqualified'
-	 *		attributeFormDefault %formValues;           'unqualified'
-	 *		defaultAttributes    CDATA                  #IMPLIED
-	 *		xpathDefaultNamespace    CDATA              '##local'
-	 *		xml:lang             CDATA                  #IMPLIED
+	 *		targetNamespace       %URIref;               #IMPLIED
+	 *		version               CDATA                  #IMPLIED
+	 *		%nds;                 %URIref;               #FIXED 'http://www.w3.org/2001/XMLSchema'
+	 *		xmlns                 CDATA                  #IMPLIED
+	 *		finalDefault          %complexDerivationSet; ''
+	 *		blockDefault          %blockSet;             ''
+	 *		id                    ID                     #IMPLIED
+	 *		elementFormDefault    %formValues;           'unqualified'
+	 *		attributeFormDefault  %formValues;           'unqualified'
+	 *		defaultAttributes     CDATA                  #IMPLIED
+	 *		xpathDefaultNamespace CDATA                  '##local'
+	 *		xml:lang              CDATA                  #IMPLIED
 	 *		%schemaAttrs;>
 	 */
 	private void convertSchema(XSDElement element)
@@ -2744,11 +2743,6 @@ public class XSDConverter_v11 extends XSDConverter
 		{
 			UnionType union = (UnionType)type;
 			return new Field(fieldName(union.getName()), union.getName(), union);
-		}
-		else if (type instanceof SeqType)
-		{
-			SeqType seq = (SeqType)type;
-			return toField(seq.itemtype);
 		}
 		else if (type instanceof BasicType)
 		{

@@ -59,7 +59,7 @@ abstract public class Type
 	{
 		if (value != null)
 		{
-			maxOccurs = occursOf(value);
+			maxOccurs = occursToInt(value);
 		}
 	}
 	
@@ -68,7 +68,7 @@ abstract public class Type
 		setMaxOccurs(element.getAttr("maxOccurs"));
 	}
 	
-	public static Integer occursOf(String value)
+	public static Integer occursToInt(String value)
 	{
 		if (value == null)
 		{
@@ -129,8 +129,8 @@ abstract public class Type
 	
 	public static int aggregateTypeOf(XSDElement element)
 	{
-		Integer min = occursOf(element.getAttr("minOccurs"));
-		Integer max = occursOf(element.getAttr("maxOccurs"));
+		Integer min = occursToInt(element.getAttr("minOccurs"));
+		Integer max = occursToInt(element.getAttr("maxOccurs"));
 			
 		return min > 1 ? 2 : max > 1 ? (min == 1 ? 2 : 1) : 0; 
 	}
