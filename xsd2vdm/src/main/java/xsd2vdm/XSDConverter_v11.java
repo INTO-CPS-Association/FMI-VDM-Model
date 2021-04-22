@@ -546,7 +546,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:restriction":
-					fields.add(convertRestriction(child));
+					fields.addAll(convertRestriction(child, true));
 					break;
 					
 				case "xs:extension":
@@ -621,7 +621,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 					
 				case "xs:restriction":
-					fields.add(convertRestriction(child));
+					fields.addAll(convertRestriction(child, false));
 					break;
 					
 				case "xs:extension":
@@ -1887,7 +1887,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 				
 				case "xs:restriction":
-					field = convertRestriction(child);
+					field = convertRestriction(child, false).get(0);
 					break;
 					
 				case "xs:list":
@@ -1917,7 +1917,7 @@ public class XSDConverter_v11 extends XSDConverter
 	 *     id        ID       #IMPLIED
 	 *     %restrictionAttrs;>
 	 */
-	private Field convertRestriction(XSDElement element)
+	private List<Field> convertRestriction(XSDElement element, boolean complex)
 	{
 		assert element.isType("xs:restriction");
 		stack.push(element);
@@ -1962,6 +1962,8 @@ public class XSDConverter_v11 extends XSDConverter
 		{
 			facets.addAll(result.getFacets());
 		}
+		
+		List<Field> results = new Vector<>();
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1978,7 +1980,7 @@ public class XSDConverter_v11 extends XSDConverter
 				default:
 					if (isRestriction1(child))
 					{
-						convertRestriction1(child);
+						results.addAll(convertRestriction1(child));
 					}
 					else if (isFacet(child))
 					{
@@ -1986,7 +1988,7 @@ public class XSDConverter_v11 extends XSDConverter
 					}
 					else if (isAttrDecls(child))
 					{
-						convertAttrDecls(child);
+						results.addAll(convertAttrDecls(child));
 					}
 					else
 					{
@@ -1996,10 +1998,14 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
-		result = adjustField(result, facets);
+		if (!complex)
+		{
+			result = adjustField(result, facets);
+			results.add(result);
+		}
 		
 		stack.pop();
-		return result;
+		return results;
 	}
 	
 	/**

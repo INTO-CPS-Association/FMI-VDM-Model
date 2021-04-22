@@ -328,7 +328,8 @@ public class Xsd2VDM
 		output.println("AnyString = seq of char;\n");
 
 		output.println("NormalizedString = seq of char");
-		output.println("inv ns == forall c in seq ns & c not in set {\'\\r\', \'\\n\', \'\\t\'};\n");
+		output.println("inv ns ==");
+		output.println(INDENT + "forall c in seq ns & c not in set {\'\\r\', \'\\n\', \'\\t\'};\n");
 		
 		output.println("Location ::");
 		output.println("    file : seq1 of char");
