@@ -50,6 +50,12 @@ public class OptionalType extends Type
 	}
 
 	@Override
+	public boolean isOptional()
+	{
+		return true;
+	}
+	
+	@Override
 	public String signature()
 	{
 		return (type instanceof OptionalType) ?
