@@ -2044,8 +2044,8 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
-		// Set min/max to produce a simple "seq of" (can be empty)
-		field.getType().setMinOccurs("1");
+		// Set min/max to produce a simple "seq of" (can be empty, so becomes optional)
+		field.getType().setMinOccurs("0");
 		field.getType().setMaxOccurs("2");
 		
 		stack.pop();
