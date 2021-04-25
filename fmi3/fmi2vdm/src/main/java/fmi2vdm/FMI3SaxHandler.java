@@ -374,7 +374,7 @@ public class FMI3SaxHandler extends DefaultHandler
 				break;
 
 			case "Output":
-			case "Derivative":
+			case "ContinuousStateDerivative":
 			case "InitialUnknown":
 				stack.push(new Unknown(qName, attributes, locator));
 				break;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<fmiModelDescription fmiVersion="3.0-alpha"
+<fmiModelDescription fmiVersion="3.0-beta.1"
 	modelName="" instantiationToken="{111-222-333-444}">
 	<ModelExchange modelIdentifier="Test FMU">
 		<Annotations>
@@ -29,7 +29,7 @@
 			<Item name="b" value="2" />
 			<Item name="c" value="3" />
 		</EnumerationType>
-		<ClockType name="g" clockType="synchronousTime" priority="1" />
+		<ClockType name="g" interval="fixed" priority="1" />
 	</TypeDefinitions>
 	<ModelVariables>
 		<Float64 name="a" valueReference="1" start="INF NaN -INF">
@@ -58,15 +58,15 @@
 		</String>
 		<Binary name="e" valueReference="5" />
 		<Enumeration name="f" valueReference="5" declaredType="f" />
-		<Clock name="g" valueReference="6" clockType="synchronousTime" priority="10" />
+		<Clock name="g" valueReference="6" interval="fixed" priority="10" />
 	</ModelVariables>
 	<ModelStructure>
 		<Output valueReference="1" dependencies="1" dependenciesKind="dependent" />
 		<Output valueReference="2" dependencies="1" dependenciesKind="dependent" />
 		<Output valueReference="3" dependencies="1" dependenciesKind="dependent" />
-		<Derivative valueReference="1" dependencies="1"
+		<ContinuousStateDerivative valueReference="1" dependencies="1"
 			dependenciesKind="dependent" />
-		<Derivative valueReference="2" dependencies="1"
+		<ContinuousStateDerivative valueReference="2" dependencies="1"
 			dependenciesKind="dependent" />
 		<InitialUnknown valueReference="1" dependencies="1 22 333"
 			dependenciesKind="dependent fixed tunable" />
