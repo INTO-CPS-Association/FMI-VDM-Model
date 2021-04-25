@@ -30,22 +30,6 @@
 /**
  * 2.2.8 Definition of the Model Structure (ModelStructure)
  */
-types
-	-- XSD p57
-	DependencyKind = <dependent> | <constant> | <fixed> | <tunable> | <discrete>;
-
-	Unknown ::			-- XSD p57
-		location			: Location
-		index				: nat1
-		dependencies		: [seq of nat1]
-		dependenciesKind	: [seq of DependencyKind];
-
-	ModelStructure ::	-- XSD p56
-		location			: Location
-		outputs				: [seq1 of Unknown]
-		derivatives			: [seq1 of Unknown]
-		initialUnknowns		: [seq1 of Unknown];
-
 functions
 	/**
 	 * Validate an Unknown structure in isolation.

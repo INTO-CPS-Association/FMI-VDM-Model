@@ -30,30 +30,6 @@
 /**
  * 2.2.2 Unit Definitions.
  */
-types
-	Unit ::
-		location		: Location
-		name			: NormalizedString
-		baseUnit		: [BaseUnit]
-		displayUnits	: [seq of DisplayUnit];
-
-	BaseUnit ::
-		kg				: [int]
-		m				: [int]
-		s				: [int]
-		A				: [int]
-		K				: [int]
-		mol				: [int]
-		cd				: [int]
-		rad				: [int]
-		factor			: [real]
-		offset			: [real];
-
-	DisplayUnit ::
-		name			: NormalizedString
-		factor			: [real]
-		offset			: [real];
-
 functions
 	isValidUnitDefinitions: [seq1 of Unit] +> bool
 	isValidUnitDefinitions(units) ==
@@ -67,11 +43,12 @@ functions
 	effBaseUnit(b) ==
 		mk_BaseUnit
 		(
+			b.location,
 			nilInt(b.kg),
 			nilInt(b.m),
 			nilInt(b.s),
-			nilInt(b.A),
-			nilInt(b.K),
+			nilInt(b.a),
+			nilInt(b.k),
 			nilInt(b.mol),
 			nilInt(b.cd),
 			nilInt(b.rad),
@@ -83,6 +60,7 @@ functions
 	effDisplayUnit(d) ==
 		mk_DisplayUnit
 		(
+			d.location,
 			d.name,
 			if d.factor = nil then 1 else d.factor,
 			nilReal(d.offset)

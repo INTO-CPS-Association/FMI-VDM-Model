@@ -30,12 +30,6 @@
 /**
  * 2.2.4 Log Categories
  */
-types
-	Category ::
-		location		: Location
-		name			: NormalizedString
-		description		: [AnyString];
-
 functions
 	isValidLogCategories: [seq1 of Category] +> bool
 	isValidLogCategories(cats) ==

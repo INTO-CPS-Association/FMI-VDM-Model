@@ -30,79 +30,25 @@
 /**
  * 2.2.1 Definition of an FMU (fmiModelDescription)
  */
-types
-	ModelAttributes ::
-		location					: Location
-		fmiVersion					: NormalizedString
-		modelName					: AnyString
-		guid						: NormalizedString
-		description					: [AnyString]
-		author						: [AnyString]
-		version						: [NormalizedString]
-		copyright					: [AnyString]
-		license						: [AnyString]
-		generationTool				: [NormalizedString]
-		generationDateAndTime		: [AnyString]
-		variableNamingConvention	: [<flat> | <structured>]
-		numberOfEventIndicators		: [nat];
-
-
-	-- XSD definition in section 2.2.1, p25
-	FMIModelDescription ::
-		-- The common model attributes
-		attributes			: ModelAttributes			-- XSD 2.2.1, p31
-
-		-- ModelExchange
-		modelExchange		: [ModelExchange]			-- XSD 3.3.1, p89
-
-		-- CoSimulation
-		coSimulation		: [CoSimulation ]			-- XSD 4.3.1, p109
-
-		-- Unit Definitions that are utilized in "ModelVariables"
-		unitDefinitions		: [seq1 of Unit]			-- XSD 2.2.2, p33
-
-		-- A global list of type definitions that are utilized in "ModelVariables"
-		typeDefinitions		: [set1 of SimpleType]		-- XSD 2.2.3, p38
-
-		-- Log categories
-		logCategories		: [seq1 of Category]		-- XSD 2.2.4, p42
-
-		-- Default experiment
-		defaultExperiment	: [DefaultExperiment]		-- XSD 2.2.5, p43
-
-		-- Vendor annotations
-		vendorAnnotations	: [seq1 of Tool]			-- XSD 2.2.6, p43
-
-		-- The central FMU data structure defining all variables of the FMU that
-		-- Are visible/accessible via the FMU functions.
-		modelVariables		: seq1 of ScalarVariable	-- XSD 2.2.7, p44
-
-		-- Defines the structure of the model. Especially, the ordered lists of
-		-- outputs, continuous-time states and initial unknowns (the unknowns
-		-- during Initialization Mode) are defined here. Furthermore, the
-		-- dependency of the unknowns from the knowns can be optionally
-		-- defined.
-		modelStructure		: ModelStructure;			-- XSD 2.2.8, p56
-
 functions
 	/**
 	 * Valid description attributes.
 	 */
-	isValidModelAttributes: ModelAttributes +> bool
-	isValidModelAttributes(attrs) ==
+	isValidModelAttributes: FmiModelDescription +> bool
+	isValidModelAttributes(md) ==
 		-- @OnFail(1000, "2.2.1 ModelAttribute fmiVersion should be 2.0")
-		( attrs.fmiVersion in set { "2.0" } );
+		( md.fmiVersion in set { "2.0" } );
 
 	/**
 	 * Invariant definition for FMIModelDescription
 	 */
-	isValidFMIModelDescription: FMIModelDescription +> bool
+	isValidFMIModelDescription: FmiModelDescription +> bool
 	isValidFMIModelDescription(md) ==
 		-- First fill in effective values for model variables' missing attributes
 		let eModelVariables = effectiveScalarVariables(md) in
 		{
-			-- @OnFail(1001, "2.2.1 ModelAttributes invalid at line %s", md.attributes.location)
-			( isValidModelAttributes(md.attributes) ),
+			-- @OnFail(1001, "2.2.1 ModelAttributes invalid at line %s", md.location)
+			( isValidModelAttributes(md) ),
 
 			-- @OnFail(1002, "2.2.1 ModelExchange invalid at line %s", md.modelExchange.location)
 			( isValidModelExchange(md.modelExchange) ),
@@ -141,7 +87,7 @@ functions
 			( md.modelExchange <> nil or md.coSimulation <> nil ),
 
 			(
-				md.attributes.variableNamingConvention = <structured> =>
+				md.variableNamingConvention = <structured> =>
 					dunion
 					{
 						{
@@ -149,7 +95,7 @@ functions
 							( isValidStructuredName(sv.name) ),
 
 							-- @OnFail(1015, "2.2.9 Name %s is not Real at line %s", sv.name, sv.location)
-							( sv.name(1, ..., 4) = "der(" => is_Real(sv.variable) )
+							( sv.name(1, ..., 4) = "der(" => is_Real(sv.fmi2ScalarVariable) )
 						}
 
 						| sv in seq eModelVariables
@@ -164,21 +110,21 @@ functions
 								simpleType.name, simpleType.location) */
 						( not exists sv in seq eModelVariables & sv.name = simpleType.name )
 
-						| simpleType in set md.typeDefinitions
+						| simpleType in seq md.typeDefinitions
 					} = {true}
 			),
 
 			(
 				md.typeDefinitions <> nil =>
 					{
-						is_RealType(std.type) =>
-							std.type.unit <> nil =>
+						is_RealType(std.fmi2SimpleType) =>
+							std.fmi2SimpleType.unit <> nil =>
 								/* @OnFail(1017, "2.2.3 SimpleType %s, Real unit %s not defined in UnitDefinitions at line %s",
-									std.name, std.type.unit, std.location) */
+									std.name, std.fmi2SimpleType.unit, std.location) */
 								( md.unitDefinitions <> nil
-								  and exists u in seq md.unitDefinitions & u.name = std.type.unit )
+								  and exists u in seq md.unitDefinitions & u.name = std.fmi2SimpleType.unit )
 
-						| std in set md.typeDefinitions
+						| std in seq md.typeDefinitions
 					} = {true}
 			),
 
@@ -195,17 +141,17 @@ functions
 
 			(
 				{
-					is_Real(sv.variable) =>
+					is_Real(sv.fmi2ScalarVariable) =>
 					{
 						/* @OnFail(1019, "2.2.7 ScalarVariable %s, Real unit must be defined for displayUnit %s at line %s",
-							sv.name, sv.variable.displayUnit, sv.location) */
-						( sv.variable.displayUnit <> nil => sv.variable.unit <> nil ),
+							sv.name, sv.fmi2ScalarVariable.displayUnit, sv.location) */
+						( sv.fmi2ScalarVariable.displayUnit <> nil => sv.fmi2ScalarVariable.unit <> nil ),
 
-						sv.variable.unit <> nil =>
+						sv.fmi2ScalarVariable.unit <> nil =>
 							/* @OnFail(1020, "2.2.7 ScalarVariable %s, Real unit %s not defined in UnitDefinitions at line %s",
-								sv.name, sv.variable.unit, sv.location) */
+								sv.name, sv.fmi2ScalarVariable.unit, sv.location) */
 							( md.unitDefinitions <> nil
-							  and exists u in seq md.unitDefinitions & u.name = sv.variable.unit )
+							  and exists u in seq md.unitDefinitions & u.name = sv.fmi2ScalarVariable.unit )
 					}
 					= {true}
 
@@ -216,7 +162,7 @@ functions
 			(
 				{
 					let sv = eModelVariables(svi) in
-						is_Real(sv.variable) and sv.variable.reinit <> nil =>
+						is_Real(sv.fmi2ScalarVariable) and sv.fmi2ScalarVariable.reinit <> nil =>
 						/* @OnFail(1021, "2.2.7 ScalarVariable %s, Real reinit for model exchange continuous time only at line %s",
 								sv.name, sv.location) */
 						( isContinuousTimeState(svi, eModelVariables) and md.modelExchange <> nil )
@@ -319,7 +265,7 @@ functions
 	typeCheck: seq1 of ScalarVariable * [set1 of SimpleType] +> bool
 	typeCheck(variables, typedefs) ==
 		{
-			let dname = sv.variable.declaredType in
+			let dname = sv.fmi2ScalarVariable.declaredType in
 				dname <> nil =>
 					let matchingTypes = { td | td in set nilSet[SimpleType](typedefs) & td.name = dname } in
 					{
@@ -328,56 +274,56 @@ functions
 						( matchingTypes <> {} => card matchingTypes = 1 ),
 
 						/* @OnFail(1033, "2.2.3 Declared type %s unknown at line %s",
-							sv.variable.declaredType, sv.location ) */
+							sv.fmi2ScalarVariable.declaredType, sv.location ) */
 						( card matchingTypes <> 0 ),
 
 						-- The match is has compatible values in the ScalarVariable
 						card matchingTypes = 1 => let { simpleType } = matchingTypes in
-							cases simpleType.type:
-								mk_RealType(-, -, -, -, min, max, -, -) ->
+							cases simpleType.fmi2SimpleType:
+								mk_RealType(-, -, -, -, -, min, max, -, -) ->
 									/* @OnFail(1034, "2.2.7 ScalarVariable %s min/max exceeds RealType %s at line %s",
-										sv.name, sv.variable.declaredType, sv.location) */
-									( (min <> nil and sv.variable.min <> nil => min <= sv.variable.min)
+										sv.name, sv.fmi2ScalarVariable.declaredType, sv.location) */
+									( (min <> nil and sv.fmi2ScalarVariable.min <> nil => min <= sv.fmi2ScalarVariable.min)
 										and
-									  (max <> nil and sv.variable.max <> nil => max >= sv.variable.max) ),
+									  (max <> nil and sv.fmi2ScalarVariable.max <> nil => max >= sv.fmi2ScalarVariable.max) ),
 
-								mk_IntegerType(-, min, max) ->
+								mk_IntegerType(-, -, min, max) ->
 									/* @OnFail(1035, "2.2.7 ScalarVariable %s min/max exceeds IntegerType %s at line %s",
-										sv.name, sv.variable.declaredType, sv.location) */
-									( (min <> nil and sv.variable.min <> nil => min <= sv.variable.min)
+										sv.name, sv.fmi2ScalarVariable.declaredType, sv.location) */
+									( (min <> nil and sv.fmi2ScalarVariable.min <> nil => min <= sv.fmi2ScalarVariable.min)
 										and
-									  (max <> nil and sv.variable.max <> nil => max >= sv.variable.max) ),
+									  (max <> nil and sv.fmi2ScalarVariable.max <> nil => max >= sv.fmi2ScalarVariable.max) ),
 
 								others -> true
 							end,
 
 						-- The match is the same type as the ScalarVariable type and for numerics,
 						card matchingTypes = 1 => let { simpleType } = matchingTypes in
-							cases simpleType.type:
-								mk_RealType(-, -, -, -, -, -, -, -) ->
+							cases simpleType.fmi2SimpleType:
+								mk_RealType(-, -, -, -, -, -, -, -, -) ->
 									/* @OnFail(1036, "2.2.7 ScalarVariable %s, RealType not referenced by Real variable %s at line %s",
-										sv.name, sv.variable.declaredType, sv.location) */
-									( is_Real(sv.variable) ),
+										sv.name, sv.fmi2ScalarVariable.declaredType, sv.location) */
+									( is_Real(sv.fmi2ScalarVariable) ),
 
-								mk_IntegerType(-, -, -) ->
+								mk_IntegerType(-, -, -, -) ->
 									/* @OnFail(1037, "2.2.7 ScalarVariable %s, IntegerType not referenced by Integer variable %s at line %s",
-										sv.name, sv.variable.declaredType, sv.location) */
-									( is_Integer(sv.variable) ),
+										sv.name, sv.fmi2ScalarVariable.declaredType, sv.location) */
+									( is_Integer(sv.fmi2ScalarVariable) ),
 
-								mk_BooleanType() ->
+								mk_BooleanType(-) ->
 									/* @OnFail(1038, "2.2.7 ScalarVariable %s, BooleanType not referenced by Boolean variable %s at line %s",
-										sv.name, sv.variable.declaredType, sv.location) */
-									( is_Boolean(sv.variable) ),
+										sv.name, sv.fmi2ScalarVariable.declaredType, sv.location) */
+									( is_Boolean(sv.fmi2ScalarVariable) ),
 
-								mk_StringType() ->
+								mk_StringType(-) ->
 									/* @OnFail(1039, "2.2.7 ScalarVariable %s, StringType not referenced by String variable %s at line %s",
-										sv.name, sv.variable.declaredType, sv.location) */
-									( is_String(sv.variable) ),
+										sv.name, sv.fmi2ScalarVariable.declaredType, sv.location) */
+									( is_String(sv.fmi2ScalarVariable) ),
 
-								mk_EnumerationType(-, -) ->
+								mk_EnumerationType(-, -, -) ->
 									/* @OnFail(1040, "2.2.7 ScalarVariable %s, EnumerationType not referenced by Enumeration variable %s at line %s",
-										sv.name, sv.variable.declaredType, sv.location) */
-									( is_Enumeration(sv.variable) )
+										sv.name, sv.fmi2ScalarVariable.declaredType, sv.location) */
+									( is_Enumeration(sv.fmi2ScalarVariable) )
 							end
 					} = {true}
 			| sv in seq variables

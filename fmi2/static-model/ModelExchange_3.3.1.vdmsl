@@ -30,19 +30,6 @@
 /**
  * 4.3.1 Definition of a ModelExchange section of an FMU.
  */
-types
-	ModelExchange ::
-		location							: Location
-		modelIdentifier						: NormalizedString
-		needsExecutionTool					: [bool]
-		completedIntegratorStepNotNeeded	: [bool]
-		canBeInstantiatedOnlyOncePerProcess	: [bool]
-		canNotUseMemoryManagementFunctions	: [bool]
-		canGetAndSetFMUstate				: [bool]
-		canSerializeFMUstate				: [bool]
-		providesDirectionalDerivative		: [bool]
-		sourceFiles							: [seq1 of SourceFile];
-
 functions
 	/**
 	 * Apply defaults to return effective ModelExchange settings.
@@ -60,7 +47,7 @@ functions
 			nilBool(me.canGetAndSetFMUstate),
 			nilBool(me.canSerializeFMUstate),
 			nilBool(me.providesDirectionalDerivative),
-			nilSeq[SourceFile](me.sourceFiles)
+			nilSeq[File](me.sourceFiles)
 		);
 
 	/**
@@ -73,14 +60,14 @@ functions
 			me.sourceFiles <> nil =>
 				/* @OnFail(1400, "3.3.1 ModelExchange source file names are not unique: %s",
 					let files = me.sourceFiles in
-						{ files(a).name | a, b in set inds files &
-							a <> b and files(a).name = files(b).name })
+						{ files(a) | a, b in set inds files &
+							a <> b and files(a) = files(b) })
 
 					The file names within the sequence of source files listed for the ModelExchange
 					must be unique. This is determined by checking that the set of names is the same
 					size as the length of the list of source files.
 				 */
-				( len me.sourceFiles = card { f.name | f in seq me.sourceFiles } ),
+				( len me.sourceFiles = card { name | name in seq me.sourceFiles } ),
 
 			/* @OnFail(1401, "3.3.1 ModelExchange modelIdentifer %s not valid C variable name at line %s",
 							me.modelIdentifier, me.location) */

@@ -35,25 +35,28 @@ values
 --	test() ==
 --	isValidFMIModelDescription
 
-	springMassDamper = mk_FMIModelDescription
+	loc : Location = mk_Location("?", 1);	-- Dummy location
+
+	springMassDamper = mk_FmiModelDescription
 	(
 		-- Attributes
-		mk_ModelAttributes(0, "2.0", "MassSpringDamper", "GUID", nil, nil, nil, nil, nil, nil, nil, <structured>, nil),
+		loc,
+		"2.0", "MassSpringDamper", "GUID", nil, nil, nil, nil, nil, nil, nil, <structured>, nil,
 
 		-- Model types
-		mk_ModelExchange(0, "MSD", nil, nil, nil, nil, nil, nil, nil, nil),
+		mk_ModelExchange(loc, "MSD", nil, nil, nil, nil, nil, nil, nil, nil),
 		nil,
 
 		-- Unit definitions
 		nil,
 
 		-- TypeDefinitions
-		{
-			mk_SimpleType(0, "Modelica.SIunits.Inertia",         nil, mk_RealType(nil, nil, nil, nil, 0, nil, nil, nil)),
-			mk_SimpleType(0, "Modelica.SIunits.Torque",          nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil)),
-			mk_SimpleType(0, "Modelica.SIunits.AngularVelocity", nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil)),
-			mk_SimpleType(0, "Modelica.SIunits.Angle",           nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil))
-		},
+		[
+			mk_SimpleType(loc, "Modelica.SIunits.Inertia",         nil, mk_RealType(loc, nil, nil, nil, nil, 0, nil, nil, nil)),
+			mk_SimpleType(loc, "Modelica.SIunits.Torque",          nil, mk_RealType(loc, nil, nil, nil, nil, nil, nil, nil, nil)),
+			mk_SimpleType(loc, "Modelica.SIunits.AngularVelocity", nil, mk_RealType(loc, nil, nil, nil, nil, nil, nil, nil, nil)),
+			mk_SimpleType(loc, "Modelica.SIunits.Angle",           nil, mk_RealType(loc, nil, nil, nil, nil, nil, nil, nil, nil))
+		],
 
 		-- Log categories
 		nil,
@@ -66,33 +69,33 @@ values
 
 		-- ScalarVariables
 		[
-/* 1 */		mk_ScalarVariable(1, "inertial.J", 0, nil, <parameter>, <fixed>, nil, nil,
-					mk_Real("Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
+/* 1 */		mk_ScalarVariable(loc, "inertial.J", 0, nil, <parameter>, <fixed>, nil, nil,
+					mk_Real(loc, "Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
 
-/* 2 */		mk_ScalarVariable(2, "torque.tau", 1, nil, <input>, nil, nil, nil,
-					mk_Real("Modelica.SIunits.Torque", nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
+/* 2 */		mk_ScalarVariable(mk_Location("F", 2), "torque.tau", 1, nil, <input>, nil, nil, nil,
+					mk_Real(loc, "Modelica.SIunits.Torque", nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
 
-/* 3 */		mk_ScalarVariable(3, "inertial.phi", 2, nil, <output>, nil, nil, nil,
-					mk_Real("Modelica.SIunits.Angle", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
+/* 3 */		mk_ScalarVariable(mk_Location("F", 3), "inertial.phi", 2, nil, <output>, nil, nil, nil,
+					mk_Real(loc, "Modelica.SIunits.Angle", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
 
-/* 4 */		mk_ScalarVariable(4, "inertial.w", 3, nil, <output>, nil, nil, nil,
-					mk_Real("Modelica.SIunits.AngularVelocity", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil)
+/* 4 */		mk_ScalarVariable(mk_Location("F", 4), "inertial.w", 3, nil, <output>, nil, nil, nil,
+					mk_Real(loc, "Modelica.SIunits.AngularVelocity", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
 		mk_ModelStructure
 		(
-			0,
+			loc,
 			-- Outputs
 			[
-				mk_Unknown(0, 3, nil, nil),
-				mk_Unknown(0, 4, nil, nil)
+				mk_Unknown(loc, 3, nil, nil),
+				mk_Unknown(loc, 4, nil, nil)
 			],
 			-- Derivatives
 			nil,
 			-- InitialUnknowns
 			[
-				mk_Unknown(0, 3, nil, nil),
-				mk_Unknown(0, 4, nil, nil)
+				mk_Unknown(loc, 3, nil, nil),
+				mk_Unknown(loc, 4, nil, nil)
 			]
 		)
 	);
