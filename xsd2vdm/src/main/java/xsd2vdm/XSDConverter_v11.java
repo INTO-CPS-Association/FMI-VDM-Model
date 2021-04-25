@@ -43,6 +43,7 @@ import types.EnumFacet;
 import types.ErrorFacet;
 import types.Facet;
 import types.Field;
+import types.FixedFacet;
 import types.LengthFacet;
 import types.MinMaxFacet;
 import types.PatternFacet;
@@ -1272,6 +1273,15 @@ public class XSDConverter_v11 extends XSDConverter
 		stack.pop();
 		result.getType().setUse(element);
 		result.setIsAttribute(true);
+		
+		if (element.hasAttr("fixed"))
+		{
+			String fixed = element.getAttr("fixed");
+			List<Facet> facets = new Vector<>();
+			facets.add(new FixedFacet(fixed)); 
+			result.setFacets(facets);
+		}
+		
 		return result;
 	}
 
