@@ -1932,42 +1932,45 @@ public class XSDConverter_v11 extends XSDConverter
 		stack.push(element);
 		Field result = null;
 
-		BasicType vtype = vdmTypeOf(element.getAttr("base"));
-		String name = stackAttr("name");
-		
-		if (vtype != null)
+		if (element.hasAttr("base"))
 		{
-			result = new Field(fieldName(name), name, vtype);
-		}
-		else
-		{
-			XSDElement etype = lookup(element.getAttr("base"));
+			BasicType vtype = vdmTypeOf(element.getAttr("base"));
+			String name = stackAttr("name");
 			
-			switch (etype.getType())
+			if (vtype != null)
 			{
-				case "xs:simpleType":
-					result = convertSimpleType(etype);
-					break;
-					
-				case "xs:complexType":
-					result = toField(convertComplexType(etype));
-					break;
-					
-				case "xs:element":
-					result = toField(convertElement(etype));
-					break;
-					
-				default:
-					dumpStack("Unexpected restriction base type", element);
-					break;
+				result = new Field(fieldName(name), name, vtype);
 			}
-			
-			result.setNames(fieldName(name), name);
+			else
+			{
+				XSDElement etype = lookup(element.getAttr("base"));
+				
+				switch (etype.getType())
+				{
+					case "xs:simpleType":
+						result = convertSimpleType(etype);
+						break;
+						
+					case "xs:complexType":
+						result = toField(convertComplexType(etype));
+						break;
+						
+					case "xs:element":
+						result = toField(convertElement(etype));
+						break;
+						
+					default:
+						dumpStack("Unexpected restriction base type", element);
+						break;
+				}
+				
+				result.setNames(fieldName(name), name);
+			}
 		}
 		
 		List<Facet> facets = new Vector<>();
 		
-		if (result.getFacets() != null)
+		if (result != null && result.getFacets() != null)
 		{
 			facets.addAll(result.getFacets());
 		}
@@ -1983,7 +1986,7 @@ public class XSDConverter_v11 extends XSDConverter
 					break;
 				
 				case "xs:simpleType":
-					result = convertSimpleType(child);
+					result = convertSimpleType(child);	// Rather than base attr
 					break;
 					
 				default:
