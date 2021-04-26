@@ -75,3 +75,15 @@ functions
 	epsilon(a, b) ==
 		let EPSILON = 1e-8 in
 			abs(a - b) < EPSILON;
+
+	loc2str: Location +> seq1 of char
+	loc2str(location) ==
+		location.file ^ ":" ^ nat2str(location.line);
+
+	nat2str: nat +> seq of char
+	nat2str(n) ==
+		if n = 0
+		then ""
+		else let d : char = "0123456789"(n rem 10 + 1) in
+			nat2str(n div 10) ^ [d]
+	measure n;

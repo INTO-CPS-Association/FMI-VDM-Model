@@ -69,8 +69,8 @@ functions
 				 */
 				( len me.sourceFiles = card { name | name in seq me.sourceFiles } ),
 
-			/* @OnFail(1401, "3.3.1 ModelExchange modelIdentifer %s not valid C variable name at line %s",
-							me.modelIdentifier, me.location) */
+			/* @OnFail(1401, "3.3.1 ModelExchange modelIdentifer %s not valid C variable name at %s",
+							me.modelIdentifier, loc2str(me.location)) */
 			( me.modelIdentifier <> ""
 			  and me.modelIdentifier(1) in set elems NONDIGITS )
 		}

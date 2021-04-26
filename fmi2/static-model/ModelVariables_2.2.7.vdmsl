@@ -74,16 +74,16 @@ functions
 	isInRange(min, max, start, initial, location) ==
 	{
 		max <> nil and min <> nil =>
-			--@OnFail(1300, "2.2.7 min %s is not <= max %s at line %s", min, max, location)
+			--@OnFail(1300, "2.2.7 min %s is not <= max %s at %s", min, max, loc2str(location))
 			( max >= min ),
 
 		start <> nil =>
-			--@OnFail(1301, "2.2.7 start %s is not within min %s/max %s at line %s", start, min, max, location)
+			--@OnFail(1301, "2.2.7 start %s is not within min %s/max %s at %s", start, min, max, loc2str(location))
 			( (min <> nil => min <= start) and
 			  (max <> nil => max >= start) ),
 
 		start = nil and initial not in set {<calculated>, <independent>} =>
-			--@OnFail(1302, "2.2.7 Warning: implicit start of 0 is not within min %s/max %s at line %s", min, max, location)
+			--@OnFail(1302, "2.2.7 Warning: implicit start of 0 is not within min %s/max %s at %s", min, max, loc2str(location))
 			( (min <> nil => min <= 0) and
 			  (max <> nil => max >= 0) ) or true	-- NOTE warning
 	} = {true}
@@ -106,7 +106,7 @@ functions
 		}
 		union
 		{
-			-- @OnFail(1305, "2.2.7 ScalarVariable %s invalid at line %s", sv.name, sv.location)
+			-- @OnFail(1305, "2.2.7 ScalarVariable %s invalid at %s", sv.name, loc2str(sv.location))
 			( isValidScalarVariable(sv) )
 
 			| sv in seq svs
@@ -123,8 +123,8 @@ functions
 		in
 		{
 			-- Table on p46 defining causality, and p48/49 defining combinations
-			/* @OnFail(1306, "2.2.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
-				sv.name, eCausality, eVariability, eInitial, sv.fmi2ScalarVariable.start, sv.location) */
+			/* @OnFail(1306, "2.2.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %s",
+				sv.name, eCausality, eVariability, eInitial, sv.fmi2ScalarVariable.start, loc2str(sv.location)) */
 			(
 				cases eCausality:
 					<parameter> ->
@@ -173,14 +173,14 @@ functions
 				end
 			),
 
-			-- @OnFail(1307, "2.2.7 Independent variable must be Real at line %s", sv.location)
+			-- @OnFail(1307, "2.2.7 Independent variable must be Real at %s", loc2str(sv.location))
 			(
 				eCausality = <independent> => is_Real(sv.fmi2ScalarVariable)
 			),
 
 			-- Table on p46 defining variability, and p49 defining combinations
-			/* @OnFail(1308, "2.2.7 Variable %s variability/causality %s/%s invalid at line %s",
-				sv.name, eVariability, eCausality, sv.location) */
+			/* @OnFail(1308, "2.2.7 Variable %s variability/causality %s/%s invalid at %s",
+				sv.name, eVariability, eCausality, loc2str(sv.location)) */
 			(
 				cases eVariability:
 					<constant> ->
@@ -197,7 +197,7 @@ functions
 				end
 			),
 
-			-- @OnFail(1309, "2.2.7 Continuous variable must be Real at line %s", sv.location)
+			-- @OnFail(1309, "2.2.7 Continuous variable must be Real at %s", loc2str(sv.location))
 			(
 				eVariability = <continuous> => is_Real(sv.fmi2ScalarVariable)
 			),
@@ -211,8 +211,8 @@ functions
 			),
 
 			-- Table on p47 defining initial
-			/* @OnFail(1311, "2.2.7 Variable %s initial/variability/start %s/%s/%s invalid at line %s",
-				sv.name, eInitial, eVariability, sv.fmi2ScalarVariable.start, sv.location) */
+			/* @OnFail(1311, "2.2.7 Variable %s initial/variability/start %s/%s/%s invalid at %s",
+				sv.name, eInitial, eVariability, sv.fmi2ScalarVariable.start, loc2str(sv.location)) */
 			(
 				cases eInitial:
 					<exact> ->
@@ -243,12 +243,12 @@ functions
 	isValidEffectiveVariables: seq1 of ScalarVariable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail(1313, "2.2.7 Variable %s min/max/start/nominal invalid at line %s", sv.name, sv.location)
+		-- @OnFail(1313, "2.2.7 Variable %s min/max/start/nominal invalid at %s", sv.name, loc2str(sv.location))
 		(
 			cases sv.fmi2ScalarVariable:
 				mk_Real(-, -, -, -, -, -, min, max, nominal, -, start, -, -) ->
 					isInRange[real](min, max, start, sv.initial, sv.location)
-					-- @OnFail(1314, "2.2.7 Real nominal must be >0.0 at line %s", sv.location)
+					-- @OnFail(1314, "2.2.7 Real nominal must be >0.0 at %s", loc2str(sv.location))
 					and (nominal <> nil => nominal > 0.0),
 
 				mk_Integer(-, -, -, min, max, start) ->
@@ -417,7 +417,7 @@ functions
 	 * Generate the effective value of a ScalarVariable, accounting for fields inherited from
 	 * any declaredType and defaulted values of causality, variability and initial.
 	 */
-	effectiveScalarVariable: ScalarVariable * [set1 of SimpleType] +> ScalarVariable
+	effectiveScalarVariable: ScalarVariable * [seq1 of SimpleType] +> ScalarVariable
 	effectiveScalarVariable(sv, typedefs) ==
 		let causality   = effectiveCausality(sv.causality),
 			variability = effectiveVariability(sv.variability)
@@ -440,11 +440,11 @@ functions
 	 * Generate the effective value of a Variable, accounting for fields inherited from
 	 * its declaredType.
 	 */
-	effectiveVariable: Variable * [set1 of SimpleType] +> Variable
+	effectiveVariable: Variable * [seq1 of SimpleType] +> Variable
 	effectiveVariable(v, typedefs) ==
 		if v.declaredType = nil or typedefs = nil
 		then v
-		else let dtypes = { td | td in set typedefs & td.name = v.declaredType } in
+		else let dtypes = { td | td in seq typedefs & td.name = v.declaredType } in
 			cases dtypes:
 				{ dt } ->
 					cases dt.fmi2SimpleType:

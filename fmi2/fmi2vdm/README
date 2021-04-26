@@ -3,5 +3,5 @@ To build the VDMCheck distribution package, use Maven with the package or instal
 The package is called vdmcheck-<version>-distribution.zip, and is located in the target folder
 after the build.
 
-To install the package, unzip the distribution ZIP somewhere and call the VDMCheck.sh bash
+To install the package, unzip the distribution ZIP somewhere and call the VDMCheck2.sh bash
 script, passing the FMU file to be processed.

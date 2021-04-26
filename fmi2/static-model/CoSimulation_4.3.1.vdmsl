@@ -72,8 +72,8 @@ functions
 				 */
 				( len cs.sourceFiles = card { name | name in seq cs.sourceFiles } ),
 
-			/* @OnFail(1451, "4.3.1 CoSimulation modelIdentifer %s not valid C variable name at line %s",
-						cs.modelIdentifier, cs.location) */
+			/* @OnFail(1451, "4.3.1 CoSimulation modelIdentifer %s not valid C variable name at %s",
+						cs.modelIdentifier, loc2str(cs.location)) */
 			( cs.modelIdentifier <> ""
 			  and cs.modelIdentifier(1) in set elems NONDIGITS )
 		}

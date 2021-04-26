@@ -2,7 +2,7 @@
 #
 # This file is part of the INTO-CPS toolchain.
 #
-# Copyright (c) 2017-2019, INTO-CPS Association,
+# Copyright (c) 2017-2021, INTO-CPS Association,
 # c/o Professor Peter Gorm Larsen, Department of Engineering
 # Finlandsgade 22, 8200 Aarhus N.
 #
@@ -31,7 +31,7 @@
 # Process an FMI V2 FMU or XML file, and validate the XML structure using the VDM-SL model.
 #
 
-USAGE="Usage: VDMCheck2.sh [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml"
+USAGE="Usage: VDMCheck2.sh [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
 
 while getopts ":v:x:s:" OPT
 do
@@ -42,9 +42,6 @@ do
         x)
             INXML=${OPTARG}
             ;;
-        s)
-        	INXSD=${OPTARG}
-        	;;
         *)
 			echo "$USAGE"
 			exit 1
@@ -78,12 +75,7 @@ then
 	echo "$INXML" >$FILE
 fi
 
-if [ "$INXSD" ]
-then
-	INXSD=$(readlink -f "$INXSD")
-fi 
-
-XML=/tmp/modelDescription$$.xml
+XML=/tmp/modelDescription.xml
 VDM=/tmp/vdm$$.vdmsl
 
 trap "rm -f $XML $VDM $TMPX" EXIT
@@ -120,10 +112,7 @@ esac
 	cd "$dir"
 	VAR=model$$
 	
-	if [ ! "$INXSD" ]
-	then
-		INXSD="schema/fmi2ModelDescription.xsd"
-	fi
+	INXSD="schema/fmi2ModelDescription.xsd"
 	
 	if ! type java 2>/dev/null 1>&2
 	then
@@ -131,7 +120,7 @@ esac
 		exit 2
 	fi
 	
-	if ! java -cp fmi2vdm.jar fmi2vdm.FMI2SaxParser "$XML" "$VAR" "$INXSD" >$VDM
+	if ! java -jar xsd2vdm.jar -xsd "$INXSD" -xml "$XML" -name "$VAR" -vdm "$VDM" -nowarn
 	then
 		echo "Problem converting modelDescription.xml to VDM-SL?"
 		exit 2
