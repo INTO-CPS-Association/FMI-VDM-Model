@@ -93,8 +93,8 @@ functions
 			forall didx in set inds c.eModelVariables &
 				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
 					o = order(vidx) and c.eModelVariables(bidx).valueReference = vrs(vidx) =>
-						let min = c.eModelVariables(bidx).variable.min,
-							max = c.eModelVariables(bidx).variable.max in
+						let min = c.eModelVariables(bidx).fmi2ScalarVariable.min,
+							max = c.eModelVariables(bidx).fmi2ScalarVariable.max in
 						(min <> nil => value(vidx) >= min) and (max <> nil => value(vidx) <= max));
 
 
@@ -139,8 +139,8 @@ functions
 			exists didx in set inds c.eModelVariables &
 				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
 					o = order(i) and c.eModelVariables(bidx).valueReference = vrs(i) and
-						let min = c.eModelVariables(bidx).variable.min,
-							max = c.eModelVariables(bidx).variable.max in
+						let min = c.eModelVariables(bidx).fmi2ScalarVariable.min,
+							max = c.eModelVariables(bidx).fmi2ScalarVariable.max in
 						(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
 		then let - = logAPIError(c, "Values not all within min/max for derivative variables", []) in
 			mk_(<fmi2Error>, nil)

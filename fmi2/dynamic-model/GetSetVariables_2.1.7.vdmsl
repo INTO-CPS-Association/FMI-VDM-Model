@@ -234,8 +234,8 @@ functions
 			in
 				sv <> nil
 				and sv.causality <> <independent>
-				and let min = sv.variable.min,
-						max = sv.variable.max
+				and let min = sv.fmi2ScalarVariable.min,
+						max = sv.fmi2ScalarVariable.max
 					in
 						(min <> nil => value(i) >= min)	and (max <> nil => value(i) <= max);
 
@@ -255,8 +255,8 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif exists i in set inds vrs &
 			let sv = lookup(c.eModelVariables, vrs(i), <Real>),
-				min = sv.variable.min,
-				max = sv.variable.max
+				min = sv.fmi2ScalarVariable.min,
+				max = sv.fmi2ScalarVariable.max
 			in
 				(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
 		then let - = logAPIError(c, "Values not all within min/max for variables", []) in
@@ -288,8 +288,8 @@ functions
 				sv = lookup(c.eModelVariables, vr, <Integer>)
 			in
 				sv <> nil
-				and let min = sv.variable.min,
-						max = sv.variable.max
+				and let min = sv.fmi2ScalarVariable.min,
+						max = sv.fmi2ScalarVariable.max
 					in
 						(min <> nil => value(i) >= min)	and (max <> nil => value(i) <= max);
 
@@ -309,8 +309,8 @@ functions
 			mk_(<fmi2Error>, nil)
 		elseif exists i in set inds vrs &
 			let sv = lookup(c.eModelVariables, vrs(i), <Integer>),
-				min = sv.variable.min,
-				max = sv.variable.max
+				min = sv.fmi2ScalarVariable.min,
+				max = sv.fmi2ScalarVariable.max
 			in
 				(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
 		then let - = logAPIError(c, "Values not all within min/max for variables", []) in

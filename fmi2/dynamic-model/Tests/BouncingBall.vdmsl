@@ -106,29 +106,29 @@ functions
  * VDM Model generated from modelDescription.xml on Wed Nov 13 15:02:30 GMT 2019
  */
 values
-	bouncingBall = mk_FMIModelDescription
+	loc : Location = mk_Location("?", 1);
+
+	bouncingBall = mk_FmiModelDescription
 	(
-		mk_ModelAttributes
-		(
-			2,  -- Line
-			"2.0",
-			"BouncingBall",
-			"{8c4e810f-3df3-4a00-8276-176fa3c9f003}",
-			nil,
-			nil,
-			nil,
-			nil,
-			nil,
-			nil,
-			nil,
-			nil,
-			1
-		),
+		loc,
+
+		"2.0",
+		"BouncingBall",
+		"{8c4e810f-3df3-4a00-8276-176fa3c9f003}",
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
+		1,
 
 		-- ModelExchange
 		mk_ModelExchange
 		(
-			4,  -- Line
+			loc,
 			"BouncingBall",
 			nil,
 			nil,
@@ -137,34 +137,13 @@ values
 			nil,
 			nil,
 			nil,
-			[
-				mk_SourceFile
-				(
-					6,  -- Line
-					"fmi2.c"
-				),
-				mk_SourceFile
-				(
-					7,  -- Line
-					"euler.c"
-				),
-				mk_SourceFile
-				(
-					8,  -- Line
-					"model.c"
-				),
-				mk_SourceFile
-				(
-					9,  -- Line
-					"slave.c"
-				)
-			]
+			[ "fmi2.c", "euler.c", "model.c", "slave.c" ]
 		),
 
 		-- CoSimulation
 		mk_CoSimulation
 		(
-			13,  -- Line
+			loc,  -- Line
 			"BouncingBall",
 			nil,
 			true,
@@ -176,104 +155,82 @@ values
 			nil,
 			nil,
 			nil,
-			[
-				mk_SourceFile
-				(
-					15,  -- Line
-					"fmi2.c"
-				),
-				mk_SourceFile
-				(
-					16,  -- Line
-					"euler.c"
-				),
-				mk_SourceFile
-				(
-					17,  -- Line
-					"model.c"
-				),
-				mk_SourceFile
-				(
-					18,  -- Line
-					"slave.c"
-				)
-			]
-
+			[ "fmi2.c","euler.c","model.c","slave.c" ]
 		),
 
 		-- UnitDefinitions
 		[
 			mk_Unit
 			(
-				25,  -- Line
+				loc,  -- Line
 				"m",
-				mk_BaseUnit(nil, 1, nil, nil, nil, nil, nil, nil, nil, nil),
+				mk_BaseUnit(loc, nil, 1, nil, nil, nil, nil, nil, nil, nil, nil),
 				nil
 			),
 			mk_Unit
 			(
-				28,  -- Line
+				loc,  -- Line
 				"m/s",
-				mk_BaseUnit(nil, 1, -1, nil, nil, nil, nil, nil, nil, nil),
+				mk_BaseUnit(loc, nil, 1, -1, nil, nil, nil, nil, nil, nil, nil),
 				nil
 			),
 			mk_Unit
 			(
-				31,  -- Line
+				loc,  -- Line
 				"m/s2",
-				mk_BaseUnit(nil, 1, -2, nil, nil, nil, nil, nil, nil, nil),
+				mk_BaseUnit(loc, nil, 1, -2, nil, nil, nil, nil, nil, nil, nil),
 				nil
 			)
 		],
 
 		-- TypeDefinitions
-		{
+		[
 			mk_SimpleType
 			(
-				37,  -- Line
+				loc,  -- Line
 				"Position",
 				nil,
-				mk_RealType("Position", "m", nil, nil, nil, nil, nil, nil)
+				mk_RealType(loc, "Position", "m", nil, nil, nil, nil, nil, nil)
 			),
 			mk_SimpleType
 			(
-				40,  -- Line
+				loc,  -- Line
 				"Velocity",
 				nil,
-				mk_RealType("Velocity", "m/s", nil, nil, nil, nil, nil, nil)
+				mk_RealType(loc, "Velocity", "m/s", nil, nil, nil, nil, nil, nil)
 			),
 			mk_SimpleType
 			(
-				43,  -- Line
+				loc,  -- Line
 				"Acceleration",
 				nil,
-				mk_RealType("Acceleration", "m/s2", nil, nil, nil, nil, nil, nil)
+				mk_RealType(loc, "Acceleration", "m/s2", nil, nil, nil, nil, nil, nil)
 			)
-		},
+		],
 
 		-- LogCategories
 		[
 			mk_Category
 			(
-				18,  -- Line
+				loc,  -- Line
 				"logAll",
 				nil
 			),
 			mk_Category
 			(
-				19,  -- Line
+				loc,  -- Line
 				"logError",
 				nil
 			),
 			mk_Category
 			(
-				20,  -- Line
+				loc,  -- Line
 				"logFmiCall",
 				nil
 			),
 			mk_Category
 			(
-				21,  -- Line
+				loc,  -- Line
 				"logEvent",
 				nil
 			)
@@ -282,7 +239,7 @@ values
 		-- DefaultExperiment
 		mk_DefaultExperiment
 		(
-			48,  -- Line
+			loc,  -- Line
 			0.0,
 			100,
 			nil,
@@ -296,7 +253,7 @@ values
 		[
 			mk_ScalarVariable
 			(
-				51,  -- Line
+				loc,  -- Line
 				"h",
 				0,
 				"Position of the ball",
@@ -304,12 +261,12 @@ values
 				<continuous>,
 				<exact>,
 				nil,
-				mk_Real("Position", nil, nil, nil, nil, nil, nil, nil, nil, 10.0, nil, nil),
+				mk_Real(loc, "Position", nil, nil, nil, nil, nil, nil, nil, nil, 10.0, nil, nil),
 				nil
 			),
 			mk_ScalarVariable
 			(
-				54,  -- Line
+				loc,  -- Line
 				"v",
 				1,
 				"Velocity of the ball",
@@ -317,12 +274,12 @@ values
 				<continuous>,
 				<exact>,
 				nil,
-				mk_Real("Velocity", nil, nil, nil, nil, nil, nil, nil, nil, 0.0, 1, true),
+				mk_Real(loc, "Velocity", nil, nil, nil, nil, nil, nil, nil, nil, 0.0, 1, true),
 				nil
 			),
 			mk_ScalarVariable
 			(
-				57,  -- Line
+				loc,  -- Line
 				"g",
 				2,
 				"Gravity acting on the ball",
@@ -330,12 +287,12 @@ values
 				<fixed>,
 				<exact>,
 				nil,
-				mk_Real("Acceleration", nil, nil, nil, nil, nil, nil, nil, nil, -9.81, 2, nil),
+				mk_Real(loc, "Acceleration", nil, nil, nil, nil, nil, nil, nil, nil, -9.81, 2, nil),
 				nil
 			),
 			mk_ScalarVariable
 			(
-				60,  -- Line
+				loc,  -- Line
 				"e",
 				3,
 				"Rebound factor",
@@ -343,12 +300,12 @@ values
 				<tunable>,
 				<exact>,
 				nil,
-				mk_Real(nil, nil, nil, nil, nil, 0.5, 1.0, nil, nil, 0.6, nil, nil),
+				mk_Real(loc, nil, nil, nil, nil, nil, 0.5, 1.0, nil, nil, 0.6, nil, nil),
 				nil
 			),
 			mk_ScalarVariable
 			(
-				63,  -- Line
+				loc,  -- Line
 				"v_min",
 				4,
 				"Velocity below which the ball stops bouncing",
@@ -356,7 +313,7 @@ values
 				<fixed>,
 				nil,
 				nil,
-				mk_Real("Velocity", nil, nil, nil, nil, nil, nil, nil, nil, 1.0, nil, nil),
+				mk_Real(loc, "Velocity", nil, nil, nil, nil, nil, nil, nil, nil, 1.0, nil, nil),
 				nil
 			)
 		],
@@ -364,19 +321,19 @@ values
 		-- ModelStructure
 		mk_ModelStructure
 		(
-			68,  -- Line
+			loc,  -- Line
 			-- Outputs
 			[
 				mk_Unknown
 				(
-					70,  -- Line
+					loc,  -- Line
 					1,
 					nil,
 					nil
 				),
 				mk_Unknown
 				(
-					71,  -- Line
+					loc,  -- Line
 					2,
 					nil,
 					nil
@@ -387,14 +344,14 @@ values
 			[
 				mk_Unknown
 				(
-					74,  -- Line
+					loc,  -- Line
 					2,
 					nil,
 					nil
 				),
 				mk_Unknown
 				(
-					75,  -- Line
+					loc,  -- Line
 					3,
 					nil,
 					nil
@@ -405,14 +362,14 @@ values
 			[
 				mk_Unknown
 				(
-					78,  -- Line
+					loc,  -- Line
 					2,
 					nil,
 					nil
 				),
 				mk_Unknown
 				(
-					79,  -- Line
+					loc,  -- Line
 					3,
 					nil,
 					nil

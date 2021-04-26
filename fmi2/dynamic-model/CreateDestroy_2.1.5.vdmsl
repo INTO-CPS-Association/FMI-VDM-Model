@@ -88,7 +88,7 @@ functions
 
 				-- The eventIndicators
 				[
-					0.0 | - in set {1, ..., nilNat(model.attributes.numberOfEventIndicators)}
+					0.0 | - in set {1, ..., nilNat(model.numberOfEventIndicators)}
 				],
 
 				-- Initially dirty, because "start" values above need calculate call
@@ -122,7 +122,7 @@ functions
 	pre
 		instanceName <> ""
 		and let model = callbacks.componentEnvironment.model in
-			fmuGUID = model.attributes.guid
+			fmuGUID = model.guid
 			and (fmuType = <fmi2CoSimulation>  => model.coSimulation <> nil)
 			and (fmuType = <fmi2ModelExchange> => model.modelExchange <> nil)
 	post
@@ -143,7 +143,7 @@ functions
 			if instanceName = ""
 			then let - = logInst(cenv, instanceName, "fmi2Instantiate instanceName cannot be empty") in
 				nil
-			elseif fmuGUID <> model.attributes.guid
+			elseif fmuGUID <> model.guid
 			then let - = logInst(cenv, instanceName, "fmi2Instantiate fmuGUID does not match XML configuration") in
 				nil
 			elseif fmuType = <fmi2CoSimulation> and model.coSimulation = nil
@@ -173,15 +173,15 @@ functions
 	{
 		tag |-> 
 			let sv in set aliasmap(tag) in	-- Choose any alias
-				if sv.variable.start <> nil
-				then sv.variable.start		-- All aliases have the same start
+				if sv.fmi2ScalarVariable.start <> nil
+				then sv.fmi2ScalarVariable.start		-- All aliases have the same start
 				else
 					-- Set default value for variable type
-					if is_Real(sv.variable) then 0.0
-					else if is_Integer(sv.variable) then 0
-					else if is_Boolean(sv.variable) then false
-					else if is_String(sv.variable) then ""
-					else if is_Enumeration(sv.variable) then 0
+					if is_Real(sv.fmi2ScalarVariable) then 0.0
+					else if is_Integer(sv.fmi2ScalarVariable) then 0
+					else if is_Boolean(sv.fmi2ScalarVariable) then false
+					else if is_String(sv.fmi2ScalarVariable) then ""
+					else if is_Enumeration(sv.fmi2ScalarVariable) then 0
 					else undefined
 
 		| tag in seq setToSeq[AliasTag](dom aliasmap)

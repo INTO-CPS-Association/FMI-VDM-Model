@@ -177,7 +177,7 @@ functions
 	pre
 		c.fmuType = <fmi2ModelExchange>
 		and c.fmuState in set STATES_fmi2GetEventIndicators
-		and ni = nilNat(c.model.attributes.numberOfEventIndicators);
+		and ni = nilNat(c.model.numberOfEventIndicators);
 
 	fmi2GetEventIndicators: fmi2Component * nat +> fmi2Status * [seq of fmi2Real]
 	fmi2GetEventIndicators(c, ni) ==
@@ -187,7 +187,7 @@ functions
 		elseif c.fmuState not in set STATES_fmi2GetEventIndicators
 		then let - = logAPIError(c, "Cannot call fmi2GetEventIndicators in state %s", [c.fmuState]) in
 			mk_(<fmi2Error>, nil)
-		elseif ni <> nilNat(c.model.attributes.numberOfEventIndicators)
+		elseif ni <> nilNat(c.model.numberOfEventIndicators)
 		then let - = logAPIError(c, "Wrong number of event indicators passed", []) in
 			mk_(<fmi2Error>, nil)
 	 	else

@@ -68,7 +68,7 @@ functions
 	isINC(c, vr, kind) ==
 		let sv = lookup(c.eModelVariables, vr, kind) in
 			sv <> nil and
-			is_Real(sv.variable)
+			is_Real(sv.fmi2ScalarVariable)
 			and sv.causality = <input>
 			and sv.variability = <continuous>;
 
@@ -82,7 +82,7 @@ functions
 		let sv = lookup(c.eModelVariables, vr, kind) in
 			sv <> nil and
 			((sv.causality = <input>
-				and sv.variable.derivative <> nil)
+				and sv.fmi2ScalarVariable.derivative <> nil)
 			  or (sv.variability <> <constant>
 				and sv.initial in set { <exact>, <approx> }));
 

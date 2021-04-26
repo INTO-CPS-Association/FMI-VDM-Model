@@ -41,7 +41,7 @@ types
 
 	fmi2ComponentEnvironment ::
 		solver					: SolverData
-		model					: FMIModelDescription
+		model					: FmiModelDescription
 		calculateValues			: fmi2Component -> fmi2Status * [fmi2Component]
 		calculateDoStep			: fmi2Component * fmi2Real * fmi2Real -> fmi2Status * [fmi2Component]
 		calculateEvents			: fmi2Component -> fmi2Status * [fmi2Component]
@@ -72,7 +72,7 @@ types
 		componentEnvironment	: fmi2ComponentEnvironment
 
 		-- convenience read-only fields, copied from componentEnvironment
-		model					: FMIModelDescription
+		model					: FmiModelDescription
 		eModelVariables			: seq1 of ScalarVariable
 		continuousTimeStates	: seq of nat1
 		initialUnknowns			: set of nat1
@@ -97,7 +97,7 @@ types
 		(len c.continuousTimeStates = len nilSeq[Unknown](c.model.modelStructure.derivatives))
 		and (forall sd in seq c.solverDerivatives & lookup(c.eModelVariables, sd.vref, <Real>) <> nil)
 		and (len c.derivatives = len c.solverDerivatives)
-		and (len c.eventIndicators = nilNat(c.model.attributes.numberOfEventIndicators))
+		and (len c.eventIndicators = nilNat(c.model.numberOfEventIndicators))
 		and (c.isNewEventIteration => c.fmuType = <fmi2ModelExchange>)
 		and (c.currentTime <> nil <=> c.startTime <> nil)
 		and (c.currentTime <> nil => c.currentTime >= c.startTime)
