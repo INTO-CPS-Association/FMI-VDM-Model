@@ -57,7 +57,7 @@ types
 	 * the various FMU parameters.
 	 */
 	CoSimulationConfig ::
-		fmus			: seq1 of FMIModelDescription
+		fmus			: seq1 of FmiModelDescription
 		connections		: ConnectionMap		-- Inter-FMU, outputs mapped to inputs
 		parameters		: map FMUVariable to Value;
 
@@ -72,7 +72,7 @@ functions
 			-- The FMUs are valid
 			(
 				forall fmu in seq cs.fmus &
-					-- @OnFail("FMU %s is invalid", fmu.attributes.modelName)
+					-- @OnFail("FMU %s is invalid", fmu.modelName)
 					(isValidFMIModelDescription(fmu))
 			),
 
@@ -147,7 +147,7 @@ functions
 	 * Given an FMU description and its CoSimulationConfig index, produce a map of its internal
 	 * connections - that is, its internal input-output dependencies.
 	 */
-	fmuInternalConnections: FMIModelDescription * nat1 * bool -> ConnectionMap
+	fmuInternalConnections: FmiModelDescription * nat1 * bool -> ConnectionMap
 	fmuInternalConnections(fmu, fmuIndex, initialization) ==
 		let ctvars = continuousTimeStates(fmu.modelVariables),
 

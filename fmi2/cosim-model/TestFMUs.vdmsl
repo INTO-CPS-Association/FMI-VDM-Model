@@ -31,9 +31,11 @@
  * FMUs to test CoSimulation and functions for loop searching.
  */
 values
-	FMU1 = mk_FMIModelDescription
+	loc : Location = mk_Location("?", 1);
+
+	FMU1 = mk_FmiModelDescription
 	(
-		mk_ModelAttributes(0, "2.0", "FMU1", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
+		loc, "2.0", "FMU1", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil,
 
 		nil,
 
@@ -48,24 +50,24 @@ values
 		nil,
 
 		[
-			mk_ScalarVariable(0, "A", 0, nil, <input>, nil, nil, nil,
-					mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
-			mk_ScalarVariable(0, "B", 0, nil, <output>, nil, nil, nil,
-					mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil)
+			mk_ScalarVariable(loc, "A", 0, nil, <input>, nil, nil, nil,
+					mk_Real(loc, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
+			mk_ScalarVariable(loc, "B", 0, nil, <output>, nil, nil, nil,
+					mk_Real(loc, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
 		mk_ModelStructure
 		(
-			0,
-			[ mk_Unknown(0, 2, [1], [<dependent>]) ],		-- B depends on A
+			loc,
+			[ mk_Unknown(loc, 2, [1], [<dependent>]) ],		-- B depends on A
 			nil,
-			[ mk_Unknown(0, 2, [1], [<dependent>]) ]		-- B depends on A
+			[ mk_Unknown(loc, 2, [1], [<dependent>]) ]		-- B depends on A
 		)
 	);
 
-	FMU2 = mk_FMIModelDescription
+	FMU2 = mk_FmiModelDescription
 	(
-		mk_ModelAttributes(0, "2.0", "FMU2", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil),
+		loc, "2.0", "FMU2", "GUID", nil, nil, nil, nil, nil, nil, nil, nil, nil,
 
 		nil,
 
@@ -80,18 +82,18 @@ values
 		nil,
 
 		[
-			mk_ScalarVariable(0, "C", 0, nil, <input>, nil, nil, nil,
-					mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
-			mk_ScalarVariable(0, "D", 0, nil, <output>, nil, nil, nil,
-					mk_Real(nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil)
+			mk_ScalarVariable(loc, "C", 0, nil, <input>, nil, nil, nil,
+					mk_Real(loc, nil, nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
+			mk_ScalarVariable(loc, "D", 0, nil, <output>, nil, nil, nil,
+					mk_Real(loc, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
 		mk_ModelStructure
 		(
-			0,
-			[ mk_Unknown(0, 2, [1], [<dependent>]) ],		-- D depends on C
+			loc,
+			[ mk_Unknown(loc, 2, [1], [<dependent>]) ],		-- D depends on C
 			nil,
-			[ mk_Unknown(0, 2, [1], [<dependent>]) ]		-- D depends on C
+			[ mk_Unknown(loc, 2, [1], [<dependent>]) ]		-- D depends on C
 		)
 	);
 

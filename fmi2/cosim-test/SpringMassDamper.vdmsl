@@ -31,29 +31,31 @@
  * Test FMU configuration.
  */
 values
-	springMassDamper = mk_FMIModelDescription
+	loc : Location = mk_Location("?", 1);
+
+	springMassDamper = mk_FmiModelDescription
 	(
 		-- Attributes
-		mk_ModelAttributes(0, "2.0", "MassSpringDamper", "GUID", nil, nil, nil, nil, nil, nil, nil, <structured>, nil),
+		loc, "2.0", "MassSpringDamper", "GUID", nil, nil, nil, nil, nil, nil, nil, <structured>, nil,
 
 		-- Model types
 		nil,
-		mk_CoSimulation(0, "MSD", nil, nil, true, 1, nil, nil, nil, true, true, true, nil),
+		mk_CoSimulation(loc, "MSD", nil, nil, true, 1, nil, nil, nil, true, true, true, nil),
 
 		-- Unit definitions
 		nil,
 
 		-- TypeDefinitions
-		{
-			mk_SimpleType(0, "Modelica.SIunits.Inertia",         nil, mk_RealType(nil, nil, nil, nil, 0, nil, nil, nil)),
-			mk_SimpleType(0, "Modelica.SIunits.Torque",          nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil)),
-			mk_SimpleType(0, "Modelica.SIunits.AngularVelocity", nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil)),
-			mk_SimpleType(0, "Modelica.SIunits.Angle",           nil, mk_RealType(nil, nil, nil, nil, nil, nil, nil, nil))
-		},
+		[
+			mk_SimpleType(loc, "Modelica.SIunits.Inertia",         nil, mk_RealType(loc, nil, nil, nil, nil, 0, nil, nil, nil)),
+			mk_SimpleType(loc, "Modelica.SIunits.Torque",          nil, mk_RealType(loc, nil, nil, nil, nil, nil, nil, nil, nil)),
+			mk_SimpleType(loc, "Modelica.SIunits.AngularVelocity", nil, mk_RealType(loc, nil, nil, nil, nil, nil, nil, nil, nil)),
+			mk_SimpleType(loc, "Modelica.SIunits.Angle",           nil, mk_RealType(loc, nil, nil, nil, nil, nil, nil, nil, nil))
+		],
 
 		-- Log categories
 		[
-			mk_Category(0, "debug", "debug output")
+			mk_Category(loc, "debug", "debug output")
 		],
 
 		-- Default experiment
@@ -64,39 +66,39 @@ values
 
 		-- ScalarVariables
 		[
-/* 1 */		mk_ScalarVariable(1, "inertial.J", 0, nil, <input>, nil, nil, nil,
-					mk_Real("Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
+/* 1 */		mk_ScalarVariable(loc, "inertial.J", 0, nil, <input>, nil, nil, nil,
+					mk_Real(loc, "Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
 
-/* 2 */		mk_ScalarVariable(2, "Alias.inertial.J", 0, nil, <local>, nil, nil, nil,
-					mk_Real("Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
+/* 2 */		mk_ScalarVariable(loc, "Alias.inertial.J", 0, nil, <local>, nil, nil, nil,
+					mk_Real(loc, "Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
 
-/* 3 */		mk_ScalarVariable(3, "torque.tau", 1, nil, <input>, nil, nil, nil,
-					mk_Real("Modelica.SIunits.Torque", nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
+/* 3 */		mk_ScalarVariable(loc, "torque.tau", 1, nil, <input>, nil, nil, nil,
+					mk_Real(loc, "Modelica.SIunits.Torque", nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
 
-/* 4 */		mk_ScalarVariable(4, "inertial.phi", 2, nil, <output>, nil, nil, nil,
-					mk_Real("Modelica.SIunits.Angle", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
+/* 4 */		mk_ScalarVariable(loc, "inertial.phi", 2, nil, <output>, nil, nil, nil,
+					mk_Real(loc, "Modelica.SIunits.Angle", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
 
-/* 5 */		mk_ScalarVariable(5, "inertial.w", 3, nil, <output>, nil, nil, nil,
-					mk_Real("Modelica.SIunits.AngularVelocity", nil, nil, nil, nil, nil, nil, nil, nil, nil, 3, nil), nil)
+/* 5 */		mk_ScalarVariable(loc, "inertial.w", 3, nil, <output>, nil, nil, nil,
+					mk_Real(loc, "Modelica.SIunits.AngularVelocity", nil, nil, nil, nil, nil, nil, nil, nil, nil, 3, nil), nil)
 		],
 
 		mk_ModelStructure
 		(
-			0,
+			loc,
 			-- Outputs
 			[
-				mk_Unknown(0, 4, nil, nil),
-				mk_Unknown(0, 5, nil, nil)
+				mk_Unknown(loc, 4, nil, nil),
+				mk_Unknown(loc, 5, nil, nil)
 			],
 			-- Derivatives
 			[
-				-- mk_Unknown(0, 2, nil, nil),
-				mk_Unknown(0, 5, nil, nil)
+				-- mk_Unknown(loc, 2, nil, nil),
+				mk_Unknown(loc, 5, nil, nil)
 			],
 			-- InitialUnknowns
 			[
-				mk_Unknown(0, 4, nil, nil),
-				mk_Unknown(0, 5, nil, nil)
+				mk_Unknown(loc, 4, nil, nil),
+				mk_Unknown(loc, 5, nil, nil)
 			]
 		)
 	);

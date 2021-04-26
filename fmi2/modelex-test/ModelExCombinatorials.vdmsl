@@ -218,9 +218,9 @@ operations
 
 			<fmi2SetSEA> ->
 				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
-					isSEA(c, sv.valueReference, kindOf(sv.variable))
-					and is_Real(sv.variable)
-					and sv.variable.derivative = nil ]
+					isSEA(c, sv.valueReference, kindOf(sv.fmi2ScalarVariable))
+					and is_Real(sv.fmi2ScalarVariable)
+					and sv.fmi2ScalarVariable.derivative = nil ]
 				in
 					if vrefs = []
 					then skip
@@ -283,7 +283,7 @@ operations
 			<fmi2GetINIT> ->
 			(
 				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
-					isINIT(c, sv.valueReference, kindOf(sv.variable)) ]
+					isINIT(c, sv.valueReference, kindOf(sv.fmi2ScalarVariable)) ]
 				in
 					if vrefs = []
 					then skip
@@ -309,9 +309,9 @@ operations
 
 			<fmi2SetSE> ->
 				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
-					isSE(c, sv.valueReference, kindOf(sv.variable))
-					and is_Real(sv.variable)
-					and sv.variable.derivative = nil ]
+					isSE(c, sv.valueReference, kindOf(sv.fmi2ScalarVariable))
+					and is_Real(sv.fmi2ScalarVariable)
+					and sv.fmi2ScalarVariable.derivative = nil ]
 				in
 					if vrefs = []
 					then skip
@@ -327,7 +327,7 @@ operations
 
 			<fmi2GetEventIndicators> ->
 				let mk_(s, -) = fmi2GetEventIndicators(c,
-						nilNat(c.model.attributes.numberOfEventIndicators)) in
+						nilNat(c.model.numberOfEventIndicators)) in
 					if s <> <fmi2OK>
 					then exit "Cannot GetX EventIndicators",
 
@@ -343,9 +343,9 @@ operations
 
 			<fmi2SetIN> ->
 				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
-					isIN(c, sv.valueReference, kindOf(sv.variable))
-					and is_Real(sv.variable)
-					and sv.variable.derivative = nil ]
+					isIN(c, sv.valueReference, kindOf(sv.fmi2ScalarVariable))
+					and is_Real(sv.fmi2ScalarVariable)
+					and sv.fmi2ScalarVariable.derivative = nil ]
 				in
 					if vrefs = []
 					then skip
@@ -356,7 +356,7 @@ operations
 
 			<fmi2SetINC> ->
 				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
-					isINC(c, sv.valueReference, kindOf(sv.variable)) ]
+					isINC(c, sv.valueReference, kindOf(sv.fmi2ScalarVariable)) ]
 				in
 					if vrefs = []
 					then skip
@@ -415,9 +415,9 @@ operations
 					else c := c2,
 
 			<fmi2GetX> ->
-				let vars = [ sv | sv in seq c.eModelVariables & is_Real(sv.variable) ] in
+				let vars = [ sv | sv in seq c.eModelVariables & is_Real(sv.fmi2ScalarVariable) ] in
 				(
-					let vrefs = [ sv.valueReference | sv in seq vars & sv.variable.derivative = nil ] in
+					let vrefs = [ sv.valueReference | sv in seq vars & sv.fmi2ScalarVariable.derivative = nil ] in
 						if vrefs = []
 						then skip
 						else let mk_(s, -) = fmi2GetReal(c, vrefs, len vrefs) in
@@ -433,7 +433,7 @@ operations
 						then exit "Cannot GetX ContinuousStates";
 
 					let mk_(s, -) = fmi2GetEventIndicators(c,
-							nilNat(c.model.attributes.numberOfEventIndicators)) in
+							nilNat(c.model.numberOfEventIndicators)) in
 						if s <> <fmi2OK>
 						then exit "Cannot GetX EventIndicators";
 

@@ -198,9 +198,9 @@ operations
 			<fmi2SetINI> ->
 			(
 				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
-								isINI(c, sv.valueReference, kindOf(sv.variable))
-								and is_Real(sv.variable)
-								and sv.variable.derivative = nil ]
+								isINI(c, sv.valueReference, kindOf(sv.fmi2ScalarVariable))
+								and is_Real(sv.fmi2ScalarVariable)
+								and sv.fmi2ScalarVariable.derivative = nil ]
 				in
 					if vrefs = []
 					then skip
@@ -213,8 +213,8 @@ operations
 				then let ders = [ c.eModelVariables(idx).valueReference | idx in set inds c.eModelVariables &
 					c.eModelVariables(idx).causality = <input>
 					and exists dv in seq c.eModelVariables &
-						is_Real(dv.variable)
-						and dv.variable.derivative = idx ]
+						is_Real(dv.fmi2ScalarVariable)
+						and dv.fmi2ScalarVariable.derivative = idx ]
 					^
 					[ sd.vref | sd in seq c.solverDerivatives & sd.type = <input> ]
 				in
@@ -275,9 +275,9 @@ operations
 			<fmi2SetIN> ->
 			(
 				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
-								isINI(c, sv.valueReference, kindOf(sv.variable))
-								and is_Real(sv.variable)
-								and sv.variable.derivative = nil ]
+								isINI(c, sv.valueReference, kindOf(sv.fmi2ScalarVariable))
+								and is_Real(sv.fmi2ScalarVariable)
+								and sv.fmi2ScalarVariable.derivative = nil ]
 				in
 					if vrefs = []
 					then skip
@@ -290,8 +290,8 @@ operations
 				then let ders = [ c.eModelVariables(idx).valueReference | idx in set inds c.eModelVariables &
 					c.eModelVariables(idx).causality = <input>
 					and exists dv in seq c.eModelVariables &
-						is_Real(dv.variable)
-						and dv.variable.derivative = idx ]
+						is_Real(dv.fmi2ScalarVariable)
+						and dv.fmi2ScalarVariable.derivative = idx ]
 					^
 					[ sd.vref | sd in seq c.solverDerivatives & sd.type = <input> ]
 				in
@@ -306,7 +306,7 @@ operations
 
 			<fmi2SetINIE> ->
 				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
-					isINIE(c, sv.valueReference, kindOf(sv.variable)) ]
+					isINIE(c, sv.valueReference, kindOf(sv.fmi2ScalarVariable)) ]
 				in
 					if vrefs = []
 					then skip
@@ -318,7 +318,7 @@ operations
 			<fmi2GetINIT> ->
 			(
 				let vrefs = [ sv.valueReference | sv in seq c.eModelVariables &
-					isINIT(c, sv.valueReference, kindOf(sv.variable)) ]
+					isINIT(c, sv.valueReference, kindOf(sv.fmi2ScalarVariable)) ]
 				in
 					if vrefs = []
 					then skip
@@ -349,9 +349,9 @@ operations
 				),
 
 			<fmi2GetX> ->
-				let vars = [ idx | idx in set inds c.eModelVariables & is_Real(c.eModelVariables(idx).variable) ] in
+				let vars = [ idx | idx in set inds c.eModelVariables & is_Real(c.eModelVariables(idx).fmi2ScalarVariable) ] in
 				(
-					let vrefs = [ c.eModelVariables(idx).valueReference | idx in seq vars & c.eModelVariables(idx).variable.derivative = nil ] in
+					let vrefs = [ c.eModelVariables(idx).valueReference | idx in seq vars & c.eModelVariables(idx).fmi2ScalarVariable.derivative = nil ] in
 						if vrefs = []
 						then skip
 						else let mk_(s, -) = fmi2GetReal(c, vrefs, len vrefs) in
@@ -362,8 +362,8 @@ operations
 					then let ders = [ c.eModelVariables(idx).valueReference | idx in seq vars &
 						c.eModelVariables(idx).causality = <output>
 						and exists dv in seq c.eModelVariables &
-							is_Real(dv.variable)
-							and dv.variable.derivative = idx ]
+							is_Real(dv.fmi2ScalarVariable)
+							and dv.fmi2ScalarVariable.derivative = idx ]
 						^
 						[ sd.vref | sd in seq c.solverDerivatives & sd.type = <output> ]
 					in
