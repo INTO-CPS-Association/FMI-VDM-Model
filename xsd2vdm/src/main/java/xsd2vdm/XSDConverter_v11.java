@@ -71,7 +71,12 @@ public class XSDConverter_v11 extends XSDConverter
 	 */
 	public XSDConverter_v11()
 	{
-		initConverter();
+		this(false);
+	}
+	
+	public XSDConverter_v11(boolean suppressWarnings)
+	{
+		initConverter(suppressWarnings);
 	}
 	
 	/**
@@ -969,10 +974,9 @@ public class XSDConverter_v11 extends XSDConverter
 				// We can process the min/max for the xs:all because there is only
 				// one field within.
 				
-				Type full = fields.get(0).getFieldType();	// Apply inner seq/opt
-				full.setMinOccurs(element);
-				full.setMaxOccurs(element);
-				fields.set(0, new Field(fields.get(0).getFieldName(), fields.get(0).getElementName(), full));
+				Type ftype = fields.get(0).getType();
+				ftype.setMinOccurs(element);
+				ftype.setMaxOccurs(element);
 			}
 			else 
 			{

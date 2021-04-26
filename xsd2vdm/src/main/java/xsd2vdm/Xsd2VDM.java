@@ -63,7 +63,7 @@ public class Xsd2VDM
 	
 	private static void usage()
 	{
-		System.err.println("Usage: Xsd2VDM -xsd <XSD schema> [-vdm <output>] [-xml <XML file> [-name <varname>]]");
+		System.err.println("Usage: Xsd2VDM -xsd <XSD schema> [-vdm <output>] [-xml <XML file> [-name <varname>]] [-nowarn]");
 		System.err.println("Default mapping file is 'xsd2vdm.properties' located in same dir as XSD.");
 		System.err.println("Properties:");
 		System.err.println("    -Dmappings=<file>  Set an alternative mappings file");
@@ -81,6 +81,7 @@ public class Xsd2VDM
 		File vdmFile = null;
 		File xmlFile = null;
 		String varName = null;
+		boolean noWarn = false;
 		
 		while (arg < args.length)
 		{
@@ -104,6 +105,10 @@ public class Xsd2VDM
 						varName = args[++arg];
 						break;
 						
+					case "-nowarn":
+						noWarn = true;
+						break;
+						
 					default:
 						usage();
 				}
@@ -122,7 +127,7 @@ public class Xsd2VDM
 		}
 		
 		Xsd2VDM xsd2vdm = new Xsd2VDM();
-		xsd2vdm.convert(xsdFile, vdmFile, xmlFile, varName);
+		xsd2vdm.convert(xsdFile, vdmFile, xmlFile, varName, noWarn);
 	}
 	
 	/**
@@ -131,12 +136,12 @@ public class Xsd2VDM
 	 * xmlFile is null, the schema is written, else the XML value mapping.
 	 * Note that the XML is always validated.
 	 */
-	public void convert(File xsdFile, File vdmFile, File xmlFile, String varName)
+	public void convert(File xsdFile, File vdmFile, File xmlFile, String varName, boolean noWarn)
 	{
 		try
 		{
 			loadProperties(xsdFile);
-			Map<String, Type> schema = createVDMSchema(xsdFile, vdmFile, (xmlFile == null));
+			Map<String, Type> schema = createVDMSchema(xsdFile, vdmFile, (xmlFile == null), noWarn);
 			
 			if (xmlFile != null)
 			{
@@ -225,7 +230,7 @@ public class Xsd2VDM
 	 * Convert the root schema file passed in and write out VDM-SL to the output. 
 	 * @param b 
 	 */
-	private Map<String, Type> createVDMSchema(File xsdFile, File vdmFile, boolean writeVDM) throws Exception
+	private Map<String, Type> createVDMSchema(File xsdFile, File vdmFile, boolean writeVDM, boolean noWarn) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
@@ -253,7 +258,7 @@ public class Xsd2VDM
 		}
 
 		// Select a version of the XSD schema to convert...
-		XSDConverter converter = new XSDConverter_v11();
+		XSDConverter converter = new XSDConverter_v11(noWarn);
 		
 		Map<String, Type> vdmSchema = converter.convertSchemas(roots);
 

@@ -60,6 +60,11 @@ abstract public class XSDConverter
 	protected boolean errors = false;
 	
 	/**
+	 * True if warning messages should be suppressed.
+	 */
+	protected boolean suppressWarnings = false;
+	
+	/**
 	 * Set to the schema target namespace, if set.
 	 */
 	protected String targetNamespace = null;
@@ -69,12 +74,13 @@ abstract public class XSDConverter
 	/**
 	 * Initialize data.
 	 */
-	protected void initConverter()
+	protected void initConverter(boolean suppressWarnings)
 	{
 		stack.clear();
 		functions.clear();
 		errors = false;
 		namespaces.clear();
+		this.suppressWarnings = suppressWarnings;
 	}
 	
 	/**
@@ -289,7 +295,10 @@ abstract public class XSDConverter
 	
 	protected void warning(String message, XSDElement element)
 	{
-		System.err.println("Warning: " + message +
-			" at " + element.getFile().getName() + " line " + element.getLineNumber());
+		if (!suppressWarnings)
+		{
+			System.err.println("Warning: " + message +
+				" at " + element.getFile().getName() + " line " + element.getLineNumber());
+		}
 	}
 }
