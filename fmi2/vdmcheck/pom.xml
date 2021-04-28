@@ -8,7 +8,7 @@
 	</parent>
 
 	<groupId>org.into-cps.vdmcheck.fmi2</groupId>
-	<artifactId>fmi2vdm</artifactId>
+	<artifactId>vdmcheck</artifactId>
 
 	<properties>
 		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>

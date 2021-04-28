@@ -49,7 +49,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import fmi2vdm.FMI2SaxParser;
 
 public class VDMCheck
 {
@@ -58,7 +57,6 @@ public class VDMCheck
 		String filename = null;
 		String vdmOUT = null;
 		String xmlIN = null;
-		String xsdIN = "schema/fmi2ModelDescription.xsd";
 		
 		for (int a=0; a < args.length; a++)
 		{
@@ -75,26 +73,23 @@ public class VDMCheck
 				case "-x":
 					xmlIN = args[++a];
 					break;
-					
-				case "-s":
-					xsdIN = args[++a];
-					break;
 			}
 		}
 		
 		if (filename == null && xmlIN == null)
 		{
-			System.err.println("Usage: java -jar fmi2vdm.jar [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml");
+			System.err.println("Usage: java -jar vdmcheck.jar [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml");
 			System.exit(1);
 		}
 		else
 		{
-			System.exit(run(filename, xmlIN, vdmOUT, xsdIN));
+			System.exit(run(filename, xmlIN, vdmOUT));
 		}
 	}
 	
-	private static int run(String filename, String xmlIN, String vdmOUT, String xsdIN)
+	private static int run(String filename, String xmlIN, String vdmOUT)
 	{
+		String xsdIN = "schema/fmi2ModelDescription.xsd";
 		File fmuFile = filename == null ? null : new File(filename);
 		
 		File tempXML = null;
@@ -185,14 +180,12 @@ public class VDMCheck
 				schema = new File(jarLocation.getAbsolutePath() + File.separator + schema.getPath());
 			}
 			
-			String[] args = new String[] { tempXML.getCanonicalPath(), varName, schema.getCanonicalPath() };
-
-			PrintStream savedIO = System.out;
-			PrintStream vdmsl = new PrintStream(tempVDM);
-			System.setOut(vdmsl);
-			FMI2SaxParser.main(args);	// Produce VDM source or exit
-			vdmsl.close();
-			System.setOut(savedIO);
+			runCommand(jarLocation, tempOUT,
+					"java", "-jar", "xsd2vdm.jar", 
+					"-xsd", schema.getCanonicalPath(),
+					"-xml", tempXML.getCanonicalPath(),
+					"-vdm", tempVDM.getCanonicalPath(),
+					"-name", varName);
 			
 			tempOUT = File.createTempFile("out", "tmp");
 			
@@ -212,9 +205,7 @@ public class VDMCheck
 			if (vdmOUT != null)
 			{
 				if (filename == null) filename = "XML";
-				
-				sed(tempVDM, new PrintStream(new FileOutputStream(vdmOUT)),
-					"generated from " + tempXML, "generated from " + filename);
+				sed(tempVDM, new PrintStream(new FileOutputStream(vdmOUT)),	tempXML.getName(), filename);
 			}
 			
 			return exit;

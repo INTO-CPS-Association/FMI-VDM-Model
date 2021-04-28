@@ -20,7 +20,7 @@
 		<module>cosim-model</module>
 		<module>cosim2vdm</module>
 		<module>static-model</module>
-		<module>fmi2vdm</module>
+		<module>vdmcheck</module>
 	</modules>
 
 </project>
