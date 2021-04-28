@@ -78,7 +78,7 @@ public class VDMCheck
 		
 		if (filename == null && xmlIN == null)
 		{
-			System.err.println("Usage: java -jar vdmcheck.jar [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml");
+			System.err.println("Usage: java -jar vdmcheck2.jar [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml");
 			System.exit(1);
 		}
 		else

@@ -45,7 +45,7 @@
 		<dependencySet>
 			<includes>
 				<include>org.into-cps.vdmcheck:xsd2vdm</include>
-				<include>org.into-cps.vdmcheck.fmi2:vdmcheck</include>
+				<include>org.into-cps.vdmcheck.fmi2:vdmcheck2</include>
 				<include>com.fujitsu:vdmj</include>
 				<include>com.fujitsu:annotations</include>
 			</includes>
