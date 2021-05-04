@@ -42,6 +42,8 @@ public class FixedFacet extends Facet
 		{
 			case "NormalizedString":
 			case "AnyString":
+			case "seq of char":
+			case "seq1 of char":
 				return var + " = \"" + value + "\"";
 				
 			default:

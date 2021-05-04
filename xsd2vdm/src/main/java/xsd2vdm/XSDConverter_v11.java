@@ -1249,8 +1249,16 @@ public class XSDConverter_v11 extends XSDConverter
 			
 			if (result == null)
 			{
-				// If an attribute has no type... defaults to xs:any?
-				result = new Field(fieldName(name), name, new BasicType("token"));
+				// If an attribute has no type... defaults to xs:any, unless fixed?
+				
+				if (element.hasAttr("fixed"))
+				{
+					result = new Field(fieldName(name), name, new BasicType("AnyString"));
+				}
+				else
+				{
+					result = new Field(fieldName(name), name, new BasicType("token"));
+				}
 			}
 
 			for (XSDElement child: element.getChildren())
