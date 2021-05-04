@@ -30,76 +30,24 @@
 /**
  * 2.5 Build Configuration
  */
-types
-	FMIBuildDescription ::
-		location				: Location
-		fmiVersion				: NormalizedString
-		buildConfigurations		: seq1 of BuildConfiguration;
-
-	BuildConfiguration ::
-		location				: Location
-		modelIdentifier			: NormalizedString
-		platform				: [NormalizedString]
-		description				: [NormalizedString]
-		sourceFileSets			: [seq1 of SourceFileSet]
-		libraries				: [seq1 of Library];
-
-	SourceFileSet ::
-		location				: Location
-		name					: [NormalizedString]
-		language				: [NormalizedString]
-		compiler				: [NormalizedString]
-		compilerOptions			: [AnyString]
-		sourceFiles				: seq1 of SourceFile
-		preprocessorDefinitions	: [seq1 of PreprocessorDefinition]
-		includeDirectories		: [seq1 of IncludeDirectory];
-
-	SourceFile ::
-		location				: Location
-		name					: NormalizedString;
-
-	PreprocessorDefinition ::
-		location				: Location
-		name					: NormalizedString
-		optional				: [bool]
-		value					: [NormalizedString]
-		description				: [AnyString]
-		options					: [seq1 of Option];
-
-	Option ::
-		location				: Location
-		value					: [NormalizedString]
-		description				: [AnyString];
-
-	IncludeDirectory ::
-		location				: Location
-		name					: NormalizedString;
-
-	Library ::
-		location				: Location
-		name					: NormalizedString
-		version					: [NormalizedString]
-		external				: [bool]
-		description				: [AnyString];
-
 functions
-	isValidFMIBuildDescription: FMIBuildDescription +> bool
+	isValidFMIBuildDescription: FmiBuildDescription +> bool
 	isValidFMIBuildDescription(desc) ==
 	{
 		-- @OnFail(1050, "2.5 Invalid BuildConfiguration at line %s", bc.location)
-		( isValidBuildConfiguration(bc) ) | bc in seq desc.buildConfigurations
+		( isValidBuildConfiguration(bc) ) | bc in seq desc.buildConfiguration
 	} = {true};
 
 	isValidBuildConfiguration: BuildConfiguration +> bool
 	isValidBuildConfiguration(bc) ==
 	{
 		-- @OnFail(1051, "2.5 Invalid SourceFileSet at line %s", sfs.location)
-		( isValidSourceFileSet(sfs) ) | sfs in seq nilSeq[SourceFileSet](bc.sourceFileSets)
+		( isValidSourceFileSet(sfs) ) | sfs in seq nilSeq[SourceFileSet](bc.sourceFileSet)
 	}
 	union
 	{
 		-- @OnFail(1052, "2.5 Invalid Library at line %s", lib.location)
-		( isValidLibrary(lib) ) | lib in seq nilSeq[Library](bc.libraries)
+		( isValidLibrary(lib) ) | lib in seq nilSeq[Library](bc.library)
 	}
 	= {true};
 
@@ -109,11 +57,11 @@ functions
 		-- @OnFail(1053, "2.5 Compiler options set without compiler at line %s", sfs.location)
 		( sfs.compilerOptions <> nil => sfs.compiler <> nil ),
 		-- @OnFail(1054, "2.5 Invalid SourceFiles at line %s", sfs.location)
-		( isValidSourceFiles(sfs.sourceFiles) ),
+		( isValidSourceFiles(sfs.sourceFile) ),
 		-- @OnFail(1055, "2.5 Invalid PreprocessorDefinitions at line %s", sfs.location)
-		( isValidPreprocessorDefinitions(sfs.preprocessorDefinitions) ),
+		( isValidPreprocessorDefinitions(sfs.preprocessorDefinition) ),
 		-- @OnFail(1056, "2.5 Invalid IncludeDirectories at line %s", sfs.location)
-		( isValidIncludeDirectories(sfs.includeDirectories) )
+		( isValidIncludeDirectories(sfs.includeDirectory) )
 	} = {true};
 
 	isValidSourceFiles: seq1 of SourceFile +> bool

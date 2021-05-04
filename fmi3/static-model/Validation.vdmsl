@@ -31,15 +31,15 @@
  * Functions to support the validation of FMU configuration files.
  */
 functions
-	isValidFMIConfiguration: FMIModelDescription | FMIBuildDescription | FMITerminalsAndIcons +> bool
+	isValidFMIConfiguration: FmiModelDescription | FmiBuildDescription | FmiTerminalsAndIcons +> bool
 	isValidFMIConfiguration(conf) ==
-		if is_(conf, FMIModelDescription)
+		if is_(conf, FmiModelDescription)
 		then isValidFMIModelDescription(conf)
 
-		elseif is_(conf, FMIBuildDescription)
+		elseif is_(conf, FmiBuildDescription)
 		then isValidFMIBuildDescription(conf)
 
-		else if is_(conf, FMITerminalsAndIcons)
+		else if is_(conf, FmiTerminalsAndIcons)
 		then isValidFMITerminalsAndIcons(conf)
 
 		else undefined;		-- Undefined top level type

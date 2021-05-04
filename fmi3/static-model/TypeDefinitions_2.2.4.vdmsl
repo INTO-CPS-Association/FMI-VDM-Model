@@ -31,176 +31,82 @@
  * 2.2.3 Definition of Types (TypeDefinitions)
  */
 types
-	fmi3TypeDefinitionBase ::
-		location			: Location
-		name				: NormalizedString
-		description			: [AnyString];
-
-	fmi3RealAttributes ::
-		quantity			: [NormalizedString]
-		unit				: [NormalizedString]
-		displayUnit			: [NormalizedString]
-		relativeQuantity	: [bool]
-		unbounded			: [bool];
-
-	fmi3FloatXXAttributes ::
-		min					: [real]
-		max					: [real]
-		nominal				: [real];
-
-	fmi3IntegerAttributes ::
-		quantity			: [NormalizedString];
-
-	fmi3IntXXAttributes ::
-		min					: [int]
-		max					: [int];
-
-	fmi3ClockAttributes ::
-		clockType			: <synchronousTime> | <communicationPoint>
-		priority			: nat
-		periodic			: [bool]
-		strict				: [bool]
-		intervalCounter		: [nat]
-		shiftCounter		: [nat]
-		resolution			: [nat];
-
-	-- The common attributes above are used to compose various types:
-
-	FloatKind =
-		<Float64> |
-		<Float32>;
-
-	IntegerKind =
-		<Int64> |
-		<Int32> |
-		<Int16> |
-		<Int8> |
-		<UInt64> |
-		<UInt32> |
-		<UInt16> |
-		<UInt8>;
-
-	OtherKind =
-		<BooleanKind> |
-		<StringKind> |
-		<BinaryKind> |
-		<ClockKind>;
-
-	Kind = FloatKind | IntegerKind | OtherKind
-	ord a < b ==
-		let value =
-		{
-			<Float64>		|-> 1,
-			<Float32>		|-> 2,
-			<UInt64> 		|-> 3,
-			<Int64>			|-> 4,
-			<UInt32> 		|-> 5,
-			<Int32>			|-> 6,
-			<UInt16>	 	|-> 7,
-			<Int16>			|-> 8,
-			<UInt8>			|-> 9,
-			<Int8> 			|-> 10,
-			<BooleanKind>	|-> 11,
-			<StringKind>	|-> 12,
-			<BinaryKind>	|-> 13,
-			<ClockKind>		|-> 14
-		}
-		in value(a) < value(b);
-
-	RealType ::
-		base				: fmi3TypeDefinitionBase
-		kind				: FloatKind
-		realAtts			: fmi3RealAttributes
-		floatAtts			: fmi3FloatXXAttributes;
-
-	IntegerType ::
-		base				: fmi3TypeDefinitionBase
-		kind				: IntegerKind
-		integerAtts			: fmi3IntegerAttributes
-		intAtts				: fmi3IntXXAttributes;
-
-	BooleanType ::
-		base				: fmi3TypeDefinitionBase
-		kind				: <BooleanKind>;
-
-	StringType ::
-		base				: fmi3TypeDefinitionBase
-		kind				: <StringKind>;
-
-	BinaryType ::
-		base				: fmi3TypeDefinitionBase
-		kind				: <BinaryKind>
-		mimeType			: [NormalizedString]
-		maxSize				: [nat];
-
-	ClockType ::
-		base				: fmi3TypeDefinitionBase
-		kind				: <ClockKind>
-		clockAttrs			: fmi3ClockAttributes;
-
-	Item ::
-		name				: NormalizedString
-		value				: int
-		description			: [AnyString];
-
-	EnumerationType ::
-		base				: fmi3TypeDefinitionBase
-		kind				: <IntegerKind>				-- Enum items are ints?
-		quantity			: [NormalizedString]
-		items				: [seq1 of Item];
-
 	VariableType =
-		RealType |
-		IntegerType |
+		Float32Type | Float64Type |
+		Int64Type | Int32Type | Int16Type | Int8Type |
+		UInt64Type | UInt32Type | UInt16Type | UInt8Type |
 		BooleanType |
 		StringType |
 		BinaryType |
 		EnumerationType |
 		ClockType;
 
-
 functions
+	/**
+	 * Check whether a type is a "real" type.
+	 */
+	isRealType: VariableType +> bool
+	isRealType(var) ==
+		is_Float64Type(var) or is_Float32Type(var);
+
+	/**
+	 * Check whether a type is an "integer" type.
+	 */
+	isIntegerType: VariableType +> bool
+	isIntegerType(var) ==
+		is_Int64Type(var) or is_Int32Type(var) or is_Int16Type(var) or is_Int8Type(var) or
+		is_UInt64Type(var) or is_UInt32Type(var) or is_UInt16Type(var) or is_UInt8Type(var);
+
+
 	isValidType: VariableType +> bool
 	isValidType(stype) ==
 		cases stype:
-			mk_RealType(-, kind, mk_fmi3RealAttributes(-, unit, dunit, -, -), mk_fmi3FloatXXAttributes(min, max, -)) ->
+			mk_Float32Type(-, -, -, -, unit, dunit, -, -, min, max, -, -),
+			mk_Float64Type(-, -, -, -, unit, dunit, -, -, min, max, -, -) ->
 			{
-				-- @OnFail(1150, "2.2.3 Type %s, Float max %s not >= min %s", stype.base.name, max, min)
+				-- @OnFail(1150, "2.2.3 Type %s, Float max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
 
-				-- @OnFail(1151, "2.2.3 Type %s, Real unit must be defined for displayUnit %s", stype.base.name, dunit)
+				-- @OnFail(1151, "2.2.3 Type %s, Real unit must be defined for displayUnit %s", stype.name, dunit)
 				( dunit <> nil => unit <> nil )
 			}
 			union
 			(
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxKind(stype) in
 				{
 					max <> nil =>
-						--@OnFail(1152, "2.2.3 max %s is not a valid %s", max, kind)
+						--@OnFail(1152, "2.2.3 max %s is not a valid value of this type", max)
 						( max <= kmax and max >= kmin ),
 
 					min <> nil =>
-						--@OnFail(1153, "2.2.3 min %s is not a valid %s", min, kind)
+						--@OnFail(1153, "2.2.3 min %s is not a valid value of this type", min)
 						( min <= kmax and min >= kmin )
 				}
 			)
 			= {true},
 
-			mk_IntegerType(-, kind, -, mk_fmi3IntXXAttributes(min, max)) ->
+			mk_Int64Type(-, -, -, -, min, max, -),
+			mk_Int32Type(-, -, -, -, min, max, -),
+			mk_Int16Type(-, -, -, -, min, max, -),
+			mk_Int8Type(-, -, -, -, min, max, -),
+			mk_UInt64Type(-, -, -, -, min, max, -),
+			mk_UInt32Type(-, -, -, -, min, max, -),
+			mk_UInt16Type(-, -, -, -, min, max, -),
+			mk_UInt8Type(-, -, -, -, min, max, -) ->
 			{
-				-- @OnFail(1154, "2.2.3 Type %s, Integer max %s not >= min %s", stype.base.name, max, min)
+				-- @OnFail(1154, "2.2.3 Type %s, Integer max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min )
 			}
 			union
 			(
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxKind(stype) in
 				{
 					max <> nil =>
-						--@OnFail(1155, "2.2.3 max %s is not a valid %s", max, kind)
+						--@OnFail(1155, "2.2.3 max %s is not a valid value of this type", max)
 						( max <= kmax and max >= kmin ),
 
 					min <> nil =>
-						--@OnFail(1156, "2.2.3 min %s is not a valid %s", min, kind)
+						--@OnFail(1156, "2.2.3 min %s is not a valid value of this type", min)
 						( min <= kmax and min >= kmin )
 				}
 			)
@@ -211,8 +117,8 @@ functions
 			-- enumeration (in order that the mapping between "name" and "value" is
 			-- bijective). An Enumeration element must have at least one Item.
 
-			mk_EnumerationType(-, -, -, items) ->
-				-- @OnFail(1157, "2.2.3 Type %s, Enumeration item name/values do not form a bijection", stype.base.name)
+			mk_EnumerationType(-, -, -, -, -, items) ->
+				-- @OnFail(1157, "2.2.3 Type %s, Enumeration item name/values do not form a bijection", stype.name)
 				(
 					card { i.name | i in seq items } = len items
 					and	card { i.value | i in seq items } = len items
@@ -226,12 +132,12 @@ functions
 		defs <> nil =>
 			{
 				/* @OnFail(1158, "2.2.3 TypeDefinitions names are not unique: %s",
-					{ a.base.name | a, b in set defs & a <> b and a.base.name = b.base.name }) */
-				( card { stype.base.name | stype in set defs } = card defs )
+					{ a.name | a, b in set defs & a <> b and a.name = b.name }) */
+				( card { stype.name | stype in set defs } = card defs )
 			}
 			union
 			{
-				-- @OnFail(1159, "2.2.3 TypeDefinition %s invalid at line %s", stype.base.name, stype.base.location)
+				-- @OnFail(1159, "2.2.3 TypeDefinition %s invalid at line %s", stype.name, stype.location)
 				( isValidType(stype) )
 
 				| stype in set defs

@@ -39,23 +39,85 @@ traces
 		let c : [Causality] in
 		let v : [Variability] in
 		let i : [Initial] in
-		let a : fmi3Annotation = [ mk_Tool(0, "A", mk_token(1)) ] in
+		let a : Annotations = [ "A" ] in
 		let t in set
 		{
-			mk_Real(
-				mk_fmi3VariableBase(0, "name", 1234, nil, c, v, i, nil, nil, nil, nil, nil, nil, a, nil),
-				<Float64>,
-				mk_fmi3RealVariableAttributes(nil, nil),
-				mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
-				mk_fmi3FloatXXAttributes(nil, nil, nil),
-				[1.23]),
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 6),
+                "name",
+                1234,
+                nil,  -- description
+                c,    -- causality
+                v,    -- variabilty
+                i,    -- initial
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    1.23
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- dimension
+                a,    -- annotations
+                -- alias
+                [
+                    mk_Alias
+                    (
+                        mk_Location("modelDescription.xml", 7),
+                        "alias",
+                        "desc",
+                        nil   -- displayUnit
+                    )
+                ] 
+            ),
 
-			mk_Integer(
-				mk_fmi3VariableBase(0, "name", 1234, nil, c, v, i, nil, nil, nil, nil, nil, nil, a, nil),
-				<Int32>,
-				mk_fmi3IntegerAttributes(nil),
-				mk_fmi3IntXXAttributes(nil, nil),
-				[123])
+           mk_Int64
+            (
+                mk_Location("modelDescription.xml", 9),
+                "name2",
+                1234,
+                nil,  -- description
+                c,    -- causality
+                v,    -- variability
+                i,    -- initial
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- quantity
+                nil,  -- min
+                nil,  -- max
+                -- start
+                [
+                    123
+                ],
+                nil,  -- dimension
+                a,    -- annotations
+                -- alias
+                [
+                    mk_Alias
+                    (
+                        mk_Location("modelDescription.xml", 10),
+                        "alias",
+                        "desc",
+                        nil   -- displayUnit
+                    )
+                ] 
+            )
 		}
 		in
 			isValidVariableAttributes(t);
@@ -64,15 +126,47 @@ functions
 	/**
 	 * Helper to make Reals for test below.
 	 */
-	mkVariable: Causality * Variability * [Initial] * [seq1 of real] +> Real
-	mkVariable(causality, variability, initial, start) ==
-		mk_Real(
-			mk_fmi3VariableBase(0, "name", 1234, nil, causality, variability, initial, nil, nil, nil, nil, nil, nil, nil, nil),
-			<Float64>,
-			mk_fmi3RealVariableAttributes(nil, nil),
-			mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
-			mk_fmi3FloatXXAttributes(nil, nil, nil),
-			start);
+	mkVariable: Causality * Variability * [Initial] * [seq1 of real] +> Float64
+	mkVariable(c, v, i, start) ==
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 6),
+                "name",
+                1234,
+                nil,  -- description
+                c,    -- causality
+                v,    -- variabilty
+                i,    -- initial
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                start,
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- dimension
+                nil,  -- annotations
+                -- alias
+                [
+                    mk_Alias
+                    (
+                        mk_Location("modelDescription.xml", 7),
+                        "alias",
+                        "desc",
+                        nil   -- displayUnit
+                    )
+                ] 
+            );
 
 	/**
 	 * Test the ScalarVariable invariant for the table on p48, where the SV is valid or not
@@ -95,7 +189,7 @@ functions
 									not isValidVariableAttributes(mkVariable(causality, variability, <approx>, startv)) and
 									not isValidVariableAttributes(mkVariable(causality, variability, <calculated>, nilv)),
 
-								<constant>, <discrete>, <continuous>, <clock> ->
+								<constant>, <discrete>, <continuous> ->
 									forall initial : Initial &
 										not isValidVariableAttributes(mkVariable(causality, variability, initial, nilv))
 							end,
@@ -107,7 +201,7 @@ functions
 									not isValidVariableAttributes(mkVariable(causality, variability, <approx>, startv)) and
 									not isValidVariableAttributes(mkVariable(causality, variability, <calculated>, nilv)),
 
-								<constant>, <discrete>, <continuous>, <clock> ->
+								<constant>, <discrete>, <continuous> ->
 									forall initial : Initial &
 										not isValidVariableAttributes(mkVariable(causality, variability, initial, nilv))
 							end,
@@ -119,16 +213,13 @@ functions
 									isValidVariableAttributes(mkVariable(causality, variability, <approx>, startv)) and
 									not isValidVariableAttributes(mkVariable(causality, variability, <exact>, nilv)),
 
-								<constant>, <discrete>, <continuous>, <clock> ->
+								<constant>, <discrete>, <continuous> ->
 									forall initial : Initial &
 										not isValidVariableAttributes(mkVariable(causality, variability, initial, nilv))
 							end,
 
 						<input> ->
 							cases variability:
-								<clock> ->
-									isValidVariableAttributes(mkVariable(causality, variability, <exact>, startv)),
-
 								<discrete>, <continuous> ->
 									isValidVariableAttributes(mkVariable(causality, variability, nil, startv)) and
 									not isValidVariableAttributes(mkVariable(causality, variability, <calculated>, nilv)) and
@@ -142,9 +233,6 @@ functions
 
 						<output> ->
 							cases variability:
-								<clock> ->
-									isValidVariableAttributes(mkVariable(causality, variability, <calculated>, nilv)),
-
 								<constant> ->
 									isValidVariableAttributes(mkVariable(causality, variability, <exact>, startv)) and
 									not isValidVariableAttributes(mkVariable(causality, variability, <calculated>, nilv)) and
@@ -175,11 +263,7 @@ functions
 								<discrete>, <continuous> ->
 									isValidVariableAttributes(mkVariable(causality, variability, <calculated>, nilv)) and
 									isValidVariableAttributes(mkVariable(causality, variability, <approx>, startv)) and
-									isValidVariableAttributes(mkVariable(causality, variability, <exact>, startv)),
-
-								<clock> ->
-									forall initial : Initial &
-										not isValidVariableAttributes(mkVariable(causality, variability, initial, nilv))
+									isValidVariableAttributes(mkVariable(causality, variability, <exact>, startv))
 							end,
 
 						<independent> ->

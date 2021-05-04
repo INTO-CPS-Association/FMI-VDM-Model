@@ -30,51 +30,8 @@
 /**
  * 2.2.6.2 Definition of Terminals
  */
-types
-	FMITerminalsAndIcons ::
-		location					: Location
-		fmiVersion					: NormalizedString
-		graphicalRepresentation		: GraphicalRepresentation
-		terminals					: [seq1 of Terminal]
-		vendorAnnotations			: [fmi3Annotation];
-
-	Terminal ::
-		location					: Location
-		name						: NormalizedString
-		matchingRule				: NormalizedString
-		terminalKind				: [NormalizedString]
-		description					: [AnyString]
-		graphicalRepresentation		: [TerminalGraphicalRepresentation]
-		variables					: [seq1 of TerminalMemberVariable]
-		streams						: [seq1 of TerminalStreamMemberVariable]
-		subTerminals				: [seq1 of Terminal];
-
-	TerminalGraphicalRepresentation ::
-		location					: Location
-		defaultConnectionColor		: [seq of nat]
-		defaultConnectionStrokeSize	: [real]
-		x1							: real
-		y1							: real
-		x2							: real
-		y2							: real
-		iconBase					: [NormalizedString]
-		vendorAnnotations			: [fmi3Annotation];
-
-	TerminalMemberVariable ::
-		location					: Location
-		variableKind				: NormalizedString
-		memberName					: NormalizedString
-		variableName				: NormalizedString;
-
-	TerminalStreamMemberVariable ::
-		location					: Location
-		inStreamMemberName			: NormalizedString
-		outStreamMemberName			: NormalizedString
-		inStreamVariableName		: NormalizedString
-		outStreamVariableName		: NormalizedString;
-
 functions
-	isValidFMITerminalsAndIcons: FMITerminalsAndIcons +> bool
+	isValidFMITerminalsAndIcons: FmiTerminalsAndIcons +> bool
 	isValidFMITerminalsAndIcons(tandi) ==
 	{
 		isValidGraphicalRepresentation(tandi.graphicalRepresentation),
@@ -90,8 +47,8 @@ functions
 				-- @OnFail(1300, "2.2.6.2 Terminal invalid at line %s", t.location)
 				( isValidTerminal(t) ),
 
-				isValidTerminals(t.subTerminals),
-				isValidTerminalGraphicalRepresentation(t.graphicalRepresentation)
+				isValidTerminals(t.terminal),
+				isValidTerminalGraphicalRepresentation(t.terminalGraphicalRepresentation)
 			}
 
 			| t in seq terminals
@@ -101,9 +58,9 @@ functions
 
 	isValidTerminal: Terminal +> bool
 	isValidTerminal(term) ==
-		term.variables <> nil =>
+		term.terminalMemberVariable <> nil =>
 			-- @OnFail(1301, "2.2.6.2 Terminal member variables not unique at line %s", term.location)
-			( card { v | v in seq term.variables } = len term.variables );
+			( card { v | v in seq term.terminalMemberVariable } = len term.terminalMemberVariable );
 
 
 	isValidTerminalGraphicalRepresentation: [TerminalGraphicalRepresentation] +> bool
@@ -122,6 +79,6 @@ functions
 					gt.defaultConnectionStrokeSize > 0 ),
 
 				-- @OnFail(1305, "2.2.6.2 Terminal vendor annotations invalid at line %s", gt.location)
-				( isValidVendorAnnotation(gt.vendorAnnotations) )
+				( isValidVendorAnnotation(gt.annotations) )
 			}
 			= {true};

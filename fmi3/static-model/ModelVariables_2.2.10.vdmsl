@@ -30,137 +30,33 @@
 /**
  * 2.2.8 Definition of Model Variables (ModelVariables)
  */
-values
-	-- TODO These catch INF and NAN Double values from the XML
-	Infinity	= 0x7ff0000000000000;
-	NaN			= 0x7ff8000000000000;
-
 types
-	Causality =
-		<structuralParameter> |
-		<parameter> |
-		<calculatedParameter> |
-		<input> |
-		<output> |
-		<local> |
-		<independent>;
-
-	Variability	=
-		<constant> |
-		<fixed> |
-		<tunable> |
-		<discrete> |
-		<continuous> |
-		<clock>
-	ord a < b ==
-		let value =
-		{
-			<constant>   |-> 1,
-			<fixed>      |-> 2,
-			<tunable>    |-> 3,
-			<discrete>   |-> 4,
-			<continuous> |-> 5,
-			<clock>      |-> 6
-		}
-		in value(a) < value(b);
-
-	Initial =
-		<exact> |
-		<approx> |
-		<calculated>;
-
-	-- Note that FMI3 value references are effectively alias tags
-	fmi3ValueReference = nat;
-
-	-- Common variable attributes
-	fmi3RealVariableAttributes ::
-		derivative			: [fmi3ValueReference]
-		reinit				: [bool];
-
-	Dimension ::
-		start				: [nat]
-		valueReference		: [fmi3ValueReference];
-
-	Alias ::
-		name				: NormalizedString
-		description			: [AnyString]
-		displayUnit			: [NormalizedString];	-- Only for floats
-
-	fmi3VariableBase ::
-		location							: Location
-		name								: NormalizedString
-		valueReference						: fmi3ValueReference
-		description							: [AnyString]
-		causality							: [Causality]
-		variability							: [Variability]
-		initial								: [Initial]
-		canHandleMultipleSetPerTimeInstant	: [bool]
-		declaredType						: [NormalizedString]
-		clockReference						: [fmi3ValueReference]
-		clockElementIndex					: [nat]
-		intermediateUpdate					: [bool]
-		dimensions							: [seq1 of Dimension]
-		annotations							: [fmi3Annotation]
-		aliases								: [seq1 of Alias];
-
-	Real ::
-		base				: fmi3VariableBase
-		kind				: FloatKind
-		varAtts				: fmi3RealVariableAttributes
-		realAtts			: fmi3RealAttributes
-		floatAtts			: fmi3FloatXXAttributes
-		start				: [seq1 of real];
-
-	Integer ::
-		base				: fmi3VariableBase
-		kind				: IntegerKind
-		integerAtts			: fmi3IntegerAttributes
-		intAtts				: fmi3IntXXAttributes
-		start				: [seq1 of int];
-
-	Boolean ::
-		base				: fmi3VariableBase
-		kind				: <BooleanKind>
-		start				: [seq1 of bool];
-
-	String ::
-		base				: fmi3VariableBase
-		kind				: <StringKind>
-		start				: [seq1 of AnyString];	-- From Start elements
-
-	Binary ::
-		base				: fmi3VariableBase
-		kind				: <BinaryKind>
-		mimeType			: [NormalizedString]
-		maxSize				: [nat]
-		start				: [seq1 of AnyString];	-- HexBinary
-
-	Enumeration ::
-		base				: fmi3VariableBase
-		kind				: IntegerKind
-		quantity			: [NormalizedString]
-		min					: [int]
-		max					: [int]
-		start				: [seq1 of int]
-	inv e ==
-		e.base.declaredType <> nil;
-
-	Clock ::
-		base				: fmi3VariableBase
-		kind				: <ClockKind>
-		clockAtts			: fmi3ClockAttributes
-		start				: [seq1 of bool];
-
-	Variable = Real | Integer | Boolean | String | Binary | Enumeration | Clock;
-
+	Variable =
+		Float64 | Float32 |
+		Int64 | Int32 | Int16 | Int8 |
+		UInt64 | UInt32 | UInt16 | UInt8 |
+		Boolean | String | Binary | Enumeration | Clock;
 
 functions
+	/**
+	 * Ordering for comparison of Variability values.
+	 */
+	orderOf: Variability +> nat
+	orderOf(value) ==
+		cases value:
+			<constant>   -> 1,
+			<fixed>      -> 2,
+			<tunable>    -> 3,
+			<discrete>   -> 4,
+			<continuous> -> 5
+		end;
+
 	/**
 	 * Lookup a valueReference in the effective variable list.
 	 */
 	lookup: seq1 of Variable * fmi3ValueReference +> [Variable]
 	lookup(svs, vr) ==
-		let found = { v | v in seq svs & v.base.valueReference = vr } in
+		let found = { v | v in seq svs & v.valueReference = vr } in
 			if found = {}
 			then nil
 			else let {v} = found in v;
@@ -168,7 +64,7 @@ functions
 	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
 	 */
-	isInRange[@T]: [@T] * [@T] * [seq1 of @T] * Kind * [Initial] +> bool
+	isInRange[@T]: [@T] * [@T] * [seq1 of @T] * (Variable | VariableType) * [Initial] +> bool
 	isInRange(min, max, start, kind, initial) ==
 		let mk_(kmin, kmax) = minMaxKind(kind) in
 		{
@@ -201,22 +97,50 @@ functions
 	pre is_(min, [real]) and is_(max, [real]) and is_(start, [seq1 of real]);	-- ie. numerics
 
 	/**
-	 * Return the MININT-MAXINT values for a particular Kind
+	 * Return the MININT-MAXINT values for a particular numeric type
 	 */
-	minMaxKind: Kind +> real * real
+	minMaxKind: Variable | VariableType +> real * real
 	minMaxKind(kind) ==
-		cases kind:
-			<Float32>	-> mk_(-3.402823466385288598e+38, 3.402823466385288598e+38),
-			<Float64>	-> mk_(-1.797693134862315708e+308, 1.797693134862315708e+308),
-			<Int8>		-> mk_(-128, 127),
-			<UInt8>		-> mk_(0, 255),
-			<Int16>		-> mk_(-32768, 32767),
-			<UInt16>	-> mk_(0, 65535),
-			<Int32>		-> mk_(-2147483648, 2147483647),
-			<UInt32>	-> mk_(0, 4294967295),
-			<Int64>		-> mk_(-9.223372036854775808e+18, 9.223372036854775807e+18),
-			<UInt64>	-> mk_(0, 1.8446744073709551615e+19)
-		end;
+		if is_(kind, Float32Type) then mk_(-3.402823466385288598e+38, 3.402823466385288598e+38)
+		else if is_(kind, Float64Type) then mk_(-1.797693134862315708e+308, 1.797693134862315708e+308)
+		else if is_(kind, Int8Type) then mk_(-128, 127)
+		else if is_(kind, UInt8Type) then  mk_(0, 255)
+		else if is_(kind, Int16Type) then mk_(-32768, 32767)
+		else if is_(kind, UInt16Type) then  mk_(0, 65535)
+		else if is_(kind, Int32Type) then mk_(-2147483648, 2147483647)
+		else if is_(kind, UInt32Type) then mk_(0, 4294967295)
+		else if is_(kind, Int64Type) then mk_(-9.223372036854775808e+18, 9.223372036854775807e+18)
+		else if is_(kind, UInt64Type) then mk_(0, 1.8446744073709551615e+19)
+		else if is_(kind, EnumerationType) then mk_(0, 4294967295)	-- UInt32?
+		else
+		if is_(kind, Float32) then mk_(-3.402823466385288598e+38, 3.402823466385288598e+38)
+		else if is_(kind, Float64) then mk_(-1.797693134862315708e+308, 1.797693134862315708e+308)
+		else if is_(kind, Int8) then mk_(-128, 127)
+		else if is_(kind, UInt8) then  mk_(0, 255)
+		else if is_(kind, Int16) then mk_(-32768, 32767)
+		else if is_(kind, UInt16) then  mk_(0, 65535)
+		else if is_(kind, Int32) then mk_(-2147483648, 2147483647)
+		else if is_(kind, UInt32) then mk_(0, 4294967295)
+		else if is_(kind, Int64) then mk_(-9.223372036854775808e+18, 9.223372036854775807e+18)
+		else if is_(kind, UInt64) then mk_(0, 1.8446744073709551615e+19)
+		else if is_(kind, Enumeration) then mk_(0, 4294967295)	-- UInt32?
+
+		else undefined;
+
+	/**
+	 * Check whether a type is a "real" type.
+	 */
+	isReal: Variable +> bool
+	isReal(var) ==
+		is_Float64(var) or is_Float32(var);
+
+	/**
+	 * Check whether a type is an "integer" type.
+	 */
+	isInteger: Variable +> bool
+	isInteger(var) ==
+		is_Int64(var) or is_Int32(var) or is_Int16(var) or is_Int8(var) or
+		is_UInt64(var) or is_UInt32(var) or is_UInt16(var) or is_UInt8(var);
 
 	/**
 	 * Verify a sequence of raw Variables.
@@ -225,22 +149,19 @@ functions
 	isValidModelVariables(svs) ==
 		{
 			/* @OnFail(1456, "2.2.8 Variables define more than one independent variable: %s",
-				{ sv.base.name | sv in seq svs & sv.base.causality = <independent> }) */
-			( card { sv | sv in seq svs & sv.base.causality = <independent> } <= 1 ),
+				{ sv.name | sv in seq svs & sv.causality = <independent> }) */
+			( card { sv | sv in seq svs & sv.causality = <independent> } <= 1 ),
 
 			/* @OnFail(1457, "2.2.8 Variable names are not unique: %s",
-				{ svs(a).base.name | a, b in set inds svs &
-					a <> b and svs(a).base.name = svs(b).base.name } ) */
-			( card { sv.base.name | sv in seq svs } = len svs ),
+				{ svs(a).name | a, b in set inds svs &
+					a <> b and svs(a).name = svs(b).name } ) */
+			( card { sv.name | sv in seq svs } = len svs ),
 
-			/* @OnFail(1458, "2.2.8 Clock variables must all be the same type") */
-			( card { sv.clockAtts.clockType | sv in seq svs & is_(sv, Clock) } <= 1 ),
-
-			isValidVariableDimensions(svs)
+			isValidVariableDimension(svs)
 		}
 		union
 		{
-			-- @OnFail(1459, "2.2.8 Variable %s invalid at line %s", sv.base.name, sv.base.location)
+			-- @OnFail(1459, "2.2.8 Variable %s invalid at line %s", sv.name, sv.location)
 			( isValidVariableAttributes(sv) )
 
 			| sv in seq svs
@@ -251,13 +172,13 @@ functions
 	 */
 	isValidVariableAttributes: Variable +> bool
 	isValidVariableAttributes(sv) ==
-		let eCausality   = effectiveCausality(sv.base.causality),
+		let eCausality   = effectiveCausality(sv.causality),
 			eVariability = effectiveVariability(sv),
-			eInitial     = effectiveInitial(sv.base.initial, eCausality, eVariability)
+			eInitial     = effectiveInitial(sv.initial, eCausality, eVariability)
 		in
 		{
 			/* @OnFail(1460, "2.2.8 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
-				sv.base.name, eCausality, eVariability, eInitial, sv.start, sv.base.location) */
+				sv.name, eCausality, eVariability, eInitial, sv.start, sv.location) */
 			(
 				cases eCausality:
 					<structuralParameter> ->
@@ -275,18 +196,14 @@ functions
 					<input> ->
 						(eVariability in set {<discrete>, <continuous>}
 						 and eInitial = nil
-						 and sv.start <> nil)	-- (D)
-						or
-						(eVariability = <clock>
-						 and eInitial = <exact>
-						 and sv.start <> nil),	-- (F)
+						 and sv.start <> nil),	-- (D)
 
 					<independent> ->
 						eVariability = <continuous>
 						and eInitial = nil		-- (D)
 						and sv.start = nil
-						-- @OnFail(1461, "2.2.8 Independent variable must be Real at line %s", sv.base.location)
-						and (is_Real(sv)),
+						-- @OnFail(1461, "2.2.8 Independent variable must be Float at line %s", sv.location)
+						and (is_Float64(sv) or is_Float32(sv)),
 
 					<output> ->
 						cases eVariability:
@@ -296,9 +213,6 @@ functions
 							<discrete>,
 							<continuous> ->
 								eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
-
-							<clock> ->
-								eInitial = <calculated>, 	-- (G)
 
 							others -> false
 						end,
@@ -322,7 +236,7 @@ functions
 			),
 
 			/* @OnFail(1462, "2.2.8 Variable %s variability/causality %s/%s invalid at line %s",
-				sv.base.name, eVariability, eCausality, sv.base.location) */
+				sv.name, eVariability, eCausality, sv.location) */
 			(
 				cases eVariability:
 					<constant> ->
@@ -336,23 +250,20 @@ functions
 
 					<continuous> ->
 						eCausality in set {<input>, <output>, <local>, <independent>}
-						-- @OnFail(1463, "2.2.8 Continuous variable must be Real at line %s", sv.base.location)
-						and (is_Real(sv)),
-
-					<clock> ->
-						eCausality in set {<input>, <output>}
+						-- @OnFail(1463, "2.2.8 Continuous variable must be Real at line %s", sv.location)
+						and (is_Float64(sv) or is_Float32(sv))
 				end
 			),
 
 			/* @OnFail(1464, "2.2.8 Variable %s initial/causality %s/%s invalid at %s",
-				sv.base.name, sv.base.initial, eCausality, sv.base.location) */
+				sv.name, sv.initial, eCausality, sv.location) */
 			(
-				sv.base.initial <> nil =>
+				sv.initial <> nil =>
 					eCausality <> <independent>
 			),
 
 			/* @OnFail(1465, "2.2.8 Variable %s initial/variability/start %s/%s/%s invalid at line %s",
-				sv.base.name, eInitial, eVariability, sv.start, sv.base.location) */
+				sv.name, eInitial, eVariability, sv.start, sv.location) */
 			(
 				cases eInitial:
 					<exact> ->
@@ -371,42 +282,42 @@ functions
 				end
 			),
 
-			-- @OnFail(1466, "2.2.8 Variable %s VendorAnnotations invalid", sv.base.name)
-			( isValidVendorAnnotation(sv.base.annotations) )
+			-- @OnFail(1466, "2.2.8 Variable %s VendorAnnotations invalid", sv.name)
+			( isValidVendorAnnotation(sv.annotations) )
 		} = {true};
 
 	/**
-	 * Check Dimensions structures.
+	 * Check Dimension structures.
 	 */
-	isValidVariableDimensions: [seq1 of Variable] +> bool
-	isValidVariableDimensions(vars) ==
+	isValidVariableDimension: [seq1 of Variable] +> bool
+	isValidVariableDimension(vars) ==
 		vars <> nil => dunion
 		{
 			{
-				-- @OnFail(1467, "2.2.8 Dimensions of %s cannot define start and valueReference", v.base.name)
-				( v.base.dimensions <> nil =>
-					forall dim in seq v.base.dimensions &
+				-- @OnFail(1467, "2.2.8 Dimension of %s cannot define start and valueReference", v.name)
+				( v.dimension <> nil =>
+					forall dim in seq v.dimension &
 						dim.start = nil <=> dim.valueReference <> nil ),
 
-				-- @OnFail(1468, "2.2.8 Dimension of %s cannot reference itself at line %s", v.base.name)
-				( v.base.dimensions <> nil =>
-					forall dim in seq v.base.dimensions &
+				-- @OnFail(1468, "2.2.8 Dimension of %s cannot reference itself at line %s", v.name)
+				( v.dimension <> nil =>
+					forall dim in seq v.dimension &
 						dim.valueReference <> nil =>
-							dim.valueReference <> v.base.valueReference ),
+							dim.valueReference <> v.valueReference ),
 
-				-- @OnFail(1469, "2.2.8 Dimensions of %s, valueReference is not Integer, constant or structuralParameter, with start", v.base.name)
-				( v.base.dimensions <> nil =>
-					forall dim in seq v.base.dimensions &
+				-- @OnFail(1469, "2.2.8 Dimension of %s, valueReference is not Integer, constant or structuralParameter, with start", v.name)
+				( v.dimension <> nil =>
+					forall dim in seq v.dimension &
 						dim.valueReference <> nil =>
 							exists r in seq vars &
-								is_Integer(r) and
-								r.base.valueReference = dim.valueReference
-								and ( r.base.causality = <structuralParameter> or r.base.variability = <constant> )
+								isInteger(r) and
+								r.valueReference = dim.valueReference
+								and ( r.causality = <structuralParameter> or r.variability = <constant> )
 								and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
 
-				-- @OnFail(1470, "2.2.8 Structural parameter %s cannot have Dimensions", v.base.name)
-				( v.base.dimensions <> nil =>
-					v.base.causality <> <structuralParameter> )
+				-- @OnFail(1470, "2.2.8 Structural parameter %s cannot have Dimension", v.name)
+				( v.dimension <> nil =>
+					v.causality <> <structuralParameter> )
 			}
 
 			| v in seq vars
@@ -420,25 +331,30 @@ functions
 	isValidEffectiveVariables: seq1 of Variable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail(1471, "2.2.8 Variable %s min/max/start/nominal invalid at line %s", sv.base.name, sv.base.location)
+		-- @OnFail(1471, "2.2.8 Variable %s min/max/start/nominal invalid at line %s", sv.name, sv.location)
 		(
 			cases sv:
-				mk_Real(-, kind,
-					mk_fmi3RealVariableAttributes(-, -),
-					mk_fmi3RealAttributes(-, -, -, -, -),
-					mk_fmi3FloatXXAttributes(min, max, nominal), start) ->
-					isInRange[real](min, max, start, kind, sv.base.initial)
-					-- @OnFail(1472, "2.2.8 Real nominal must be >0.0 at line %s", sv.base.location)
+				mk_Float64(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -),
+				mk_Float32(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -) ->
+					isInRange[real](min, max, start, sv, sv.initial)
+					-- @OnFail(1472, "2.2.8 Real nominal must be >0.0 at line %s", sv.location)
 					and (nominal <> nil => nominal > 0.0),
 
-				mk_Integer(-, kind, -, mk_fmi3IntXXAttributes(min, max), start) ->
-					isInRange[int](min, max, start, kind, sv.base.initial),
+				mk_Int64(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_Int32(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_Int16(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_Int8(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_UInt64(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_UInt32(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_UInt16(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_UInt8(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
+					isInRange[int](min, max, start, sv, sv.initial),
 
-				mk_Enumeration(-, -, -, min, max, start) ->
-					isInRange[nat](min, max, start, <UInt32>, sv.base.initial),	-- TODO kind of enum?
+				mk_Enumeration(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
+					isInRange[nat](min, max, start, sv, sv.initial),	-- TODO kind of enum?
 
-				mk_Binary(-, -, -, -, start) ->
-					-- @OnFail(1473, "2.2.8 Binary %s start is not hex-binary at line %s", sv.base.name, sv.base.location)
+				mk_Binary(-, -, -, -, -, -, -, -, -, -, -, -, -, -, start, -, -, -) ->
+					-- @OnFail(1473, "2.2.8 Binary %s start is not hex-binary at line %s", sv.name, sv.location)
 					( start = nil or forall s in seq start &
 						forall c in seq s &
 							c in set elems "ABCDEFabcdef0123456789" ),
@@ -451,9 +367,9 @@ functions
 	}
 	union
 	{
-		-- @OnFail(1474, "2.2.8 Dimensions of %s do not match start vector at line %s", sv.base.name, sv.base.location)
+		-- @OnFail(1474, "2.2.8 Dimension of %s do not match start vector at line %s", sv.name, sv.location)
 		( sv.start <> nil =>
-			let size = dimensionsProduct(svs, sv.base.dimensions) in
+			let size = dimensionProduct(svs, sv.dimension) in
 				size > 0 => size = len sv.start )
 
 		| sv in seq svs
@@ -468,25 +384,25 @@ functions
 				let aliases = refmap(ref) in
 				{
 					/* @OnFail(1476, "2.2.8 Multiple aliases of reference %s are settable: %s", ref,
-							{ a.base.name | a in set aliases & isSettable(a) }) */
+							{ a.name | a in set aliases & isSettable(a) }) */
 					( card { a | a in set aliases & isSettable(a) } <= 1 ),
 
 					/* @OnFail(1477, "2.2.8 Aliases of reference %s are settable and independent: %s", ref,
-							{ {a.base.name, b.base.name} | a, b in set aliases &
-								a <> b and isSettable(a) and b.base.causality = <independent> } ) */
-					( not exists a, b in set aliases & a <> b and isSettable(a) and b.base.causality = <independent> ),
+							{ {a.name, b.name} | a, b in set aliases &
+								a <> b and isSettable(a) and b.causality = <independent> } ) */
+					( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
 
 					-- @OnFail(1478, "2.2.8 Too many aliases of reference %s have start set", ref)
-					( card { a.start | a in set aliases & a.base.variability <> <constant> and a.start <> nil } <= 1 ),
+					( card { a.start | a in set aliases & a.variability <> <constant> and a.start <> nil } <= 1 ),
 
 					-- @OnFail(1479, "2.2.8 Constant aliases of reference %s have different start values", ref)
-					( card { a.start | a in set aliases & a.base.variability = <constant> and a.start <> nil } <= 1 ),
+					( card { a.start | a in set aliases & a.variability = <constant> and a.start <> nil } <= 1 ),
 
 					-- @OnFail(1480, "2.2.8 Aliases of reference %s must all be constant or variable", ref)
-					( card { a | a in set aliases & a.base.variability = <constant> } in set {0, card aliases} ),
+					( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
 
 					-- @OnFail(1481, "2.2.8 Aliases of reference %s must all have same unit/baseUnits", ref)
-					( card { a.realAtts.unit | a in set aliases & is_Real(a) } <= 1 ),
+					( card { a.unit | a in set aliases & isReal(a) } <= 1 ),
 
 					/*
 					 * In case of different variability among the set of alias variables, and if that set of aliases
@@ -494,15 +410,15 @@ functions
 					 * in the set, e.g. continuous > discrete > tunable > fixed. If the set includes a parameter or
 					 * input the aliases will have the stated variability of that parameter or input.
 					 */
-					 let vars = { a.base.variability | a in set aliases } in
-					 	if exists a in set aliases & a.base.causality in set {<input>, <parameter>}
+					 let vars = { a.variability | a in set aliases } in
+					 	if exists a in set aliases & a.causality in set {<input>, <parameter>}
 					 	then
-					 		let a in set aliases be st a.base.causality in set {<input>, <parameter>} in
+					 		let a in set aliases be st a.causality in set {<input>, <parameter>} in
 				 				/* @OnFail(1482, "2.2.8 Warning: aliases of reference %s must all be %s, because of %s",
-				 						ref, a.base.variability, a.base.name) */
-				 				( vars = { a.base.variability } ) or true
+				 						ref, a.variability, a.name) */
+				 				( vars = { a.variability } ) or true
 					 	else
-					 		let highest in set vars be st not exists v in set vars & v > highest in
+					 		let highest in set vars be st not exists v in set vars & orderOf(v) > orderOf(highest) in
 					 			-- @OnFail(1483, "2.2.8 Warning: aliases of reference %s must all be %s", ref, highest)
 					 			( vars = { highest } ) or true
 				}
@@ -514,18 +430,18 @@ functions
 	} = {true};
 
 	/**
-	 * Calculate the overall number of start values expected from dimensions. If a variable is referenced,
+	 * Calculate the overall number of start values expected from dimension. If a variable is referenced,
 	 * and we do not know its value, we return 0.
 	 */
-	dimensionsProduct: seq1 of Variable * [seq of Dimension] +> nat
-	dimensionsProduct(svs, dims) ==
+	dimensionProduct: seq1 of Variable * [seq of Dimension] +> nat
+	dimensionProduct(svs, dims) ==
 		if dims = nil or dims = []
 		then 1
-		else dimensionSize(svs, hd dims) * dimensionsProduct(svs, tl dims)
+		else dimensionize(svs, hd dims) * dimensionProduct(svs, tl dims)
 	measure if dims <> nil then len dims else 0;
 
-	dimensionSize: seq1 of Variable * Dimension +> nat
-	dimensionSize(svs, dim) ==
+	dimensionize: seq1 of Variable * Dimension +> nat
+	dimensionize(svs, dim) ==
 		if dim.start <> nil
 		then dim.start
 		else if dim.valueReference = nil
@@ -565,14 +481,13 @@ functions
 			<input> ->
 				cases eVariability:
 					<discrete>, <continuous> -> nil,
-					<clock> -> <exact>,
 					others -> nil
 				end,
 
 			<output> ->
 				cases eVariability:
 					<constant> -> <exact>,
-					<discrete>, <continuous>, <clock> -> <calculated>,
+					<discrete>, <continuous> -> <calculated>,
 					others -> nil
 				end,
 
@@ -599,15 +514,15 @@ functions
 
 	effectiveVariability: Variable -> Variability
 	effectiveVariability(v) ==
-		if v.base.variability = nil
-		then if is_Real(v) then <continuous> else <discrete>
-		else v.base.variability;
+		if v.variability = nil
+		then if isReal(v) then <continuous> else <discrete>
+		else v.variability;
 
 	/**
 	 * Generate all of the effective Variables. Note that an effective "time"
 	 * variable is created if there are no independent variables defined.
 	 */
-	effectiveScalarVariables: FMIModelDescription +> seq1 of Variable
+	effectiveScalarVariables: FmiModelDescription +> seq1 of Variable
 	effectiveScalarVariables(model) ==
 		let evs =
 		[
@@ -615,36 +530,33 @@ functions
 			| sv in seq model.modelVariables
 		]
 		in
-			if not exists esv in seq evs & esv.base.causality = <independent>
+			if not exists esv in seq evs & esv.causality = <independent>
 			then evs ^
 				[
 					-- If no variable is defined as "independent", it is implicitly
 					-- present with name = "time" and unit = "s"
 
-					mk_Real
+					mk_Float64
 					(
-						mk_fmi3VariableBase(
-							0,		-- Line
-							"time",
-							let allvrs = { sv.base.valueReference | sv in seq evs } in
-								let vr in set {1, ..., len evs + 1} be st vr not in set allvrs in vr,
-							"Implicit independent time variable",
-							<independent>,
-							<continuous>,
-							nil,
-							nil,
-							nil,
-							nil,
-							nil,
-							nil,
-							nil,
-							nil,
-							nil
-							),
-						<Float64>,
-						mk_fmi3RealVariableAttributes(nil, nil),
-						mk_fmi3RealAttributes(nil, nil, nil, nil, nil),
-						mk_fmi3FloatXXAttributes(0, nil, nil),
+						mk_Location("?", 1),
+						"time",
+						let allvrs = { sv.valueReference | sv in seq evs } in
+							let vr in set {1, ..., len evs + 1} be st vr not in set allvrs in vr,
+						"Implicit independent time variable",
+						<independent>,
+						<continuous>,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil, nil,
+						nil, nil, nil, nil, nil,
+						false, nil, nil,
 						nil
 					)
 				]
@@ -656,75 +568,64 @@ functions
 	 */
 	effectiveVariable: Variable * [set1 of VariableType] +> Variable
 	effectiveVariable(v, typedefs) ==
-		let causality	= effectiveCausality(v.base.causality),
+		let causality	= effectiveCausality(v.causality),
 			variability	= effectiveVariability(v),
-			initial		= effectiveInitial(v.base.initial, causality, variability),
-			newbase		= mu(v.base,
+			initial		= effectiveInitial(v.initial, causality, variability),
+			newvar		= mu(v,
 				causality	|-> causality,
 				variability	|-> variability,
 				initial		|-> initial
 			)
 		in
-		if v.base.declaredType = nil or typedefs = nil
-		then mu(v, base |-> newbase)
-		else let dtypes = { td | td in set typedefs & td.base.name = v.base.declaredType } in
+		if v.declaredType = nil or typedefs = nil
+		then newvar
+		else let dtypes = { td | td in set typedefs & td.name = v.declaredType } in
 			cases dtypes:
 				{ dt } ->
 					cases dt:
-						mk_RealType(-, -,
-							mk_fmi3RealAttributes(dquantity, dunit, ddunit,drelq, dunbounded),
-							mk_fmi3FloatXXAttributes(dmin, dmax, dnominal)) ->
-							if is_Real(v) then
+						mk_Float32Type(-, -, -, quantity, unit, dunit, relq, unbounded, min, max, nominal, -),
+						mk_Float64Type(-, -, -, quantity, unit, dunit, relq, unbounded, min, max, nominal, -) ->
+							if isReal(v) then
 								mu(v,
-									base |-> newbase,
-
-									realAtts |-> mu(v.realAtts,
-										quantity			|-> override[NormalizedString](v.realAtts.quantity, dquantity),
-										unit				|-> override[NormalizedString](v.realAtts.unit, dunit),
-										displayUnit			|-> override[NormalizedString](v.realAtts.displayUnit, ddunit),
-										relativeQuantity	|-> override[bool](v.realAtts.relativeQuantity, drelq),
-										unbounded			|-> override[bool](v.realAtts.unbounded, dunbounded)
-									),
-
-									floatAtts |-> mu(v.floatAtts,
-										min					|-> override[real](v.floatAtts.min, dmin),
-										max					|-> override[real](v.floatAtts.max, dmax),
-										nominal				|-> override[real](v.floatAtts.nominal, dnominal)
-									)
+									quantity			|-> override[NormalizedString](v.quantity, quantity),
+									unit				|-> override[NormalizedString](v.unit, unit),
+									displayUnit			|-> override[NormalizedString](v.displayUnit, dunit),
+									relativeQuantity	|-> override[bool](v.relativeQuantity, relq),
+									unbounded			|-> override[bool](v.unbounded, unbounded),
+									min					|-> override[real](v.min, min),
+									max					|-> override[real](v.max, max),
+									nominal				|-> override[real](v.nominal, nominal)
 								)
 							else
 								v,	-- Error reported elsewhere
 
-						mk_IntegerType(-, -,
-							mk_fmi3IntegerAttributes(dquantity),
-							mk_fmi3IntXXAttributes(dmin, dmax)) ->
-							if is_Integer(v) then
+						mk_Int64Type(-, -, -, quantity, min, max, -),
+						mk_Int32Type(-, -, -, quantity, min, max, -),
+						mk_Int16Type(-, -, -, quantity, min, max, -),
+						mk_Int8Type(-, -, -, quantity, min, max, -),
+						mk_UInt64Type(-, -, -, quantity, min, max, -),
+						mk_UInt32Type(-, -, -, quantity, min, max, -),
+						mk_UInt16Type(-, -, -, quantity, min, max, -),
+						mk_UInt8Type(-, -, -, quantity, min, max, -) ->
+							if isInteger(v) then
 								mu(v,
-									base |-> newbase,
-
-									integerAtts |-> mu(v.integerAtts,
-										quantity	|-> override[NormalizedString](v.integerAtts.quantity, dquantity)
-									),
-
-									intAtts |-> mu(v.intAtts,
-										min			|-> override[real](v.intAtts.min, dmin),
-										max			|-> override[real](v.intAtts.max, dmax)
-									)
+									quantity	|-> override[NormalizedString](v.quantity, quantity),
+									min			|-> override[real](v.min, min),
+									max			|-> override[real](v.max, max)
 								)
 							else
 								v,	-- Error reported elsewhere
 
-						mk_EnumerationType(-, -, dquantity, -) ->
+						mk_EnumerationType(-, -, -, quantity, -, -) ->
 							if is_Enumeration(v) then
 								mu(v,
-									base		|-> newbase,
-									quantity	|-> override[NormalizedString](v.quantity, dquantity)
+									quantity	|-> override[NormalizedString](v.quantity, quantity)
 								)
 							else
 								v,	-- Error reported elsewhere
 
 						others ->
-							mu(v, base |-> newbase)
+							newvar
 					end,
 
 				others -> v		-- Duplicate or missing typedefs caught elsewhere
@@ -742,11 +643,11 @@ functions
 	 */
 	isSettable: Variable +> bool
 	isSettable(sv) ==
-		sv.base.variability <> <constant> and sv.base.initial in set { <exact>, <approx> }
+		sv.variability <> <constant> and sv.initial in set { <exact>, <approx> }
 		or
-		sv.base.causality = <input>
+		sv.causality = <input>
 		or
-		sv.base.causality = <parameter> and sv.base.variability = <tunable>;
+		sv.causality = <parameter> and sv.variability = <tunable>;
 
 	/**
 	 * Test whether two Variables are the same basic type (Kind).
@@ -768,10 +669,10 @@ functions
 	 */
 	isContinuousTimeState: nat1 * seq of Variable +> bool
 	isContinuousTimeState(i, svs) ==
-		is_Real(svs(i))
-		and svs(i).base.variability = <continuous> 
+		isReal(svs(i))
+		and svs(i).variability = <continuous> 
 		and exists j in seq svs &
-			is_Real(j) and j.varAtts.derivative = svs(i).base.valueReference;
+			isReal(j) and j.derivative = svs(i).valueReference;
 
 	/**
 	 * Return the Variables from a list which are state derivatives, defined to be
@@ -786,16 +687,16 @@ functions
 	 */
 	isStateDerivative: Variable +> bool
 	isStateDerivative(sv) ==
-		is_Real(sv) and sv.varAtts.derivative <> nil;
+		isReal(sv) and sv.derivative <> nil;
 
 	/**
 	 * Get derivative order of a variable.
 	 */
 	getDerivativeBase: fmi3ValueReference * seq of Variable +> nat * fmi3ValueReference
 	getDerivativeBase(vr, svs) ==
-		if not is_Real(svs(vr)) or svs(vr).varAtts.derivative = nil
+		if not isReal(svs(vr)) or svs(vr).derivative = nil
 		then mk_(0, vr)
-		else let mk_(o, r) = getDerivativeBase(svs(vr).varAtts.derivative, svs) in
+		else let mk_(o, r) = getDerivativeBase(svs(vr).derivative, svs) in
 			mk_(o+1, r)
 	measure is not yet specified;
 
@@ -804,7 +705,7 @@ functions
 	 */
 	getAliasRefMap: seq1 of Variable -> map fmi3ValueReference to set of Variable
 	getAliasRefMap(svs) ==
-		let vrefs = { svi |-> svs(svi).base.valueReference | svi in set inds svs } in
+		let vrefs = { svi |-> svs(svi).valueReference | svi in set inds svs } in
 		{
 			vrefs(svi) |-> { svs(v) | v in set inds svs & vrefs(v) = vrefs(svi) }
 			| svi in set inds svs

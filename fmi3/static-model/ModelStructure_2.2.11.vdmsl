@@ -30,35 +30,6 @@
 /**
  * 2.2.9 Definition of the Model Structure (ModelStructure)
  */
-types
-	DependencyKind	=
-		<dependent> |
-		<constant> |
-		<fixed> |
-		<tunable> |
-		<discrete>;
-
-	UnknownKind =
-		<Output> |
-		<Derivative> |
-		<InitialUnknown>;
-
-	Unknown ::
-		location				: Location
-		kind					: UnknownKind
-		valueReference			: fmi3ValueReference
-		dependencies			: [seq of fmi3ValueReference]
-		dependenciesKind		: [seq of DependencyKind];
-
-	EventIndicator ::
-		location				: Location
-		valueReference			: fmi3ValueReference;
-
-	ModelStructure ::
-		location				: Location
-		unknowns				: [seq1 of Unknown]
-		eventIndicators			: [seq1 of EventIndicator];
-
 functions
 	/**
 	 * Validation of a ModelStructure.
@@ -66,15 +37,31 @@ functions
 	isValidModelStructure: ModelStructure +> bool
 	isValidModelStructure(ms) ==
 	{
-		-- @OnFail(1500, "2.2.9 ModelStructure has invalid Unknowns")
-		( ms.unknowns <> nil =>
-			forall u in seq ms.unknowns & isValidUnknown(u) ),
+		-- @OnFail(1500, "2.2.9 ModelStructure has invalid initialUnknowns")
+		( ms.initialUnknown <> nil =>
+			forall u in seq ms.initialUnknown &
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
 
-		-- @OnFail(1501, "2.2.9 InitialUnknowns are not of kind dependent or constant")
+		-- @OnFail(1501, "2.2.9 ModelStructure has invalid continuousStateDerivative")
+		( ms.continuousStateDerivative <> nil =>
+			forall u in seq ms.continuousStateDerivative &
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
+
+		-- @OnFail(1502, "2.2.9 ModelStructure has invalid clockedState")
+		( ms.clockedState <> nil =>
+			forall u in seq ms.clockedState &
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
+
+		-- @OnFail(1503, "2.2.9 ModelStructure has invalid eventIndicator")
+		( ms.eventIndicator <> nil =>
+			forall u in seq ms.eventIndicator &
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
+
+		-- @OnFail(1504, "2.2.9 InitialUnknowns are not of kind dependent or constant")
 		(
-			ms.unknowns <> nil =>
-				forall iu in seq ms.unknowns &
-					iu.kind = <InitialUnknown> and iu.dependenciesKind <> nil =>
+			ms.initialUnknown <> nil =>
+				forall iu in seq ms.initialUnknown &
+					iu.dependenciesKind <> nil =>
 						forall dk in seq iu.dependenciesKind &
 							 dk in set { <dependent>, <constant>, nil }
 		)
@@ -83,24 +70,24 @@ functions
 	/**
 	 * Validate an Unknown structure in isolation.
 	 */
-	isValidUnknown: Unknown +> bool
-	isValidUnknown(u) ==
-	-- @OnFail(1502, "2.2.11 Unknown %s has invalid dependencies/kinds at line %s", u.valueReference, u.location)
+	isValidUnknown: fmi3ValueReference * [seq of (nat)] * [seq of (DependenciesKind)] * Location +> bool
+	isValidUnknown(valueReference, dependencies, dependenciesKind, location) ==
+	-- @OnFail(1502, "2.2.11 Unknown %s has invalid dependencies/kinds at line %s", valueReference, location)
 	(
-		if u.dependencies <> nil
-		then u.dependenciesKind <> nil =>
+		if dependencies <> nil
+		then dependenciesKind <> nil =>
 			{
-				-- @OnFail(1503, "2.2.9 Dependencies list does not match dependenciesKind at line %s", u.location)
-				( len u.dependencies = len u.dependenciesKind ),
+				-- @OnFail(1505, "2.2.9 Dependencies list does not match dependenciesKind at line %s", location)
+				( len dependencies = len dependenciesKind ),
 
-				/* @OnFail(1504, "2.2.9 Unknown has duplicate indexes %s at line %s",
-					{ u.dependencies(a) | a, b in set inds u.dependencies &
-						a <> b and u.dependencies(a) = u.dependencies(b) }, u.location ) */
-				( len u.dependencies = card elems u.dependencies),
+				/* @OnFail(1506, "2.2.9 Unknown has duplicate indexes %s at line %s",
+					{ dependencies(a) | a, b in set inds dependencies &
+						a <> b and dependencies(a) = dependencies(b) }, location ) */
+				( len dependencies = card elems dependencies),
 
-				-- @OnFail(1505, "2.2.9 Unknown cannot depend on itself at line %s", u.location)
+				-- @OnFail(1507, "2.2.9 Unknown cannot depend on itself at line %s", location)
 				(true) -- CHECK THIS! ( u.index not in set elems u.dependencies )
 			} = {true}
 		else
-			u.dependenciesKind = nil
+			dependenciesKind = nil
 	);

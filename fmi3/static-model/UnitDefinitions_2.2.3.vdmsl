@@ -30,31 +30,6 @@
 /**
  * 2.2.2 Unit Definitions.
  */
-types
-	Unit ::
-		location		: Location
-		name			: NormalizedString
-		baseUnit		: [BaseUnit]
-		displayUnits	: [seq of DisplayUnit];
-
-	BaseUnit ::
-		kg				: [int]
-		m				: [int]
-		s				: [int]
-		A				: [int]
-		K				: [int]
-		mol				: [int]
-		cd				: [int]
-		rad				: [int]
-		factor			: [real]
-		offset			: [real];
-
-	DisplayUnit ::
-		name			: NormalizedString
-		factor			: [real]
-		offset			: [real]
-		inverse_		: [bool];	-- Note underscore... reserved word!
-
 functions
 	isValidUnitDefinitions: [seq1 of Unit] +> bool
 	isValidUnitDefinitions(units) ==

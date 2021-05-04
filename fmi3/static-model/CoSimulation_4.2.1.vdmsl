@@ -31,37 +31,6 @@
  * 4.3.1 Definition of a CoSimulation and ScheduledExecution section of an FMU.
  */
 types
-	fmi3InterfaceType ::
-		location								: Location
-		annotations								: [fmi3Annotation]
-		modelIdentifier							: NormalizedString
-		needsExecutionTool						: [bool]
-		canBeInstantiatedOnlyOncePerProcess		: [bool]
-		canNotUseMemoryManagementFunctions		: [bool]
-		canGetAndSetFMUState					: [bool]
-		canSerializeFMUState					: [bool]
-		providesDirectionalDerivatives			: [bool]
-		providesAdjointDerivatives				: [bool]
-		providesPerElementDependencies			: [bool];
-
-	CoSimulation ::
-		base									: fmi3InterfaceType
-		kind									: CoSimulationKind
-		canHandleVariableCommunicationStepSize	: [bool]
-		maxOutputDerivativeOrder				: [nat]
-		providesIntermediateUpdate				: [bool]
-		recommendedIntermediateInputSmoothness	: [int]
-		canReturnEarlyAfterIntermediateUpdate	: [bool]
-		fixedInternalStepSize					: [real]
-		hasEventMode							: [bool];
-
-	ScheduledExecution ::
-		base									: fmi3InterfaceType
-		kind									: CoSimulationKind
-		maxOutputDerivativeOrder				: [nat]
-		providesIntermediateUpdate				: [bool]
-		recommendedIntermediateInputSmoothness	: [int];
-
     CoSimulationKind = <CoSimulation> | <ScheduledExecution>;
 
 functions
@@ -71,21 +40,29 @@ functions
 	 */
 	isValidCoSimulation: [CoSimulation] +> bool
 	isValidCoSimulation(cs) ==
-		cs <> nil => isValidInterfaceType(cs.base);
+		cs <> nil =>
+		{
+			-- @OnFail(1550, "4.3.1 Annotations invalid at line %s", cs.location)
+			( isValidVendorAnnotation(cs.annotations) ),
+
+			/* @OnFail(1551, "4.3.1 modelIdentifer %s not valid C variable name at line %s",
+							cs.modelIdentifier, cs.location) */
+			( cs.modelIdentifier <> ""
+				and cs.modelIdentifier(1) in set elems NONDIGITS )
+			}
+		= {true};
+
 
 	isValidScheduledExecution: [ScheduledExecution] +> bool
 	isValidScheduledExecution(se) ==
-		se <> nil => isValidInterfaceType(se.base);
+		se <> nil => 
+		{
+			-- @OnFail(1552, "4.3.1 Annotations invalid at line %s", se.location)
+			( isValidVendorAnnotation(se.annotations) ),
 
-	isValidInterfaceType: fmi3InterfaceType +> bool
-	isValidInterfaceType(itype) ==
-	{
-		-- @OnFail(1550, "4.3.1 Annotations invalid at line %s", itype.location)
-		( isValidVendorAnnotation(itype.annotations) ),
-
-		/* @OnFail(1551, "4.3.1 modelIdentifer %s not valid C variable name at line %s",
-						itype.modelIdentifier, itype.location) */
-		( itype.modelIdentifier <> ""
-			and itype.modelIdentifier(1) in set elems NONDIGITS )
-	}
-	= {true};
+			/* @OnFail(1553, "4.3.1 modelIdentifer %s not valid C variable name at line %s",
+							se.modelIdentifier, se.location) */
+			( se.modelIdentifier <> ""
+				and se.modelIdentifier(1) in set elems NONDIGITS )
+		}
+		= {true};

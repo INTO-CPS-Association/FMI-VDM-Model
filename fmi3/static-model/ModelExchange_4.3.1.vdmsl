@@ -30,14 +30,6 @@
 /**
  * 4.3.1 Definition of a ModelExchange section of an FMU.
  */
-types
-	ModelExchangeKind = <ModelExchange>;	-- May be others one day, see CoSimulationKind
-
-	ModelExchange ::
-		base								: fmi3InterfaceType
-		kind								: ModelExchangeKind
-		completedIntegratorStepNotNeeded	: [bool];
-
 functions
 	/**
 	 * Check ModelExchange values.
@@ -46,12 +38,12 @@ functions
 	isValidModelExchange(me) ==
 		me <> nil =>
 		{
-			-- @OnFail(1600, "4.3.1 ModelExchange annotations invalid at line %s", me.base.location)
-			( isValidVendorAnnotation(me.base.annotations) ),
+			-- @OnFail(1600, "4.3.1 ModelExchange annotations invalid at line %s", me.location)
+			( isValidVendorAnnotation(me.annotations) ),
 
 			/* @OnFail(1601, "4.3.1 ModelExchange modelIdentifer %s not valid C variable name at line %s",
-						 me.base.modelIdentifier, me.base.location) */
-			( me.base.modelIdentifier <> ""
-			  and me.base.modelIdentifier(1) in set elems NONDIGITS )
+						 me.modelIdentifier, me.location) */
+			( me.modelIdentifier <> ""
+			  and me.modelIdentifier(1) in set elems NONDIGITS )
 		}
 		= {true};
