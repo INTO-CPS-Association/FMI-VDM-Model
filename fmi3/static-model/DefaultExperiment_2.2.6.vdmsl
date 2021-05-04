@@ -30,14 +30,6 @@
 /**
  * 2.2.5 Default Experiment
  */
-types
-	DefaultExperiment ::
-		location		: Location
-		startTime		: [real]
-		stopTime		: [real]
-		tolerance		: [real]
-		stepSize		: [real];
-
 functions
 	isValidDefaultExperiment: [DefaultExperiment] +> bool
 	isValidDefaultExperiment(e) ==

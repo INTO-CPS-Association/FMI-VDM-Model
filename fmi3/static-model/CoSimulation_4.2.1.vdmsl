@@ -30,11 +30,7 @@
 /**
  * 4.3.1 Definition of a CoSimulation and ScheduledExecution section of an FMU.
  */
-types
-    CoSimulationKind = <CoSimulation> | <ScheduledExecution>;
-
 functions
-
 	/**
 	 * Check CoSimulation and ScheduledExecution values.
 	 */

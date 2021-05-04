@@ -650,13 +650,6 @@ functions
 		sv.causality = <parameter> and sv.variability = <tunable>;
 
 	/**
-	 * Test whether two Variables are the same basic type (Kind).
-	 */
-	sameTypes: Variable * Variable +> bool
-	sameTypes(a, b) ==
-		a.kind = b.kind;
-
-	/**
 	 * Return the Variables from a list which are continuous-time states, defined to be
 	 * Real variables which are continuous and have a derivative.
 	 */

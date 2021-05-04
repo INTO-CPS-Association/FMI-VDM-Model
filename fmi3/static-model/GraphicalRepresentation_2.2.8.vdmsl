@@ -30,28 +30,6 @@
 /**
  * 2.2.6.1 Definition of GraphicalRepresentation
  */
-types
-	GraphicalRepresentation ::
-		location					: Location
-		coordinateSystem			: [CoordinateSystem]
-		icon						: [Icon]
-		vendorAnnotations			: [fmi3Annotation];
-
-	CoordinateSystem ::
-		location					: Location
-		x1							: real
-		y1							: real
-		x2							: real
-		y2							: real
-		suggestedScalingFactorTo_mm	: real;
-
-	Icon ::
-		location					: Location
-		x1							: real
-		y1							: real
-		x2							: real
-		y2							: real;
-
 functions
 	isValidGraphicalRepresentation: [GraphicalRepresentation] +> bool
 	isValidGraphicalRepresentation(gr) ==
