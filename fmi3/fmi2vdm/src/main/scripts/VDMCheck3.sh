@@ -31,7 +31,7 @@
 # Process an FMI V3 FMU or XML file, and validate the XML structure using the VDM-SL model.
 #
 
-USAGE="Usage: VDMCheck3.sh [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml"
+USAGE="Usage: VDMCheck3.sh [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
 
 while getopts ":v:x:s:" OPT
 do
@@ -42,9 +42,6 @@ do
         x)
             INXML=${OPTARG}
             ;;
-        s)
-        	INXSD=${OPTARG}
-        	;;
         *)
 			echo "$USAGE"
 			exit 1
@@ -77,11 +74,6 @@ then
 	echo "$INXML" >$FILE
 	INXML=$FILE
 fi
-
-if [ "$INXSD" ]
-then
-	INXSD=$(readlink -f "$INXSD")
-fi 
 
 XML_MD=/tmp/modelDescription$$.xml
 XML_BD=/tmp/buildDescription$$.xml
@@ -155,10 +147,7 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 		cd "$dir"
 		VAR=model$$
 		
-		if [ ! "$INXSD" ]
-		then
-			INXSD="schema/fmi3.xsd"
-		fi
+		INXSD="schema/fmi3.xsd"
 	
 		if ! type java 2>/dev/null 1>&2
 		then
@@ -166,14 +155,16 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 			exit 2
 		fi
 		
-		java -cp fmi2vdm.jar fmi2vdm.FMI3SaxParser "$1" "$VAR" "$INXSD" >$VDM
-		
-		if [ $? -ne 0 ]
+		if ! java -jar xsd2vdm.jar -xsd "$INXSD" -xml "$1" -name "$VAR" -vdm "$VDM" -nowarn
 		then
-			echo "Problem converting $1 to VDM-SL?"
+			echo "Problem converting $2 to VDM-SL?"
 			exit 2
 		fi
 		
+		# Fix VDM filenames in location constants
+		BASE=$(basename $1)
+		sed -i -e "s+$BASE+$2+g" "$VDM"
+
 		java -Xmx1g -cp vdmj.jar:annotations.jar com.fujitsu.vdmj.VDMJ \
 			-vdmsl -q -annotations -e "isValidFMIConfiguration($VAR)" \
 			model $VDM |
