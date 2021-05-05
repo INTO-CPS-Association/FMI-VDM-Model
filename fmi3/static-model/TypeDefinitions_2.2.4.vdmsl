@@ -137,7 +137,7 @@ functions
 			}
 			union
 			{
-				-- @OnFail(1159, "2.2.3 TypeDefinition %s invalid at line %s", stype.name, stype.location)
+				-- @OnFail(1159, "2.2.3 TypeDefinition %s invalid at %s", stype.name, loc2str(stype.location))
 				( isValidType(stype) )
 
 				| stype in set defs

@@ -161,7 +161,7 @@ functions
 		}
 		union
 		{
-			-- @OnFail(1459, "2.2.8 Variable %s invalid at line %s", sv.name, sv.location)
+			-- @OnFail(1459, "2.2.8 Variable %s invalid at %s", sv.name, loc2str(sv.location))
 			( isValidVariableAttributes(sv) )
 
 			| sv in seq svs
@@ -177,8 +177,8 @@ functions
 			eInitial     = effectiveInitial(sv.initial, eCausality, eVariability)
 		in
 		{
-			/* @OnFail(1460, "2.2.8 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at line %s",
-				sv.name, eCausality, eVariability, eInitial, sv.start, sv.location) */
+			/* @OnFail(1460, "2.2.8 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %s",
+				sv.name, eCausality, eVariability, eInitial, sv.start, loc2str(sv.location)) */
 			(
 				cases eCausality:
 					<structuralParameter> ->
@@ -202,7 +202,7 @@ functions
 						eVariability = <continuous>
 						and eInitial = nil		-- (D)
 						and sv.start = nil
-						-- @OnFail(1461, "2.2.8 Independent variable must be Float at line %s", sv.location)
+						-- @OnFail(1461, "2.2.8 Independent variable must be Float at %s", loc2str(sv.location))
 						and (is_Float64(sv) or is_Float32(sv)),
 
 					<output> ->
@@ -235,8 +235,8 @@ functions
 				end
 			),
 
-			/* @OnFail(1462, "2.2.8 Variable %s variability/causality %s/%s invalid at line %s",
-				sv.name, eVariability, eCausality, sv.location) */
+			/* @OnFail(1462, "2.2.8 Variable %s variability/causality %s/%s invalid at %s",
+				sv.name, eVariability, eCausality, loc2str(sv.location)) */
 			(
 				cases eVariability:
 					<constant> ->
@@ -250,7 +250,7 @@ functions
 
 					<continuous> ->
 						eCausality in set {<input>, <output>, <local>, <independent>}
-						-- @OnFail(1463, "2.2.8 Continuous variable must be Real at line %s", sv.location)
+						-- @OnFail(1463, "2.2.8 Continuous variable must be Real at %s", loc2str(sv.location))
 						and (is_Float64(sv) or is_Float32(sv))
 				end
 			),
@@ -262,8 +262,8 @@ functions
 					eCausality <> <independent>
 			),
 
-			/* @OnFail(1465, "2.2.8 Variable %s initial/variability/start %s/%s/%s invalid at line %s",
-				sv.name, eInitial, eVariability, sv.start, sv.location) */
+			/* @OnFail(1465, "2.2.8 Variable %s initial/variability/start %s/%s/%s invalid at %s",
+				sv.name, eInitial, eVariability, sv.start, loc2str(sv.location)) */
 			(
 				cases eInitial:
 					<exact> ->
@@ -299,7 +299,7 @@ functions
 					forall dim in seq v.dimension &
 						dim.start = nil <=> dim.valueReference <> nil ),
 
-				-- @OnFail(1468, "2.2.8 Dimension of %s cannot reference itself at line %s", v.name)
+				-- @OnFail(1468, "2.2.8 Dimension of %s cannot reference itself", v.name)
 				( v.dimension <> nil =>
 					forall dim in seq v.dimension &
 						dim.valueReference <> nil =>
@@ -331,13 +331,13 @@ functions
 	isValidEffectiveVariables: seq1 of Variable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail(1471, "2.2.8 Variable %s min/max/start/nominal invalid at line %s", sv.name, sv.location)
+		-- @OnFail(1471, "2.2.8 Variable %s min/max/start/nominal invalid at %s", sv.name, loc2str(sv.location))
 		(
 			cases sv:
 				mk_Float64(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -),
 				mk_Float32(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -) ->
 					isInRange[real](min, max, start, sv, sv.initial)
-					-- @OnFail(1472, "2.2.8 Real nominal must be >0.0 at line %s", sv.location)
+					-- @OnFail(1472, "2.2.8 Real nominal must be >0.0 at %s", loc2str(sv.location))
 					and (nominal <> nil => nominal > 0.0),
 
 				mk_Int64(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
@@ -354,7 +354,7 @@ functions
 					isInRange[nat](min, max, start, sv, sv.initial),	-- TODO kind of enum?
 
 				mk_Binary(-, -, -, -, -, -, -, -, -, -, -, -, -, -, start, -, -, -) ->
-					-- @OnFail(1473, "2.2.8 Binary %s start is not hex-binary at line %s", sv.name, sv.location)
+					-- @OnFail(1473, "2.2.8 Binary %s start is not hex-binary at %s", sv.name, loc2str(sv.location))
 					( start = nil or forall s in seq start &
 						forall c in seq s &
 							c in set elems "ABCDEFabcdef0123456789" ),
@@ -367,7 +367,7 @@ functions
 	}
 	union
 	{
-		-- @OnFail(1474, "2.2.8 Dimension of %s do not match start vector at line %s", sv.name, sv.location)
+		-- @OnFail(1474, "2.2.8 Dimension of %s do not match start vector at %s", sv.name, loc2str(sv.location))
 		( sv.start <> nil =>
 			let size = dimensionProduct(svs, sv.dimension) in
 				size > 0 => size = len sv.start )

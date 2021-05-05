@@ -44,7 +44,7 @@ functions
 		terminals <> nil => dunion
 		{
 			{
-				-- @OnFail(1300, "2.2.6.2 Terminal invalid at line %s", t.location)
+				-- @OnFail(1300, "2.2.6.2 Terminal invalid at %s", loc2str(t.location))
 				( isValidTerminal(t) ),
 
 				isValidTerminals(t.terminal),
@@ -59,7 +59,7 @@ functions
 	isValidTerminal: Terminal +> bool
 	isValidTerminal(term) ==
 		term.terminalMemberVariable <> nil =>
-			-- @OnFail(1301, "2.2.6.2 Terminal member variables not unique at line %s", term.location)
+			-- @OnFail(1301, "2.2.6.2 Terminal member variables not unique at %s", loc2str(term.location))
 			( card { v | v in seq term.terminalMemberVariable } = len term.terminalMemberVariable );
 
 
@@ -67,18 +67,18 @@ functions
 	isValidTerminalGraphicalRepresentation(gt) ==
 		gt <> nil =>
 			{
-				-- @OnFail(1302, "2.2.6.2 Terminal area is not bottom left to top right at line %s", gt.location)
+				-- @OnFail(1302, "2.2.6.2 Terminal area is not bottom left to top right at %s", loc2str(gt.location))
 				( gt.x1 < gt.x2 and gt.y1 < gt.y2 ),
 
-				-- @OnFail(1303, "2.2.6.2 Colour attributes must be octets (<=255) at line %s", gt.location)
+				-- @OnFail(1303, "2.2.6.2 Colour attributes must be octets (<=255) at %s", loc2str(gt.location))
 				( gt.defaultConnectionColor <> nil =>
 					forall c in seq gt.defaultConnectionColor & c <= 255 ),
 
-				-- @OnFail(1304, "2.2.6.2 defaultConnectionStrokeSize must be >0 at line %s", gt.location)
+				-- @OnFail(1304, "2.2.6.2 defaultConnectionStrokeSize must be >0 at %s", loc2str(gt.location))
 				( gt.defaultConnectionStrokeSize <> nil =>
 					gt.defaultConnectionStrokeSize > 0 ),
 
-				-- @OnFail(1305, "2.2.6.2 Terminal vendor annotations invalid at line %s", gt.location)
+				-- @OnFail(1305, "2.2.6.2 Terminal vendor annotations invalid at %s", loc2str(gt.location))
 				( isValidVendorAnnotation(gt.annotations) )
 			}
 			= {true};

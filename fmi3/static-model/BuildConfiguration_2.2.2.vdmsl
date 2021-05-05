@@ -34,19 +34,19 @@ functions
 	isValidFMIBuildDescription: FmiBuildDescription +> bool
 	isValidFMIBuildDescription(desc) ==
 	{
-		-- @OnFail(1050, "2.5 Invalid BuildConfiguration at line %s", bc.location)
+		-- @OnFail(1050, "2.5 Invalid BuildConfiguration at %s", loc2str(bc.location))
 		( isValidBuildConfiguration(bc) ) | bc in seq desc.buildConfiguration
 	} = {true};
 
 	isValidBuildConfiguration: BuildConfiguration +> bool
 	isValidBuildConfiguration(bc) ==
 	{
-		-- @OnFail(1051, "2.5 Invalid SourceFileSet at line %s", sfs.location)
+		-- @OnFail(1051, "2.5 Invalid SourceFileSet at %s", loc2str(sfs.location))
 		( isValidSourceFileSet(sfs) ) | sfs in seq nilSeq[SourceFileSet](bc.sourceFileSet)
 	}
 	union
 	{
-		-- @OnFail(1052, "2.5 Invalid Library at line %s", lib.location)
+		-- @OnFail(1052, "2.5 Invalid Library at %s", loc2str(lib.location))
 		( isValidLibrary(lib) ) | lib in seq nilSeq[Library](bc.library)
 	}
 	= {true};
@@ -54,13 +54,13 @@ functions
 	isValidSourceFileSet: SourceFileSet +> bool
 	isValidSourceFileSet(sfs) ==
 	{
-		-- @OnFail(1053, "2.5 Compiler options set without compiler at line %s", sfs.location)
+		-- @OnFail(1053, "2.5 Compiler options set without compiler at %s", loc2str(sfs.location))
 		( sfs.compilerOptions <> nil => sfs.compiler <> nil ),
-		-- @OnFail(1054, "2.5 Invalid SourceFiles at line %s", sfs.location)
+		-- @OnFail(1054, "2.5 Invalid SourceFiles at %s", loc2str(sfs.location))
 		( isValidSourceFiles(sfs.sourceFile) ),
-		-- @OnFail(1055, "2.5 Invalid PreprocessorDefinitions at line %s", sfs.location)
+		-- @OnFail(1055, "2.5 Invalid PreprocessorDefinitions at %s", loc2str(sfs.location))
 		( isValidPreprocessorDefinitions(sfs.preprocessorDefinition) ),
-		-- @OnFail(1056, "2.5 Invalid IncludeDirectories at line %s", sfs.location)
+		-- @OnFail(1056, "2.5 Invalid IncludeDirectories at %s", loc2str(sfs.location))
 		( isValidIncludeDirectories(sfs.includeDirectory) )
 	} = {true};
 
