@@ -279,12 +279,12 @@ functions
 	 * Check that all variables' declaredTypes are defined, that the variables' types match
 	 * the declared types.
 	 */
-	typeCheck: seq1 of Variable * [set1 of VariableType] +> bool
+	typeCheck: seq1 of Variable * [seq of VariableType] +> bool
 	typeCheck(variables, typedefs) ==
 		{
 			sv.declaredType <> nil =>
 				let matchingTypes = { td |
-					td in set nilSet[VariableType](typedefs) &
+					td in seq nilSeq[VariableType](typedefs) &
 					td.name = sv.declaredType } in
 				{
 					/* @OnFail(1032, "2.2.3 Typedefs have multiple matching names: %s",

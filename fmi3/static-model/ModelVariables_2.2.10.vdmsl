@@ -566,7 +566,7 @@ functions
 	 * Generate the effective value of a Variable, accounting for fields inherited from
 	 * its declaredType.
 	 */
-	effectiveVariable: Variable * [set1 of VariableType] +> Variable
+	effectiveVariable: Variable * [seq of VariableType] +> Variable
 	effectiveVariable(v, typedefs) ==
 		let causality	= effectiveCausality(v.causality),
 			variability	= effectiveVariability(v),
@@ -579,7 +579,7 @@ functions
 		in
 		if v.declaredType = nil or typedefs = nil
 		then newvar
-		else let dtypes = { td | td in set typedefs & td.name = v.declaredType } in
+		else let dtypes = { td | td in seq typedefs & td.name = v.declaredType } in
 			cases dtypes:
 				{ dt } ->
 					cases dt:

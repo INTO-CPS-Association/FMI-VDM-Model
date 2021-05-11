@@ -127,19 +127,19 @@ functions
 			others -> true		-- String, Boolean and Clock
 		end;
 
-	isValidTypeDefinitions: [set1 of VariableType] +> bool
+	isValidTypeDefinitions: [seq of VariableType] +> bool
 	isValidTypeDefinitions(defs) ==
 		defs <> nil =>
 			{
 				/* @OnFail(1158, "2.2.3 TypeDefinitions names are not unique: %s",
-					{ a.name | a, b in set defs & a <> b and a.name = b.name }) */
-				( card { stype.name | stype in set defs } = card defs )
+					{ a.name | a, b in seq defs & a <> b and a.name = b.name }) */
+				( card { stype.name | stype in seq defs } = len defs )
 			}
 			union
 			{
 				-- @OnFail(1159, "2.2.3 TypeDefinition %s invalid at %s", stype.name, loc2str(stype.location))
 				( isValidType(stype) )
 
-				| stype in set defs
+				| stype in seq defs
 			} = {true};
 
