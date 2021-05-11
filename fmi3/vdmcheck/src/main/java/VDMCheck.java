@@ -51,7 +51,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import fmi2vdm.FMI3SaxParser;
 
 public class VDMCheck
 {
@@ -60,7 +59,6 @@ public class VDMCheck
 		String filename = null;
 		String vdmOUT = null;
 		String xmlIN = null;
-		String xsdIN = null;
 		
 		for (int a=0; a < args.length; a++)
 		{
@@ -77,16 +75,12 @@ public class VDMCheck
 				case "-x":
 					xmlIN = args[++a];
 					break;
-					
-				case "-s":
-					xsdIN = args[++a];
-					break;
 			}
 		}
 		
 		if (filename == null && xmlIN == null)
 		{
-			System.err.println("Usage: java -jar fmi2vdm.jar [-v <VDM outfile>] [-s <XSD>] -x <XML> | <file>.fmu | <file>.xml");
+			System.err.println("Usage: java -jar vdmcheck3.jar [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml");
 			System.exit(1);
 		}
 		else
@@ -103,7 +97,7 @@ public class VDMCheck
 			{
 				for (XMLFile tempXML: checkList)
 				{
-					boolean ok = run(filename, tempXML, xsdIN, vdmOUT);
+					boolean ok = run(filename, tempXML, vdmOUT);
 					failed = failed || !ok;
 				}
 			}
@@ -245,7 +239,7 @@ public class VDMCheck
 		return results;
 	}
 
-	private static boolean run(String filename, XMLFile tempXML, String xsdIN, String vdmOUT)
+	private static boolean run(String filename, XMLFile tempXML, String vdmOUT)
 	{
 		try
 		{
@@ -254,29 +248,21 @@ public class VDMCheck
 			File jarLocation = getJarLocation();
 			
 			String varName = "model" + (new Random().nextInt(9999));
-			String[] args = null;
-			
-			if (xsdIN == null)
-			{
-				args = new String[] { tempXML.file.getCanonicalPath(), varName };
-			}
-			else
-			{
-				args = new String[] { tempXML.file.getCanonicalPath(), varName, xsdIN };
-			}
 		
 			File tempVDM = File.createTempFile("vdm", "tmp");
 			tempVDM.deleteOnExit();
 			
-			PrintStream savedIO = System.out;
-			PrintStream vdmsl = new PrintStream(tempVDM);
-			System.setOut(vdmsl);
-			FMI3SaxParser.main(args);	// Produce VDM source or exit
-			vdmsl.close();
-			System.setOut(savedIO);
-			
 			File tempOUT = File.createTempFile("out", "tmp");
 			tempOUT.deleteOnExit();
+			
+			File schema = new File(jarLocation.getAbsolutePath() + File.separator + "schema/fmi3.xsd");
+			
+			runCommand(jarLocation, tempOUT,
+					"java", "-jar", "xsd2vdm.jar", 
+					"-xsd", schema.getCanonicalPath(),
+					"-xml", tempXML.file.getCanonicalPath(),
+					"-vdm", tempVDM.getCanonicalPath(),
+					"-name", varName);
 			
 			String[] dependencies = {"vdmj.jar", "annotations.jar"};
 	

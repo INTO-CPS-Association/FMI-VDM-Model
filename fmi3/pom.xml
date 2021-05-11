@@ -18,7 +18,7 @@
 	<!-- sub modules -->
 	<modules>
 		<module>static-model</module>
-		<module>fmi2vdm</module>
+		<module>vdmcheck</module>
 	</modules>
 
 </project>
