@@ -70,17 +70,16 @@ functions
 				eModelVariables,
 
 				-- The continuous time state references
-				[ v.base.valueReference |
+				[ v.valueReference |
 					v in seq getContinuousTimeStates(eModelVariables) ],
 
 				-- The state derivative references
-				{ v.base.valueReference |
+				{ v.valueReference |
 					v in set stateDerivatives(eModelVariables) },
 
 				-- The initial unknown references, which may be an empty set
 				{ u.valueReference |
-					u in seq nilSeq[Unknown](xmlModel.modelStructure.unknowns) &
-					u.kind = <InitialUnknown> },
+					u in seq nilSeq[InitialUnknown](xmlModel.modelStructure.initialUnknown) },
 
 				-- The solver derivative references
 				[ sd | sd in seq instanceEnvironment.solverData.derivatives ],
@@ -143,7 +142,7 @@ functions
 	pre
 		mk_(nil, <START>) in set allowed
 		and instanceName <> ""
-		and instantiationToken = instanceEnvironment.xmlModel.attributes.instantiationToken
+		and instantiationToken = instanceEnvironment.xmlModel.instantiationToken
 	post
 		result.fmuState = <INSTANTIATED>
 		and result.fmuKind = fmuKind
@@ -171,7 +170,7 @@ functions
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateModelExchange instanceName cannot be empty", nil)
 
-		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
+		elseif instantiationToken <> instanceEnvironment.xmlModel.instantiationToken
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateModelExchange instantiationToken does not match XML configuration", nil)
 
@@ -210,7 +209,7 @@ functions
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3fmi3InstantiateCoSimulation instanceName cannot be empty", nil)
 
-		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
+		elseif instantiationToken <> instanceEnvironment.xmlModel.instantiationToken
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3fmi3InstantiateCoSimulation instantiationToken does not match XML configuration", nil)
 
@@ -228,7 +227,7 @@ functions
 
 		elseif exists vr in seq requiredIntermediateVariables &
 			 let v = lookup(instanceEnvironment.xmlModel.modelVariables, vr) in
-			 	v = nil or not v.base.intermediateUpdate
+			 	v = nil or not v.intermediateUpdate
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3fmi3InstantiateCoSimulation variables are not all intermediateUpdate", nil)
 
@@ -272,7 +271,7 @@ functions
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateScheduledExecution instanceName cannot be empty", nil)
 
-		elseif instantiationToken <> instanceEnvironment.xmlModel.attributes.instantiationToken
+		elseif instantiationToken <> instanceEnvironment.xmlModel.instantiationToken
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateScheduledExecution instantiationToken does not match XML configuration", nil)
 
@@ -290,7 +289,7 @@ functions
 
 		elseif exists vr in seq requiredIntermediateVariables &
 			 let v = lookup(instanceEnvironment.xmlModel.modelVariables, vr) in
-			 	v = nil or not v.base.intermediateUpdate
+			 	v = nil or not v.intermediateUpdate
 		then logInst(instanceEnvironment, instanceName,
 				"fmi3InstantiateScheduledExecution variables are not all intermediateUpdate", nil)
 
@@ -335,8 +334,8 @@ functions
 					else sv.start
 				else
 					let defValue =	-- Set default scalar value for variable type
-						if is_Real(sv) then 0.0
-						else if is_Integer(sv) then 0
+						if isReal(sv) then 0.0
+						else if isInteger(sv) then 0
 						else if is_Boolean(sv) then false
 						else if is_String(sv) then ""
 						else if is_Binary(sv) then []
@@ -344,7 +343,7 @@ functions
 						else if is_Clock(sv) then false
 						else undefined
 					in
-						[defValue | - in set {1, ..., dimensionsProduct(eModelVariables, sv.base.dimensions)}]
+						[defValue | - in set {1, ..., dimensionsProduct(eModelVariables, sv.dimension)}]
 
 		| vref in set dom aliasVars
 	};
@@ -355,8 +354,8 @@ functions
 	getDependencies: seq1 of Variable +> map fmi3ValueReference to seq of ElementDependency
 	getDependencies(eModelVariables) ==
 	{
-		sv.base.valueReference |->
-			let size = dimensionsProduct(eModelVariables, sv.base.dimensions) in
+		sv.valueReference |->
+			let size = dimensionsProduct(eModelVariables, sv.dimension) in
 				if size = 0		-- we don't know
 				then []			-- TODO!
 				else [ getOneDependency(sv, i) | i in set {1, ..., size} ]
@@ -383,9 +382,9 @@ functions
 	 * Calculate the initial event indicator values, given the FMU configuration data.
 	 * Called by fmi3Instantiate and fmi3Reset.
 	 */
-	getEventIndicatorValues: FMIModelDescription +> seq of fmi3Float
+	getEventIndicatorValues: FmiModelDescription +> seq of fmi3Float
 	getEventIndicatorValues(xmlModel) ==
-		[ 0.0 | - in set {1, ..., nilNat(xmlModel.attributes.numberOfEventIndicators)} ];
+		[ 0.0 | - in set {1, ..., nilNat(xmlModel.numberOfEventIndicators)} ];
 
 	/**
 	 * Get CT state Variables.

@@ -81,7 +81,7 @@ functions
 						let sv = lookup(ienv.xmlModel.modelVariables, vref) in
 							if sv = nil
 							then "?" ^ expandValueRefs(ienv, tail)
-							else sv.base.name ^ expandValueRefs(ienv, tail),
+							else sv.name ^ expandValueRefs(ienv, tail),
 
 					others -> "?" ^ expandValueRefs(ienv, tail)
 				end

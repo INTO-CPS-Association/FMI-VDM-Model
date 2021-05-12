@@ -50,9 +50,9 @@ functions
 				else
 					let svis = [ svi | svi in set inds c.eModelVariables &
 						let mk_(o, bidx) = getDerivativeBase(svi, c.eModelVariables) in
-							c.eModelVariables(bidx).base.valueReference = vrs(i) and o = order(i) ]
+							c.eModelVariables(bidx).valueReference = vrs(i) and o = order(i) ]
 					in
-						c.variables(c.eModelVariables(hd svis).base.valueReference)	-- Precondition guarantees len >0
+						c.variables(c.eModelVariables(hd svis).valueReference)	-- Precondition guarantees len >0
 
 			| i in set inds vrs
 		]
@@ -65,7 +65,7 @@ functions
 		and (forall o in seq order & o > 0)
 		and (forall vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr) in
-				sv <> nil and sv.base.causality = <output>)
+				sv <> nil and sv.causality = <output>)
 
 		-- Output derivatives must exist as SVs with "derivative" set,
 		-- or be defined in solver data (but not both!)
@@ -75,7 +75,7 @@ functions
 			<=>
 			not exists didx in set inds c.eModelVariables &
 				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
-					o = order(i) and c.eModelVariables(bidx).base.valueReference = vrs(i))
+					o = order(i) and c.eModelVariables(bidx).valueReference = vrs(i))
 	post
 		RESULT.#1 = <fmi3OK> => nvr = len RESULT.#2;
 
@@ -94,7 +94,7 @@ functions
 
 		elseif exists vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr) in
-				sv = nil or sv.base.causality <> <output>
+				sv = nil or sv.causality <> <output>
 		then logAPIError(c, "Some arguments are not outputs", mk_(<fmi3Error>, nil))
 
 		-- Output derivatives must exist as SVs with "derivative" set
@@ -105,7 +105,7 @@ functions
 			<=>
 			not exists didx in set inds c.eModelVariables &
 				let mk_(o, bidx) = getDerivativeBase(didx, c.eModelVariables) in
-					o = orders(i) and c.eModelVariables(bidx).base.valueReference = vrs(i)
+					o = orders(i) and c.eModelVariables(bidx).valueReference = vrs(i)
 		then logAPIError(c, "Some outputs do not have derivatives of the right order", mk_(<fmi3Error>, nil))
 
 		else fmi3GetOutputDerivatives_Impl(c, vrs, nvr, orders)

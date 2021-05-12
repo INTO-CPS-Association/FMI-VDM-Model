@@ -41,7 +41,7 @@ types
 
 	-- The opaque data for the model - the XML model and solver data
 	fmi3InstanceEnvironment ::
-		xmlModel				: FMIModelDescription
+		xmlModel				: FmiModelDescription
 		solverData				: SolverData
 		logCategories			: [set1 of fmi3String]	-- nil means logging is off
 		calculateValues			: fmi3Instance -> fmi3Status * [fmi3Instance]
@@ -89,7 +89,7 @@ types
 		coSimulationConfiguration	: [fmi3CoSimulationConfiguration] 
 
 		-- convenience read-only fields, copied from instanceEnvironment
-		xmlModel				: FMIModelDescription
+		xmlModel				: FmiModelDescription
 		eModelVariables			: seq1 of Variable
 		continuousTimeStates	: seq of fmi3ValueReference			-- In ModelStructure/Derivatives order
 		stateDerivatives		: set of fmi3ValueReference
@@ -118,8 +118,8 @@ types
 	inv c ==
 		card dom c.variables = card rng c.aliasVars
 		and (len c.derivatives = len c.solverDerivatives)
-		and (len c.eventIndicators = nilNat(c.xmlModel.attributes.numberOfEventIndicators))
-		and (c.isNewEventIteration => is_(c.fmuKind, ModelExchangeKind))
+		and (len c.eventIndicators = nilNat(c.xmlModel.numberOfEventIndicators))
+		and (c.isNewEventIteration => is_(c.fmuKind, <ModelExchange>))
 		and (c.currentTime <> nil <=> c.startTime <> nil)
 		and (c.currentTime <> nil => c.currentTime >= c.startTime)
 		and (c.stopTime <> nil and c.startTime <> nil => c.stopTime > c.startTime and c.currentTime <= c.stopTime);

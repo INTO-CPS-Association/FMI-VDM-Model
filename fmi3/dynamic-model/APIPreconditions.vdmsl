@@ -45,7 +45,7 @@ functions
 		forall vr in seq vrs &
 			vr in set c.initialUnknowns
 			or let v = lookup(c.eModelVariables, vr) in
-				v.base.causality = <output>;
+				v.causality = <output>;
 
 
 	-- Note 2: 3.2.3.7 - output variables can be retrieved with fmi3Get{VariableType}
@@ -55,7 +55,7 @@ functions
 	note2(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				v.base.causality = <output>;
+				v.causality = <output>;
 
 
 	-- Note 3: 3.2.3.3 - Variables with initial = exact and variability ≠ constant, as well as
@@ -64,9 +64,9 @@ functions
 	note3(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				(v.base.initial = <exact> and v.base.variability <> <constant>)
-				or v.base.causality = <input>
-			 	or (v.base.causality = <parameter> and v.base.variability = <tunable>);
+				(v.initial = <exact> and v.variability <> <constant>)
+				or v.causality = <input>
+			 	or (v.causality = <parameter> and v.variability = <tunable>);
 
 
 	-- Note 4: 3.2.3.1 - start and guess values (= variables that have initial = exact or
@@ -75,8 +75,8 @@ functions
 	note4(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				v.base.initial = <exact> or v.base.initial = <approx>
-				or v.base.variability <> <constant>;
+				v.initial = <exact> or v.initial = <approx>
+				or v.variability <> <constant>;
 
 
 	-- Note 5: 3.2.3.2 - structural parameters with variability = fixed or
@@ -85,8 +85,8 @@ functions
 	note5(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				v.base.causality = <structuralParameter>
-				and (v.base.variability = <fixed> or v.base.variability = <tunable>);
+				v.causality = <structuralParameter>
+				and (v.variability = <fixed> or v.variability = <tunable>);
 
 
 	-- Note 6: 3.2.3.6 - structural parameters with variability = tunable can be changed
@@ -95,8 +95,8 @@ functions
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
 				v <> nil and
-				v.base.causality = <structuralParameter>
-				and v.base.variability = <tunable>;
+				v.causality = <structuralParameter>
+				and v.variability = <tunable>;
 
 
 	-- Note 7: 4.2.3.4 - For variables with variability ≠ constant and for which
@@ -105,8 +105,8 @@ functions
 	note7(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				v.base.variability <> <constant>
-				and (v.base.initial = <exact> or v.base.initial = <approx>);
+				v.variability <> <constant>
+				and (v.initial = <exact> or v.initial = <approx>);
 
 
 	-- Note 8: 4.2.3.5 - For variables with: variability ≠ constant that have
@@ -122,8 +122,8 @@ functions
 	note9(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				v.base.causality = <input>
-				or (v.base.causality = <parameter> or v.base.variability = <tunable>);
+				v.causality = <input>
+				or (v.causality = <parameter> or v.variability = <tunable>);
 
 
 	-- Note 10: 4.2.3.7 - If intermediateVariableSetAllowed == fmi3True, the value of intermediate
@@ -133,13 +133,13 @@ functions
 	note10g(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				nilBool(v.base.intermediateUpdate) => c.intermediateAccessGetAllowed;	-- Getters
+				nilBool(v.intermediateUpdate) => c.intermediateAccessGetAllowed;	-- Getters
 
 	note10s: fmi3Instance * seq of fmi3ValueReference +> bool
 	note10s(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				nilBool(v.base.intermediateUpdate) => c.intermediateAccessSetAllowed;	-- Setters
+				nilBool(v.intermediateUpdate) => c.intermediateAccessSetAllowed;	-- Setters
 
 
 	-- Note 11: 4.2.3.10 - Only for variables with causality = structuralParameter
@@ -155,7 +155,7 @@ functions
 	note12(c, vrs) ==
 		forall vr in seq vrs &
 			let v = lookup(c.eModelVariables, vr) in
-				v.base.causality = <output>
+				v.causality = <output>
 				or vr in set elems c.continuousTimeStates
 				or vr in set c.stateDerivatives;
 

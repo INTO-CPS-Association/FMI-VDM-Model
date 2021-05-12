@@ -103,7 +103,7 @@ types
 		info == info.nextEventTimeDefined <=> info.nextEventTime <> nil;
 
 
-	fmi3FMUKind = CoSimulationKind | ModelExchangeKind;
+	fmi3FMUKind = <CoSimulation> | <ModelExchange> | <ScheduledExecution>;
 
 	fmi3CoSimulationMode =
 	    <fmi3ModeBasicCoSimulation> |

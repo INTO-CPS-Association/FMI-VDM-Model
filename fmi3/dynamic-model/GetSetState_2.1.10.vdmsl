@@ -38,9 +38,9 @@ functions
 	canDoGetSetState: fmi3Instance * States +> bool
 	canDoGetSetState(c, allowed) ==
 		mk_(c.fmuKind, c.fmuState) in set allowed
-		and if is_(c.fmuKind, CoSimulationKind)
-		then nilBool(c.xmlModel.coSimulation.base.canGetAndSetFMUState)
-		else nilBool(c.xmlModel.modelExchange.base.canGetAndSetFMUState);
+		and if is_(c.fmuKind, <CoSimulation>)
+		then nilBool(c.xmlModel.coSimulation.canGetAndSetFMUState)
+		else nilBool(c.xmlModel.modelExchange.canGetAndSetFMUState);
 
 	/**
 	 * Implementation and API for fmi3GetFMUState.

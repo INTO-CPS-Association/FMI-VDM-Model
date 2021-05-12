@@ -118,10 +118,10 @@ functions
 
 		else forall vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr) in
-				if sv.base.causality = <independent>
+				if sv.causality = <independent>
 				then logAPIError(c, "Cannot set value of independent variable", false)
 
-				elseif sv.base.variability = <constant>
+				elseif sv.variability = <constant>
 				then logAPIError(c, "Cannot set value of constant variable", false)
 
 				elseif sv.kind <> kind
@@ -135,8 +135,8 @@ functions
 		then
 			if exists i in set inds vrs &
 				let sv = lookup(c.eModelVariables, vrs(i)),
-					min = sv.floatAtts.min,
-					max = sv.floatAtts.max
+					min = sv.min,
+					max = sv.max
 				in
 					(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
 			then logAPIError(c, "Values not all within min/max for variables", false)
@@ -145,8 +145,8 @@ functions
 		then
 			if exists i in set inds vrs &
 				let sv = lookup(c.eModelVariables, vrs(i)),
-					min = sv.intAtts.min,
-					max = sv.intAtts.max
+					min = sv.min,
+					max = sv.max
 				in
 					(min <> nil and value(i) < min)	or (max <> nil and value(i) > max)
 			then logAPIError(c, "Values not all within min/max for variables", false)
@@ -163,7 +163,7 @@ functions
 		and ( forall vr in seq vrs &
 			    let sv = lookup(c.eModelVariables, vr) in
 				   sv <> nil
-				   and sv.base.causality <> <independent>
+				   and sv.causality <> <independent>
 				   and sv.kind = kind )
 		and len value = totalValues(c, vrs)
 		and generalSetPrecondition(c, vrs);
@@ -173,7 +173,7 @@ functions
 		forall vr in seq vrs &
 			let sv = lookup(c.eModelVariables, vr) in
 				sv <> nil
-				and sv.base.causality <> <independent>
+				and sv.causality <> <independent>
 				and let mk_(min, max) = minMaxKind(kind) in
 						forall v in seq value & min <= v and v <= max;
 

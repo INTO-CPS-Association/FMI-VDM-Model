@@ -45,8 +45,8 @@ functions
 			mk_(s, derivatives, n)
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetDirectionalDerivative
-		and (c.fmuKind = <CoSimulation> and nilBool(c.xmlModel.coSimulation.base.providesDirectionalDerivatives)
-			or c.fmuKind = <ModelExchange> and nilBool(c.xmlModel.modelExchange.base.providesDirectionalDerivatives))
+		and (c.fmuKind = <CoSimulation> and nilBool(c.xmlModel.coSimulation.providesDirectionalDerivatives)
+			or c.fmuKind = <ModelExchange> and nilBool(c.xmlModel.modelExchange.providesDirectionalDerivatives))
 		and nUnknowns = len unknowns
 		and nKnowns = len knowns
 	post
@@ -62,10 +62,10 @@ functions
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetDirectionalDerivative
 		then logAPIError(c, "Cannot call fmi3GetDirectionalDerivative in this state", mk_(<fmi3Error>, nil, nil))
 
-		elseif c.fmuKind = <CoSimulation> and not nilBool(c.xmlModel.coSimulation.base.providesDirectionalDerivatives)
+		elseif c.fmuKind = <CoSimulation> and not nilBool(c.xmlModel.coSimulation.providesDirectionalDerivatives)
 		then logAPIError(c, "Model does not support directional derivatives", mk_(<fmi3Error>, nil, nil))
 
-		elseif c.fmuKind = <ModelExchange> and not nilBool(c.xmlModel.modelExchange.base.providesDirectionalDerivatives)
+		elseif c.fmuKind = <ModelExchange> and not nilBool(c.xmlModel.modelExchange.providesDirectionalDerivatives)
 		then logAPIError(c, "Model does not support directional derivatives", mk_(<fmi3Error>, nil, nil))
 
 		elseif nUnknowns <> len unknowns or nKnowns <> len knowns
@@ -89,8 +89,8 @@ functions
 			mk_(s, derivatives, n)
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetAdjointDerivative
-		and (c.fmuKind = <CoSimulation> and nilBool(c.xmlModel.coSimulation.base.providesAdjointDerivatives)
-			or c.fmuKind = <ModelExchange> and nilBool(c.xmlModel.modelExchange.base.providesAdjointDerivatives))
+		and (c.fmuKind = <CoSimulation> and nilBool(c.xmlModel.coSimulation.providesAdjointDerivatives)
+			or c.fmuKind = <ModelExchange> and nilBool(c.xmlModel.modelExchange.providesAdjointDerivatives))
 		and nUnknowns = len unknowns
 		and nKnowns = len knowns
 	post
@@ -106,10 +106,10 @@ functions
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetAdjointDerivative
 		then logAPIError(c, "Cannot call fmi3GetAdjointDerivative in this state", mk_(<fmi3Error>, nil, nil))
 
-		elseif c.fmuKind = <CoSimulation> and not nilBool(c.xmlModel.coSimulation.base.providesAdjointDerivatives)
+		elseif c.fmuKind = <CoSimulation> and not nilBool(c.xmlModel.coSimulation.providesAdjointDerivatives)
 		then logAPIError(c, "Model does not support adjoint derivatives", mk_(<fmi3Error>, nil, nil))
 
-		elseif c.fmuKind = <ModelExchange> and not nilBool(c.xmlModel.modelExchange.base.providesAdjointDerivatives)
+		elseif c.fmuKind = <ModelExchange> and not nilBool(c.xmlModel.modelExchange.providesAdjointDerivatives)
 		then logAPIError(c, "Model does not support adjoint derivatives", mk_(<fmi3Error>, nil, nil))
 
 		elseif nUnknowns <> len unknowns or nKnowns <> len knowns

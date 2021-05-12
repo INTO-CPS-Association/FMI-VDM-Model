@@ -44,8 +44,8 @@ functions
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3EnterConfigurationMode
 		and exists sv in seq c.eModelVariables &
-			sv.base.causality = <structuralParameter> and
-			(c.fmuState = <RECONFIGURATION_MODE> => sv.base.variability = <tunable>)
+			sv.causality = <structuralParameter> and
+			(c.fmuState = <RECONFIGURATION_MODE> => sv.variability = <tunable>)
 	post
 		RESULT.#2.fmuState in set {<CONFIGURATION_MODE>, <RECONFIGURATION_MODE>};
 
@@ -55,8 +55,8 @@ functions
 		then logAPIError(c, "Cannot call fmi3EnterConfigurationMode in this state", mk_(<fmi3Error>, nil))
 
 		elseif not exists sv in seq c.eModelVariables &
-			sv.base.causality = <structuralParameter> and
-			(c.fmuState = <RECONFIGURATION_MODE> => sv.base.variability = <tunable>)
+			sv.causality = <structuralParameter> and
+			(c.fmuState = <RECONFIGURATION_MODE> => sv.variability = <tunable>)
 		then logAPIError(c, "Cannot call fmi3EnterConfigurationMode with structural parameters defined", mk_(<fmi3Error>, nil))
 
 		else fmi3EnterConfigurationMode_Impl(c)
