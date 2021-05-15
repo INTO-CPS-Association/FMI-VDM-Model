@@ -124,7 +124,7 @@ functions
 				elseif sv.variability = <constant>
 				then logAPIError(c, "Cannot set value of constant variable", false)
 
-				elseif sv.kind <> kind
+				elseif kindOf(sv) <> kind
 				then logAPIError(c, "Variables not of the correct kind", false)
 
 				else true;
@@ -164,7 +164,7 @@ functions
 			    let sv = lookup(c.eModelVariables, vr) in
 				   sv <> nil
 				   and sv.causality <> <independent>
-				   and sv.kind = kind )
+				   and kindOf(sv) = kind )
 		and len value = totalValues(c, vrs)
 		and generalSetPrecondition(c, vrs);
 
@@ -285,11 +285,11 @@ functions
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
-		setterArgPreconditions(c, allowed, <BooleanKind>, vrs, nvr, value);
+		setterArgPreconditions(c, allowed, <Boolean>, vrs, nvr, value);
 
 	fmi3SetBoolean: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Boolean +> fmi3Status * [fmi3Instance]
 	fmi3SetBoolean(c, vrs, nvr, value) ==
-		if setterArgChecks(c, STATES_fmi3SetBoolean, <BooleanKind>, vrs, nvr, value)
+		if setterArgChecks(c, STATES_fmi3SetBoolean, <Boolean>, vrs, nvr, value)
 		then fmi3SetBoolean_Impl(c, STATES_fmi3SetBoolean, vrs, nvr, value)
 		else mk_(<fmi3Error>, nil)
 	post
@@ -311,11 +311,11 @@ functions
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
-		setterArgPreconditions(c, allowed, <StringKind>, vrs, nvr, value);
+		setterArgPreconditions(c, allowed, <String>, vrs, nvr, value);
 
 	fmi3SetString: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3String +> fmi3Status * [fmi3Instance]
 	fmi3SetString(c, vrs, nvr, value) ==
-		if setterArgChecks(c, STATES_fmi3SetString, <StringKind>, vrs, nvr, value)
+		if setterArgChecks(c, STATES_fmi3SetString, <String>, vrs, nvr, value)
 		then fmi3SetString_Impl(c, STATES_fmi3SetString, vrs, nvr, value)
 		else mk_(<fmi3Error>, nil)
 	post
@@ -336,11 +336,11 @@ functions
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
-		setterArgPreconditions(c, allowed, <BinaryKind>, vrs, nvr, value);
+		setterArgPreconditions(c, allowed, <Binary>, vrs, nvr, value);
 
 	fmi3SetBinary: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Binary +> fmi3Status * [fmi3Instance]
 	fmi3SetBinary(c, vrs, nvr, value) ==
-		if setterArgChecks(c, STATES_fmi3SetBinary, <BinaryKind>, vrs, nvr, value)
+		if setterArgChecks(c, STATES_fmi3SetBinary, <Binary>, vrs, nvr, value)
 		then fmi3SetBinary_Impl(c, STATES_fmi3SetBinary, vrs, nvr, value)
 		else mk_(<fmi3Error>, nil)
 	post

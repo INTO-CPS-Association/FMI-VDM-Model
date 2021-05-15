@@ -37,6 +37,11 @@ types
 		UInt64 | UInt32 | UInt16 | UInt8 |
 		Boolean | String | Binary | Enumeration | Clock;
 
+	-- Possible type for a Variable
+	FloatKind = <Float64> | <Float32>;
+	IntegerKind = <Int64> | <Int32> | <Int16> | <Int8> | <UInt64> | <UInt32> | <UInt16> | <UInt8>;
+	Kind = FloatKind | IntegerKind | <Boolean> | <String> | <Binary> | <Enumeration> | <Clock>;
+
 functions
 	/**
 	 * Ordering for comparison of Variability values.
@@ -99,31 +104,40 @@ functions
 	/**
 	 * Return the MININT-MAXINT values for a particular numeric type
 	 */
-	minMaxKind: Variable | VariableType +> real * real
+	minMaxKind: Variable | VariableType | Kind +> real * real
 	minMaxKind(kind) ==
-		if is_(kind, Float32Type) then mk_(-3.402823466385288598e+38, 3.402823466385288598e+38)
-		else if is_(kind, Float64Type) then mk_(-1.797693134862315708e+308, 1.797693134862315708e+308)
-		else if is_(kind, Int8Type) then mk_(-128, 127)
-		else if is_(kind, UInt8Type) then  mk_(0, 255)
-		else if is_(kind, Int16Type) then mk_(-32768, 32767)
-		else if is_(kind, UInt16Type) then  mk_(0, 65535)
-		else if is_(kind, Int32Type) then mk_(-2147483648, 2147483647)
-		else if is_(kind, UInt32Type) then mk_(0, 4294967295)
-		else if is_(kind, Int64Type) then mk_(-9.223372036854775808e+18, 9.223372036854775807e+18)
-		else if is_(kind, UInt64Type) then mk_(0, 1.8446744073709551615e+19)
-		else if is_(kind, EnumerationType) then mk_(0, 4294967295)	-- UInt32?
-		else
-		if is_(kind, Float32) then mk_(-3.402823466385288598e+38, 3.402823466385288598e+38)
-		else if is_(kind, Float64) then mk_(-1.797693134862315708e+308, 1.797693134862315708e+308)
-		else if is_(kind, Int8) then mk_(-128, 127)
-		else if is_(kind, UInt8) then  mk_(0, 255)
-		else if is_(kind, Int16) then mk_(-32768, 32767)
-		else if is_(kind, UInt16) then  mk_(0, 65535)
-		else if is_(kind, Int32) then mk_(-2147483648, 2147483647)
-		else if is_(kind, UInt32) then mk_(0, 4294967295)
-		else if is_(kind, Int64) then mk_(-9.223372036854775808e+18, 9.223372036854775807e+18)
-		else if is_(kind, UInt64) then mk_(0, 1.8446744073709551615e+19)
-		else if is_(kind, Enumeration) then mk_(0, 4294967295)	-- UInt32?
+		if is_(kind, Float32Type) or is_(kind, Float32) or kind = <Float32>
+		then mk_(-3.402823466385288598e+38, 3.402823466385288598e+38)
+
+		else if is_(kind, Float64Type) or is_(kind, Float64) or kind = <Float64>
+		then mk_(-1.797693134862315708e+308, 1.797693134862315708e+308)
+
+		else if is_(kind, Int8Type) or is_(kind, Int8) or kind = <Int8>
+		then mk_(-128, 127)
+
+		else if is_(kind, UInt8Type) or is_(kind, UInt8) or kind = <UInt8>
+		then  mk_(0, 255)
+
+		else if is_(kind, Int16Type) or is_(kind, Int16) or kind = <Int16>
+		then mk_(-32768, 32767)
+
+		else if is_(kind, UInt16Type) or is_(kind, UInt16) or kind = <UInt16>
+		then  mk_(0, 65535)
+
+		else if is_(kind, Int32Type) or is_(kind, Int32) or kind = <Int32>
+		then mk_(-2147483648, 2147483647)
+
+		else if is_(kind, UInt32Type) or is_(kind, UInt32) or kind = <UInt32>
+		then mk_(0, 4294967295)
+
+		else if is_(kind, Int64Type) or is_(kind, Int64) or kind = <Int64>
+		then mk_(-9.223372036854775808e+18, 9.223372036854775807e+18)
+
+		else if is_(kind, UInt64Type) or is_(kind, UInt64) or kind = <UInt64>
+		then mk_(0, 1.8446744073709551615e+19)
+
+		else if is_(kind, EnumerationType) or is_(kind, Enumeration) or kind = <Enumeration>
+		then mk_(0, 4294967295)	-- UInt32?
 
 		else undefined;
 

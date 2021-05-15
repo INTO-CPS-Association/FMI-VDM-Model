@@ -32,11 +32,6 @@
  * 2.1.3 Status Returned by Functions
  */
 types
-	-- Possible type for a Variable
-	FloatKind = <Float64> | <Float32>;
-	IntegerKind = <Int64> | <Int32> | <Int16> | <Int8> | <UInt64> | <UInt32> | <UInt16> | <UInt8>;
-	Kind = FloatKind | IntegerKind | <BooleanKind> | <StringKind> | <BinaryKind> | <EnumKind> | <ClockKind>;
-
 	-- Raw types for data
 	fmi3Float			= real;
 	fmi3Integer			= int;			-- Enumerations are also Integers
@@ -161,3 +156,18 @@ values
 
 	fmi3ClockActive		: fmi3Clock	= 1;	-- See parameters of fmi3GetClock and fmi3SetClock
 	fmi3ClockInactive	: fmi3Clock	= 0;
+
+functions
+	kindOf: Variable +> Kind
+	kindOf(sv) ==
+		if is_(sv, Float32) then <Float32>
+		else if is_(sv, Float64) then <Float64>
+		else if is_(sv, Int8) then <Int8>
+		else if is_(sv, UInt8) then  <UInt8>
+		else if is_(sv, Int16) then<Int16>
+		else if is_(sv, UInt16) then <UInt16>
+		else if is_(sv, Int32) then <Int32>
+		else if is_(sv, UInt32) then <UInt32>
+		else if is_(sv, Int64) then <Int64>
+		else if is_(sv, UInt64) then <UInt64>
+		else undefined;

@@ -1,0 +1,263 @@
+/**
+ * VDM value created from /tmp/XML
+ */
+values
+    scheduledExecutionFMU =
+    mk_FmiModelDescription
+    (
+        mk_Location("XML", 3),
+        "3.0-beta.1",
+        "ThreeInputClocks",
+        "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
+        nil,  -- description
+        nil,  -- author
+        nil,  -- version
+        nil,  -- copyright
+        nil,  -- license
+        nil,  -- generationTool
+        nil,  -- generationDateAndTime
+        nil,  -- variableNamingConvention
+        nil,  -- modelExchange
+        nil,  -- coSimulation
+        mk_ScheduledExecution
+        (
+            mk_Location("XML", 4),
+            "ThreeInputClocks",
+            nil,  -- needsExecutionTool
+            true,
+            nil,  -- canGetAndSetFMUState
+            nil,  -- canSerializeFMUState
+            nil,  -- providesDirectionalDerivatives
+            nil,  -- providesAdjointDerivatives
+            nil,  -- providesPerElementDependencies
+            nil,  -- maxOutputDerivativeOrder
+            nil,  -- providesIntermediateUpdate
+            nil,  -- recommendedIntermediateInputSmoothness
+            nil   -- annotations
+        ),
+        nil,  -- unitDefinitions
+        nil,  -- typeDefinitions
+        -- logCategories
+        [
+            mk_Category
+            (
+                mk_Location("XML", 6),
+                "logStatusError",
+                "Log error messages",
+                nil   -- annotations
+            )
+        ],
+        mk_DefaultExperiment
+        (
+            mk_Location("XML", 8),
+            0,
+            6,
+            nil,  -- tolerance
+            0.001,
+            nil   -- annotations
+        ),
+        -- modelVariables
+        [
+            mk_Float64
+            (
+                mk_Location("XML", 11),
+                "AIn1",
+                0,
+                nil,  -- description
+                <input>,
+                nil,  -- variability
+                nil,  -- initial
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- dimension
+                nil,  -- annotations
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("XML", 12),
+                "AIn2",
+                1,
+                nil,  -- description
+                <input>,
+                nil,  -- variability
+                nil,  -- initial
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- dimension
+                nil,  -- annotations
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("XML", 13),
+                "AOut",
+                2,
+                nil,  -- description
+                <output>,
+                nil,  -- variability
+                nil,  -- initial
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                nil,  -- start
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- dimension
+                nil,  -- annotations
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("XML", 16),
+                "BIn",
+                3,
+                nil,  -- description
+                <input>,
+                nil,  -- variability
+                nil,  -- initial
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- dimension
+                nil,  -- annotations
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("XML", 17),
+                "BOut",
+                4,
+                nil,  -- description
+                <output>,
+                nil,  -- variability
+                nil,  -- initial
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                nil,  -- start
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- dimension
+                nil,  -- annotations
+                nil   -- alias
+            )
+        ],
+        mk_ModelStructure
+        (
+            mk_Location("XML", 19),
+            -- output
+            [
+                mk_Output
+                (
+                    mk_Location("XML", 20),
+                    2,
+                    nil,  -- dependencies
+                    nil,  -- dependenciesKind
+                    nil   -- annotations
+                ),
+                mk_Output
+                (
+                    mk_Location("XML", 21),
+                    4,
+                    nil,  -- dependencies
+                    nil,  -- dependenciesKind
+                    nil   -- annotations
+                )
+            ],
+            nil,  -- continuousStateDerivative
+            nil,  -- clockedState
+            -- initialUnknown
+            [
+                mk_InitialUnknown
+                (
+                    mk_Location("XML", 22),
+                    2,
+                    nil,  -- dependencies
+                    nil,  -- dependenciesKind
+                    nil   -- annotations
+                ),
+                mk_InitialUnknown
+                (
+                    mk_Location("XML", 23),
+                    4,
+                    nil,  -- dependencies
+                    nil,  -- dependenciesKind
+                    nil   -- annotations
+                )
+            ],
+            nil   -- eventIndicator
+        ),
+        nil   -- annotations
+    );
+

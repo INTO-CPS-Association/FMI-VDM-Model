@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0-beta.1" instantiationToken="{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}"
+	modelName="ThreeInputClocks">
+	<ScheduledExecution modelIdentifier="ThreeInputClocks" canBeInstantiatedOnlyOncePerProcess="true"/>
+	<LogCategories>
+		<Category name="logStatusError" description="Log error messages"/>
+	</LogCategories>
+	<DefaultExperiment startTime="0" stopTime="6" stepSize="0.001"/>
+	<ModelVariables>
+		<!-- Variables related to input clock 10msClock  -->
+		<Float64 name="AIn1" valueReference="0" causality="input"  start="0"/>
+		<Float64 name="AIn2" valueReference="1" causality="input"  start="0"/>
+		<Float64 name="AOut" valueReference="2" causality="output" />
+		
+		<!-- Variables related to input clock AperiodicClock  -->
+		<Float64 name="BIn"  valueReference="3" causality="input"  start="0"/>
+		<Float64 name="BOut" valueReference="4" causality="output" />
+	</ModelVariables>
+	<ModelStructure>
+		<Output valueReference="2"/>
+		<Output valueReference="4"/>
+		<InitialUnknown valueReference="2" />
+		<InitialUnknown valueReference="4" />
+	</ModelStructure>
+</fmiModelDescription>

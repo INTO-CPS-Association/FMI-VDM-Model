@@ -42,13 +42,13 @@ functions
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
 	pre
-		getterPreconditions(c, allowed, <ClockKind>, vrs, nvr, nval)
+		getterPreconditions(c, allowed, <Clock>, vrs, nvr, nval)
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
 
 	fmi3GetClock: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Clock]
 	fmi3GetClock(c, vrs, nvr, nval) ==
-		if getterArgChecks(c, STATES_fmi3GetClock, <ClockKind>, vrs, nvr, nval)
+		if getterArgChecks(c, STATES_fmi3GetClock, <Clock>, vrs, nvr, nval)
 		then fmi3GetClock_Impl(c, STATES_fmi3GetClock, vrs, nvr, nval)
 		else mk_(<fmi3Error>, nil)
 	post
@@ -70,11 +70,11 @@ functions
 				variables |-> c.variables ++ updates,
 				dirty     |-> true))
 	pre
-		setterArgPreconditions(c, allowed, <ClockKind>, vrs, nvr, value);
+		setterArgPreconditions(c, allowed, <Clock>, vrs, nvr, value);
 
 	fmi3SetClock: fmi3Instance * seq of fmi3ValueReference * nat1 * seq1 of fmi3Clock +> fmi3Status * [fmi3Instance]
 	fmi3SetClock(c, vrs, nvr, value) ==
-		if setterArgChecks(c, STATES_fmi3SetClock, <ClockKind>, vrs, nvr, value)
+		if setterArgChecks(c, STATES_fmi3SetClock, <Clock>, vrs, nvr, value)
 		then fmi3SetClock_Impl(c, STATES_fmi3SetClock, vrs, nvr, value)
 		else mk_(<fmi3Error>, nil)
 	post

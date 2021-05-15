@@ -100,7 +100,7 @@ functions
 		then logAPIError(c, "vrs and nvr do not match", false)
 
 		elseif exists vr in seq vrs &
-			let sv = lookup(c.eModelVariables, vr) in sv = nil or sv.kind <> kind
+			let sv = lookup(c.eModelVariables, vr) in sv = nil or kindOf(sv) <> kind
 		then logAPIError(c, "Value references are not all defined for kind", false)
 
 		elseif not generalGetPrecondition(c, vrs)
@@ -120,7 +120,7 @@ functions
 		and len vrs = nvr
 		and ( forall vr in seq vrs &
 			    let sv = lookup(c.eModelVariables, vr) in
-				  sv <> nil and sv.kind = kind )
+				  sv <> nil and kindOf(sv) = kind )
 		and generalGetPrecondition(c, vrs)
 		and nval = totalValues(c, vrs);
 
@@ -224,13 +224,13 @@ functions
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
 	pre
-		getterPreconditions(c, allowed, <BooleanKind>, vrs, nvr, nval)
+		getterPreconditions(c, allowed, <Boolean>, vrs, nvr, nval)
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
 
 	fmi3GetBoolean: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Boolean]
 	fmi3GetBoolean(c, vrs, nvr, nval) ==
-		if getterArgChecks(c, STATES_fmi3GetBoolean, <BooleanKind>, vrs, nvr, nval)
+		if getterArgChecks(c, STATES_fmi3GetBoolean, <Boolean>, vrs, nvr, nval)
 		then fmi3GetBoolean_Impl(c, STATES_fmi3GetBoolean, vrs, nvr, nval)
 		else mk_(<fmi3Error>, nil)
 	post
@@ -247,13 +247,13 @@ functions
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
 	pre
-		getterPreconditions(c, allowed, <StringKind>, vrs, nvr, nval)
+		getterPreconditions(c, allowed, <String>, vrs, nvr, nval)
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
 
 	fmi3GetString: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3String]
 	fmi3GetString(c, vrs, nvr, nval) ==
-		if getterArgChecks(c, STATES_fmi3GetString, <StringKind>, vrs, nvr, nval)
+		if getterArgChecks(c, STATES_fmi3GetString, <String>, vrs, nvr, nval)
 		then fmi3GetString_Impl(c, STATES_fmi3GetString, vrs, nvr, nval)
 		else mk_(<fmi3Error>, nil)
 	post
@@ -269,13 +269,13 @@ functions
 			then mk_(s, nil)
 			else mk_(<fmi3OK>, conc [ c2.variables(vr) | vr in seq vrs ])
 	pre
-		getterPreconditions(c, allowed, <BinaryKind>, vrs, nvr, nval)
+		getterPreconditions(c, allowed, <Binary>, vrs, nvr, nval)
 	post
 		RESULT.#1 = <fmi3OK> => len RESULT.#2 = nval;
 
 	fmi3GetBinary: fmi3Instance * seq of fmi3ValueReference * nat * nat +> fmi3Status * [seq of fmi3Binary]
 	fmi3GetBinary(c, vrs, nvr, nval) ==
-		if getterArgChecks(c, STATES_fmi3GetBinary, <BinaryKind>, vrs, nvr, nval)
+		if getterArgChecks(c, STATES_fmi3GetBinary, <Binary>, vrs, nvr, nval)
 		then fmi3GetBinary_Impl(c, STATES_fmi3GetBinary, vrs, nvr, nval)
 		else mk_(<fmi3Error>, nil)
 	post
