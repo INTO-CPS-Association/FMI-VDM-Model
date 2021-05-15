@@ -343,7 +343,7 @@ functions
 						else if is_Clock(sv) then false
 						else undefined
 					in
-						[defValue | - in set {1, ..., dimensionsProduct(eModelVariables, sv.dimension)}]
+						[defValue | - in set {1, ..., dimensionProduct(eModelVariables, sv.dimension) }]
 
 		| vref in set dom aliasVars
 	};
@@ -355,7 +355,7 @@ functions
 	getDependencies(eModelVariables) ==
 	{
 		sv.valueReference |->
-			let size = dimensionsProduct(eModelVariables, sv.dimension) in
+			let size = dimensionProduct(eModelVariables, sv.dimension) in
 				if size = 0		-- we don't know
 				then []			-- TODO!
 				else [ getOneDependency(sv, i) | i in set {1, ..., size} ]
@@ -384,7 +384,7 @@ functions
 	 */
 	getEventIndicatorValues: FmiModelDescription +> seq of fmi3Float
 	getEventIndicatorValues(xmlModel) ==
-		[ 0.0 | - in set {1, ..., nilNat(xmlModel.numberOfEventIndicators)} ];
+		[ 0.0 | - in set {1, ..., len nilSeq[EventIndicator](xmlModel.modelStructure.eventIndicator) } ];
 
 	/**
 	 * Get CT state Variables.

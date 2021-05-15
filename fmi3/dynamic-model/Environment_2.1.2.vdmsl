@@ -118,7 +118,7 @@ types
 	inv c ==
 		card dom c.variables = card rng c.aliasVars
 		and (len c.derivatives = len c.solverDerivatives)
-		and (len c.eventIndicators = nilNat(c.xmlModel.numberOfEventIndicators))
+		and (len c.eventIndicators = len nilSeq[EventIndicator](c.xmlModel.modelStructure.eventIndicator))
 		and (c.isNewEventIteration => is_(c.fmuKind, <ModelExchange>))
 		and (c.currentTime <> nil <=> c.startTime <> nil)
 		and (c.currentTime <> nil => c.currentTime >= c.startTime)

@@ -179,14 +179,14 @@ functions
 		mk_(<fmi3OK>, [ 0 | - in set {1, ..., ni} ])
 	pre
 		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3GetEventIndicators
-		and ni = nilNat(c.xmlModel.numberOfEventIndicators);
+		and ni = len nilSeq[EventIndicator](c.xmlModel.modelStructure.eventIndicator);
 
 	fmi3GetEventIndicators: fmi3Instance * nat +> fmi3Status * [seq of fmi3Float]
 	fmi3GetEventIndicators(c, ni) ==
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3GetEventIndicators
 		then logAPIError(c, "Cannot call fmi3GetEventIndicators in this state", mk_(<fmi3Error>, nil))
 
-		elseif ni <> nilNat(c.xmlModel.numberOfEventIndicators)
+		elseif ni <> len nilSeq[EventIndicator](c.xmlModel.modelStructure.eventIndicator)
 		then logAPIError(c, "Wrong number of event indicators passed", mk_(<fmi3Error>, nil))
 
 	 	else fmi3GetEventIndicators_Impl(c, ni)

@@ -37,10 +37,6 @@ types
 		UInt64 | UInt32 | UInt16 | UInt8 |
 		Boolean | String | Binary | Enumeration | Clock;
 
-	FloatKind = <Float64> | <Float32>;
-	IntegerKind = <Int64> | <Int32> | <Int16> | <Int8> | <UInt64> | <UInt32> | <UInt16> | <UInt8>;
-	Kind = FloatKind | IntegerKind | <BooleanKind> | <StringKind> | <BinaryKind> | <EnumKind> | <ClockKind>;
-
 functions
 	/**
 	 * Ordering for comparison of Variability values.

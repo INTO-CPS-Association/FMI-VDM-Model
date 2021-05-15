@@ -32,8 +32,12 @@
  * 2.1.3 Status Returned by Functions
  */
 types
-	-- fmi3ValueReference	= nat;		-- Defined in FMI3 model
+	-- Possible type for a Variable
+	FloatKind = <Float64> | <Float32>;
+	IntegerKind = <Int64> | <Int32> | <Int16> | <Int8> | <UInt64> | <UInt32> | <UInt16> | <UInt8>;
+	Kind = FloatKind | IntegerKind | <BooleanKind> | <StringKind> | <BinaryKind> | <EnumKind> | <ClockKind>;
 
+	-- Raw types for data
 	fmi3Float			= real;
 	fmi3Integer			= int;			-- Enumerations are also Integers
 	fmi3Boolean			= bool;

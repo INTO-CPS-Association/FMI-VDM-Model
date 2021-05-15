@@ -96,7 +96,7 @@ functions
 		nValueReferences = len valueReferences
 		and ( forall vr in seq valueReferences &
 		    let sv = lookup(c.eModelVariables, vr) in
-			  sv <> nil and sv.kind = <ClockKind> )
+			  sv <> nil and is_(sv, Clock) )
 		and nValues = totalValues(c, valueReferences);
 
 	fmi3GetIntervalDecimal(
@@ -128,7 +128,7 @@ functions
 		and (forall r in seq resolution & r >= 0)
 		and (forall vr in seq valueReferences &
 		    let sv = lookup(c.eModelVariables, vr) in
-			  sv <> nil and sv.kind = <ClockKind> )
+			  sv <> nil and is_(sv, Clock) )
 		and nValues = totalValues(c, valueReferences);
 
 	fmi3GetIntervalFraction(
@@ -156,7 +156,7 @@ functions
 	pre
 		(forall vr in seq valueReferences &
 		    let sv = lookup(c.eModelVariables, vr) in
-			  sv <> nil and sv.kind = <ClockKind> )
+			  sv <> nil and is_(sv, Clock) )
 		and nValues = totalValues(c, valueReferences);
 
 	fmi3SetIntervalDecimal(
@@ -188,7 +188,7 @@ functions
 		and (forall r in seq resolution & r >= 0)
 		and (forall vr in seq valueReferences &
 		    let sv = lookup(c.eModelVariables, vr) in
-			  sv <> nil and sv.kind = <ClockKind> )
+			  sv <> nil and is_(sv, Clock) )
 		and nValues = totalValues(c, valueReferences);
 
 	fmi3SetIntervalFraction(

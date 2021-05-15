@@ -137,10 +137,10 @@ functions
             BOOL = 11, STRING = 12, BINARY = 13
 		in
 			( let f64 = fmi3GetFloat64(instance, [F64], 1, 7) in
-				f64 = mk_(<fmi3OK>, [-Infinity, -1.79769E308, -2.22507E-308, NaN, 2.22507E-308, 1.79769E308, Infinity]))
+				f64 = mk_(<fmi3OK>, [NEGATIVE_INFINITY, -1.79769E308, -2.22507E-308, NOT_A_NUMBER, 2.22507E-308, 1.79769E308, POSITIVE_INFINITY]))
 			and
 			( let f32 = fmi3GetFloat32(instance, [F32], 1, 7) in
-				f32 = mk_(<fmi3OK>, [-Infinity, -1.23E38, -1.23E-38, NaN, 1.23E-38, 1.23E38, Infinity]))
+				f32 = mk_(<fmi3OK>, [NEGATIVE_INFINITY, -1.23E38, -1.23E-38, NOT_A_NUMBER, 1.23E-38, 1.23E38, POSITIVE_INFINITY]))
 			and
 			( let i64 = fmi3GetInt64(instance, [I64], 1, 2) in
 				i64 = mk_(<fmi3OK>, [-922337203685477580, 922337203685477580]) )	-- Note: <2**64
