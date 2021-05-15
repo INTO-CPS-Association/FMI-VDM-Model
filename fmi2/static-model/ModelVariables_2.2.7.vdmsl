@@ -398,7 +398,7 @@ functions
 
 					mk_ScalarVariable
 					(
-						mk_Location("?", 1),
+						mk_Location("<implicit variable>", 1),
 						"time",
 						let allvrs = { sv.valueReference | sv in seq evs } in
 							let vr in set {1, ..., len evs + 1} be st vr not in set allvrs in vr,
@@ -407,7 +407,7 @@ functions
 						<continuous>,
 						nil,
 						nil,
-						mk_Real(mk_Location("?", 1), nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil),	-- Unit "s"?
+						mk_Real(mk_Location("<implicit variable>", 1), nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil),	-- Unit "s"?
 						nil
 					)
 				]
