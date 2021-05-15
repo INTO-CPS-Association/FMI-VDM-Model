@@ -273,15 +273,15 @@ public class Xsd2VDM
 			output.println(" * DO NOT EDIT!");
 			output.println(" */");
 			
-			if (!converter.getFunctions().isEmpty())
-			{
-				output.println("functions");
-
-				for (String function: converter.getFunctions())
-				{
-					xsdStandardFunction(output, function);
-				}
-			}
+//			if (!converter.getFunctions().isEmpty())
+//			{
+//				output.println("functions");
+//
+//				for (String function: converter.getFunctions())
+//				{
+//					xsdStandardFunction(output, function);
+//				}
+//			}
 			
 			xsdStandardTypes(output);
 			
@@ -351,6 +351,7 @@ public class Xsd2VDM
 		output.println();
 	}
 
+	@SuppressWarnings("unused")
 	private void xsdStandardFunction(PrintStream output, String function)
 	{
 		switch (function)

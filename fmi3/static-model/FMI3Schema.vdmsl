@@ -1,11 +1,7 @@
 /**
- * VDM schema created from fmi3.xsd on Tue May 04 10:43:06 BST 2021
+ * VDM schema created from fmi3.xsd on Sat May 15 12:48:48 BST 2021
  * DO NOT EDIT!
  */
-functions
-    xsdPattern: ? * seq of char +> bool
-    xsdPattern(value, pattern) == is not yet specified;
-
 types
 
 AnyString = seq of char;
@@ -750,7 +746,7 @@ FmiBuildDescription ::
     buildConfiguration  : seq1 of (BuildConfiguration)
     annotations         : [Annotations]
 inv rec ==
-    (xsdPattern(rec.fmiVersion, "3[.](0-.*)"))
+    (XSD`xsdPattern(rec.fmiVersion, "3[.](0-.*)"))
 ;
 
 BuildConfiguration ::
@@ -819,7 +815,7 @@ FmiTerminalsAndIcons ::
     terminals                : [Terminals]
     annotations              : [Annotations]
 inv rec ==
-    (xsdPattern(rec.fmiVersion, "3[.](0-.*)"))
+    (XSD`xsdPattern(rec.fmiVersion, "3[.](0-.*)"))
 ;
 
 GraphicalRepresentation ::

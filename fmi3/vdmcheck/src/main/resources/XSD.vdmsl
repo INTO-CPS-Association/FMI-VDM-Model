@@ -27,28 +27,30 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-package types;
-
-import java.util.Set;
-
-public class PatternFacet extends Facet
-{
-	public PatternFacet(String kind, String value)
-	{
-		super(kind, value);
-	}
-
-	@Override
-	public String toVDM(String var, Type fieldtype)
-	{
-		return "XSD`xsdPattern(" + var + ", \"" + value + "\")";
-	}
+/**
+ * The XSD module contains functions that support the XSD parser, checking
+ * various facets of values. They typically delegate to native Java methods.
+ */
+module XSD
+exports all
+definitions
+functions
+	xsdTotalDigits: real +> bool
+	xsdTotalDigits(value) == is not yet specified;
 	
-	@Override
-	public Set<String> getFunctions()
-	{
-		Set<String> all = super.getFunctions();
-		all.add(functionFromType());
-		return all;
-	}
-}
+	xsdFractionDigits: real +> bool
+	xsdFractionDigits(value) == is not yet specified;
+	
+	xsdAssertion: ? * seq of char +> bool
+	xsdAssertion(value, test) == is not yet specified;
+	
+	xsdPattern: ? * seq of char +> bool
+	xsdPattern(value, pattern) == is not yet specified;
+	
+	xsdExplicitTimezone: seq1 of char * seq of char +> bool
+	xsdExplicitTimezone(date, setting) == is not yet specified;
+	
+	xsdWhitespace: seq of char * seq of char +> bool
+	xsdWhitespace(string, setting) == is not yet specified;
+
+end XSD

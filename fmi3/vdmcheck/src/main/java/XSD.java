@@ -1,6 +1,3 @@
-import com.fujitsu.vdmj.values.Value;
-import com.fujitsu.vdmj.values.ValueFactory;
-
 /**
  * This file is part of the INTO-CPS toolchain.
  *
@@ -30,7 +27,10 @@ import com.fujitsu.vdmj.values.ValueFactory;
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
-public class DEFAULT
+import com.fujitsu.vdmj.values.Value;
+import com.fujitsu.vdmj.values.ValueFactory;
+
+public class XSD
 {
 	/**
 	 * functions
