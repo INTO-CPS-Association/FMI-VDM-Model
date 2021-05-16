@@ -170,4 +170,9 @@ functions
 		else if is_(sv, UInt32) then <UInt32>
 		else if is_(sv, Int64) then <Int64>
 		else if is_(sv, UInt64) then <UInt64>
+		else if is_(sv, Boolean) then <Boolean>
+		else if is_(sv, String) then <String>
+		else if is_(sv, Binary) then <Binary>
+		else if is_(sv, Enumeration) then <Enumeration>
+		else if is_(sv, Clock) then <Clock>
 		else undefined;

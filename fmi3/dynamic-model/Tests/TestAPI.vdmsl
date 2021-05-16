@@ -53,7 +53,7 @@ functions
      testInstantiateCoSimulation(requiredIntermediateVariables, eventModeRequired) ==
         fmi3InstantiateCoSimulation(
             "CS",
-            "{111-222-333-444}",
+            "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
             "",
             false,
             true,
@@ -75,7 +75,7 @@ functions
      testInstantiateScheduledExecution(requiredIntermediateVariables) ==
         fmi3InstantiateScheduledExecution(
             "SE",
-            "{111-222-333-444}",
+            "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
             "",
             false,
             true,
@@ -99,21 +99,21 @@ functions
 
 	testSetDebugLogging: seq of fmi3String -> bool
 	testSetDebugLogging(cats) ==
-		let instance = testInstantiateModelExchange("name", "{111-222-333-444}"),
+		let instance = testInstantiateModelExchange("name", "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}"),
 			mk_(s, -) = fmi3SetDebugLogging(instance, true, len cats, cats)
 		in
 			s = <fmi3OK>;
 
 	testReset: () -> bool
 	testReset() ==
-		let instance = testInstantiateModelExchange("name", "{111-222-333-444}"),
+		let instance = testInstantiateModelExchange("name", "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}"),
 			mk_(s, -) = fmi3Reset(instance)
 		in
 			s = <fmi3OK>;
 
 	testFreeInstance: () -> bool
 	testFreeInstance() ==
-		fmi3FreeInstance(testInstantiateModelExchange("name", "{111-222-333-444}")) = <VOID> and
+		fmi3FreeInstance(testInstantiateModelExchange("name", "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}")) = <VOID> and
 		fmi3FreeInstance(nil) = <VOID>;
 
 	testGetVersion: () -> bool

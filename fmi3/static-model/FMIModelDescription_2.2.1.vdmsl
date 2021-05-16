@@ -38,7 +38,7 @@ functions
 	isValidFMIModelDescription(md) ==
 		-- First fill in effective values for model variables' missing attributes
 		let eModelVariables = effectiveScalarVariables(md) in
-		{
+		let results = [
 			-- @OnFail(1001, "2.2.1 ModelAttributes invalid at %s", loc2str(md.location))
 			( md.fmiVersion(1, ..., 3) = "3.0" ),
 
@@ -260,6 +260,7 @@ functions
 					nilSeq[InitialUnknown](md.modelStructure.initialUnknown),
 					nilSeq[EventIndicator](md.modelStructure.eventIndicator)
 				] in
+					allUnknowns <> [] =>
 					{
 						unk.dependencies <> nil =>
 						{
@@ -273,7 +274,8 @@ functions
 					}
 					= {true}
 			)
-		} = {true};
+		]
+		in elems results = {true};
 
 	/**
 	 * Check that all variables' declaredTypes are defined, that the variables' types match

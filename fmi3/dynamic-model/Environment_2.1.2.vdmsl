@@ -120,6 +120,6 @@ types
 		and (len c.derivatives = len c.solverDerivatives)
 		and (len c.eventIndicators = len nilSeq[EventIndicator](c.xmlModel.modelStructure.eventIndicator))
 		and (c.isNewEventIteration => is_(c.fmuKind, <ModelExchange>))
-		and (c.currentTime <> nil <=> c.startTime <> nil)
+		and (c.currentTime <> nil => c.startTime <> nil)
 		and (c.currentTime <> nil => c.currentTime >= c.startTime)
-		and (c.stopTime <> nil and c.startTime <> nil => c.stopTime > c.startTime and c.currentTime <= c.stopTime);
+		and (c.stopTime <> nil and c.startTime <> nil => c.stopTime > c.startTime);
