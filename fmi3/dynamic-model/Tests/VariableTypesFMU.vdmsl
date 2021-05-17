@@ -1,11 +1,11 @@
 /**
- * VDM value created from /tmp/XML
+ * VDM value created from VariableTypesFMU.xml
  */
 values
     variableTypesFMU =
     mk_FmiModelDescription
     (
-        mk_Location("XML", 2),
+        mk_Location("VariableTypesFMU.xml", 2),
         "3.0-beta.1",
         "VariableTypes",
         "",
@@ -20,7 +20,7 @@ values
         nil,  -- modelExchange
         mk_CoSimulation
         (
-            mk_Location("XML", 4),
+            mk_Location("VariableTypesFMU.xml", 4),
             "VariableTypes",
             nil,  -- needsExecutionTool
             nil,  -- canBeInstantiatedOnlyOncePerProcess
@@ -47,7 +47,7 @@ values
         [
             mk_Float32
             (
-                mk_Location("XML", 7),
+                mk_Location("VariableTypesFMU.xml", 7),
                 "Float32",
                 1,
                 nil,  -- description
@@ -69,13 +69,13 @@ values
                 nil,  -- nominal
                 -- start
                 [
-                    NEGATIVE_INFINITY,
+                    XSD`NEGATIVE_INFINITY,
                     -3.402823E+38,
                     -1.175494E-38,
-                    NOT_A_NUMBER,
+                    XSD`NOT_A_NUMBER,
                     1.175494E-38,
                     3.402823E+38,
-                    POSITIVE_INFINITY
+                    XSD`POSITIVE_INFINITY
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
@@ -83,7 +83,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 8),
+                        mk_Location("VariableTypesFMU.xml", 8),
                         7,
                         nil   -- valueReference
                     )
@@ -93,7 +93,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 10),
+                mk_Location("VariableTypesFMU.xml", 10),
                 "Float64",
                 2,
                 nil,  -- description
@@ -115,13 +115,13 @@ values
                 nil,  -- nominal
                 -- start
                 [
-                    NEGATIVE_INFINITY,
+                    XSD`NEGATIVE_INFINITY,
                     -1.79769E+308,
                     -2.22507E-308,
-                    NOT_A_NUMBER,
+                    XSD`NOT_A_NUMBER,
                     2.22507E-308,
                     1.79769E+308,
-                    POSITIVE_INFINITY
+                    XSD`POSITIVE_INFINITY
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
@@ -129,7 +129,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 11),
+                        mk_Location("VariableTypesFMU.xml", 11),
                         7,
                         nil   -- valueReference
                     )
@@ -139,7 +139,7 @@ values
             ),
             mk_Int8
             (
-                mk_Location("XML", 13),
+                mk_Location("VariableTypesFMU.xml", 13),
                 "Int8",
                 3,
                 nil,  -- description
@@ -163,7 +163,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 14),
+                        mk_Location("VariableTypesFMU.xml", 14),
                         2,
                         nil   -- valueReference
                     )
@@ -173,7 +173,7 @@ values
             ),
             mk_UInt8
             (
-                mk_Location("XML", 16),
+                mk_Location("VariableTypesFMU.xml", 16),
                 "UInt8",
                 4,
                 nil,  -- description
@@ -197,7 +197,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 17),
+                        mk_Location("VariableTypesFMU.xml", 17),
                         2,
                         nil   -- valueReference
                     )
@@ -207,7 +207,7 @@ values
             ),
             mk_Int16
             (
-                mk_Location("XML", 19),
+                mk_Location("VariableTypesFMU.xml", 19),
                 "Int16",
                 5,
                 nil,  -- description
@@ -231,7 +231,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 20),
+                        mk_Location("VariableTypesFMU.xml", 20),
                         2,
                         nil   -- valueReference
                     )
@@ -241,7 +241,7 @@ values
             ),
             mk_UInt16
             (
-                mk_Location("XML", 22),
+                mk_Location("VariableTypesFMU.xml", 22),
                 "UInt16",
                 6,
                 nil,  -- description
@@ -265,7 +265,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 23),
+                        mk_Location("VariableTypesFMU.xml", 23),
                         2,
                         nil   -- valueReference
                     )
@@ -275,7 +275,7 @@ values
             ),
             mk_Int32
             (
-                mk_Location("XML", 25),
+                mk_Location("VariableTypesFMU.xml", 25),
                 "Int32",
                 7,
                 nil,  -- description
@@ -299,7 +299,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 26),
+                        mk_Location("VariableTypesFMU.xml", 26),
                         2,
                         nil   -- valueReference
                     )
@@ -309,7 +309,7 @@ values
             ),
             mk_UInt32
             (
-                mk_Location("XML", 28),
+                mk_Location("VariableTypesFMU.xml", 28),
                 "UInt32",
                 8,
                 nil,  -- description
@@ -333,7 +333,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 29),
+                        mk_Location("VariableTypesFMU.xml", 29),
                         2,
                         nil   -- valueReference
                     )
@@ -343,7 +343,7 @@ values
             ),
             mk_Int64
             (
-                mk_Location("XML", 31),
+                mk_Location("VariableTypesFMU.xml", 31),
                 "Int64",
                 9,
                 nil,  -- description
@@ -367,7 +367,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 32),
+                        mk_Location("VariableTypesFMU.xml", 32),
                         2,
                         nil   -- valueReference
                     )
@@ -377,7 +377,7 @@ values
             ),
             mk_UInt64
             (
-                mk_Location("XML", 34),
+                mk_Location("VariableTypesFMU.xml", 34),
                 "UInt64",
                 10,
                 nil,  -- description
@@ -401,7 +401,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 35),
+                        mk_Location("VariableTypesFMU.xml", 35),
                         2,
                         nil   -- valueReference
                     )
@@ -411,7 +411,7 @@ values
             ),
             mk_Boolean
             (
-                mk_Location("XML", 37),
+                mk_Location("VariableTypesFMU.xml", 37),
                 "Boolean",
                 11,
                 nil,  -- description
@@ -434,13 +434,13 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 38),
+                        mk_Location("VariableTypesFMU.xml", 38),
                         2,
                         nil   -- valueReference
                     ),
                     mk_Dimension
                     (
-                        mk_Location("XML", 39),
+                        mk_Location("VariableTypesFMU.xml", 39),
                         2,
                         nil   -- valueReference
                     )
@@ -450,7 +450,7 @@ values
             ),
             mk_String
             (
-                mk_Location("XML", 41),
+                mk_Location("VariableTypesFMU.xml", 41),
                 "String",
                 12,
                 nil,  -- description
@@ -466,7 +466,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 42),
+                        mk_Location("VariableTypesFMU.xml", 42),
                         2,
                         nil   -- valueReference
                     )
@@ -481,7 +481,7 @@ values
             ),
             mk_Binary
             (
-                mk_Location("XML", 46),
+                mk_Location("VariableTypesFMU.xml", 46),
                 "Binary",
                 13,
                 nil,  -- description
@@ -504,7 +504,7 @@ values
                 [
                     mk_Dimension
                     (
-                        mk_Location("XML", 47),
+                        mk_Location("VariableTypesFMU.xml", 47),
                         2,
                         nil   -- valueReference
                     )
@@ -515,7 +515,7 @@ values
         ],
         mk_ModelStructure
         (
-            mk_Location("XML", 51),
+            mk_Location("VariableTypesFMU.xml", 51),
             nil,  -- output
             nil,  -- continuousStateDerivative
             nil,  -- clockedState

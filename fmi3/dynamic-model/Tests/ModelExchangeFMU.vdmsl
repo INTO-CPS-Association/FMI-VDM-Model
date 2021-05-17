@@ -5,7 +5,7 @@ values
     modelExchangeFMU =
     mk_FmiModelDescription
     (
-        mk_Location("XML", 9),
+        mk_Location("ModelExchangeFMU.xml", 9),
         "3.0-beta.1",
         "MyLibrary.SpringMassDamper",
         "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
@@ -19,7 +19,7 @@ values
         <structured>,
         mk_ModelExchange
         (
-            mk_Location("XML", 10),
+            mk_Location("ModelExchangeFMU.xml", 10),
             "MyLibrary_SpringMassDamper",
             nil,  -- needsExecutionTool
             nil,  -- canBeInstantiatedOnlyOncePerProcess
@@ -37,11 +37,11 @@ values
         [
             mk_Unit
             (
-                mk_Location("XML", 12),
+                mk_Location("ModelExchangeFMU.xml", 12),
                 "rad",
                 mk_BaseUnit
                 (
-                    mk_Location("XML", 13),
+                    mk_Location("ModelExchangeFMU.xml", 13),
                     nil,  -- kg
                     nil,  -- m
                     nil,  -- s
@@ -57,7 +57,7 @@ values
                 [
                     mk_DisplayUnit
                     (
-                        mk_Location("XML", 14),
+                        mk_Location("ModelExchangeFMU.xml", 14),
                         "deg",
                         57.2957795130823,
                         nil,  -- offset
@@ -69,11 +69,11 @@ values
             ),
             mk_Unit
             (
-                mk_Location("XML", 16),
+                mk_Location("ModelExchangeFMU.xml", 16),
                 "rad/s",
                 mk_BaseUnit
                 (
-                    mk_Location("XML", 17),
+                    mk_Location("ModelExchangeFMU.xml", 17),
                     nil,  -- kg
                     nil,  -- m
                     -1,
@@ -90,11 +90,11 @@ values
             ),
             mk_Unit
             (
-                mk_Location("XML", 19),
+                mk_Location("ModelExchangeFMU.xml", 19),
                 "kg.m2",
                 mk_BaseUnit
                 (
-                    mk_Location("XML", 20),
+                    mk_Location("ModelExchangeFMU.xml", 20),
                     1,
                     2,
                     nil,  -- s
@@ -111,11 +111,11 @@ values
             ),
             mk_Unit
             (
-                mk_Location("XML", 22),
+                mk_Location("ModelExchangeFMU.xml", 22),
                 "N.m",
                 mk_BaseUnit
                 (
-                    mk_Location("XML", 23),
+                    mk_Location("ModelExchangeFMU.xml", 23),
                     1,
                     2,
                     -2,
@@ -135,7 +135,7 @@ values
         [
             mk_Float64Type
             (
-                mk_Location("XML", 27),
+                mk_Location("ModelExchangeFMU.xml", 27),
                 "Modelica.Units.SI.Inertia",
                 nil,  -- description
                 "MomentOfInertia",
@@ -150,7 +150,7 @@ values
             ),
             mk_Float64Type
             (
-                mk_Location("XML", 28),
+                mk_Location("ModelExchangeFMU.xml", 28),
                 "Modelica.Units.SI.Torque",
                 nil,  -- description
                 "Torque",
@@ -165,7 +165,7 @@ values
             ),
             mk_Float64Type
             (
-                mk_Location("XML", 29),
+                mk_Location("ModelExchangeFMU.xml", 29),
                 "Modelica.Units.SI.AngularVelocity",
                 nil,  -- description
                 "AngularVelocity",
@@ -180,7 +180,7 @@ values
             ),
             mk_Float64Type
             (
-                mk_Location("XML", 30),
+                mk_Location("ModelExchangeFMU.xml", 30),
                 "Modelica.Units.SI.Angle",
                 nil,  -- description
                 "Angle",
@@ -198,14 +198,14 @@ values
         [
             mk_Category
             (
-                mk_Location("XML", 33),
+                mk_Location("ModelExchangeFMU.xml", 33),
                 "Full",
                 "Full error messages",
                 nil   -- annotations
             ),
             mk_Category
             (
-                mk_Location("XML", 34),
+                mk_Location("ModelExchangeFMU.xml", 34),
                 "Terse",
                 "Terse error messages",
                 nil   -- annotations
@@ -213,7 +213,7 @@ values
         ],
         mk_DefaultExperiment
         (
-            mk_Location("XML", 32),
+            mk_Location("ModelExchangeFMU.xml", 36),
             0.0,
             3.0,
             0.0001,
@@ -224,11 +224,11 @@ values
         [
             mk_Float64
             (
-                mk_Location("XML", 36),
+                mk_Location("ModelExchangeFMU.xml", 40),
                 "inertia1.J",
                 1073741824,
                 "Moment of load inertia",
-                <parameter>,
+                <structuralParameter>,
                 <fixed>,
                 nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
@@ -256,7 +256,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 39),
+                mk_Location("ModelExchangeFMU.xml", 43),
                 "torque.tau",
                 536870912,
                 "Accelerating torque acting at flange (= -flange.tau)",
@@ -288,7 +288,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 42),
+                mk_Location("ModelExchangeFMU.xml", 46),
                 "inertia1.phi",
                 805306368,
                 "Absolute rotation angle of component",
@@ -317,7 +317,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 45),
+                mk_Location("ModelExchangeFMU.xml", 49),
                 "inertia1.w",
                 805306369,
                 "Absolute angular velocity of component (= der(phi))",
@@ -346,7 +346,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 46),
+                mk_Location("ModelExchangeFMU.xml", 50),
                 "x[1]",
                 0,
                 nil,  -- description
@@ -378,7 +378,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 47),
+                mk_Location("ModelExchangeFMU.xml", 51),
                 "x[2]",
                 1,
                 nil,  -- description
@@ -410,7 +410,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 48),
+                mk_Location("ModelExchangeFMU.xml", 52),
                 "der(x[1])",
                 2,
                 nil,  -- description
@@ -439,7 +439,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 49),
+                mk_Location("ModelExchangeFMU.xml", 53),
                 "der(x[2])",
                 3,
                 nil,  -- description
@@ -469,12 +469,12 @@ values
         ],
         mk_ModelStructure
         (
-            mk_Location("XML", 51),
+            mk_Location("ModelExchangeFMU.xml", 55),
             -- output
             [
                 mk_Output
                 (
-                    mk_Location("XML", 52),
+                    mk_Location("ModelExchangeFMU.xml", 56),
                     805306368,
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
@@ -482,7 +482,7 @@ values
                 ),
                 mk_Output
                 (
-                    mk_Location("XML", 53),
+                    mk_Location("ModelExchangeFMU.xml", 57),
                     805306369,
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
@@ -493,7 +493,7 @@ values
             [
                 mk_ContinuousStateDerivative
                 (
-                    mk_Location("XML", 54),
+                    mk_Location("ModelExchangeFMU.xml", 58),
                     2,
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
@@ -501,7 +501,7 @@ values
                 ),
                 mk_ContinuousStateDerivative
                 (
-                    mk_Location("XML", 55),
+                    mk_Location("ModelExchangeFMU.xml", 59),
                     3,
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
@@ -513,7 +513,7 @@ values
             [
                 mk_InitialUnknown
                 (
-                    mk_Location("XML", 56),
+                    mk_Location("ModelExchangeFMU.xml", 60),
                     2,
                     -- dependencies
                     [
@@ -525,7 +525,7 @@ values
                 ),
                 mk_InitialUnknown
                 (
-                    mk_Location("XML", 57),
+                    mk_Location("ModelExchangeFMU.xml", 61),
                     3,
                     -- dependencies
                     [

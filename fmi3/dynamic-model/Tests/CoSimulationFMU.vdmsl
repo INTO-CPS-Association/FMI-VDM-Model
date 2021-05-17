@@ -1,11 +1,11 @@
 /**
- * VDM value created from /tmp/XML
+ * VDM value created from CoSimulationFMU.xml
  */
 values
     basicCosimulationFMU =
     mk_FmiModelDescription
     (
-        mk_Location("XML", 9),
+        mk_Location("CoSimulationFMU.xml", 9),
         "3.0-beta.1",
         "MyLibrary.SpringMassDamper",
         "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
@@ -20,7 +20,7 @@ values
         nil,  -- modelExchange
         mk_CoSimulation
         (
-            mk_Location("XML", 12),
+            mk_Location("CoSimulationFMU.xml", 12),
             "MyLibrary_SpringMassDamper",
             nil,  -- needsExecutionTool
             nil,  -- canBeInstantiatedOnlyOncePerProcess
@@ -43,11 +43,11 @@ values
         [
             mk_Unit
             (
-                mk_Location("XML", 14),
+                mk_Location("CoSimulationFMU.xml", 14),
                 "rad",
                 mk_BaseUnit
                 (
-                    mk_Location("XML", 15),
+                    mk_Location("CoSimulationFMU.xml", 15),
                     nil,  -- kg
                     nil,  -- m
                     nil,  -- s
@@ -63,7 +63,7 @@ values
                 [
                     mk_DisplayUnit
                     (
-                        mk_Location("XML", 16),
+                        mk_Location("CoSimulationFMU.xml", 16),
                         "deg",
                         57.2957795130823,
                         nil,  -- offset
@@ -75,11 +75,11 @@ values
             ),
             mk_Unit
             (
-                mk_Location("XML", 18),
+                mk_Location("CoSimulationFMU.xml", 18),
                 "rad/s",
                 mk_BaseUnit
                 (
-                    mk_Location("XML", 19),
+                    mk_Location("CoSimulationFMU.xml", 19),
                     nil,  -- kg
                     nil,  -- m
                     -1,
@@ -96,11 +96,11 @@ values
             ),
             mk_Unit
             (
-                mk_Location("XML", 21),
+                mk_Location("CoSimulationFMU.xml", 21),
                 "kg.m2",
                 mk_BaseUnit
                 (
-                    mk_Location("XML", 22),
+                    mk_Location("CoSimulationFMU.xml", 22),
                     1,
                     2,
                     nil,  -- s
@@ -117,11 +117,11 @@ values
             ),
             mk_Unit
             (
-                mk_Location("XML", 24),
+                mk_Location("CoSimulationFMU.xml", 24),
                 "N.m",
                 mk_BaseUnit
                 (
-                    mk_Location("XML", 25),
+                    mk_Location("CoSimulationFMU.xml", 25),
                     1,
                     2,
                     -2,
@@ -141,7 +141,7 @@ values
         [
             mk_Float64Type
             (
-                mk_Location("XML", 29),
+                mk_Location("CoSimulationFMU.xml", 29),
                 "Modelica.Units.SI.Inertia",
                 nil,  -- description
                 "MomentOfInertia",
@@ -156,7 +156,7 @@ values
             ),
             mk_Float64Type
             (
-                mk_Location("XML", 30),
+                mk_Location("CoSimulationFMU.xml", 30),
                 "Modelica.Units.SI.Torque",
                 nil,  -- description
                 "Torque",
@@ -171,7 +171,7 @@ values
             ),
             mk_Float64Type
             (
-                mk_Location("XML", 31),
+                mk_Location("CoSimulationFMU.xml", 31),
                 "Modelica.Units.SI.AngularVelocity",
                 nil,  -- description
                 "AngularVelocity",
@@ -186,7 +186,7 @@ values
             ),
             mk_Float64Type
             (
-                mk_Location("XML", 32),
+                mk_Location("CoSimulationFMU.xml", 32),
                 "Modelica.Units.SI.Angle",
                 nil,  -- description
                 "Angle",
@@ -203,7 +203,7 @@ values
         nil,  -- logCategories
         mk_DefaultExperiment
         (
-            mk_Location("XML", 34),
+            mk_Location("CoSimulationFMU.xml", 34),
             0.0,
             3.0,
             0.0001,
@@ -214,7 +214,7 @@ values
         [
             mk_Float64
             (
-                mk_Location("XML", 38),
+                mk_Location("CoSimulationFMU.xml", 38),
                 "inertia1.J",
                 1073741824,
                 "Moment of load inertia",
@@ -246,7 +246,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 41),
+                mk_Location("CoSimulationFMU.xml", 41),
                 "torque.tau",
                 536870912,
                 "Accelerating torque acting at flange (= -flange.tau)",
@@ -278,7 +278,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 44),
+                mk_Location("CoSimulationFMU.xml", 44),
                 "inertia1.phi",
                 805306368,
                 "Absolute rotation angle of component",
@@ -307,7 +307,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("XML", 47),
+                mk_Location("CoSimulationFMU.xml", 47),
                 "inertia1.w",
                 805306369,
                 "Absolute angular velocity of component (= der(phi))",
@@ -337,12 +337,12 @@ values
         ],
         mk_ModelStructure
         (
-            mk_Location("XML", 49),
+            mk_Location("CoSimulationFMU.xml", 49),
             -- output
             [
                 mk_Output
                 (
-                    mk_Location("XML", 50),
+                    mk_Location("CoSimulationFMU.xml", 50),
                     805306368,
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
@@ -350,7 +350,7 @@ values
                 ),
                 mk_Output
                 (
-                    mk_Location("XML", 51),
+                    mk_Location("CoSimulationFMU.xml", 51),
                     805306369,
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
@@ -363,7 +363,7 @@ values
             [
                 mk_InitialUnknown
                 (
-                    mk_Location("XML", 52),
+                    mk_Location("CoSimulationFMU.xml", 52),
                     805306368,
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
@@ -371,7 +371,7 @@ values
                 ),
                 mk_InitialUnknown
                 (
-                    mk_Location("XML", 53),
+                    mk_Location("CoSimulationFMU.xml", 53),
                     805306369,
                     nil,  -- dependencies
                     nil,  -- dependenciesKind

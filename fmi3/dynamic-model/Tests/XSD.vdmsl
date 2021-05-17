@@ -34,6 +34,11 @@
 module XSD
 exports all
 definitions
+values
+	POSITIVE_INFINITY : real = 9218868437227405312;  -- 0x7ff0000000000000
+	NEGATIVE_INFINITY : real = -4503599627370496;    -- 0xfff0000000000000
+	NOT_A_NUMBER : real      = 9221120237041090560;  -- 0x7ff8000000000000
+
 functions
 	xsdTotalDigits: real +> bool
 	xsdTotalDigits(-) == true;
