@@ -194,7 +194,23 @@ values
                 nil   -- annotations
             )
         ],
-        nil,  -- logCategories
+        -- logCategories
+        [
+            mk_Category
+            (
+                mk_Location("XML", 33),
+                "Full",
+                "Full error messages",
+                nil   -- annotations
+            ),
+            mk_Category
+            (
+                mk_Location("XML", 34),
+                "Terse",
+                "Terse error messages",
+                nil   -- annotations
+            )
+        ],
         mk_DefaultExperiment
         (
             mk_Location("XML", 32),

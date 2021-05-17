@@ -34,7 +34,7 @@ operations
 	testModelExchangePaths: () ==> bool
 	testModelExchangePaths() ==
 	(
-		dcl c : [fmi3Instance] := testInstantiateModelExchange("ME", "{111-222-333-444}");
+		dcl c : [fmi3Instance] := testInstantiateModelExchange("ME", "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}");
 		if c = nil then return false;
 
 		let mk_(s, c2) = fmi3EnterConfigurationMode(c) in

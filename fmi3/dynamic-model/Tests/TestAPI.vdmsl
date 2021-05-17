@@ -140,10 +140,10 @@ functions
 				f64 = mk_(<fmi3OK>, [NEGATIVE_INFINITY, -1.79769E308, -2.22507E-308, NOT_A_NUMBER, 2.22507E-308, 1.79769E308, POSITIVE_INFINITY]))
 			and
 			( let f32 = fmi3GetFloat32(instance, [F32], 1, 7) in
-				f32 = mk_(<fmi3OK>, [NEGATIVE_INFINITY, -1.23E38, -1.23E-38, NOT_A_NUMBER, 1.23E-38, 1.23E38, POSITIVE_INFINITY]))
+				f32 = mk_(<fmi3OK>, [NEGATIVE_INFINITY, -3.402823e+38, -1.175494e-38, NOT_A_NUMBER, 1.175494e-38, 3.402823e+38, POSITIVE_INFINITY]))
 			and
 			( let i64 = fmi3GetInt64(instance, [I64], 1, 2) in
-				i64 = mk_(<fmi3OK>, [-922337203685477580, 922337203685477580]) )	-- Note: <2**64
+				i64 = mk_(<fmi3OK>, [-9223372036854775808, 9223372036854775807]) )
 			and
 			( let i32 = fmi3GetInt32(instance, [I32], 1, 2) in
 				i32 = mk_(<fmi3OK>, [-2147483648, 2147483647]) )
@@ -155,7 +155,7 @@ functions
 				i8 = mk_(<fmi3OK>, [-128, 127]) )
 			and
 			( let ui64 = fmi3GetUInt64(instance, [UI64], 1, 2) in
-				ui64 = mk_(<fmi3OK>, [0, 1844674407370955161]) )	-- Note: <2**64
+				ui64 = mk_(<fmi3OK>, [0, 18446744073709551615]) )
 			and
 			( let ui32 = fmi3GetUInt32(instance, [UI32], 1, 2) in
 				ui32 = mk_(<fmi3OK>, [0, 4294967295]) )
@@ -237,8 +237,8 @@ functions
 	tests: () -> seq of bool
 	tests() ==
 	[
-		testInstantiateModelExchange("ME", "{111-222-333-444}") <> nil,
-		testInstantiateModelExchange("", "{111-222-333-444}") = nil,
+		testInstantiateModelExchange("ME", "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}") <> nil,
+		testInstantiateModelExchange("", "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}") = nil,
 		testInstantiateModelExchange("ME", "wrong") = nil,
 
 		testInstantiateCoSimulation([], false) <> nil,

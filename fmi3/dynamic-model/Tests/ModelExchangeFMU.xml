@@ -29,6 +29,10 @@
     <Float64Type name="Modelica.Units.SI.AngularVelocity" quantity="AngularVelocity" unit="rad/s"/>
     <Float64Type name="Modelica.Units.SI.Angle" quantity="Angle" unit="rad"/>
   </TypeDefinitions>
+  <LogCategories>
+     <Category name="Full" description="Full error messages"/>
+     <Category name="Terse" description="Terse error messages"/>
+  </LogCategories>
   <DefaultExperiment startTime="0.0" stopTime="3.0" tolerance="0.0001"/>
   <ModelVariables>
     <Float64 name="inertia1.J" valueReference="1073741824"
