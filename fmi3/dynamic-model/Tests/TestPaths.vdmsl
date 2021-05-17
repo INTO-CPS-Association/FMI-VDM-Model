@@ -79,15 +79,15 @@ operations
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+		let mk_(s, v) = fmi3GetInt64(c, [99], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [123]);
 
-		let mk_(s, c2) = fmi3SetInt64(c, [0], 1, [12345]) in
+		let mk_(s, c2) = fmi3SetInt64(c, [99], 1, [12345]) in
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+		let mk_(s, v) = fmi3GetInt64(c, [99], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [12345]);
 
@@ -114,13 +114,13 @@ operations
 
 		let mk_(s, size) = fmi3GetNumberOfEventIndicators(c) in
 			if s <> <fmi3OK> then return false
-			else assert(size = 3);
+			else assert(size = 1);
 
 		let mk_(s1, size) = fmi3GetNumberOfContinuousStates(c),
 			mk_(s2, nominals) = fmi3GetNominalsOfContinuousStates(c, size)
 		in
 			if s1 <> <fmi3OK> or s2 <> <fmi3OK> then return false
-			else assert(size = 0 and nominals = []);
+			else assert(size = 2 and nominals = [1, 1]);
 
 		let mk_(s, c2) = fmi3Reset(c) in
 			if s <> <fmi3OK> then return false

@@ -7,7 +7,9 @@
   version="1.0"
   generationDateAndTime="2011-09-23T16:57:33Z"
   variableNamingConvention="structured">
-  <ModelExchange modelIdentifier="MyLibrary_SpringMassDamper"/>
+  <ModelExchange modelIdentifier="MyLibrary_SpringMassDamper"
+  	canGetAndSetFMUState="true"
+	providesPerElementDependencies="true" />
   <UnitDefinitions>
     <Unit name="rad">
       <BaseUnit rad="1"/>
@@ -51,6 +53,7 @@
     <Float64 name="x[2]" valueReference="1" initial="exact" start="0"/>
     <Float64 name="der(x[1])" valueReference="2" derivative="0"/>
     <Float64 name="der(x[2])" valueReference="3" derivative="1"/>
+	<Int64 name="Int64" valueReference="99" initial="exact" start="123" />
   </ModelVariables>
   <ModelStructure>
     <Output valueReference="805306368"/>
@@ -59,5 +62,6 @@
     <ContinuousStateDerivative valueReference="3"/>
     <InitialUnknown valueReference="2" dependencies="0 536870912"/>
     <InitialUnknown valueReference="3" dependencies="0 1"/>
+	<EventIndicator valueReference="0" />
   </ModelStructure>
 </fmiModelDescription>
