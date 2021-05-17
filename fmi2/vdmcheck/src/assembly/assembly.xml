@@ -19,6 +19,10 @@
 			<source>../../LICENCE</source>
 			<destName>LICENCE</destName>
 		</file>
+		<file>
+			<source>src/main/resources/XSD.vdmsl</source>
+			<destName>model/XSD.vdmsl</destName>
+		</file>
 	</files>
 
 	<fileSets>
