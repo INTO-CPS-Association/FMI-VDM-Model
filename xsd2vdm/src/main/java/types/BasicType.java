@@ -66,11 +66,11 @@ public class BasicType extends Type
 				switch (avalue)
 				{
 					case "INF":
-						return new SimpleValue(this, locator, "POSITIVE_INFINITY", false);
+						return new SimpleValue(this, locator, "XSD`POSITIVE_INFINITY", false);
 					case "-INF":
-						return new SimpleValue(this, locator, "NEGATIVE_INFINITY", false);
+						return new SimpleValue(this, locator, "XSD`NEGATIVE_INFINITY", false);
 					case "NaN":
-						return new SimpleValue(this, locator, "NOT_A_NUMBER", false);
+						return new SimpleValue(this, locator, "XSD`NOT_A_NUMBER", false);
 					default:
 						return new SimpleValue(this, locator, new BigDecimal(avalue));
 				}
