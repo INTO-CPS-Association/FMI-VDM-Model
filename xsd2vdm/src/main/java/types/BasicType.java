@@ -82,7 +82,7 @@ public class BasicType extends Type
 				return new SimpleValue(this, locator, avalue, true);
 				
 			case "bool":
-				return new SimpleValue(this, locator, Boolean.parseBoolean(avalue));
+				return new SimpleValue(this, locator, Boolean.parseBoolean(avalue) || avalue.equals("1"));
 			
 			default:
 				throw new IllegalArgumentException("Unknown type string for BasicValue: " + typestring);
