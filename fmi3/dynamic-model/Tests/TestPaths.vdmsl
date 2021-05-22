@@ -169,15 +169,15 @@ operations
 
 		assert(c.fmuState = <STEP_MODE>);
 
-		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+		let mk_(s, v) = fmi3GetFloat64(c, [99], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [123]);
 
-		let mk_(s, c2) = fmi3SetInt64(c, [0], 1, [12345]) in
+		let mk_(s, c2) = fmi3SetFloat64(c, [99], 1, [12345]) in
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+		let mk_(s, v) = fmi3GetFloat64(c, [99], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [12345]);
 
@@ -255,15 +255,15 @@ operations
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+		let mk_(s, v) = fmi3GetFloat64(c, [99], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [123]);
 
-		let mk_(s, c2) = fmi3SetInt64(c, [0], 1, [12345]) in
+		let mk_(s, c2) = fmi3SetFloat64(c, [99], 1, [12345]) in
 			if s <> <fmi3OK> then return false
 			else c := c2;
 
-		let mk_(s, v) = fmi3GetInt64(c, [0], 1, 1) in
+		let mk_(s, v) = fmi3GetFloat64(c, [99], 1, 1) in
 			if s <> <fmi3OK> then return false
 			else assert(v = [12345]);
 

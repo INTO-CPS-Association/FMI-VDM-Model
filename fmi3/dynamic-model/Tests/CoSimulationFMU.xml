@@ -9,6 +9,9 @@
   variableNamingConvention="structured">
   <CoSimulation
     modelIdentifier="MyLibrary_SpringMassDamper"
+	canGetAndSetFMUState="true"
+	providesDirectionalDerivatives="true"
+	providesAdjointDerivatives="true"
     canHandleVariableCommunicationStepSize="true"/>
   <UnitDefinitions>
     <Unit name="rad">
@@ -34,7 +37,7 @@
   <DefaultExperiment startTime="0.0" stopTime="3.0" tolerance="0.0001"/>
   <ModelVariables>
     <Float64 name="inertia1.J" valueReference="1073741824"
-      description="Moment of load inertia" causality="parameter" variability="fixed"
+      description="Moment of load inertia" causality="structuralParameter" variability="fixed"
       declaredType="Modelica.Units.SI.Inertia" start="1"/>
     <Float64 name="torque.tau" valueReference="536870912"
       description="Accelerating torque acting at flange (= -flange.tau)" causality="input"
@@ -45,6 +48,7 @@
     <Float64 name="inertia1.w" valueReference="805306369"
       description="Absolute angular velocity of component (= der(phi))" causality="output"
       declaredType="Modelica.Units.SI.AngularVelocity"/>
+	<Float64 name="Testing" valueReference="99" causality="input" start="123" />
   </ModelVariables>
   <ModelStructure>
     <Output valueReference="805306368"/>
