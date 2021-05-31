@@ -1,5 +1,5 @@
 /**
- * VDM schema created from fmi3.xsd on Sat May 15 12:48:48 BST 2021
+ * VDM schema created from fmi3.xsd on Mon May 31 16:36:31 BST 2021
  * DO NOT EDIT!
  */
 types
@@ -852,7 +852,7 @@ Terminal ::
     description                      : [AnyString]
     terminalMemberVariable           : [seq of (TerminalMemberVariable)]
     terminalStreamMemberVariable     : [seq of (TerminalStreamMemberVariable)]
-    terminal                         : seq1 of (Terminal)
+    terminal                         : [seq of (Terminal)]
     terminalGraphicalRepresentation  : [TerminalGraphicalRepresentation]
     annotations                      : [Annotations]
 ;
