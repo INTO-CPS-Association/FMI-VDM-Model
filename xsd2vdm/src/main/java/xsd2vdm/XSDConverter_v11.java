@@ -733,7 +733,20 @@ public class XSDConverter_v11 extends XSDConverter
 			if (converted.get(elementName) instanceof RecordType)
 			{
 				stack.pop();
-				return (RecordType)converted.get(elementName);
+				RecordType existing = (RecordType)converted.get(elementName);
+				
+				if (element.hasAttr("minOccurs") || element.hasAttr("maxOccurs"))
+				{
+					// Might be different to existing
+					RecordType modified = new RecordType(elementName, existing.getFields());
+					modified.setMinOccurs(element);
+					modified.setMaxOccurs(element);
+					return modified;
+				}
+				else
+				{
+					return existing;
+				}
 			}
 
 			record = new RecordType(typeName(elementName));
