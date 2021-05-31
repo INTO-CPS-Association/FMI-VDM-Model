@@ -179,6 +179,13 @@ functions
 			( isValidVariableAttributes(sv) )
 
 			| sv in seq svs
+		}
+		union
+		{
+			-- @OnFail(1459, "2.2.9 Variable %s invalid at %s", sv.name, loc2str(sv.location))
+			( isValidClockAttributes(sv, svs) )
+
+			| sv in seq svs
 		} = {true};
 
 	/**
@@ -299,6 +306,46 @@ functions
 			-- @OnFail(1466, "2.2.8 Variable %s VendorAnnotations invalid", sv.name)
 			( isValidVendorAnnotation(sv.annotations) )
 		} = {true};
+
+	/**
+	 * Check Clock attributes and references.
+	 */
+	isValidClockAttributes: Variable * seq1 of Variable +> bool
+	isValidClockAttributes(sv, svs) ==
+		if is_(sv, Clock)
+		then
+			{
+				-- @OnFail(1484, "Clock cannot have clock references at %s", loc2str(sv.location))
+				( sv.clocks = nil or sv.clocks = [] ),
+
+				-- @OnFail(1485, "Clock initial/causality %s/%s invalid at %s", sv.initial, sv.causality, loc2str(sv.location))
+				(
+					cases sv.causality:
+						<input>		-> sv.initial = <exact>,
+						<output>	-> sv.initial = <calculated>,
+						<local>		-> sv.initial = <calculated>,
+						others		-> false
+					end
+				)
+			} = {true}
+
+		else
+			sv.clocks <> nil =>
+			{
+				-- @OnFail(1486, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
+				( sv.variability = <discrete> or sv.variability = <tunable> )
+			}
+			union
+			{
+				let cvar = lookup(svs, cref) in
+					-- @OnFail(1487, "Clock reference %s not found at %s", cvar, loc2str(sv.location))
+					( cvar <> nil )
+
+					-- @OnFail(1488, "Clock reference %s is not a Clock at %s", cvar, loc2str(sv.location))
+					and ( not is_(cvar, Clock) )
+
+				| cref in seq sv.clocks
+			} = {true};
 
 	/**
 	 * Check Dimension structures.
