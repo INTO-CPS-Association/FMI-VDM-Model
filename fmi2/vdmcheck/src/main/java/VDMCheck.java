@@ -185,7 +185,8 @@ public class VDMCheck
 					"-xsd", schema.getCanonicalPath(),
 					"-xml", tempXML.getCanonicalPath(),
 					"-vdm", tempVDM.getCanonicalPath(),
-					"-name", varName);
+					"-name", varName,
+					"-nowarn");
 			
 			tempOUT = File.createTempFile("out", "tmp");
 			

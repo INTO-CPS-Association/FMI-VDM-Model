@@ -262,7 +262,8 @@ public class VDMCheck
 					"-xsd", schema.getCanonicalPath(),
 					"-xml", tempXML.file.getCanonicalPath(),
 					"-vdm", tempVDM.getCanonicalPath(),
-					"-name", varName);
+					"-name", varName,
+					"-nowarn");
 			
 			String[] dependencies = {"vdmj.jar", "annotations.jar"};
 	
