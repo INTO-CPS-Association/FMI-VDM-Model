@@ -43,6 +43,29 @@ types
 	Kind = FloatKind | IntegerKind | <Boolean> | <String> | <Binary> | <Enumeration> | <Clock>;
 
 functions
+functions
+	/**
+	 * Turn a Variable into a Kind.
+	 */
+	kindOf: Variable +> Kind
+	kindOf(sv) ==
+		if is_(sv, Float32) then <Float32>
+		else if is_(sv, Float64) then <Float64>
+		else if is_(sv, Int8) then <Int8>
+		else if is_(sv, UInt8) then  <UInt8>
+		else if is_(sv, Int16) then<Int16>
+		else if is_(sv, UInt16) then <UInt16>
+		else if is_(sv, Int32) then <Int32>
+		else if is_(sv, UInt32) then <UInt32>
+		else if is_(sv, Int64) then <Int64>
+		else if is_(sv, UInt64) then <UInt64>
+		else if is_(sv, Boolean) then <Boolean>
+		else if is_(sv, String) then <String>
+		else if is_(sv, Binary) then <Binary>
+		else if is_(sv, Enumeration) then <Enumeration>
+		else if is_(sv, Clock) then <Clock>
+		else undefined;
+
 	/**
 	 * Ordering for comparison of Variability values.
 	 */
@@ -318,6 +341,9 @@ functions
 				-- @OnFail(1484, "Clock cannot have clock references at %s", loc2str(sv.location))
 				( sv.clocks = nil or sv.clocks = [] ),
 
+				-- @OnFail(1486, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
+				( sv.variability = <discrete> or sv.variability = <tunable> ),
+
 				-- @OnFail(1485, "Clock initial/causality %s/%s invalid at %s", sv.initial, sv.causality, loc2str(sv.location))
 				(
 					cases sv.causality:
@@ -330,10 +356,14 @@ functions
 			} = {true}
 
 		else
-			sv.clocks <> nil =>
 			{
-				-- @OnFail(1486, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
-				( sv.variability = <discrete> or sv.variability = <tunable> )
+				sv.previous <> nil =>
+					let p = lookup(svs, sv.previous) in
+						-- @OnFail(1489, "Clock previous setting unknown at %s", loc2str(sv.location))
+						( p <> nil )
+
+						-- @OnFail(1490, "Clock previous setting wrong kind at %s", loc2str(sv.location))
+						and ( kindOf(p) = kindOf(sv) )
 			}
 			union
 			{
@@ -344,7 +374,7 @@ functions
 					-- @OnFail(1488, "Clock reference %s is not a Clock at %s", cvar, loc2str(sv.location))
 					and ( not is_(cvar, Clock) )
 
-				| cref in seq sv.clocks
+				| cref in seq nilSeq[nat](sv.clocks)
 			} = {true};
 
 	/**

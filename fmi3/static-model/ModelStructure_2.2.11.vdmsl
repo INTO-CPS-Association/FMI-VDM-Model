@@ -28,36 +28,40 @@
  */
 
 /**
- * 2.2.9 Definition of the Model Structure (ModelStructure)
+ *"2.4.8 Definition of the Model Structure (ModelStructure)
  */
 functions
 	/**
 	 * Validation of a ModelStructure.
 	 */
-	isValidModelStructure: ModelStructure +> bool
-	isValidModelStructure(ms) ==
+	isValidModelStructure: ModelStructure * seq1 of Variable +> bool
+	isValidModelStructure(ms, svs) ==
 	{
-		-- @OnFail(1500, "2.2.9 ModelStructure has invalid initialUnknowns")
+		-- @OnFail(1500, "2.4.8 ModelStructure has invalid initialUnknowns")
 		( ms.initialUnknown <> nil =>
 			forall u in seq ms.initialUnknown &
 				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
 
-		-- @OnFail(1501, "2.2.9 ModelStructure has invalid continuousStateDerivative")
+		-- @OnFail(1501, "2.4.8 ModelStructure has invalid continuousStateDerivative")
 		( ms.continuousStateDerivative <> nil =>
 			forall u in seq ms.continuousStateDerivative &
 				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
 
-		-- @OnFail(1502, "2.2.9 ModelStructure has invalid clockedState")
+		-- @OnFail(1502, "2.4.8 ModelStructure has invalid clockedState")
 		( ms.clockedState <> nil =>
 			forall u in seq ms.clockedState &
-				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location)
+				and let cv = lookup(svs, u.valueReference) in
+					is_(cv, Clock)
+					and cv.previous <> nil
+					and cv.variability = <discrete> ),
 
-		-- @OnFail(1503, "2.2.9 ModelStructure has invalid eventIndicator")
+		-- @OnFail(1503, "2.4.8 ModelStructure has invalid eventIndicator")
 		( ms.eventIndicator <> nil =>
 			forall u in seq ms.eventIndicator &
 				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
 
-		-- @OnFail(1504, "2.2.9 InitialUnknowns are not of kind dependent or constant")
+		-- @OnFail(1504, "2.4.8 InitialUnknowns are not of kind dependent or constant")
 		(
 			ms.initialUnknown <> nil =>
 				forall iu in seq ms.initialUnknown &
@@ -72,20 +76,20 @@ functions
 	 */
 	isValidUnknown: fmi3ValueReference * [seq of (nat)] * [seq of (DependenciesKind)] * Location +> bool
 	isValidUnknown(valueReference, dependencies, dependenciesKind, location) ==
-	-- @OnFail(1502, "2.2.11 Unknown %s has invalid dependencies/kinds at %s", valueReference, loc2str(location))
+	-- @OnFail(1502, "2.4.8 Unknown %s has invalid dependencies/kinds at %s", valueReference, loc2str(location))
 	(
 		if dependencies <> nil
 		then dependenciesKind <> nil =>
 			{
-				-- @OnFail(1505, "2.2.9 Dependencies list does not match dependenciesKind at %s", loc2str(location))
+				-- @OnFail(1505, "2.4.8 Dependencies list does not match dependenciesKind at %s", loc2str(location))
 				( len dependencies = len dependenciesKind ),
 
-				/* @OnFail(1506, "2.2.9 Unknown has duplicate indexes %s at %s",
+				/* @OnFail(1506, "2.4.8 Unknown has duplicate indexes %s at %s",
 					{ dependencies(a) | a, b in set inds dependencies &
 						a <> b and dependencies(a) = dependencies(b) }, loc2str(location) ) */
 				( len dependencies = card elems dependencies),
 
-				-- @OnFail(1507, "2.2.9 Unknown cannot depend on itself at %s", loc2str(location))
+				-- @OnFail(1507, "2.4.8 Unknown cannot depend on itself at %s", loc2str(location))
 				(true) -- CHECK THIS! ( u.index not in set elems u.dependencies )
 			} = {true}
 		else

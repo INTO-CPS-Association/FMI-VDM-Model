@@ -73,7 +73,7 @@ functions
 			( isValidEffectiveVariables(eModelVariables) ),		-- NOTE: effective variables!
 
 			-- @OnFail(1011, "2.2.1 ModelStructure invalid at %s", loc2str(md.modelStructure.location))
-			( isValidModelStructure(md.modelStructure) ),
+			( isValidModelStructure(md.modelStructure, eModelVariables) ),
 
 			-- @OnFail(1012, "2.2.1 Variables typecheck against TypeDefinitions failed")
 			( typeCheck(eModelVariables, md.typeDefinitions) ),

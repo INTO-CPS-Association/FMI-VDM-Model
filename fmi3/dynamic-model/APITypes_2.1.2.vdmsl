@@ -156,23 +156,3 @@ values
 
 	fmi3ClockActive		: fmi3Clock	= 1;	-- See parameters of fmi3GetClock and fmi3SetClock
 	fmi3ClockInactive	: fmi3Clock	= 0;
-
-functions
-	kindOf: Variable +> Kind
-	kindOf(sv) ==
-		if is_(sv, Float32) then <Float32>
-		else if is_(sv, Float64) then <Float64>
-		else if is_(sv, Int8) then <Int8>
-		else if is_(sv, UInt8) then  <UInt8>
-		else if is_(sv, Int16) then<Int16>
-		else if is_(sv, UInt16) then <UInt16>
-		else if is_(sv, Int32) then <Int32>
-		else if is_(sv, UInt32) then <UInt32>
-		else if is_(sv, Int64) then <Int64>
-		else if is_(sv, UInt64) then <UInt64>
-		else if is_(sv, Boolean) then <Boolean>
-		else if is_(sv, String) then <String>
-		else if is_(sv, Binary) then <Binary>
-		else if is_(sv, Enumeration) then <Enumeration>
-		else if is_(sv, Clock) then <Clock>
-		else undefined;
