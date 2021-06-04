@@ -43,11 +43,10 @@ types
 	Kind = FloatKind | IntegerKind | <Boolean> | <String> | <Binary> | <Enumeration> | <Clock>;
 
 functions
-functions
 	/**
 	 * Turn a Variable into a Kind.
 	 */
-	kindOf: Variable +> Kind
+	kindOf: Variable | VariableType +> Kind
 	kindOf(sv) ==
 		if is_(sv, Float32) then <Float32>
 		else if is_(sv, Float64) then <Float64>
@@ -64,12 +63,29 @@ functions
 		else if is_(sv, Binary) then <Binary>
 		else if is_(sv, Enumeration) then <Enumeration>
 		else if is_(sv, Clock) then <Clock>
+
+		else if is_(sv, Float32Type) then <Float32>
+		else if is_(sv, Float64Type) then <Float64>
+		else if is_(sv, Int8Type) then <Int8>
+		else if is_(sv, UInt8Type) then  <UInt8>
+		else if is_(sv, Int16Type) then<Int16>
+		else if is_(sv, UInt16Type) then <UInt16>
+		else if is_(sv, Int32Type) then <Int32>
+		else if is_(sv, UInt32Type) then <UInt32>
+		else if is_(sv, Int64Type) then <Int64>
+		else if is_(sv, UInt64Type) then <UInt64>
+		else if is_(sv, BooleanType) then <Boolean>
+		else if is_(sv, StringType) then <String>
+		else if is_(sv, BinaryType) then <Binary>
+		else if is_(sv, EnumerationType) then <Enumeration>
+		else if is_(sv, ClockType) then <Clock>
+
 		else undefined;
 
 	/**
 	 * Ordering for comparison of Variability values.
 	 */
-	orderOf: Variability +> nat
+	orderOf: Variability +> fmi3ValueReference
 	orderOf(value) ==
 		cases value:
 			<constant>   -> 1,
@@ -94,7 +110,7 @@ functions
 	 */
 	isInRange[@T]: [@T] * [@T] * [seq1 of @T] * (Variable | VariableType) * [Initial] +> bool
 	isInRange(min, max, start, kind, initial) ==
-		let mk_(kmin, kmax) = minMaxKind(kind) in
+		let mk_(kmin, kmax) = minMaxKind(kindOf(kind)) in
 		{
 			max <> nil =>
 				--@OnFail(1450, "2.2.8 max %s is not a valid %s", max, kind)
@@ -127,42 +143,22 @@ functions
 	/**
 	 * Return the MININT-MAXINT values for a particular numeric type
 	 */
-	minMaxKind: Variable | VariableType | Kind +> real * real
+	minMaxKind: Kind +> real * real
 	minMaxKind(kind) ==
-		if is_(kind, Float32Type) or is_(kind, Float32) or kind = <Float32>
-		then mk_(-3.402823466385288598e+38, 3.402823466385288598e+38)
-
-		else if is_(kind, Float64Type) or is_(kind, Float64) or kind = <Float64>
-		then mk_(-1.797693134862315708e+308, 1.797693134862315708e+308)
-
-		else if is_(kind, Int8Type) or is_(kind, Int8) or kind = <Int8>
-		then mk_(-128, 127)
-
-		else if is_(kind, UInt8Type) or is_(kind, UInt8) or kind = <UInt8>
-		then  mk_(0, 255)
-
-		else if is_(kind, Int16Type) or is_(kind, Int16) or kind = <Int16>
-		then mk_(-32768, 32767)
-
-		else if is_(kind, UInt16Type) or is_(kind, UInt16) or kind = <UInt16>
-		then  mk_(0, 65535)
-
-		else if is_(kind, Int32Type) or is_(kind, Int32) or kind = <Int32>
-		then mk_(-2147483648, 2147483647)
-
-		else if is_(kind, UInt32Type) or is_(kind, UInt32) or kind = <UInt32>
-		then mk_(0, 4294967295)
-
-		else if is_(kind, Int64Type) or is_(kind, Int64) or kind = <Int64>
-		then mk_(-9.223372036854775808e+18, 9.223372036854775807e+18)
-
-		else if is_(kind, UInt64Type) or is_(kind, UInt64) or kind = <UInt64>
-		then mk_(0, 1.8446744073709551615e+19)
-
-		else if is_(kind, EnumerationType) or is_(kind, Enumeration) or kind = <Enumeration>
-		then mk_(0, 4294967295)	-- UInt32?
-
-		else undefined;
+		cases kind:
+			<Float32>		-> mk_(-3.402823466385288598e+38, 3.402823466385288598e+38),
+			<Float64>		-> mk_(-1.797693134862315708e+308, 1.797693134862315708e+308),
+			<Int8>			-> mk_(-128, 127),
+			<UInt8>			-> mk_(0, 255),
+			<Int16>			-> mk_(-32768, 32767),
+			<UInt16>		-> mk_(0, 65535),
+			<Int32>			-> mk_(-2147483648, 2147483647),
+			<UInt32>		-> mk_(0, 4294967295),
+			<Int64>			-> mk_(-9.223372036854775808e+18, 9.223372036854775807e+18),
+			<UInt64>		-> mk_(0, 1.8446744073709551615e+19),
+			<Enumeration>	-> mk_(0, 4294967295),	-- UInt32?
+			others			-> undefined
+		end;
 
 	/**
 	 * Check whether a type is a "real" type.

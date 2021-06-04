@@ -72,7 +72,7 @@ functions
 			}
 			union
 			(
-				let mk_(kmin, kmax) = minMaxKind(stype) in
+				let mk_(kmin, kmax) = minMaxKind(kindOf(stype)) in
 				{
 					max <> nil =>
 						--@OnFail(1152, "2.2.3 max %s is not a valid value of this type", max)
@@ -99,7 +99,7 @@ functions
 			}
 			union
 			(
-				let mk_(kmin, kmax) = minMaxKind(stype) in
+				let mk_(kmin, kmax) = minMaxKind(kindOf(stype)) in
 				{
 					max <> nil =>
 						--@OnFail(1155, "2.2.3 max %s is not a valid value of this type", max)

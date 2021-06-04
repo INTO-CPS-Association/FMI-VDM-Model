@@ -74,7 +74,7 @@ functions
 	/**
 	 * Validate an Unknown structure in isolation.
 	 */
-	isValidUnknown: fmi3ValueReference * [seq of (nat)] * [seq of (DependenciesKind)] * Location +> bool
+	isValidUnknown: fmi3ValueReference * [seq of fmi3ValueReference] * [seq of DependenciesKind] * Location +> bool
 	isValidUnknown(valueReference, dependencies, dependenciesKind, location) ==
 	-- @OnFail(1502, "2.4.8 Unknown %s has invalid dependencies/kinds at %s", valueReference, loc2str(location))
 	(
