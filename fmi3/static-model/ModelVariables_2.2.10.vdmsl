@@ -214,7 +214,7 @@ functions
 	isValidVariableAttributes(sv) ==
 		let eCausality   = effectiveCausality(sv.causality),
 			eVariability = effectiveVariability(sv),
-			eInitial     = effectiveInitial(sv.initial, eCausality, eVariability)
+			eInitial     = effectiveInitial(sv, eCausality, eVariability)
 		in
 		{
 			/* @OnFail(1460, "2.2.8 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %s",
@@ -334,12 +334,6 @@ functions
 		if is_(sv, Clock)
 		then
 			{
-				-- @OnFail(1484, "Clock cannot have clock references at %s", loc2str(sv.location))
-				( sv.clocks = nil or sv.clocks = [] ),
-
-				-- @OnFail(1486, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
-				( sv.variability = <discrete> or sv.variability = <tunable> ),
-
 				-- @OnFail(1485, "Clock initial/causality %s/%s invalid at %s", sv.initial, sv.causality, loc2str(sv.location))
 				(
 					cases sv.causality:
@@ -348,26 +342,38 @@ functions
 						<local>		-> sv.initial = <calculated>,
 						others		-> false
 					end
-				)
+				),
+
+				-- @OnFail(1485, "Clock variable cannot be an array at %s", loc2str(sv.location))
+				( sv.dimension = nil ),
+
+				-- @OnFail(1488, "Clock variable cannot have previous field set at %s", loc2str(sv.location))
+				( sv.previous = nil )
 			} = {true}
 
 		else
 			{
+				sv.clocks <> nil =>
+					-- @OnFail(1486, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
+					( sv.variability = <discrete> or sv.variability = <tunable> ),
+
 				sv.previous <> nil =>
 					let p = lookup(svs, sv.previous) in
-						-- @OnFail(1489, "Clock previous setting unknown at %s", loc2str(sv.location))
-						( p <> nil )
+					{
+						-- @OnFail(1489, "Variable previous setting unknown at %s", loc2str(sv.location))
+						( p <> nil ),
 
-						-- @OnFail(1490, "Clock previous setting wrong kind at %s", loc2str(sv.location))
-						and ( kindOf(p) = kindOf(sv) )
+						-- @OnFail(1490, "Variable previous setting wrong kind at %s", loc2str(sv.location))
+						( kindOf(p) = kindOf(sv) )
+					} = {true}
 			}
 			union
 			{
 				let cvar = lookup(svs, cref) in
-					-- @OnFail(1487, "Clock reference %s not found at %s", cvar, loc2str(sv.location))
+					-- @OnFail(1487, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
 					( cvar <> nil )
 
-					-- @OnFail(1488, "Clock reference %s is not a Clock at %s", cvar, loc2str(sv.location))
+					-- @OnFail(1488, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
 					and ( not is_(cvar, Clock) )
 
 				| cref in seq nilSeq[nat](sv.clocks)
@@ -542,56 +548,64 @@ functions
 	 * The default value for initial, defined by the (effective) values of causality and
 	 * variability, via the table on p48/49.
 	 */
-	effectiveInitial: [Initial] * Causality * Variability -> [Initial]
-	effectiveInitial(i, eCausality, eVariability) ==
-		if i <> nil
-		then i
+	effectiveInitial: Variable * Causality * Variability -> [Initial]
+	effectiveInitial(v, eCausality, eVariability) ==
+		let i = v.initial in
+			if i <> nil	then i
+		else if is_Clock(v)
+		then
+			cases eCausality:
+				<input> -> <exact>,
+				<output> -> <calculated>,
+				<local> -> <calculated>,
+				others -> nil
+			end
 		else cases eCausality:
-			<structuralParameter> ->
-				cases eVariability:
-					<fixed>, <tunable> -> <exact>,
-					others -> nil
-				end,
+				<structuralParameter> ->
+					cases eVariability:
+						<fixed>, <tunable> -> <exact>,
+						others -> nil
+					end,
 
-			<parameter> ->
-				cases eVariability:
-					<fixed>, <tunable> -> <exact>,
-					others -> nil
-				end,
+				<parameter> ->
+					cases eVariability:
+						<fixed>, <tunable> -> <exact>,
+						others -> nil
+					end,
 
-			<calculatedParameter> ->
-				cases eVariability:
-					<fixed>, <tunable> -> <calculated>,
-					others -> nil
-				end,
+				<calculatedParameter> ->
+					cases eVariability:
+						<fixed>, <tunable> -> <calculated>,
+						others -> nil
+					end,
 
-			<input> ->
-				cases eVariability:
-					<discrete>, <continuous> -> nil,
-					others -> nil
-				end,
+				<input> ->
+					cases eVariability:
+						<discrete>, <continuous> -> nil,
+						others -> nil
+					end,
 
-			<output> ->
-				cases eVariability:
-					<constant> -> <exact>,
-					<discrete>, <continuous> -> <calculated>,
-					others -> nil
-				end,
+				<output> ->
+					cases eVariability:
+						<constant> -> <exact>,
+						<discrete>, <continuous> -> <calculated>,
+						others -> nil
+					end,
 
-			<local> ->
-				cases eVariability:
-					<constant> -> <exact>,
-					<fixed>, <tunable> -> <calculated>,
-					<discrete>, <continuous> -> <calculated>,
-					others -> nil
-				end,
+				<local> ->
+					cases eVariability:
+						<constant> -> <exact>,
+						<fixed>, <tunable> -> <calculated>,
+						<discrete>, <continuous> -> <calculated>,
+						others -> nil
+					end,
 
-			<independent> ->
-				cases eVariability:
-					<continuous> -> nil,
-					others -> nil
-				end
-		end;
+				<independent> ->
+					cases eVariability:
+						<continuous> -> nil,
+						others -> nil
+					end
+			end;
 
 	effectiveCausality: [Causality] -> Causality
 	effectiveCausality(c) ==
@@ -657,15 +671,15 @@ functions
 	effectiveVariable(v, typedefs) ==
 		let causality	= effectiveCausality(v.causality),
 			variability	= effectiveVariability(v),
-			initial		= effectiveInitial(v.initial, causality, variability),
-			newvar		= mu(v,
+			initial		= effectiveInitial(v, causality, variability),
+			newv		= mu(v,
 				causality	|-> causality,
 				variability	|-> variability,
 				initial		|-> initial
 			)
 		in
 		if v.declaredType = nil or typedefs = nil
-		then newvar
+		then newv
 		else let dtypes = { td | td in seq typedefs & td.name = v.declaredType } in
 			cases dtypes:
 				{ dt } ->
@@ -673,7 +687,7 @@ functions
 						mk_Float32Type(-, -, -, quantity, unit, dunit, relq, unbounded, min, max, nominal, -),
 						mk_Float64Type(-, -, -, quantity, unit, dunit, relq, unbounded, min, max, nominal, -) ->
 							if isReal(v) then
-								mu(v,
+								mu(newv,
 									quantity			|-> override[NormalizedString](v.quantity, quantity),
 									unit				|-> override[NormalizedString](v.unit, unit),
 									displayUnit			|-> override[NormalizedString](v.displayUnit, dunit),
@@ -684,7 +698,7 @@ functions
 									nominal				|-> override[real](v.nominal, nominal)
 								)
 							else
-								v,	-- Error reported elsewhere
+								newv,	-- Error reported elsewhere
 
 						mk_Int64Type(-, -, -, quantity, min, max, -),
 						mk_Int32Type(-, -, -, quantity, min, max, -),
@@ -695,27 +709,41 @@ functions
 						mk_UInt16Type(-, -, -, quantity, min, max, -),
 						mk_UInt8Type(-, -, -, quantity, min, max, -) ->
 							if isInteger(v) then
-								mu(v,
+								mu(newv,
 									quantity	|-> override[NormalizedString](v.quantity, quantity),
 									min			|-> override[real](v.min, min),
 									max			|-> override[real](v.max, max)
 								)
 							else
-								v,	-- Error reported elsewhere
+								newv,	-- Error reported elsewhere
 
 						mk_EnumerationType(-, -, -, quantity, -, -) ->
 							if is_Enumeration(v) then
-								mu(v,
+								mu(newv,
 									quantity	|-> override[NormalizedString](v.quantity, quantity)
 								)
 							else
-								v,	-- Error reported elsewhere
+								newv,	-- Error reported elsewhere
+
+						mk_ClockType(-, -, -, canBeDeactivated,	priority, interval, intervalDecimal,
+									shiftDecimal, supportsFraction, resolution, intervalCounter,
+									shiftCounter, -) ->
+							mu(newv,
+								canBeDeactivated  |-> override[bool](v.canBeDeactivated, canBeDeactivated),
+								priority          |-> override[nat](v.priority, priority),
+								interval          |-> override[Interval](v.interval, interval),
+								intervalDecimal   |-> override[real](v.intervalDecimal, intervalDecimal),
+								shiftDecimal      |-> override[real](v.shiftDecimal, shiftDecimal),
+								supportsFraction  |-> override[bool](v.supportsFraction, supportsFraction),
+								resolution        |-> override[nat](v.resolution, resolution),
+								intervalCounter   |-> override[nat](v.intervalCounter, intervalCounter),
+								shiftCounter      |-> override[nat](v.shiftCounter, shiftCounter)),
 
 						others ->
-							newvar
+							newv
 					end,
 
-				others -> v		-- Duplicate or missing typedefs caught elsewhere
+				others -> newv		-- Duplicate or missing typedefs caught elsewhere
 			end;
 
 	/**
