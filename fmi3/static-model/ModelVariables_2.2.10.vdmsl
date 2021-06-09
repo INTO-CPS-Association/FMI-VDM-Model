@@ -235,7 +235,7 @@ functions
 
 					<input> ->
 						(eVariability in set {<discrete>, <continuous>}
-						 and eInitial = nil
+						 -- and eInitial = nil
 						 and sv.start <> nil),	-- (D)
 
 					<independent> ->
@@ -331,53 +331,57 @@ functions
 	 */
 	isValidClockAttributes: Variable * seq1 of Variable +> bool
 	isValidClockAttributes(sv, svs) ==
-		if is_(sv, Clock)
-		then
-			{
-				-- @OnFail(1485, "Clock initial/causality %s/%s invalid at %s", sv.initial, sv.causality, loc2str(sv.location))
-				(
-					cases sv.causality:
-						<input>		-> sv.initial = <exact>,
-						<output>	-> sv.initial = <calculated>,
-						<local>		-> sv.initial = <calculated>,
-						others		-> false
-					end
-				),
+		let eCausality   = effectiveCausality(sv.causality),
+			eVariability = effectiveVariability(sv),
+			eInitial     = effectiveInitial(sv, eCausality, eVariability)
+        in
+            if is_(sv, Clock)
+            then
+                {
+                    -- @OnFail(1485, "Clock initial/causality %s/%s invalid at %s", sv.initial, sv.causality, loc2str(sv.location))
+                    (
+                        cases sv.causality:
+                            <input>		-> eInitial = <exact>,
+                            <output>	-> eInitial = <calculated>,
+                            <local>		-> eInitial = <calculated>,
+                            others		-> false
+                        end
+                    ),
 
-				-- @OnFail(1485, "Clock variable cannot be an array at %s", loc2str(sv.location))
-				( sv.dimension = nil ),
+                    -- @OnFail(1485, "Clock variable cannot be an array at %s", loc2str(sv.location))
+                    ( sv.dimension = nil ),
 
-				-- @OnFail(1488, "Clock variable cannot have previous field set at %s", loc2str(sv.location))
-				( sv.previous = nil )
-			} = {true}
+                    -- @OnFail(1488, "Clock variable cannot have previous field set at %s", loc2str(sv.location))
+                    ( sv.previous = nil )
+                } = {true}
 
-		else
-			{
-				sv.clocks <> nil =>
-					-- @OnFail(1486, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
-					( sv.variability = <discrete> or sv.variability = <tunable> ),
+            else
+                {
+                    sv.clocks <> nil =>
+                        -- @OnFail(1486, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
+                        ( eVariability = <discrete> or eVariability = <tunable> ),
 
-				sv.previous <> nil =>
-					let p = lookup(svs, sv.previous) in
-					{
-						-- @OnFail(1489, "Variable previous setting unknown at %s", loc2str(sv.location))
-						( p <> nil ),
+                    sv.previous <> nil =>
+                        let p = lookup(svs, sv.previous) in
+                        {
+                            -- @OnFail(1489, "Variable previous setting unknown at %s", loc2str(sv.location))
+                            ( p <> nil ),
 
-						-- @OnFail(1490, "Variable previous setting wrong kind at %s", loc2str(sv.location))
-						( kindOf(p) = kindOf(sv) )
-					} = {true}
-			}
-			union
-			{
-				let cvar = lookup(svs, cref) in
-					-- @OnFail(1487, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
-					( cvar <> nil )
+                            -- @OnFail(1490, "Variable previous setting wrong kind at %s", loc2str(sv.location))
+                            ( kindOf(p) = kindOf(sv) )
+                        } = {true}
+                }
+                union
+                {
+                    let cvar = lookup(svs, cref) in
+                        -- @OnFail(1487, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
+                        ( cvar <> nil )
 
-					-- @OnFail(1488, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
-					and ( not is_(cvar, Clock) )
+                        -- @OnFail(1488, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
+                        and ( is_(cvar, Clock) )
 
-				| cref in seq nilSeq[nat](sv.clocks)
-			} = {true};
+                    | cref in seq nilSeq[nat](sv.clocks)
+                } = {true};
 
 	/**
 	 * Check Dimension structures.
