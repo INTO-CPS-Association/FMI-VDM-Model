@@ -215,7 +215,7 @@ functions
 				let ctVars = continuousTimeStates(eModelVariables),
 					sdVars = stateDerivatives(eModelVariables),
 					initRefs = { sv.valueReference | sv in seq eModelVariables &
-						(sv.causality = <output>
+						(sv.causality = <output> and sv.clocks = nil
 							and sv.initial in set { <approx>, <calculated> })
 
 						or (sv.causality = <calculatedParameter>)
