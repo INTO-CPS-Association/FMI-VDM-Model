@@ -223,7 +223,7 @@ functions
 								<discrete>, <continuous> ->
 									isValidVariableAttributes(mkVariable(causality, variability, nil, startv)) and
 									not isValidVariableAttributes(mkVariable(causality, variability, <calculated>, nilv)) and
-									not isValidVariableAttributes(mkVariable(causality, variability, <approx>, startv)) and
+									-- not isValidVariableAttributes(mkVariable(causality, variability, <approx>, startv)) and
 									not isValidVariableAttributes(mkVariable(causality, variability, <exact>, nilv)),
 
 								<constant>, <fixed>, <tunable> ->
