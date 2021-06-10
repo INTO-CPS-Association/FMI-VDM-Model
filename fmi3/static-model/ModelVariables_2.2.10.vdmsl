@@ -176,7 +176,7 @@ functions
 		is_UInt64(var) or is_UInt32(var) or is_UInt16(var) or is_UInt8(var);
 
 	/**
-	 * Verify a sequence of raw Variables.
+	 * Verify a sequence of raw (NOT effective) Variables.
 	 */
 	isValidModelVariables: seq1 of Variable +> bool
 	isValidModelVariables(svs) ==
@@ -196,13 +196,6 @@ functions
 		{
 			-- @OnFail(1459, "2.2.8 Variable %s invalid at %s", sv.name, loc2str(sv.location))
 			( isValidVariableAttributes(sv) )
-
-			| sv in seq svs
-		}
-		union
-		{
-			-- @OnFail(1459, "2.2.9 Variable %s invalid at %s", sv.name, loc2str(sv.location))
-			( isValidClockAttributes(sv, svs) )
 
 			| sv in seq svs
 		} = {true};
@@ -327,61 +320,57 @@ functions
 		} = {true};
 
 	/**
-	 * Check Clock attributes and references.
+	 * Check (effective) Clock attributes and references.
 	 */
 	isValidClockAttributes: Variable * seq1 of Variable +> bool
 	isValidClockAttributes(sv, svs) ==
-		let eCausality   = effectiveCausality(sv.causality),
-			eVariability = effectiveVariability(sv),
-			eInitial     = effectiveInitial(sv, eCausality, eVariability)
-        in
-            if is_(sv, Clock)
-            then
-                {
-                    -- @OnFail(1485, "Clock initial/causality %s/%s invalid at %s", sv.initial, sv.causality, loc2str(sv.location))
-                    (
-                        cases sv.causality:
-                            <input>		-> eInitial = <exact>,
-                            <output>	-> eInitial = <calculated>,
-                            <local>		-> eInitial = <calculated>,
-                            others		-> false
-                        end
-                    ),
+		if is_(sv, Clock)
+		then
+			{
+				-- @OnFail(1485, "Clock initial/causality %s/%s invalid at %s", sv.initial, sv.causality, loc2str(sv.location))
+				(
+					cases sv.causality:
+						<input>		-> sv.initial = <exact>,
+						<output>	-> sv.initial = <calculated>,
+						<local>		-> sv.initial = <calculated>,
+						others		-> false
+					end
+				),
 
-                    -- @OnFail(1485, "Clock variable cannot be an array at %s", loc2str(sv.location))
-                    ( sv.dimension = nil ),
+				-- @OnFail(1485, "Clock variable cannot be an array at %s", loc2str(sv.location))
+				( sv.dimension = nil ),
 
-                    -- @OnFail(1488, "Clock variable cannot have previous field set at %s", loc2str(sv.location))
-                    ( sv.previous = nil )
-                } = {true}
+				-- @OnFail(1488, "Clock variable cannot have previous field set at %s", loc2str(sv.location))
+				( sv.previous = nil )
+			} = {true}
 
-            else
-                {
-                    sv.clocks <> nil =>
-                        -- @OnFail(1486, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
-                        ( eVariability = <discrete> or eVariability = <tunable> ),
+		else
+			{
+				sv.clocks <> nil =>
+					-- @OnFail(1486, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
+					( sv.variability = <discrete> or sv.variability = <tunable> ),
 
-                    sv.previous <> nil =>
-                        let p = lookup(svs, sv.previous) in
-                        {
-                            -- @OnFail(1489, "Variable previous setting unknown at %s", loc2str(sv.location))
-                            ( p <> nil ),
+				sv.previous <> nil =>
+					let p = lookup(svs, sv.previous) in
+					{
+						-- @OnFail(1489, "Variable previous setting unknown at %s", loc2str(sv.location))
+						( p <> nil ),
 
-                            -- @OnFail(1490, "Variable previous setting wrong kind at %s", loc2str(sv.location))
-                            ( kindOf(p) = kindOf(sv) )
-                        } = {true}
-                }
-                union
-                {
-                    let cvar = lookup(svs, cref) in
-                        -- @OnFail(1487, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
-                        ( cvar <> nil )
+						-- @OnFail(1490, "Variable previous setting wrong kind at %s", loc2str(sv.location))
+						( kindOf(p) = kindOf(sv) )
+					} = {true}
+			}
+			union
+			{
+				let cvar = lookup(svs, cref) in
+					-- @OnFail(1487, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
+					( cvar <> nil )
 
-                        -- @OnFail(1488, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
-                        and ( is_(cvar, Clock) )
+					-- @OnFail(1488, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
+					and ( is_(cvar, Clock) )
 
-                    | cref in seq nilSeq[nat](sv.clocks)
-                } = {true};
+				| cref in seq nilSeq[nat](sv.clocks)
+			} = {true};
 
 	/**
 	 * Check Dimension structures.
@@ -524,7 +513,15 @@ functions
 			}
 			= {true}
 		)
+	}
+	union
+	{
+		-- @OnFail(1459, "2.2.9 Variable %s invalid at %s", sv.name, loc2str(sv.location))
+		( isValidClockAttributes(sv, svs) )
+
+		| sv in seq svs
 	} = {true};
+
 
 	/**
 	 * Calculate the overall number of start values expected from dimension. If a variable is referenced,
