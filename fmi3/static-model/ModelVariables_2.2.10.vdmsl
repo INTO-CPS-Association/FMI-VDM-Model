@@ -289,10 +289,16 @@ functions
 			),
 
 			/* @OnFail(1464, "2.2.8 Variable %s initial/causality %s/%s invalid at %s",
-				sv.name, sv.initial, eCausality, sv.location) */
+				sv.name, sv.initial, eCausality, loc2str(sv.location)) */
 			(
 				sv.initial <> nil =>
 					eCausality <> <independent>
+			),
+
+			/* @OnFail(1499, "2.2.8 Clock variable %s cannot define initial or start at %s",
+				sv.name, loc2str(sv.location)) */
+			(
+				is_Clock(sv) => sv.initial = nil and sv.start = nil
 			),
 
 			/* @OnFail(1465, "2.2.8 Variable %s initial/variability/start %s/%s/%s invalid at %s",
@@ -326,23 +332,8 @@ functions
 	isValidClockAttributes(sv, svs) ==
 		if is_(sv, Clock)
 		then
-			{
-				-- @OnFail(1485, "Clock initial/causality %s/%s invalid at %s", sv.initial, sv.causality, loc2str(sv.location))
-				(
-					cases sv.causality:
-						<input>		-> sv.initial = <exact>,
-						<output>	-> sv.initial = <calculated>,
-						<local>		-> sv.initial = <calculated>,
-						others		-> false
-					end
-				),
-
-				-- @OnFail(1485, "Clock variable cannot be an array at %s", loc2str(sv.location))
-				( sv.dimension = nil ),
-
-				-- @OnFail(1488, "Clock variable cannot have previous field set at %s", loc2str(sv.location))
-				( sv.previous = nil )
-			} = {true}
+			-- @OnFail(1488, "Clock variable cannot have previous field set at %s", loc2str(sv.location))
+			( sv.previous = nil )
 
 		else
 			{
