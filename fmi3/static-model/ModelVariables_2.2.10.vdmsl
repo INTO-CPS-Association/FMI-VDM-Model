@@ -295,7 +295,7 @@ functions
 					eCausality <> <independent>
 			),
 
-			/* @OnFail(1499, "2.2.8 Clock variable %s cannot define initial or start at %s",
+			/* @OnFail(1460, "2.2.8 Clock variable %s cannot define initial or start at %s",
 				sv.name, loc2str(sv.location)) */
 			(
 				is_Clock(sv) => sv.initial = nil and sv.start = nil
