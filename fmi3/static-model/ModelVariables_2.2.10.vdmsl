@@ -192,8 +192,9 @@ functions
 
 			/* @OnFail(1458, "2.2.8 Variable previous fields are not unique: %s",
 				{ svs(a).name | a, b in set inds svs &
-					a <> b and svs(a).previous = svs(b).previous } ) */
-			( card { sv.previous | sv in seq svs } = card { sv | sv in seq svs & sv.clocks <> nil } ),
+					a <> b and svs(a).previous <> nil and svs(a).previous = svs(b).previous } ) */
+			( let plist =  [ sv.previous | sv in seq svs & sv.previous <> nil ] in
+			  	card elems plist = len plist ),
 
 			isValidVariableDimension(svs)
 		}
