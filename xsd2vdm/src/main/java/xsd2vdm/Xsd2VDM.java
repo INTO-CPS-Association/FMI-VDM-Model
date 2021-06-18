@@ -164,7 +164,7 @@ public class Xsd2VDM
 		}
 	}
 
-	private static void loadProperties(File xsdFile) throws IOException
+	public static void loadProperties(File xsdFile) throws IOException
 	{
 		mappingsProperties = new Properties();
 		File properties = new File(xsdFile.getParent(),
@@ -230,7 +230,7 @@ public class Xsd2VDM
 	 * Convert the root schema file passed in and write out VDM-SL to the output. 
 	 * @param b 
 	 */
-	private Map<String, Type> createVDMSchema(File xsdFile, File vdmFile, boolean writeVDM, boolean noWarn) throws Exception
+	public Map<String, Type> createVDMSchema(File xsdFile, File vdmFile, boolean writeVDM, boolean noWarn) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
@@ -301,7 +301,7 @@ public class Xsd2VDM
 		return vdmSchema;
 	}
 	
-	private void createVDMValue(Map<String, Type> schema, File vdmFile, File xmlFile, String varName) throws Exception
+	public void createVDMValue(Map<String, Type> schema, File vdmFile, File xmlFile, String varName) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
