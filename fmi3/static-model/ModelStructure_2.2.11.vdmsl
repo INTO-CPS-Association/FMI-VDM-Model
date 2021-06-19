@@ -98,20 +98,20 @@ functions
 	 */
 	isValidUnknown: fmi3ValueReference * [seq of fmi3ValueReference] * [seq of DependenciesKind] * Location +> bool
 	isValidUnknown(valueReference, dependencies, dependenciesKind, location) ==
-	-- @OnFail(1502, "2.4.8 Unknown %s has invalid dependencies/kinds at %s", valueReference, loc2str(location))
+	-- @OnFail(1511, "2.4.8 Unknown %s has invalid dependencies/kinds at %s", valueReference, loc2str(location))
 	(
 		if dependencies <> nil
 		then dependenciesKind <> nil =>
 			{
-				-- @OnFail(1511, "2.4.8 Dependencies list does not match dependenciesKind at %s", loc2str(location))
+				-- @OnFail(1512, "2.4.8 Dependencies list does not match dependenciesKind at %s", loc2str(location))
 				( len dependencies = len dependenciesKind ),
 
-				/* @OnFail(1512, "2.4.8 Unknown has duplicate indexes %s at %s",
+				/* @OnFail(1513, "2.4.8 Unknown has duplicate indexes %s at %s",
 					{ dependencies(a) | a, b in set inds dependencies &
 						a <> b and dependencies(a) = dependencies(b) }, loc2str(location) ) */
 				( len dependencies = card elems dependencies),
 
-				-- @OnFail(1513, "2.4.8 Unknown cannot depend on itself at %s", loc2str(location))
+				-- @OnFail(1514, "2.4.8 Unknown cannot depend on itself at %s", loc2str(location))
 				(true) -- CHECK THIS! ( u.index not in set elems u.dependencies )
 			} = {true}
 		else

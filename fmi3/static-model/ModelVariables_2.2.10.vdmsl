@@ -301,13 +301,13 @@ functions
 					eCausality <> <independent>
 			),
 
-			/* @OnFail(1460, "2.2.8 Clock variable %s cannot define initial or start at %s",
+			/* @OnFail(1465, "2.2.8 Clock variable %s cannot define initial or start at %s",
 				sv.name, loc2str(sv.location)) */
 			(
 				is_Clock(sv) => sv.initial = nil and sv.start = nil
 			),
 
-			/* @OnFail(1465, "2.2.8 Variable %s initial/variability/start %s/%s/%s invalid at %s",
+			/* @OnFail(1466, "2.2.8 Variable %s initial/variability/start %s/%s/%s invalid at %s",
 				sv.name, eInitial, eVariability, sv.start, loc2str(sv.location)) */
 			(
 				cases eInitial:
@@ -327,7 +327,7 @@ functions
 				end
 			),
 
-			-- @OnFail(1466, "2.2.8 Variable %s VendorAnnotations invalid", sv.name)
+			-- @OnFail(1467, "2.2.8 Variable %s VendorAnnotations invalid", sv.name)
 			( isValidVendorAnnotation(sv.annotations) )
 		} = {true};
 
@@ -338,32 +338,32 @@ functions
 	isValidClockAttributes(sv, svs) ==
 		if is_(sv, Clock)
 		then
-			-- @OnFail(1488, "Clock variable cannot have previous field set at %s", loc2str(sv.location))
+			-- @OnFail(1468, "Clock variable cannot have previous field set at %s", loc2str(sv.location))
 			( sv.previous = nil )
 
 		else
 			{
 				sv.clocks <> nil =>
-					-- @OnFail(1486, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
+					-- @OnFail(1469, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
 					( sv.variability = <discrete> or sv.variability = <tunable> ),
 
 				sv.previous <> nil =>
 					let p = lookup(svs, sv.previous) in
 					{
-						-- @OnFail(1489, "Variable previous setting unknown at %s", loc2str(sv.location))
+						-- @OnFail(1470, "Variable previous setting unknown at %s", loc2str(sv.location))
 						( p <> nil ),
 
-						-- @OnFail(1490, "Variable previous setting wrong kind at %s", loc2str(sv.location))
+						-- @OnFail(1471, "Variable previous setting wrong kind at %s", loc2str(sv.location))
 						( kindOf(p) = kindOf(sv) )
 					} = {true}
 			}
 			union
 			{
 				let cvar = lookup(svs, cref) in
-					-- @OnFail(1487, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
+					-- @OnFail(1472, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
 					( cvar <> nil )
 
-					-- @OnFail(1488, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
+					-- @OnFail(1473, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
 					and ( is_(cvar, Clock) )
 
 				| cref in seq nilSeq[nat](sv.clocks)
@@ -377,18 +377,18 @@ functions
 		vars <> nil => dunion
 		{
 			{
-				-- @OnFail(1467, "2.2.8 Dimension of %s cannot define start and valueReference", v.name)
+				-- @OnFail(1474, "2.2.8 Dimension of %s cannot define start and valueReference", v.name)
 				( v.dimension <> nil =>
 					forall dim in seq v.dimension &
 						dim.start = nil <=> dim.valueReference <> nil ),
 
-				-- @OnFail(1468, "2.2.8 Dimension of %s cannot reference itself", v.name)
+				-- @OnFail(1475, "2.2.8 Dimension of %s cannot reference itself", v.name)
 				( v.dimension <> nil =>
 					forall dim in seq v.dimension &
 						dim.valueReference <> nil =>
 							dim.valueReference <> v.valueReference ),
 
-				-- @OnFail(1469, "2.2.8 Dimension of %s, valueReference is not Integer, constant or structuralParameter, with start", v.name)
+				-- @OnFail(1476, "2.2.8 Dimension of %s, valueReference is not Integer, constant or structuralParameter, with start", v.name)
 				( v.dimension <> nil =>
 					forall dim in seq v.dimension &
 						dim.valueReference <> nil =>
@@ -398,7 +398,7 @@ functions
 								and ( r.causality = <structuralParameter> or r.variability = <constant> )
 								and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
 
-				-- @OnFail(1470, "2.2.8 Structural parameter %s cannot have Dimension", v.name)
+				-- @OnFail(1477, "2.2.8 Structural parameter %s cannot have Dimension", v.name)
 				( v.dimension <> nil =>
 					v.causality <> <structuralParameter> )
 			}
@@ -414,13 +414,13 @@ functions
 	isValidEffectiveVariables: seq1 of Variable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail(1471, "2.2.8 Variable %s min/max/start/nominal invalid at %s", sv.name, loc2str(sv.location))
+		-- @OnFail(1478, "2.2.8 Variable %s min/max/start/nominal invalid at %s", sv.name, loc2str(sv.location))
 		(
 			cases sv:
 				mk_Float64(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -),
 				mk_Float32(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -) ->
 					isInRange[real](min, max, start, sv, sv.initial)
-					-- @OnFail(1472, "2.2.8 Real nominal must be >0.0 at %s", loc2str(sv.location))
+					-- @OnFail(1479, "2.2.8 Real nominal must be >0.0 at %s", loc2str(sv.location))
 					and (nominal <> nil => nominal > 0.0),
 
 				mk_Int64(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
@@ -437,7 +437,7 @@ functions
 					isInRange[nat](min, max, start, sv, sv.initial),	-- TODO kind of enum?
 
 				mk_Binary(-, -, -, -, -, -, -, -, -, -, -, -, -, -, start, -, -, -) ->
-					-- @OnFail(1473, "2.2.8 Binary %s start is not hex-binary at %s", sv.name, loc2str(sv.location))
+					-- @OnFail(1480, "2.2.8 Binary %s start is not hex-binary at %s", sv.name, loc2str(sv.location))
 					( start = nil or forall s in seq start &
 						forall c in seq s &
 							c in set elems "ABCDEFabcdef0123456789" ),
@@ -450,7 +450,7 @@ functions
 	}
 	union
 	{
-		-- @OnFail(1474, "2.2.8 Dimension of %s do not match start vector at %s", sv.name, loc2str(sv.location))
+		-- @OnFail(1481, "2.2.8 Dimension of %s do not match start vector at %s", sv.name, loc2str(sv.location))
 		( sv.start <> nil =>
 			let size = dimensionProduct(svs, sv.dimension) in
 				size > 0 => size = len sv.start )
@@ -459,32 +459,32 @@ functions
 	}
 	union
 	{
-		/* @OnFail(1475, "2.2.8 Invalid Variable aliasing") */
+		/* @OnFail(1482, "2.2.8 Invalid Variable aliasing") */
 		(
 			let refmap = getAliasRefMap(svs) in
 			card dom refmap < len svs => dunion	-- Must be some aliases
 			{
 				let aliases = refmap(ref) in
 				{
-					/* @OnFail(1476, "2.2.8 Multiple aliases of reference %s are settable: %s", ref,
+					/* @OnFail(1483, "2.2.8 Multiple aliases of reference %s are settable: %s", ref,
 							{ a.name | a in set aliases & isSettable(a) }) */
 					( card { a | a in set aliases & isSettable(a) } <= 1 ),
 
-					/* @OnFail(1477, "2.2.8 Aliases of reference %s are settable and independent: %s", ref,
+					/* @OnFail(1484, "2.2.8 Aliases of reference %s are settable and independent: %s", ref,
 							{ {a.name, b.name} | a, b in set aliases &
 								a <> b and isSettable(a) and b.causality = <independent> } ) */
 					( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
 
-					-- @OnFail(1478, "2.2.8 Too many aliases of reference %s have start set", ref)
+					-- @OnFail(1485, "2.2.8 Too many aliases of reference %s have start set", ref)
 					( card { a.start | a in set aliases & a.variability <> <constant> and a.start <> nil } <= 1 ),
 
-					-- @OnFail(1479, "2.2.8 Constant aliases of reference %s have different start values", ref)
+					-- @OnFail(1486, "2.2.8 Constant aliases of reference %s have different start values", ref)
 					( card { a.start | a in set aliases & a.variability = <constant> and a.start <> nil } <= 1 ),
 
-					-- @OnFail(1480, "2.2.8 Aliases of reference %s must all be constant or variable", ref)
+					-- @OnFail(1487, "2.2.8 Aliases of reference %s must all be constant or variable", ref)
 					( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
 
-					-- @OnFail(1481, "2.2.8 Aliases of reference %s must all have same unit/baseUnits", ref)
+					-- @OnFail(1488, "2.2.8 Aliases of reference %s must all have same unit/baseUnits", ref)
 					( card { a.unit | a in set aliases & isReal(a) } <= 1 ),
 
 					/*
@@ -497,12 +497,12 @@ functions
 					 	if exists a in set aliases & a.causality in set {<input>, <parameter>}
 					 	then
 					 		let a in set aliases be st a.causality in set {<input>, <parameter>} in
-				 				/* @OnFail(1482, "2.2.8 Warning: aliases of reference %s must all be %s, because of %s",
+				 				/* @OnFail(1489, "2.2.8 Warning: aliases of reference %s must all be %s, because of %s",
 				 						ref, a.variability, a.name) */
 				 				( vars = { a.variability } ) or true
 					 	else
 					 		let highest in set vars be st not exists v in set vars & orderOf(v) > orderOf(highest) in
-					 			-- @OnFail(1483, "2.2.8 Warning: aliases of reference %s must all be %s", ref, highest)
+					 			-- @OnFail(1490, "2.2.8 Warning: aliases of reference %s must all be %s", ref, highest)
 					 			( vars = { highest } ) or true
 				}
 
@@ -513,7 +513,7 @@ functions
 	}
 	union
 	{
-		-- @OnFail(1459, "2.2.9 Variable %s invalid at %s", sv.name, loc2str(sv.location))
+		-- @OnFail(1491, "2.2.9 Variable %s invalid at %s", sv.name, loc2str(sv.location))
 		( isValidClockAttributes(sv, svs) )
 
 		| sv in seq svs

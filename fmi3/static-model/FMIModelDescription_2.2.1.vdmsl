@@ -39,13 +39,13 @@ functions
 		-- First fill in effective values for model variables' missing attributes
 		let eModelVariables = effectiveScalarVariables(md) in
 		let results = [
-			-- @OnFail(1001, "2.2.1 ModelAttributes invalid at %s", loc2str(md.location))
+			-- @OnFail(1000, "2.2.1 ModelAttributes invalid at %s", loc2str(md.location))
 			( md.fmiVersion(1, ..., 3) = "3.0" ),
 
-			-- @OnFail(1002, "2.2.1 ModelExchange invalid at %s", loc2str(md.modelExchange.location))
+			-- @OnFail(1001, "2.2.1 ModelExchange invalid at %s", loc2str(md.modelExchange.location))
 			( isValidModelExchange(md.modelExchange) ),
 
-			-- @OnFail(1003, "2.2.1 CoSimulation invalid at %s", loc2str(md.coSimulation.location))
+			-- @OnFail(1002, "2.2.1 CoSimulation invalid at %s", loc2str(md.coSimulation.location))
 			( isValidCoSimulation(md.coSimulation) ),
 
 			-- @OnFail(1003, "2.2.1 ScheduledExecution invalid at %s", loc2str(md.scheduledExecution.location))
