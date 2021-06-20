@@ -27,6 +27,8 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 
+package maestro;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,32 +67,12 @@ import com.fujitsu.vdmj.typechecker.ModuleTypeChecker;
 import com.fujitsu.vdmj.typechecker.TypeChecker;
 import com.fujitsu.vdmj.values.Value;
 
+import annotations.in.INOnFailAnnotation;
 import types.Type;
 import xsd2vdm.Xsd2VDM;
 
 public class MaestroCheck
 {
-	/**
-	 * Object for returning number/message pairs from @OnFail messages.
-	 */
-	class Error
-	{
-		public final int errno;
-		public final String message;
-		
-		public Error(int errno, String message)
-		{
-			this.errno = errno;
-			this.message = message;
-		}
-		
-		@Override
-		public String toString()
-		{
-			return errno + ": " + message;
-		}
-	}
-	
 	/**
 	 * Main class for testing. Maestro will use the default constructor.
 	 */
@@ -98,15 +80,15 @@ public class MaestroCheck
 	{
 		MaestroCheck checker = new MaestroCheck();
 		
-		for (Error err: checker.check(new File(args[0])))
+		for (OnFailError err: checker.check(new File(args[0])))
 		{
 			System.out.println(err);
 		}
 	}
 	
-	public List<Error> check(File modelDescriptionFile) throws Exception
+	public List<OnFailError> check(File modelDescriptionFile) throws Exception
 	{
-		List<Error> errors = new Vector<>();
+		List<OnFailError> errors = new Vector<>();
 
 		File fmi2 = Files.createTempDirectory("fmi2", new FileAttribute[0]).toFile();
 		fmi2.deleteOnExit();
@@ -116,17 +98,17 @@ public class MaestroCheck
 		schema.deleteOnExit();
 		
 		copyResources(fmi2,
-			"schema/fmi2Annotation.xsd",
-			"schema/fmi2AttributeGroups.xsd",
-			"schema/fmi2ModelDescription.xsd",
-			"schema/fmi2ScalarVariable.xsd",
-			"schema/fmi2Type.xsd",
-			"schema/fmi2Unit.xsd",
-			"schema/fmi2VariableDependency.xsd",
-			"schema/xsd2vdm.properties");
+			"/schema/fmi2Annotation.xsd",
+			"/schema/fmi2AttributeGroups.xsd",
+			"/schema/fmi2ModelDescription.xsd",
+			"/schema/fmi2ScalarVariable.xsd",
+			"/schema/fmi2Type.xsd",
+			"/schema/fmi2Unit.xsd",
+			"/schema/fmi2VariableDependency.xsd",
+			"/schema/xsd2vdm.properties");
 		
 		File xsdFile = new File(schema, "fmi2ModelDescription.xsd");
-		Error validation = validate(modelDescriptionFile, xsdFile);
+		OnFailError validation = validate(modelDescriptionFile, xsdFile);
 		
 		if (validation != null)
 		{
@@ -149,19 +131,19 @@ public class MaestroCheck
 			if (vdmFile.exists())	// Means successful?
 			{
 				copyResources(vdmsl,
-					"CoSimulation_4.3.1.vdmsl",
-					"DefaultExperiment_2.2.5.vdmsl",
-					"FMI2Schema.vdmsl",
-					"FMIModelDescription_2.2.1.vdmsl",
-					"LogCategories_2.2.4.vdmsl",
-					"Misc.vdmsl",
-					"ModelExchange_3.3.1.vdmsl",
-					"ModelStructure_2.2.8.vdmsl",
-					"ModelVariables_2.2.7.vdmsl",
-					"TypeDefinitions_2.2.3.vdmsl",
-					"UnitDefinitions_2.2.2.vdmsl",
-					"VariableNaming_2.2.9.vdmsl",
-					"VendorAnnotations_2.2.6.vdmsl");
+					"/CoSimulation_4.3.1.vdmsl",
+					"/DefaultExperiment_2.2.5.vdmsl",
+					"/FMI2Schema.vdmsl",
+					"/FMIModelDescription_2.2.1.vdmsl",
+					"/LogCategories_2.2.4.vdmsl",
+					"/Misc.vdmsl",
+					"/ModelExchange_3.3.1.vdmsl",
+					"/ModelStructure_2.2.8.vdmsl",
+					"/ModelVariables_2.2.7.vdmsl",
+					"/TypeDefinitions_2.2.3.vdmsl",
+					"/UnitDefinitions_2.2.2.vdmsl",
+					"/VariableNaming_2.2.9.vdmsl",
+					"/VendorAnnotations_2.2.6.vdmsl");
 				
 				Settings.annotations = true;
 				ASTModuleList ast = new ASTModuleList();
@@ -174,13 +156,13 @@ public class MaestroCheck
 					
 					for (VDMError err: mreader.getErrors())
 					{
-						errors.add(new Error(err.number, err.message));
+						errors.add(new OnFailError(err.number, err.message));
 					}
 				}
 				
 				if (!errors.isEmpty())
 				{
-					errors.add(new Error(1, "Syntax errors in VDMSL?"));
+					errors.add(new OnFailError(1, "Syntax errors in VDMSL?"));
 				}
 				else
 				{
@@ -193,20 +175,21 @@ public class MaestroCheck
 					{
 						for (VDMError err: TypeChecker.getErrors())
 						{
-							errors.add(new Error(err.number, err.message));
+							errors.add(new OnFailError(err.number, err.message));
 						}
 
-						errors.add(new Error(2, "Type errors in VDMSL?"));
+						errors.add(new OnFailError(2, "Type errors in VDMSL?"));
 					}
 					
 					INModuleList in = ClassMapper.getInstance(INNode.MAPPINGS).init().convert(tc);
 					Interpreter interpreter = new ModuleInterpreter(in, tc);
 					interpreter.init();
+					INOnFailAnnotation.setErrorList(errors);
 					Value result = interpreter.execute("isValidFMIModelDescription(model)");
 					
 					if (!result.boolValue(null))
 					{
-						errors.add(new Error(3, "Errors found"));
+						errors.add(new OnFailError(3, "Errors found"));
 					}
 				}
 			}
@@ -215,7 +198,7 @@ public class MaestroCheck
 		return errors;
 	}
 	
-	private Error validate(File xml, File xsd)
+	private OnFailError validate(File xml, File xsd)
 	{
 		try
 		{
@@ -235,11 +218,11 @@ public class MaestroCheck
 		}
 		catch (SAXException e)
 		{
-			return new Error(0, "XML validation: " + e);		// Raw exception gives file/line/col
+			return new OnFailError(0, "XML validation: " + e);		// Raw exception gives file/line/col
 		}
 		catch (Exception e)
 		{
-			return new Error(0, "XML validation: " + e.getMessage());
+			return new OnFailError(0, "XML validation: " + e.getMessage());
 		}
 	}
 
@@ -253,6 +236,12 @@ public class MaestroCheck
 		for (String resource: resources)
 		{
 			InputStream is = MaestroCheck.class.getResourceAsStream(resource);
+			
+			if (is == null)
+			{
+				throw new Exception("Cannot load resource " + resource);
+			}
+			
 			copyStream(is, target, resource);
 			is.close();
 		}
