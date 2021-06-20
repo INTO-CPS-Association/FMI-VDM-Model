@@ -82,7 +82,7 @@ public class MaestroCheck
 		
 		for (OnFailError err: checker.check(new File(args[0])))
 		{
-			System.out.println(err);
+			System.out.println(err.errno + " => " + err.message);
 		}
 	}
 	
