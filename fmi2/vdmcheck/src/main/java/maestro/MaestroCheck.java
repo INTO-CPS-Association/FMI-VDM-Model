@@ -86,6 +86,14 @@ public class MaestroCheck
 		}
 	}
 	
+	public List<OnFailError> check(InputStream modelDescriptionStream) throws Exception
+	{
+		File xmlfile = Files.createTempFile("fmi", ".xml", new FileAttribute[0]).toFile();
+		xmlfile.deleteOnExit();
+		copyStream(modelDescriptionStream, xmlfile.getParentFile(), xmlfile.getName());
+		return check(xmlfile);
+	}
+
 	public List<OnFailError> check(File modelDescriptionFile) throws Exception
 	{
 		List<OnFailError> errors = new Vector<>();
