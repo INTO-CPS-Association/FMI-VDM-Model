@@ -1103,7 +1103,7 @@ public class XSDConverter_v11 extends XSDConverter
 				default:
 					if (child.isType("xs:any"))
 					{
-						convertAny(child);
+						fields.addAll(convertAny(child));
 					}
 					else if (isChoiceSequence(child))
 					{
