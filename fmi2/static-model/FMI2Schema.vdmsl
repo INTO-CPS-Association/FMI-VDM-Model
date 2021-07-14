@@ -1,5 +1,5 @@
 /**
- * VDM schema created from fmi2ModelDescription.xsd on Mon May 31 16:37:56 BST 2021
+ * VDM schema created from fmi2ModelDescription.xsd on Wed Jul 14 16:24:09 BST 2021
  * DO NOT EDIT!
  */
 types
@@ -172,7 +172,11 @@ DefaultExperiment ::
 
 VendorAnnotations = seq1 of (Tool);
 
-Tool = NormalizedString;
+Tool ::
+    location  : Location
+    name      : NormalizedString
+    any       : [token]
+;
 
 ModelVariables = seq1 of (ScalarVariable);
 

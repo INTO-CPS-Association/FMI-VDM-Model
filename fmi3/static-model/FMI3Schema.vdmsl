@@ -1,5 +1,5 @@
 /**
- * VDM schema created from fmi3.xsd on Mon May 31 16:36:31 BST 2021
+ * VDM schema created from fmi3.xsd on Wed Jul 14 16:28:21 BST 2021
  * DO NOT EDIT!
  */
 types
@@ -58,7 +58,11 @@ ModelExchange ::
 
 Annotations = seq1 of (Annotation);
 
-Annotation = NormalizedString;
+Annotation ::
+    location  : Location
+    type      : NormalizedString
+    any       : [seq of (token)]
+;
 
 CoSimulation ::
     location                                : Location
