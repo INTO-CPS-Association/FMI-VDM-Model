@@ -50,7 +50,7 @@ traces
 			mk_String(loc, nil, nil),
 			mk_String(loc, nil, "123")
 		} in
-		let a in set { "Annotation" }
+		let a in set { mk_Tool(loc, "Annotation", mk_token("?")) }
 		in
 			isValidScalarVariable(mk_ScalarVariable(loc, "name", 0, nil, c, v, i, nil, s, [a]));
 

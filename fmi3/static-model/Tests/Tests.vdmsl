@@ -39,7 +39,7 @@ traces
 		let c : [Causality] in
 		let v : [Variability] in
 		let i : [Initial] in
-		let a : Annotations = [ "A" ] in
+		let a : Annotations = [ mk_Annotation(mk_Location("modelDescription.xml", 1), "A", [mk_token("?")]) ] in
 		let t in set
 		{
             mk_Float64
