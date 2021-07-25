@@ -433,7 +433,7 @@ functions
 				mk_UInt8(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
 					isInRange[int](min, max, start, sv, sv.initial),
 
-				mk_Enumeration(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
+				mk_Enumeration(-, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
 					isInRange[nat](min, max, start, sv, sv.initial),	-- TODO kind of enum?
 
 				mk_Binary(-, -, -, -, -, -, -, -, -, -, -, -, -, -, start, -, -, -) ->
