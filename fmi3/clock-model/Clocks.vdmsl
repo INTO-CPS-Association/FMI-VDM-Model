@@ -1,0 +1,164 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+types
+	/**
+	 * A point in superdense time is represented by a real quantity and a whole
+	 * number instant "within" that time.
+	 */
+	Time ::
+		r	: real
+		i	: nat
+	inv t ==
+		t.r >= 0	-- Times must be positive
+	ord a < b ==
+		(a.r < b.r) or (a.r = b.r and a.i < b.i);
+
+	/**
+	 * Possible "interval" values for a Clock variable
+	 */
+	Interval = <constant> | <fixed> | <calculated> | <tunable> | <changing> | <countdown> | <triggered>;
+
+	/**
+	 * A variable or clock reference. These are unique within an FMU.
+	 */
+	Ref = nat;
+
+	/**
+	 * A convenient way to name FMUs.
+	 */
+	Name = seq1 of char;
+
+	/**
+	 * A reference to a connection point in a specific named FMU.
+	 */
+	FMURef ::
+		name	: Name
+		ref		: Ref;
+
+	/**
+	 * The current known variable values. These are usually used by FMUs, but note that
+	 * Clocks can produce temporary environments that are not committed until a step.
+	 */
+	Environment = map Ref to Value;
+
+	/**
+	 * The value that a clock or variable can have. Simplified for now.
+	 */
+	Value = real | int | bool;		-- A variable value
+
+	/**
+	 * An Equation is used to modify the values of an FMU in order to compute a new
+	 * step in time. A clock defines a set of equations to activate.
+	 */
+	Equation = Environment -> Environment;
+
+	/**
+	 * A variable is identified by a Ref (within an FMU).
+	 */
+	Variable ::
+		ref			: Ref
+		type		: <input> | <output>
+		clocks		: set of Ref;
+
+	/**
+	 * A clock is identified by a Ref (within an FMU) and activates a set of equations.
+	 */
+	Clock ::
+		ref			: Ref
+		type		: <input> | <output>
+		interval	: Interval
+		equations	: set of Equation;	-- Enabled when clock is active
+
+	/**
+	 * An FMU is comprised of a set of clocks and variables, plus an environment that holds
+	 * the current values for both. The references must be unique and the references within
+	 * the environment must all refer to known references.
+	 */
+	FMU ::
+		name		: Name
+		clocks		: set of Clock		-- Ucm + Ycm
+		vars		: set of Variable	-- Um + Ym
+		env			: Environment
+	inv fmu ==
+		let refs = { c.ref | c in set fmu.clocks } union { v.ref | v in set fmu.vars } in
+			-- All clock and variable references are unique
+			card refs = card fmu.clocks + card fmu.vars
+			-- All references in the environment are defined
+			and (dom fmu.env subset refs)
+			-- All variables' clocks are defined
+			and (forall var in set fmu.vars &
+				forall cref in set var.clocks &
+					exists c in set fmu.clocks & c.ref = cref);
+
+	/**
+	 * A machine is a collection of FMUs, plus a connection map between them. The connection
+	 * sources must be FMU output variables and the destinations must be FMU input variables.
+	 */
+	Machine ::
+		fmus		: map Name to FMU
+		connections	: map FMURef to FMURef
+		time		: Time
+	inv m ==
+		(forall fmuref in set dom m.connections &
+			-- Every connection's source is a known FMU
+			fmuref.name in set dom m.fmus
+			-- Every connection's source is an output from its FMU
+			and let fmu = m.fmus(fmuref.name) in
+				(exists c in set fmu.clocks & fmuref.ref = c.ref and c.type = <output>)
+				or (exists v in set fmu.vars & fmuref.ref = v.ref and v.type = <output>))
+		and
+		(forall fmuref in set rng m.connections &
+			-- Every connection's destination is a known FMU
+			fmuref.name in set dom m.fmus
+			-- Every connection's destination is an input of its FMU
+			and let fmu = m.fmus(fmuref.name) in
+				(exists c in set fmu.clocks & fmuref.ref = c.ref and c.type = <input>)
+				or (exists v in set fmu.vars & fmuref.ref = v.ref and v.type = <input>));
+
+functions
+	set_m: FMU * Ref * Value +> FMU
+	set_m(fmu, ref, val) == is not yet specified;
+
+	get_m: FMU * Ref +> FMU * Value
+	get_m(fmu, ref) == is not yet specified;
+
+	set_cm: FMU * Ref * bool +> FMU
+	set_cm(fmu, ref, val) == is not yet specified;
+
+	get_cm: FMU * Ref +> FMU * bool
+	get_cm(fmu, ref) == is not yet specified;
+
+	step_tm: FMU * real +> FMU * real * bool
+	step_tm(fmu, step) == is not yet specified;
+
+	step_e: FMU +> FMU * bool
+	step_e(fmu) == is not yet specified;
+
+	next_tm: FMU * Ref +> real | <NaN>
+	next_tm(fmu, ref) == is not yet specified;
