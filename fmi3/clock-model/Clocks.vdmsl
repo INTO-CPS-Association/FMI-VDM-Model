@@ -37,7 +37,7 @@ types
 	inv t ==
 		t.r >= 0	-- Times must be positive
 	ord a < b ==
-		(a.r < b.r) or (a.r = b.r and a.i < b.i);
+		(a.r < b.r) or (a.r = b.r and a.i < b.i);	-- NB using real equality!
 
 	/**
 	 * Possible "interval" values for a Clock variable
@@ -62,7 +62,7 @@ types
 		ref		: Ref;
 
 	/**
-	 * The current known variable values. These are usually used by FMUs, but note that
+	 * The current known FMU variable values. These are usually used by FMUs, but note that
 	 * Clocks can produce temporary environments that are not committed until a step.
 	 */
 	Environment = map Ref to Value;
@@ -70,7 +70,7 @@ types
 	/**
 	 * The value that a clock or variable can have. Simplified for now.
 	 */
-	Value = real | int | bool;		-- A variable value
+	Value = real | int | bool;
 
 	/**
 	 * An Equation is used to modify the values of an FMU in order to compute a new
@@ -98,32 +98,39 @@ types
 	/**
 	 * An FMU is comprised of a set of clocks and variables, plus an environment that holds
 	 * the current values for both. The references must be unique and the references within
-	 * the environment must all refer to known references.
+	 * the environment must all refer to known variables.
 	 */
 	FMU ::
-		name		: Name
-		clocks		: set of Clock		-- Ucm + Ycm
-		vars		: set of Variable	-- Um + Ym
-		env			: Environment
+		name				: Name				-- m
+		clocks				: set of Clock		-- Ucm + Ycm
+		vars				: set of Variable	-- Um + Ym
+		mode				: <STEP> | <EVENT>
+		time				: Time				-- time is per FMU?
+		env					: Environment
+		activeClocks		: set of Ref
+		transitionEquations	: set of Equation
+		outputEquations		: set of Equation
 	inv fmu ==
-		let refs = { c.ref | c in set fmu.clocks } union { v.ref | v in set fmu.vars } in
+		let crefs = { c.ref | c in set fmu.clocks },
+			vrefs = { v.ref | v in set fmu.vars },
+			refs  = crefs union vrefs
+		in
 			-- All clock and variable references are unique
 			card refs = card fmu.clocks + card fmu.vars
 			-- All references in the environment are defined
 			and (dom fmu.env subset refs)
+			-- All active clocks are defined
+			and (fmu.activeClocks subset crefs)
 			-- All variables' clocks are defined
-			and (forall var in set fmu.vars &
-				forall cref in set var.clocks &
-					exists c in set fmu.clocks & c.ref = cref);
+			and (forall var in set fmu.vars & var.clocks subset crefs);
 
 	/**
 	 * A machine is a collection of FMUs, plus a connection map between them. The connection
-	 * sources must be FMU output variables and the destinations must be FMU input variables.
+	 * sources must be FMU outputs and the destinations must be FMU inputs.
 	 */
 	Machine ::
 		fmus		: map Name to FMU
 		connections	: map FMURef to FMURef
-		time		: Time
 	inv m ==
 		(forall fmuref in set dom m.connections &
 			-- Every connection's source is a known FMU
@@ -142,23 +149,70 @@ types
 				or (exists v in set fmu.vars & fmuref.ref = v.ref and v.type = <input>));
 
 functions
+	/**
+	 * These functions are total, because the error conditions that you would expect
+	 * on an API are modelled by preconditions or type invariants.
+	 */
 	set_m: FMU * Ref * Value +> FMU
-	set_m(fmu, ref, val) == is not yet specified;
+	set_m(fmu, ref, val) ==
+		mu(fmu, env |-> fmu.env ++ { ref |-> val })
+		-- and calculate equations?
+	pre exists v in set fmu.vars & v.ref = ref and v.type = <output>;
 
 	get_m: FMU * Ref +> FMU * Value
-	get_m(fmu, ref) == is not yet specified;
+	get_m(fmu, ref) ==
+		-- calculate equations?
+		mk_(fmu, fmu.env(ref))
+	pre exists v in set fmu.vars & v.ref = ref and v.type = <input>;
 
 	set_cm: FMU * Ref * bool +> FMU
-	set_cm(fmu, ref, val) == is not yet specified;
+	set_cm(fmu, ref, val) ==
+		mu(fmu, env |-> fmu.env ++ { ref |-> val })
+		-- and calculate equations?
+	pre val <=> not ref in set fmu.activeClocks
+		and exists v in set fmu.clocks & v.ref = ref and v.type = <output>;
 
 	get_cm: FMU * Ref +> FMU * bool
-	get_cm(fmu, ref) == is not yet specified;
+	get_cm(fmu, ref) ==
+		-- calculate equations?
+		mk_(fmu, fmu.env(ref))
+	pre exists v in set fmu.clocks & v.ref = ref and v.type = <input>;
 
 	step_tm: FMU * real +> FMU * real * bool
-	step_tm(fmu, step) == is not yet specified;
+	step_tm(fmu, step) ==
+		is not yet specified
+	pre fmu.mode = <STEP>
+	post RESULT.#3 => RESULT.#1.mode = <EVENT>		-- FMU moved to event mode
+		and RESULT.#2 <= step;
 
 	step_e: FMU +> FMU * bool
-	step_e(fmu) == is not yet specified;
+	step_e(fmu) ==
+		is not yet specified
+	pre fmu.mode = <EVENT>
+	post RESULT.#2 => RESULT.#1.mode = <EVENT>;		-- FMU remains in event mode
 
 	next_tm: FMU * Ref +> real | <NaN>
-	next_tm(fmu, ref) == is not yet specified;
+	next_tm(fmu, ref) ==
+		is not yet specified
+	pre exists v in set fmu.clocks & v.ref = ref
+		and v.interval in set { <tunable>, <changing>, <countdown> };
+
+operations
+	doAllSteps: Machine ==> Machine
+	doAllSteps(M) == is not yet specified;
+
+	doAllClockTicks: Machine ==> Machine
+	doAllClockTicks(M) == is not yet specified;
+
+	doEnableEquations: Machine ==> Machine
+	doEnableEquations(M) == is not yet specified;
+
+	doPropagateActivations: Machine ==> Machine
+	doPropagateActivations(M) == is not yet specified;
+
+	doScheduleNextTick: Machine ==> Machine
+	doScheduleNextTick(M) == is not yet specified;
+
+	clockedSimulationAlgorithm: Machine ==> Machine
+	clockedSimulationAlgorithm(M) == is not yet specified;
+	
