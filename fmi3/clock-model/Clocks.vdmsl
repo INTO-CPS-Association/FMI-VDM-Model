@@ -107,9 +107,10 @@ types
 		mode				: <STEP> | <EVENT>
 		time				: Time				-- time is per FMU
 		env					: Environment
+		nextScheduledTick	: [Time]
+		nextScheduledClocks	: set of Ref
 		activeClocks		: set of Ref
-		transitionEquations	: set of Equation
-		outputEquations		: set of Equation
+		activeEquations		: set of Equation
 	inv fmu ==
 		let crefs = { c.ref | c in set fmu.clocks },
 			vrefs = { v.ref | v in set fmu.vars },
@@ -122,7 +123,11 @@ types
 			-- All active clocks are defined
 			and (fmu.activeClocks subset crefs)
 			-- All variables' clocks are defined
-			and (forall var in set fmu.vars & var.clocks subset crefs);
+			and (forall var in set fmu.vars & var.clocks subset crefs)
+			-- All scheduled clocks are defined
+			and (if fmu.nextScheduledTick = nil
+				 then fmu.nextScheduledClocks = {}
+				 else fmu.nextScheduledClocks subset crefs);
 
 	/**
 	 * A machine is a collection of FMUs, plus a connection map between them. The connection
@@ -167,10 +172,13 @@ functions
 
 	set_cm: FMU * Ref * bool +> FMU
 	set_cm(fmu, ref, val) ==
-		mu(fmu, env |-> fmu.env ++ { ref |-> val })
+		mu(fmu,
+			env				|-> fmu.env ++ { ref |-> val },
+			activeClocks	|-> if val then fmu.activeClocks union {ref} else fmu.activeClocks \ {ref})
 		-- and calculate equations?
 	pre val <=> not ref in set fmu.activeClocks
-		and exists v in set fmu.clocks & v.ref = ref and v.type = <output>;
+		and exists v in set fmu.clocks & v.ref = ref and v.type = <output>
+	post val <=> ref in set fmu.activeClocks;
 
 	get_cm: FMU * Ref +> FMU * bool
 	get_cm(fmu, ref) ==
@@ -197,21 +205,71 @@ functions
 	pre exists v in set fmu.clocks & v.ref = ref
 		and v.interval in set { <tunable>, <changing>, <countdown> };
 
-operations
-	doAllSteps: Machine ==> Machine
-	doAllSteps(M) == is not yet specified;
+	/**
+	 * Dereference a clock in a given FMU.
+	 */
+	derefClock: FMU * Ref -> Clock
+	derefClock(fmu, ref) ==
+		iota c in set fmu.clocks & c.ref = ref
+	pre exists c in set fmu.clocks & c.ref = ref;
 
-	doAllClockTicks: Machine ==> Machine
-	doAllClockTicks(M) == is not yet specified;
+	/**
+	 * Move all FMUs in M into event mode.
+	 */
+	enterEventMode: Machine -> Machine
+	enterEventMode(M) ==
+		mk_Machine
+		(
+			{ name |-> mu(M.fmus(name), mode |-> <EVENT>) | name in set dom M.fmus },
+			M.connections
+		)
+	pre forall m' in set rng M.fmus &
+		m'.time.i = 0;
 
-	doEnableEquations: Machine ==> Machine
-	doEnableEquations(M) == is not yet specified;
+	/**
+	 * Activate the clocks in one FMU that are due at this time.
+	 */
+	activateFMUClocks: FMU -> FMU
+	activateFMUClocks(fmu) ==
+		if fmu.nextScheduledTick = nil
+		then fmu
+		else mu(fmu,
+				nextScheduledTick	|-> nil,
+				nextScheduledClocks	|-> {},
+				activeClocks		|-> fmu.nextScheduledClocks,
+				activeEquations		|-> dunion { derefClock(fmu, c).equations |
+													c in set fmu.nextScheduledClocks } );
 
-	doPropagateActivations: Machine ==> Machine
-	doPropagateActivations(M) == is not yet specified;
+	/**
+	 * Activate the clocks in all FMUs that are due to tick at this time.
+	 */
+	activateClocks: Machine -> Machine
+	activateClocks(M) ==
+		mk_Machine
+		(
+			{ name |-> activateFMUClocks(M.fmus(name)) | name in set dom M.fmus },
+			M.connections
+		);
 
-	doScheduleNextTick: Machine ==> Machine
-	doScheduleNextTick(M) == is not yet specified;
+	/**
+	 * Propagate one FMU's output clock activations.
+	 */
+	propagateFMUActivation: Machine * Name -> Machine
+	propagateFMUActivation(M, name) ==
+		is not yet specified;
+
+	/**
+	 * Propagate activation from all output clocks to input clocks. The names passed
+	 * are the FMU names to process (initially all of them).
+	 */
+	propagateActivations: Machine * set of Name -> Machine
+	propagateActivations(M, names) ==
+		if names = {}
+		then M
+		else let name in set names in
+			let M2 = propagateFMUActivation(M, name) in
+				propagateActivations(M2, names \ {name})
+	measure card names;
 
 	/**
 	 * Let M denote the set of FMU instances participating in the simulation. We
@@ -219,13 +277,22 @@ operations
 	 * Event mode. Therefore we assume that every other instance m' in set M and m' <> m
 	 * has been stepped up to the same super-dense time (t.r, 0).
 	 */
-	clockedSimulationAlgorithm: Machine * FMU ==> Machine
-	clockedSimulationAlgorithm(M, m) ==
+	clockedSimulationAlgorithm: Machine -> Machine
+	clockedSimulationAlgorithm(M) ==
 		/**
 		 * 1. Every m in set M enters Event mode (super-dense time instant is t.i = 0);
+		 */
+		let M1 = enterEventMode(M) in
+
+		/**
 		 * 2. Activate any time-based clocks scheduled to tick at (t.r , 0), by
 		 *    invoking set_cm(_, wcm0) for any input or output clock wcm0 in set
 		 *    Ucm union Ycm and any instance m in set M;
+		 */
+
+		let M2 = activateClocks(M1) in
+
+		/**
 		 * 3. Construct and solve system of equations for t.i :
 		 * 		(a) For all ycm in set Ycm of any instance m in set M, forward activation state of
 		 *		    triggered clocks:
@@ -235,12 +302,15 @@ operations
 		 *			   as a result of the clock activations;
 		 *		(b) Invoke get_m(_, ym0) and set_m(_, um0, _) in the appropriate order,
 		 *		    for any instance m in set M.
+		 */
+
+		let M3 = propagateActivations(M2, dom M2.fmus) in
+
+		/**
 		 * 4. Invoke step_e(_) for m in set M (signals end of Event iteration t.i).
 		 * 5. Schedule clocks by invoking next_tm on every relevant clock, for m in set M.
 		 * 6. If any m in set M wishes to repeat the event iteration, or if a clock returned a
 		 *    zero interval, go to Step 3 (start iteration t.i + 1).
 		 */
-		is not yet specified
-	pre forall m' in set rng M.fmus &
-		m' <> m => m'.time.i = 0;
-	
+		M3
+	pre card { fmu.time | fmu in set rng M.fmus } = 1;
