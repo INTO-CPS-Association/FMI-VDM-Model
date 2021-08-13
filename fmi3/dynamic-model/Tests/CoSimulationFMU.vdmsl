@@ -220,12 +220,12 @@ values
                 "Moment of load inertia",
                 <structuralParameter>,
                 <fixed>,
-                nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 "Modelica.Units.SI.Inertia",
+				nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -252,12 +252,12 @@ values
                 "Accelerating torque acting at flange (= -flange.tau)",
                 <input>,
                 nil,  -- variability
-                nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 "Modelica.Units.SI.Torque",
+                nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -284,12 +284,12 @@ values
                 "Absolute rotation angle of component",
                 <output>,
                 nil,  -- variability
-                nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 "Modelica.Units.SI.Angle",
+                nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -313,12 +313,12 @@ values
                 "Absolute angular velocity of component (= der(phi))",
                 <output>,
                 nil,  -- variability
-                nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 "Modelica.Units.SI.AngularVelocity",
+                nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -342,12 +342,12 @@ values
                 nil,  -- description
                 <input>,
                 nil,  -- variability
-                nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit

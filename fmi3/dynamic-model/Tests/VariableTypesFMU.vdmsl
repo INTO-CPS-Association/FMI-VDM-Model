@@ -53,12 +53,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -99,12 +99,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -145,12 +145,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -179,12 +179,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -213,12 +213,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -247,12 +247,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -281,12 +281,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -315,12 +315,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -349,12 +349,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -383,12 +383,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -417,12 +417,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 -- start
                 [
                     true,
@@ -456,12 +456,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 -- dimension
                 [
                     mk_Dimension
@@ -487,12 +487,12 @@ values
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
-                <exact>,
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                <exact>,
                 nil,  -- mimeType
                 28,
                 -- start
