@@ -29,12 +29,12 @@
 		<dependency>
 			<groupId>com.fujitsu</groupId>
 			<artifactId>vdmj</artifactId>
-			<version>4.4.2</version>
+			<version>4.4.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fujitsu</groupId>
 			<artifactId>annotations</artifactId>
-			<version>4.4.2</version>
+			<version>4.4.3</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
