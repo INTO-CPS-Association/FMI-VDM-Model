@@ -103,7 +103,7 @@ functions
 		let found = { v | v in seq svs & v.valueReference = vr } in
 			if found = {}
 			then nil
-			else let {v} = found in v;
+			else let {v} union - = found in v;	-- Pick an alias
 
 	/**
 	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
