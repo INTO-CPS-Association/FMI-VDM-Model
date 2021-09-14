@@ -52,6 +52,7 @@ import org.xml.sax.SAXException;
 
 import com.fujitsu.vdmj.Settings;
 import com.fujitsu.vdmj.ast.modules.ASTModuleList;
+import com.fujitsu.vdmj.config.Properties;
 import com.fujitsu.vdmj.in.INNode;
 import com.fujitsu.vdmj.in.modules.INModuleList;
 import com.fujitsu.vdmj.lex.Dialect;
@@ -153,6 +154,7 @@ public class MaestroCheck
 					"/VariableNaming_2.2.9.vdmsl",
 					"/VendorAnnotations_2.2.6.vdmsl");
 				
+				Properties.init();
 				Settings.annotations = true;
 				ASTModuleList ast = new ASTModuleList();
 				
