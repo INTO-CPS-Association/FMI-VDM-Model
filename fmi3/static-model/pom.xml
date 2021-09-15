@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.into-cps.vdmcheck</groupId>
 		<artifactId>fmi3</artifactId>
-		<version>1.1.1-SNAPSHOT</version>
+		<version>1.1.1</version>
 	</parent>
 
 	<groupId>org.into-cps.vdmcheck.fmi3</groupId>
