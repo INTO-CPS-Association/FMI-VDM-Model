@@ -160,7 +160,6 @@
 	Machine ::
 		fmus		: map Name to FMU
 		connections	: map FMURef to FMURef
-		timeBasedClocks : set of FMURef
 		-- maybe we should have clock connections - this would make it simpler later on
 	inv m ==
 		(forall fmuref in set dom m.connections &
@@ -292,8 +291,7 @@ functions
 			mk_Machine
 			(
 				fmuMap,
-				M.connections,
-				M.timeBasedClocks
+				M.connections
 			), 
 			I.schedule,
 			I.activeClocks,
@@ -359,16 +357,11 @@ functions
 		then I
 		else 
 		let clock in set clocks in
-		let I1 = activateClock(I, I.scenario.fmus(clock.name), clock.ref) in
+		let I1 = setClock(I, I.scenario.fmus(clock.name), clock.ref, true) in
 		activateClocks(I1, clocks \ {clock})		
 	pre {c.ref | c in set clocks} subset I.readyClocks
 	measure card clocks;
 
-	activateClock: Importer * FMU * Ref -> Importer
-	activateClock(I, fmu, clock) ==
-		setClock(I, fmu, clock, true)
-		pre exists1 c in set fmu.clocks & c.ref = clock and c.type = <input> and clock in set I.readyClocks;
-	
 	queryClock: Importer * FMU * Ref -> Importer
 	queryClock(I, fmu, clock)==
 		let mk_(fmuUpdated, val) = get_cm(fmu, clock) in
@@ -380,8 +373,7 @@ functions
 		mk_Importer(
 			mk_Machine(
 				I.scenario.fmus ++ {fmuUpdated.name |-> fmuUpdated},
-				I.scenario.connections,
-				I.scenario.timeBasedClocks
+				I.scenario.connections
 			),
 			I.schedule, -- Not affected
 			if (val) then I.activeClocks union {clock} else I.activeClocks \ {clock},
@@ -406,8 +398,7 @@ functions
 		mk_Importer(
 			mk_Machine(
 				I.scenario.fmus ++ {fmuUpdated.name |-> fmuUpdated},
-				I.scenario.connections,
-				I.scenario.timeBasedClocks
+				I.scenario.connections
 			),
 			I.schedule, -- Not affected
 			if(val) then I.activeClocks union {clock} else I.activeClocks \ {clock},
@@ -444,14 +435,7 @@ functions
 				propagateActivations(M2, names \ {name})
 	measure card names;
 
-    /*
-        Calculate a schedule for all time based clocks using the next_tm action
-     */
-    calculateSchedule : Machine -> map FMURef to real
-    calculateSchedule(M) == 
-		{ clock |-> next_tm(M.fmus(clock.name), clock.ref) | clock in set M.timeBasedClocks} 
-    pre forall m' in set rng M.fmus & m'.mode = <INIT> -- we should do this in the initialization
-    post card dom RESULT = card {clock | clock in set (dunion {fmu.clocks | fmu in set rng M.fmus}) & clock.interval in set { <tunable>, <changing>, <countdown> }};  -- all time-based clocks must have a schedule
+
 
     -- This method should exchange data between all inputs and outputs
 	-- Currently we do not respect inputs contract and feedthrough - we need to use a graph based approach to do this
@@ -470,10 +454,11 @@ functions
 	if outputs = {} then M
 	else let output in set outputs in 
 		let mk_(fmuUpdated, val) = get_m(M.fmus(output.name), output.ref) in
-		let input = M.connections(output) in
-		let fmuInput = set_m(M.fmus(input.name), input.ref, val) in
-		let M1 = mu(M, fmus |-> M.fmus ++ { fmuUpdated.name |-> fmuUpdated, fmuInput.name |-> fmuInput}) in
-		propagateValues(M1, outputs \ {output})
+			let input = M.connections(output) in
+				let fmuInput = set_m(M.fmus(input.name), input.ref, val) in
+					let M1 = mu(M, fmus |-> M.fmus ++ { fmuUpdated.name |-> fmuUpdated, fmuInput.name |-> fmuInput}) in
+						propagateValues(M1, outputs \ {output})
+	post variablesSynchronzied(RESULT)
 	measure card outputs;
 
 
@@ -489,7 +474,7 @@ functions
         /**
          * Calculate a schedule for all timebased clocks
         */
-        let I2 = mu(I, schedule |-> calculateSchedule(I1.scenario)) in
+        let I2 = createSchedule(I1) in
         /*
             Move all FMUs to Step Mode
          */
@@ -591,7 +576,7 @@ functions
 		/**
 			* 5. Schedule clocks by invoking next_tm on every relevant clock, for m in set M.
 		*/
-		--let I5 = updateSchedule(I4) in
+		let I5 = updateSchedule(I4, relevantFMUs, { <tunable>, <changing>, <countdown> }) in
 
 		/**
 		 * 6. If any m in set M wishes to repeat the event iteration, or if a clock returned a
@@ -607,25 +592,37 @@ solveSystemOfEquations : Importer -> Importer
 solveSystemOfEquations(I)==
 	is not yet specified;
 
-updateSchedule: Importer * set of Name -> Importer
-updateSchedule(I, fmus)==
+updateSchedule: Importer * set of Name * set of Interval -> Importer
+updateSchedule(I, fmus, intervalSet)==
 	if fmus = {} then I 
 	else
 	let name in set fmus in
 		let fmu = I.scenario.fmus(name) in
-			let relevantClocks = {c.ref | c in set fmu.clocks & c.interval in set { <tunable>, <changing>, <countdown> }} in
-				let scheduleEntries = recalculateSchedule(fmu, relevantClocks, {|->}) in
+			let relevantClocks = {c.ref | c in set fmu.clocks & c.interval in set intervalSet} in  
+				let scheduleEntries = calculateSchedule(fmu, relevantClocks, {|->}) in
 					let I1 = mu(I, schedule |-> I.schedule ++ scheduleEntries) in
-						updateSchedule(I1, fmus \ {name})
+						updateSchedule(I1, fmus \ {name}, intervalSet)
 measure card fmus;
+-- All 
 
-recalculateSchedule: FMU * set of Ref * map FMURef to real -> map FMURef to real
-recalculateSchedule(fmu, clocks, schedule)== 
+/*
+	Calculate a schedule for all time based clocks
+*/
+createSchedule : Importer -> Importer
+createSchedule(I) == 
+	let fmus = dom I.scenario.fmus in 
+		updateSchedule(I, fmus, {<constant>, <fixed>, <calculated>, <tunable>, <changing>, <countdown>})
+pre forall m' in set rng I.scenario.fmus & m'.mode = <INIT>;
+ -- we should do this in the initialization
+--post card dom RESULT = card {clock | clock in set (dunion {fmu.clocks | fmu in set rng I.scenario.fmus}) & clock.interval in set { <tunable>, <changing>, <countdown> }};  -- all time-based clocks must have a schedule
+
+calculateSchedule: FMU * set of Ref * map FMURef to real -> map FMURef to real
+calculateSchedule(fmu, clocks, schedule)== 
 	if clocks = {} then schedule
 	else
 	let clock in set clocks in
 		let S1 = schedule ++ {mk_FMURef(fmu.name, clock) |-> next_tm(fmu, clock)} in
-		recalculateSchedule(fmu, clocks \ {clock}, S1)
+		calculateSchedule(fmu, clocks \ {clock}, S1)
 measure card clocks; 
 
 
