@@ -160,6 +160,8 @@
 	Machine ::
 		fmus		: map Name to FMU
 		connections	: map FMURef to FMURef
+		timeBasedClocks : set of FMURef
+		-- maybe we should have clock connections - this would make it simpler later on
 	inv m ==
 		(forall fmuref in set dom m.connections &
 			-- Every connection's source is a known FMU
@@ -291,7 +293,8 @@ functions
 			mk_Machine
 			(
 				fmuMap,
-				M.connections
+				M.connections,
+				M.timeBasedClocks
 			), 
 			I.schedule,
 			I.activeClocks,
@@ -358,7 +361,8 @@ functions
 		else 
 		let clock in set clocks in
 		let I1 = activateClock(I, I.scenario.fmus(clock.name), clock.ref) in
-		activateClocks(I1, clocks \ {clock})
+		activateClocks(I1, clocks \ {clock})		
+	pre {c.ref | c in set clocks} subset I.readyClocks
 	measure card clocks;
 
 	activateClock: Importer * FMU * Ref -> Importer
@@ -377,7 +381,8 @@ functions
 		mk_Importer(
 			mk_Machine(
 				I.scenario.fmus ++ {fmuUpdated.name |-> fmuUpdated},
-				I.scenario.connections
+				I.scenario.connections,
+				I.scenario.timeBasedClocks
 			),
 			I.schedule, -- Not affected
 			if (val) then I.activeClocks union {clock} else I.activeClocks \ {clock},
@@ -402,7 +407,8 @@ functions
 		mk_Importer(
 			mk_Machine(
 				I.scenario.fmus ++ {fmuUpdated.name |-> fmuUpdated},
-				I.scenario.connections
+				I.scenario.connections,
+				I.scenario.timeBasedClocks
 			),
 			I.schedule, -- Not affected
 			if(val) then I.activeClocks union {clock} else I.activeClocks \ {clock},
@@ -444,13 +450,7 @@ functions
      */
     calculateSchedule : Machine -> map FMURef to real
     calculateSchedule(M) == 
-		--let clocks = {fmu |-> fmu.clocks | fmu in set rng M.fmus } in
-		--let timeBasedClocks = {clock | clock in set (dunion {fmu.clocks | fmu in set rng M.fmus}) & clock.interval <> <triggered>} in
-		-- I only care about time based clocks
-		--let timebased = {fmu |-> clock |   }
-		--- clock |-> next_tm(fmu , clocks(fmu)) | fmu in set dom clocks }
-        is not yet specified
-    -- we need to restrict range to the time base≤d clocks 
+		{ clock |-> next_tm(M.fmus(clock.name), clock.ref) | clock in set M.timeBasedClocks} 
     pre forall m' in set rng M.fmus & m'.mode = <INIT> -- we should do this in the initialization
     post card dom RESULT = card {clock | clock in set (dunion {fmu.clocks | fmu in set rng M.fmus}) & clock.interval in set { <tunable>, <changing>, <countdown> }};  -- all time-based clocks must have a schedule
 
@@ -464,7 +464,7 @@ functions
     post variablesSynchronzied(RESULT.scenario);
 
 	/*
-		Propagate the output value to the connected input using set and get
+		Propagate the output value to the connected input using set and get actions
 	 */
 	propagateValues: Machine * set of FMURef -> Machine
 	propagateValues(M, outputs)==
@@ -473,10 +473,7 @@ functions
 		let mk_(fmuUpdated, val) = get_m(M.fmus(output.name), output.ref) in
 		let input = M.connections(output) in
 		let fmuInput = set_m(M.fmus(input.name), input.ref, val) in
-		let M1 = mk_Machine(
-			M.fmus ++ { fmuUpdated.name |-> fmuUpdated, fmuInput.name |-> fmuInput},
-			M.connections
-		) in
+		let M1 = mu(M, fmus |-> M.fmus ++ { fmuUpdated.name |-> fmuUpdated, fmuInput.name |-> fmuInput}) in
 		propagateValues(M1, outputs \ {output})
 	measure card outputs;
 
@@ -493,13 +490,11 @@ functions
         /**
          * Calculate a schedule for all timebased clocks
         */
-        let schedule = calculateSchedule(I1.scenario) in
+        let I2 = mu(I, schedule |-> calculateSchedule(I1.scenario)) in
         /*
             Move all FMUs to Step Mode
          */
-        let I3 = enterStepMode(I1, dom I1.scenario.fmus) in
-
-        I3
+        enterStepMode(I2, dom I2.scenario.fmus)
 	pre forall m' in set rng I.scenario.fmus & m'.mode = <INIT> and card { fmu.time | fmu in set rng I.scenario.fmus } = 1
     post forall m' in set rng RESULT.scenario.fmus & m'.mode = <STEP>  and variablesSynchronzied(RESULT.scenario) and card { fmu.time | fmu in set rng I.scenario.fmus } = 1;
 
@@ -524,13 +519,12 @@ functions
         /*
             Select a step duration
          */
-
         let stepsize = stepnegotiation(I1) in
         /*
             Perform the rest of the simulation
         */
-
-        I1
+		--simulationStep(I1, stepsize)
+		I1
 	pre forall m' in set rng I.scenario.fmus & m'.mode = <STEP> and variablesSynchronzied(I.scenario) and card { fmu.time | fmu in set rng I.scenario.fmus } = 1
     post forall m' in set rng RESULT.scenario.fmus & m'.mode = <STEP> and variablesSynchronzied(RESULT.scenario) and card { fmu.time | fmu in set rng I.scenario.fmus } = 1;
 
@@ -610,6 +604,9 @@ functions
 
 	pre card { fmu.time | fmu in set rng I.scenario.fmus } = 1;
 
+solveSystemOfEquations : Importer -> Importer
+solveSystemOfEquations(I)==
+	is not yet specified;
 /* 
 updateSchedule: Importer -> Importer
 updateSchedule(I)==
