@@ -286,7 +286,6 @@ functions
 	pre exists v in set fmu.clocks & v.ref = ref
 		and v.interval in set { <tunable>, <changing>, <countdown> };
 
-
 	/**
 	 * Update the discrete state of all FMUs.
 	 */
@@ -303,7 +302,6 @@ functions
 		)
 	pre forall m' in set rng I.scenario.fmus & m'.mode = <EVENT>;
  
-
     /* All inputs must have a value to be stepped */
     inputsDefined: FMU -> bool
     inputsDefined(fmu) ==
@@ -332,8 +330,10 @@ functions
 	enterStepMode: Importer * set of Name -> Importer
 	enterStepMode(I, fmus) ==
 		mu(I, scenario |-> mu(I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <EVENT>) | name in set dom I.scenario.fmus & name in set fmus }))
-	pre forall m' in set rng I.scenario.fmus & m'.time.i = 0 and m'.mode in set {<INIT>, <EVENT>}
-	post forall m' in set rng I.scenario.fmus & m'.time.i = 0 and m'.mode = <STEP>;
+	pre forall m' in set rng I.scenario.fmus & m'.time.i = 0 
+		and m'.mode in set {<INIT>, <EVENT>}
+	post forall m' in set rng I.scenario.fmus & m'.time.i = 0 
+		and m'.mode = <STEP>;
 
     -- All connections shall be synchronized so meaning their value should be identical
     variablesSynchronzied: Machine -> bool
@@ -348,8 +348,7 @@ functions
 	 */
 	activateClocks: Importer * set of FMURef -> Importer 
 	activateClocks(I, clocks)==
-		if clocks = {}
-		then I
+		if clocks = {} then I
 		else 
 		let clock in set clocks in
 		let I1 = setClock(I, I.scenario.fmus(clock.name), clock.ref, true) in
@@ -417,11 +416,16 @@ functions
 	calculateEquationInput(I, equation)==
 		let value = I.valueMap(equation) in
 		let fmuUpdated = set_m(I.scenario.fmus(equation.name), equation.ref, value) in 
-		-- We need to check if we triggered any clocks
+		let triggeredClocks = {clock | clock in set fmuUpdated.clocks & equation.ref in set clock.dependsOn} in
+		-- We need to check if we triggered any clocks by setting the variable
+		let triggeredInputs = {mk_FMURef(equation.name, inputClock.ref) | inputClock in set triggeredClocks & inputClock.type <> <input> } in
+		let triggeredOutputs = {mk_FMURef(equation.name, outputClock.ref)  | outputClock in set triggeredClocks & outputClock.type <> <output> } in
 		mu(I, 
 			scenario |-> mu(I.scenario, fmus |-> I.scenario.fmus ++ {fmuUpdated.name |-> fmuUpdated}),
 			valueMap |-> {equation} <-: I.valueMap,
-			calculatedEquations |-> I.calculatedEquations union {equation}
+			calculatedEquations |-> I.calculatedEquations union {equation}, 
+			relevantInputClocks |-> I.relevantInputClocks union triggeredInputs,
+			relevantOutputClocks |-> I.relevantOutputClocks union triggeredOutputs
 		)
 	pre equation in set I.activeEquations \ I.calculatedEquations -- The value should be active and not calculated before
 		and I.valueMap(equation); -- A value to set should be accessible
@@ -430,13 +434,14 @@ functions
 	calculateEquationOutput(I, equation)==
 		let mk_(fmuUpdated, val) = get_m(I.scenario.fmus(equation.name), equation.ref) in
 		let connectedInput = I.scenario.connections(equation) in
+		-- We need to check if we triggered any clocks by getting the variable
+
 		mu(I, 
 			scenario |-> mu(I.scenario, fmus |-> I.scenario.fmus ++ {fmuUpdated.name |-> fmuUpdated}),
 			valueMap |-> I.valueMap ++ {connectedInput |-> val},
 			calculatedEquations |-> I.calculatedEquations union {equation}
 		)
 	pre equation in set I.activeEquations \ I.calculatedEquations;
-
 
 	/**
 	 * Propagate one FMU's output clock activations.
@@ -465,8 +470,8 @@ functions
     exchangeData: Importer -> Importer
     exchangeData(I) ==
 	let connections = I.scenario.connections in
-	let outputs = {output | output in set dom connections} in
-	mu(I, scenario |-> propagateValues(I.scenario, outputs))
+		let outputs = {output | output in set dom connections} in
+			mu(I, scenario |-> propagateValues(I.scenario, outputs))
     post variablesSynchronzied(RESULT.scenario);
 
 	/*
