@@ -158,35 +158,43 @@
 	 * sources must be FMU outputs and the destinations must be FMU inputs.
 	 */
 	Machine ::
-		fmus		: map Name to FMU
-		connections	: map FMURef to FMURef
+		fmus				: map Name to FMU
+		connections			: map FMURef to FMURef
 		clockConnections	: map FMURef to FMURef
-		-- maybe we should have clock connections - this would make it simpler later on
 	inv m ==
 		(forall fmuref in set dom m.connections &
 			-- Every connection's source is a known FMU
 			fmuref.name in set dom m.fmus
 			-- Every connection's source is an output from its FMU
-			and let fmu = m.fmus(fmuref.name) in
-				(exists c in set fmu.clocks & fmuref.ref = c.ref and c.type = <output>)
-				or (exists v in set fmu.vars & fmuref.ref = v.ref and v.causality = <output>))
+			and let fmu = m.fmus(fmuref.name) in exists v in set fmu.outputs & fmuref.ref = v.ref)
 		and
 		(forall fmuref in set rng m.connections &
 			-- Every connection's destination is a known FMU
 			fmuref.name in set dom m.fmus
 			-- Every connection's destination is an input of its FMU
+			and let fmu = m.fmus(fmuref.name) in exists v in set fmu.inputs & fmuref.ref = v.ref)
+		and
+			(forall fmuref in set dom m.clockConnections &
+			-- Every connection's source is a known FMU
+			fmuref.name in set dom m.fmus
+			-- Every connection's source is an output from its FMU
 			and let fmu = m.fmus(fmuref.name) in
-				(exists c in set fmu.clocks & fmuref.ref = c.ref and c.type = <input>)
-				or (exists v in set fmu.vars & fmuref.ref = v.ref and v.causality = <input>));
+				exists v in set fmu.clocks & fmuref.ref = v.ref and v.type = <output>)
+		and
+		(forall fmuref in set rng m.clockConnections &
+			-- Every connection's destination is a known FMU
+			fmuref.name in set dom m.fmus
+			-- Every connection's destination is an input of its FMU
+			and let fmu = m.fmus(fmuref.name) in
+				exists v in set fmu.clocks & fmuref.ref = v.ref and v.type = <input>)
+		and dom m.clockConnections inter dom m.connections = {}
+		and rng m.clockConnections inter rng m.connections = {};
   
-
-
-	-- The schedule most be positive
-
-
 	/*
-		The Importer runs the simulation and keeps some set to do it.
-	 */
+		The Importer runs the simulation
+		It keeps track of the input and output to adapt to the behavior of the scenario
+		It has a simulation time and values to exchange between the FMUs
+	*/
 	Importer :: 
 		scenario : Machine
         schedule : map FMURef to real -- the time the clock should tick
@@ -353,9 +361,7 @@ functions
 	queryClock(I, fmu, clock)==
 		let mk_(fmuUpdated, val) = get_cm(fmu, clock) in
 		let fmuref = mk_FMURef(fmu.name, clock) in
-		-- All out that is affect by this
-		let connectionSource = {con | con in set dom I.scenario.connections & con.name = fmu.name and con.ref = clock} in
-		let affectClocks = {I.scenario.connections(c) | c in set connectionSource} in
+		let connectedClock = I.scenario.clockConnections(fmuref) in
 		let activatedVariables = createFMURefs(fmu, dunion {c.equations | c in set fmu.clocks & clock = c.ref}, {}) in
 		mk_Importer(
 			mk_Machine(
@@ -368,13 +374,13 @@ functions
 			if val then I.readyClocks \ {fmuref} else I.readyClocks,
 			if val then I.inactiveClocks \ {fmuref} else I.inactiveClocks union {fmuref},
 			I.fmusWithEvent, -- Not affected
-			I.relevantInputClocks union affectClocks, 
+			I.relevantInputClocks union {connectedClock}, 
 			I.relevantOutputClocks \ {fmuref}, -- Other clocks might have been activated?
 			if val then I.activeEquations union activatedVariables else I.activeEquations \ activatedVariables, 
 			I.calculatedEquations, -- Not affected
 			I.time, -- Not affected
 			I.stepSize, 
-			I.valueMap
+			I.valueMap ++ {connectedClock |-> val}
 		)
 	pre mk_FMURef(fmu.name,clock) in set I.relevantOutputClocks; -- a clock should be relevant if we should query it
 
@@ -385,7 +391,6 @@ functions
 		let fmuref = mk_FMURef(fmu.name, clock) in
 		let affectClocks = {mk_FMURef(fmu.name, c.ref) | c in set fmu.clocks & clock in set c.dependsOn} in
 		let activatedVariables = createFMURefs(fmu, dunion {c.equations | c in set fmu.clocks & clock = c.ref}, {}) in
-
 		mk_Importer(
 			mk_Machine(
 				I.scenario.fmus ++ {fmuUpdated.name |-> fmuUpdated},
@@ -398,7 +403,7 @@ functions
 			if val then I.inactiveClocks \ {fmuref} else I.inactiveClocks union {fmuref},
 			I.fmusWithEvent, -- Not affected
 			I.relevantInputClocks, -- remain the same
-			I.relevantOutputClocks union affectClocks, -- Other clocks might have been activated?
+			I.relevantOutputClocks union affectClocks, -- Other clocks might have been activated
 			if val then I.activeEquations union activatedVariables else I.activeEquations \ activatedVariables, 
 			I.calculatedEquations, -- Not affected
 			I.time, -- Not affected
@@ -412,7 +417,7 @@ functions
 	calculateEquationInput(I, equation)==
 		let value = I.valueMap(equation) in
 		let fmuUpdated = set_m(I.scenario.fmus(equation.name), equation.ref, value) in 
-		-- We need to check if we triggered anything
+		-- We need to check if we triggered any clocks
 		mu(I, 
 			scenario |-> mu(I.scenario, fmus |-> I.scenario.fmus ++ {fmuUpdated.name |-> fmuUpdated}),
 			valueMap |-> {equation} <-: I.valueMap,
