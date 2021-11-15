@@ -257,12 +257,11 @@ functions
 	step_tm: FMU * real +> FMU * real * bool
 	step_tm(fmu, step) ==
         if step >= fmu.maxStep then mk_(fmu, fmu.maxStep, true) -- We should at it to the set of FMUs that wants to enter event mode
-        else mk_(fmu, step,false)
+        else mk_(fmu, step, false)
 	pre fmu.mode = <STEP> and step >= 0.0 -- Step mode and positive step duration
         and inputsDefined(fmu)
-	post RESULT.#3 => RESULT.#1.mode = <EVENT>		-- FMU moved to event mode - not correct
-		and RESULT.#2 <= step
-        and RESULT.#2 <= fmu.maxStep;
+	post RESULT.#2 <= step -- We cannot take a step larger than what the Importer requested
+        and RESULT.#2 <= fmu.maxStep;-- We cannot take a step larger than what the FMU is capable of
             
 	step_e: FMU +> FMU * bool
 	step_e(fmu) ==
@@ -607,11 +606,26 @@ functions
 solveSystemOfEquations : Importer -> Importer
 solveSystemOfEquations(I)==
 	is not yet specified;
-/* 
-updateSchedule: Importer -> Importer
-updateSchedule(I)==
-	let clocks = {fmu |-> fmu.clocks | fmu in set rng M.fmus} in
-	let updatedSchedule = next_tm()
-	mu(I, 
-	schedule |-> I.schedule ++ )
-*/
+
+updateSchedule: Importer * set of Name -> Importer
+updateSchedule(I, fmus)==
+	if fmus = {} then I 
+	else
+	let name in set fmus in
+		let fmu = I.scenario.fmus(name) in
+			let relevantClocks = {c.ref | c in set fmu.clocks & c.interval in set { <tunable>, <changing>, <countdown> }} in
+				let scheduleEntries = recalculateSchedule(fmu, relevantClocks, {|->}) in
+					let I1 = mu(I, schedule |-> I.schedule ++ scheduleEntries) in
+						updateSchedule(I1, fmus \ {name})
+measure card fmus;
+
+recalculateSchedule: FMU * set of Ref * map FMURef to real -> map FMURef to real
+recalculateSchedule(fmu, clocks, schedule)== 
+	if clocks = {} then schedule
+	else
+	let clock in set clocks in
+		let S1 = schedule ++ {mk_FMURef(fmu.name, clock) |-> next_tm(fmu, clock)} in
+		recalculateSchedule(fmu, clocks \ {clock}, S1)
+measure card clocks; 
+
+
