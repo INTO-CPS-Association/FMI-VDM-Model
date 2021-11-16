@@ -508,16 +508,18 @@ functions
     /*
 		This function runs a co-simulation step after the step negotiation
 		Currently we do not support algebraic loops
-		It uses the runAlgorithm Function to execute the actions
+		It uses the runAlgorithm-function to execute the actions
 	*/
     cosimStep: Importer -> Importer
     cosimStep(I) ==
 	let connections = I.scenario.connections in
 		let fmus = rng I.scenario.fmus in
+		-- Calculate all the actions that should be performed in the co-simulation step
 		let outputs = {mk_Action(<get>, I.scenario.fmus(output.name), output.ref) | output in set dom connections & derefOutput(I.scenario.fmus(output.name), output.ref).type = <continous>},
 			inputs = {mk_Action(<set>, I.scenario.fmus(input.name), input.ref) | input in set rng connections & derefInput(I.scenario.fmus(input.name), input.ref).type = <continous>},
 			steps = {mk_Action(<step>, fmu, 1) | fmu in set fmus} in
-				runAlgorithm(I, outputs union inputs union steps)
+		let actions = outputs union inputs union steps in
+			runAlgorithm(I, actions)
 	pre 
 		let scenario = I.scenario in
 			(forall fmu in set rng scenario.fmus & fmu.mode = <STEP>) and variablesSynchronized(scenario) and fmusSynchronized(scenario)
@@ -536,7 +538,6 @@ functions
 		let action in set  {a | a in set algorithm & activatedAction(I, a)} in
 			runAlgorithm(runAction(I, action), algorithm \ {action})
 	measure card algorithm;
-
 	
 	/*
 		Runs a single action
