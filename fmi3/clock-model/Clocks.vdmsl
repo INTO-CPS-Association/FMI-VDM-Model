@@ -547,7 +547,7 @@ functions
 	cases A:
 		mk_Action(<get>, fmu, port) -> getPort(I, mk_FMURef(fmu.name, port)),
 		mk_Action(<set>, fmu, port) -> setPort(I, mk_FMURef(fmu.name, port)),
-		mk_Action(<step>, fmu, port) -> stepFMU(I, fmu), -- Nick can I sepcify that I don't care about the port here?
+		mk_Action(<step>, fmu, -) -> stepFMU(I, fmu),
 		mk_Action(<setC>, fmu, clock) -> setClock(I, fmu, clock, true),
 		mk_Action(<getC>, fmu, clock) -> queryClock(I, fmu, clock)
 	end;
@@ -600,7 +600,7 @@ functions
 		cases A:
 		mk_Action(<get>, fmu, port) -> preGetI(I, fmu, port),
 		mk_Action(<set>, fmu, port) -> preSetI(I, fmu, port),
-		mk_Action(<step>, fmu, port) -> preStepI(I, fmu),
+		mk_Action(<step>, fmu, -) -> preStepI(I, fmu),
 		mk_Action(<setC>, fmu, clock) -> preSetCI(I, fmu, clock),
 		mk_Action(<getC>, fmu, clock) -> preGetCI(I, fmu, clock)
 	end;
