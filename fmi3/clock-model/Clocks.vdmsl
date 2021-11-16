@@ -179,19 +179,26 @@
 		connections			: map FMURef to FMURef
 		clockConnections	: map FMURef to FMURef
 	inv m ==
-		(forall fmuref in set dom m.connections &
+		(forall srcRef in set dom m.connections &
 			-- Every connection's source is a known FMU
-			fmuref.name in set dom m.fmus
+			srcRef.name in set dom m.fmus
 			-- Every connection's source is an output from its FMU
-			and let fmu = m.fmus(fmuref.name) in exists v in set fmu.outputs & fmuref.ref = v.ref)
+			and 
+			let srcFMU = m.fmus(srcRef.name),
+				trgRef = m.connections(srcRef) in 
+				-- Every connection's destination is an input of its FMU
+				(exists v in set srcFMU.outputs & srcRef.ref = v.ref)
+				-- Every connection's destination is a known FMU
+				and trgRef.name in set dom m.fmus
+				and let trgFMU = m.fmus(trgRef.name) in 
+					(exists v in set trgFMU.inputs & trgRef.ref = v.ref)
+				and 
+				let output = derefOutput(srcFMU, srcRef.ref),
+					input = derefInput(trgFMU, trgRef.ref) in
+				output.type = input.type
+		)
 		and
-		(forall fmuref in set rng m.connections &
-			-- Every connection's destination is a known FMU
-			fmuref.name in set dom m.fmus
-			-- Every connection's destination is an input of its FMU
-			and let fmu = m.fmus(fmuref.name) in exists v in set fmu.inputs & fmuref.ref = v.ref)
-		and
-			(forall fmuref in set dom m.clockConnections &
+		(forall fmuref in set dom m.clockConnections &
 			-- Every connection's source is a known FMU
 			fmuref.name in set dom m.fmus
 			-- Every connection's source is an output from its FMU
