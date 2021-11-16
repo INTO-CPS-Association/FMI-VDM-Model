@@ -47,7 +47,7 @@
 	/**
 	 * The different types of actions
 	 */
-	ActionType = <get> | <set> | <step>;  
+	ActionType = <get> | <set> | <step> | <getC> | <setC> ;  
 
 	Action ::
 		actionType : ActionType
@@ -773,11 +773,32 @@ functions
 		 */
 		enterStepMode(I5, relevantFMUs)
 
-	pre card { fmu.time | fmu in set rng I.scenario.fmus } = 1;
+	pre card { fmu.time | fmu in set rng I.scenario.fmus } = 1 
+		and forall fmu in set rng I.scenario.fmus & fmu.mode = <STEP>;
 
+
+/*
+ * This function solves the active events by solving the system of equations
+ * It terminates when all active variables have been calculated
+ * Clock actions should also be performed before regular port actions.
+ */
 solveSystemOfEquations : Importer -> Importer
 solveSystemOfEquations(I)==
-	is not yet specified;
+	if I.activeEquations \ I.calculatedEquations = {} then I
+	else
+	let clockActions = { mk_Action(<setC>, I.scenario.fmus(clock.name), clock.ref) | clock in set I.relevantInputClocks }
+						union { mk_Action(<getC>, I.scenario.fmus(clock.name), clock.ref) | clock in set I.relevantOutputClocks } in
+		if clockActions <> {} and {a | a in set clockActions & activatedAction(I,a)} <> {} then
+			let clockAction in set {a | a in set clockActions & activatedAction(I, a)} in
+			solveSystemOfEquations(runAction(I, clockAction))
+		else
+			let portActions = {mk_Action(<set>, I.scenario.fmus(input.name), input.ref) | input in set I.activeEquations \ I.calculatedEquations }
+						union {mk_Action(<get>, I.scenario.fmus(output.name), output.ref) | output in set I.activeEquations \ I.calculatedEquations } in
+				let portAction in set {a | a in set portActions & activatedAction(I, a)} in
+					solveSystemOfEquations(runAction(I, portAction))
+	measure card (I.activeEquations \ I.calculatedEquations);
+
+
 
 updateSchedule: Importer * set of Name * set of Interval -> Importer
 updateSchedule(I, fmus, intervalSet)==
@@ -790,7 +811,6 @@ updateSchedule(I, fmus, intervalSet)==
 					let I1 = mu(I, schedule |-> I.schedule ++ scheduleEntries) in
 						updateSchedule(I1, fmus \ {name}, intervalSet)
 measure card fmus;
--- All 
 
 /*
 	Calculate a schedule for all time based clocks
@@ -812,11 +832,11 @@ calculateSchedule(fmu, clocks, schedule)==
 		calculateSchedule(fmu, clocks \ {clock}, S1)
 measure card clocks; 
 
-
-
 createFMURefs: FMU * set of Ref * set of FMURef -> set of FMURef
 createFMURefs(fmu, clocks, res)==
 	if clocks = {} then res
 	else let clock in set clocks in
 	createFMURefs(fmu, clocks \ {clock}, res union {mk_FMURef(fmu.name, clock)})
 measure card clocks;
+
+
