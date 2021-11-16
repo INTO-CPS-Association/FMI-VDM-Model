@@ -246,6 +246,8 @@
 		and dom imp.schedule = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> and clock.interval <> <triggered>}, {}) | fmu in set rng fmus }-- We only have time based clocks in the schedule
 		---and imp.activeEquations = {c.equations | c in set clocks & c.ref in set imp.activeClocks} -- Invariant for the paper TYPE MISMATCH
 		and imp.endtime >= imp.time -- The simulation cannot not proceed once the endtime is reached
+		and imp.activeEquations inter imp.readyEquations = {}
+		and imp.readyEquations inter imp.calculatedEquations = {}
 		;
 
 functions
