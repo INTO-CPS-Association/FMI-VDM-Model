@@ -135,15 +135,12 @@
 		clocks				: set of Clock		-- Ucm + Ycm
 		inputs				: set of Variable	-- Um 
         outputs             : set of Variable   -- Ym
-		vars 				: set of Variable
-		mode				: <INIT> | <DONE> | <STEP> | <EVENT>
+		mode				: <INIT> | <DONE> | <STEP> | <EVENT> -- Mode of the FMU
 		time				: Time				-- time is per FMU
         maxStep             : real				-- How far can the FMU step
 		env					: Environment
-		nextScheduledTick	: [Time]
-		nextScheduledClocks	: set of Ref
-		activeClocks		: set of Ref
-		activeEquations		: set of Equation
+		activeClocks		: set of Ref		-- 
+		activeEquations		: set of Equation	-- I think this needs to be a set of reference
 	inv fmu ==
 		let vars = fmu.inputs union fmu.outputs in
 		let crefs = { c.ref | c in set fmu.clocks },
@@ -153,22 +150,22 @@
             -- The maximal step cannot be negative
             fmu.maxStep >= 0.0
 			-- All clock and variable references are unique
-			and card refs = card fmu.clocks + card fmu.vars
+			and card refs = card fmu.clocks + card vars
 			-- All references in the environment are defined
 			and (dom fmu.env subset refs)
 			-- All active clocks are defined
 			and (fmu.activeClocks subset crefs)
 			-- A clock can only be active when the fmu is in event mode
 			and (fmu.mode <> <EVENT> => fmu.activeClocks = {})
+			-- An equation can only be active when the fmu is in event mode
+			and (fmu.mode <> <EVENT> => fmu.activeEquations = {})
 			-- All variables' clocks are defined
-			and (forall var in set fmu.vars & var.clocks subset crefs)
+			and (forall var in set vars & var.clocks subset crefs)
 			-- An active variable is active by a clock Todo
 			--and (forall (cref |-> val) in set fmu.activeEquations 
 			---		& exists c in set fmu.clocks & c.ref in set fmu.activeClocks and equation in set c.equations)
 			-- All scheduled clocks are defined
-			and (if fmu.nextScheduledTick = nil
-				 then fmu.nextScheduledClocks = {}
-				 else fmu.nextScheduledClocks subset crefs);
+			;
 
 	/**
 	 * A machine is a collection of FMUs, plus a connection map between them. The connection
