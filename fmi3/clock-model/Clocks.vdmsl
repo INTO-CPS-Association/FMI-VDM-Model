@@ -50,7 +50,7 @@
 	ActionType = <get> | <set> | <step> | <getC> | <setC> ;  
 
 	/*
-		An FMU action
+		An FMU action has a type and some infomration describe the paramters of the actions
 	*/
 	Action ::
 		actionType : ActionType
@@ -82,9 +82,12 @@
 	Environment = map Ref to Value;
 
 	/**
-	 * The value that a clock or variable can have. Simplified for now.
+	 * The value that a clock or variable can have. 
+	 * It contains a time and a value
 	 */
-	Value = real | int | bool;
+	Value ::
+		value : real | int | bool
+		time : Time;
 
 	/**
 	 * An Equation is used to modify the values of an FMU in order to compute a new
@@ -220,6 +223,7 @@
 		relevantInputClocks  : set of FMURef -- All Input clocks the Importer must update because their output changed 
 		activeEquations : set of FMURef -- All active equations 
 		calculatedEquations : set of FMURef -- The equations the Importer has calculated
+		readyEquations : set of FMURef -- The equations that can be activated
 		time : Time -- Simulation Time
 		endtime : Time
 		stepSize : real -- Planned step size
@@ -250,7 +254,6 @@ functions
 	 * on an API are modelled by preconditions or type invariants.
 	 */
 
-    -- We should never calculate the equations when we are not in event mode
 	set_m: FMU * Ref * Value +> FMU
 	set_m(fmu, ref, val) ==
 		mu(fmu, env |-> fmu.env ++ { ref |-> val })
@@ -266,12 +269,12 @@ functions
 	set_cm: FMU * Ref * bool +> FMU
 	set_cm(fmu, ref, val) ==
 		mu(fmu,
-			env				|-> fmu.env ++ { ref |-> val },
+			env				|-> fmu.env ++ {ref |-> mk_Value(val, fmu.time)},
 			activeClocks	|-> if val then fmu.activeClocks union {ref} else fmu.activeClocks \ {ref})
 	pre preSetC(fmu, ref, val)
 	post val <=> ref in set fmu.activeClocks;
 
-	get_cm: FMU * Ref +> FMU * bool
+	get_cm: FMU * Ref +> FMU * Value
 	get_cm(fmu, ref) ==
 		mk_(fmu, fmu.env(ref))
 	pre preGetC(fmu, ref);
@@ -280,18 +283,21 @@ functions
 	step_tm(fmu, step) ==
         if step >= fmu.maxStep then mk_(fmu, fmu.maxStep, true) -- We should at it to the set of FMUs that wants to enter event mode
         else mk_(fmu, step, false)
-	pre preStep(fmu, step)
+	pre preStepT(fmu, step)
 	post RESULT.#2 <= step -- We cannot take a step larger than what the Importer requested
         and RESULT.#2 <= fmu.maxStep; -- We cannot take a step larger than what the FMU is capable of
 		
 	step_e: FMU +> FMU * bool
 	step_e(fmu) ==
 		is not yet specified
-	pre fmu.mode = <EVENT>
+	pre preStepE(fmu)
 	post RESULT.#1.mode = <EVENT> 		-- FMU remains in event mode - it always does the Importer should bring it out
         and RESULT.#1.time.i = fmu.time.i + 1 -- The Integer component of the FMU should be increased
 		and RESULT.#1.activeClocks = {} ; -- All clocks get disabled when we step the FMU
 
+	/*
+	 * 
+	 */
 	next_tm: FMU * Ref +> real | <NaN>
 	next_tm(fmu, ref) ==
 		is not yet specified
@@ -305,20 +311,17 @@ functions
 	updateDiscreteState(I,fmus) ==
 		let M = I.scenario in
 		let res = {fmu |-> step_e(M.fmus(fmu)) | fmu in set dom M.fmus & fmu in set fmus} in 
-		let fmuMap = { fmu |-> res(fmu).#1 | fmu in set dom res} in
-		let eventFMUs = { fmu | fmu in set dom res & res(fmu).#2 = true} in
-		-- All the FMUs should be used as the FMUs
+		let fmuMap = { fmu |-> res(fmu).#1 | fmu in set dom res}, 
+			eventFMUs = { fmu | fmu in set dom res & res(fmu).#2 = true} -- fmus that triggered an event
+		in
 		mu(I, 
 			scenario |-> mu(I.scenario, fmus |-> fmuMap),
 			fmusWithEvent |-> eventFMUs
 		)
-	pre forall m' in set rng I.scenario.fmus & m'.mode = <EVENT>;
- 
-    /* All inputs must have a value to be stepped */
-    inputsDefined: FMU -> bool
-    inputsDefined(fmu) ==
-        forall input in set fmu.inputs & input.ref in set dom fmu.env;
-
+	pre (forall m' in set rng I.scenario.fmus & m'.name in set fmus and m'.mode = <EVENT>)
+		and card {m'.time | m' in set rng I.scenario.fmus & m'.name in set fmus} = 1
+	post (forall m' in set rng I.scenario.fmus & m'.name in set fmus and m'.mode = <EVENT>) 
+		and card {m'.time | m' in set rng I.scenario.fmus & m'.name in set fmus} = 1;
 	/**
 	 * Dereference a clock in a given FMU.
 	 */
@@ -363,7 +366,7 @@ functions
 	post forall m' in set rng I.scenario.fmus & m'.time.i = 0 
 		and m'.mode = <STEP>;
 
-    -- All connections shall be synchronized so meaning their value should be identical
+    -- All connections shall be synchronized meaning their value should be identical
     variablesSynchronized: Machine -> bool
     variablesSynchronized(M) ==
         forall srcPort in set dom M.connections &
@@ -384,6 +387,9 @@ functions
 	pre clocks subset I.readyClocks inter I.relevantInputClocks
 	measure card clocks;
 
+	/*
+	 * This function queries the clock to check its activation status
+	 */
 	queryClock: Importer * FMU * Ref -> Importer
 	queryClock(I, fmu, clock)==
 		let mk_(fmuUpdated, val) = get_cm(fmu, clock),
@@ -395,10 +401,14 @@ functions
 			relevantOutputClocks |-> I.relevantOutputClocks \ {fmuref},
 			relevantInputClocks |-> I.relevantInputClocks union {connectedClock}
 		) in
-		updateEnvironmentClock(I1, fmuUpdated, clock, val)
-	pre mk_FMURef(fmu.name,clock) in set I.relevantOutputClocks; -- a clock should be relevant if we should query it
+		updateEnvironmentClock(I1, fmuUpdated, clock, val.value)
+	pre mk_FMURef(fmu.name,clock) in set I.relevantOutputClocks -- a clock should be relevant if we should query it
+		and clock in set {c.ref | c in set fmu.clocks & c.type = <input>}; 
 
 
+	/*
+	 * This function sets the activation status of the clock
+	 */
 	setClock : Importer * FMU * Ref * bool -> Importer
 	setClock(I, fmu, clock, val)==
 		let fmuUpdated = set_cm(fmu,clock, val),
@@ -413,6 +423,9 @@ functions
 	pre mk_FMURef(fmu.name,clock) in set I.relevantInputClocks -- a clock should be relevant if we should query it
 		and val <=> mk_FMURef(fmu.name,clock) in set I.inactiveClocks inter I.readyClocks;
 
+	/*
+	 * This function updates the Importer's environment according to observed clock value
+	 */
 	updateEnvironmentClock : Importer * FMU * Ref * bool -> Importer
 	updateEnvironmentClock(I, fmu, clock, val)==
 		let fmuref = mk_FMURef(fmu.name, clock),
@@ -422,10 +435,11 @@ functions
 			activeClocks |-> if val then I.activeClocks union {fmuref} else I.activeClocks \ {fmuref},
 			readyClocks |-> if val then I.readyClocks \ {fmuref} else I.readyClocks,
 			inactiveClocks |-> if val then I.inactiveClocks \ {fmuref} else I.inactiveClocks union {fmuref},
-			activeEquations |-> if val then I.activeEquations union activatedVariables else I.activeEquations \ activatedVariables	
+			activeEquations |-> if val then I.activeEquations union activatedVariables else I.activeEquations \ activatedVariables,
+			readyEquations |-> if val then I.readyEquations \ activatedVariables else I.readyEquations
 		)
-	pre mk_FMURef(fmu.name,clock) in set I.relevantInputClocks
-		or mk_FMURef(fmu.name,clock) in set I.relevantOutputClocks;
+	pre let fmuRef = mk_FMURef(fmu.name,clock) in 
+		fmuRef in set I.relevantInputClocks or fmuRef in set I.relevantOutputClocks;
 
 	/*
 	* Calculates an input equation that needs to be calculated
@@ -590,7 +604,7 @@ functions
 
 	preStepI: Importer * FMU -> bool
 	preStepI(I, fmu)==
-		preStep(fmu, I.stepSize);
+		preStepT(fmu, I.stepSize);
 
 	preGetCI: Importer * FMU * Ref -> bool
 	preGetCI(I, fmu, clock) ==
@@ -602,27 +616,38 @@ functions
 	preSetCI(I, fmu, clock) ==
 		let input = mk_FMURef(fmu.name, clock) in
 		let val = I.valueMap(input) in
-			preSetC(fmu, clock, val) and input in set I.relevantInputClocks;
+			preSetC(fmu, clock, val.value) and input in set I.relevantInputClocks;
 
 
 	/*
-		The preconditions of the actions from the paper
+		The preconditions of the actions from the paper - notice that the actions are only valid when the FMUs are not in the done state
 	*/
+
 	preSet: FMU * Ref -> bool
 	preSet(fmu, input)==
 		exists v in set fmu.inputs & v.ref = input and v.causality = <input>
 			and fmu.mode <> <DONE>;
 	
+	/*
+		An p
+	 */
 	preGet: FMU * Ref -> bool
 	preGet(fmu, ref)==
 		let output = derefOutput(fmu, ref) in
 		exists v in set fmu.outputs & v.ref = ref and v.causality = <output>
 			and fmu.mode <> <DONE>
-			and feedthroughSatisfied(fmu.inputs, output);
+			and feedthroughSatisfied(fmu, output);
 
-	preStep: FMU * real -> bool
-	preStep(fmu, stepSize)==
-		inputsDefined(fmu) and stepSize >= 0.0 and fmu.mode = <STEP>;
+	preStepT: FMU * real -> bool
+	preStepT(fmu, stepSize)==
+		forall i in set fmu.inputs &
+			 		(i.contract = <reactive> => fmu.env(i.ref).time.r = fmu.time.r + stepSize)
+					and (i.contract = <delayed> => fmu.env(i.ref).time = fmu.time)
+			and stepSize >= 0.0 and fmu.mode = <STEP>;
+
+	preStepE: FMU -> bool
+	preStepE(fmu)==
+		fmu.mode = <EVENT>;
 
 	preSetC: FMU * Ref * bool -> bool
 	preSetC(fmu, clock, val)==
@@ -634,11 +659,12 @@ functions
 	 	exists v in set fmu.clocks & v.ref = clock and v.type = <output>
 		 and fmu.mode = <EVENT>; -- We can only get an output clock
 
-	feedthroughSatisfied : set of Variable * Variable -> bool
-	feedthroughSatisfied(inputs, output)==
-		forall i in set inputs & i.ref in set output.dependsOn
-			--and fmu.env(i)
-	pre forall i in set inputs & i.causality = <input>;
+	feedthroughSatisfied : FMU * Variable -> bool
+	feedthroughSatisfied(fmu, output)==
+		forall i in set fmu.inputs & i.ref in set output.dependsOn 
+			and (i.contract = <reactive> => fmu.env(i.ref).time >= fmu.time)
+			and (i.contract = <delayed> => fmu.env(i.ref).time = fmu.time)
+	pre forall i in set fmu.inputs & i.causality = <input>;
 
 	/*
 	 * This is the initialization procedure that makes the scenario ready for simulation
@@ -766,7 +792,31 @@ functions
 		 */
 
 		let I2 = activateClocks(I1, clocks) in
+		/*
+			The event Iteration solves the system of equations, updates the schedule and the discrete state of the FMUs
+		 */
+		let I3 = eventIteration(I2, relevantFMUs) in
 
+		/**
+		 * 6. If any m in set M wishes to repeat the event iteration, or if a clock returned a
+		 *    zero interval, go to Step 3 (start iteration t.i + 1).
+		 */
+
+		if I3.fmusWithEvent <> {} 
+			then enterStepMode(I3, relevantFMUs)
+		else clockedSimulationAlgorithm(I, clocks)
+
+	pre fmusSynchronized(I.scenario)
+		and forall fmu in set rng I.scenario.fmus & fmu.mode = <STEP>
+		and (I.fmusWithEvent <> {} or clocks <> {}) 
+	post fmusSynchronized(I.scenario)
+		and forall fmu in set rng I.scenario.fmus & fmu.mode = <STEP>
+	-- I do not know the measure - it has something to do with the events that FMUs trigger
+	measure is not yet specified;
+
+
+eventIteration : Importer * set of Name -> Importer
+eventIteration(I, relevantFMUs)==
 		/**
 		 * 3. Construct and solve system of equations for t.i :
 		 * 		(a) For all ycm in set Ycm of any instance m in set M, forward activation state of
@@ -779,28 +829,20 @@ functions
 		 *		    for any instance m in set M.
 		 */
 
-		let I3 = solveSystemOfEquations(I2) in
-
+		let I1 = solveSystemOfEquations(I) in
 		/**
 		 * 4. Invoke step_e(_) for m in set M (signals end of Event iteration t.i).
 		*/
-		let I4 = updateDiscreteState(I3, relevantFMUs) in
+		let I2 = updateDiscreteState(I1, relevantFMUs) in
 
 		/**
 			* 5. Schedule clocks by invoking next_tm on every relevant clock, for m in set M.
 		*/
-		let I5 = updateSchedule(I4, relevantFMUs, { <tunable>, <changing>, <countdown> }) in
-
-		/**
-		 * 6. If any m in set M wishes to repeat the event iteration, or if a clock returned a
-		 *    zero interval, go to Step 3 (start iteration t.i + 1).
-			 if(M4.fmusWithEvent <> {} )
-
-		 */
-		enterStepMode(I5, relevantFMUs)
-
+		updateSchedule(I2, relevantFMUs, { <tunable>, <changing>, <countdown> })
 	pre fmusSynchronized(I.scenario)
-		and forall fmu in set rng I.scenario.fmus & fmu.mode = <STEP>;
+		and forall fmu in set rng I.scenario.fmus & fmu.mode = <EVENT>
+	post forall fmu in set rng I.scenario.fmus & fmu.mode = <EVENT>
+		and I.activeEquations \ I.calculatedEquations = {};
 
 
 /*
@@ -822,10 +864,12 @@ solveSystemOfEquations(I)==
 						union {mk_Action(<get>, I.scenario.fmus(output.name), output.ref) | output in set I.activeEquations \ I.calculatedEquations } in
 				let portAction in set {a | a in set portActions & activatedAction(I, a)} in
 					solveSystemOfEquations(runAction(I, portAction))
-	measure card (I.activeEquations \ I.calculatedEquations);
+	measure card I.readyEquations + card (I.activeEquations \ I.calculatedEquations);
 
 
-
+/*
+	This function updates the schedule
+*/
 updateSchedule: Importer * set of Name * set of Interval -> Importer
 updateSchedule(I, fmus, intervalSet)==
 	if fmus = {} then I 
@@ -846,16 +890,28 @@ createSchedule(I) ==
 	let fmus = dom I.scenario.fmus in 
 		updateSchedule(I, fmus, {<constant>, <fixed>, <calculated>, <tunable>, <changing>, <countdown>})
 pre forall m' in set rng I.scenario.fmus & m'.mode = <INIT>
-post dom RESULT.schedule = 
-	dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> and clock.interval <> <triggered>}, {}) | fmu in set rng I.scenario.fmus };  -- all time-based clocks must have a schedule
+	and fmusSynchronized(I.scenario)
+	and variablesSynchronized(I.scenario)
+post 
+	let timeBasedClocks = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> and clock.interval <> <triggered>}, {}) | fmu in set rng I.scenario.fmus}
+	in 
+	dom RESULT.schedule = timeBasedClocks
+	  -- all time-based clocks must have a schedule
+	and (forall m' in set rng I.scenario.fmus & m'.mode = <INIT>)
+	and fmusSynchronized(I.scenario)
+	and variablesSynchronized(I.scenario);
 
 calculateSchedule: FMU * set of Ref * map FMURef to real -> map FMURef to real
 calculateSchedule(fmu, clocks, schedule)== 
 	if clocks = {} then schedule
 	else
 	let clock in set clocks in
-		let S1 = schedule ++ {mk_FMURef(fmu.name, clock) |-> next_tm(fmu, clock)} in
+		let fmuRef = mk_FMURef(fmu.name, clock) in
+		let S1 = schedule ++ {fmuRef |-> next_tm(fmu, clock)} in
 		calculateSchedule(fmu, clocks \ {clock}, S1)
+pre 
+let cref = {c.ref | c in set fmu.clocks & c.type = <input> and c.interval <> <triggered> } in 
+	clocks subset cref
 measure card clocks; 
 
 createFMURefs: FMU * set of Ref * set of FMURef -> set of FMURef
