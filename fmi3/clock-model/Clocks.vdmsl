@@ -49,6 +49,9 @@
 	 */
 	ActionType = <get> | <set> | <step> | <getC> | <setC> ;  
 
+	/*
+		An FMU action
+	*/
 	Action ::
 		actionType : ActionType
 		fmu : FMU
@@ -218,6 +221,7 @@
 		activeEquations : set of FMURef -- All active equations 
 		calculatedEquations : set of FMURef -- The equations the Importer has calculated
 		time : Time -- Simulation Time
+		endtime : Time
 		stepSize : real -- Planned step size
 		valueMap : map FMURef to Value
 	inv imp ==
@@ -237,6 +241,7 @@
 		--and imp.activeEquations = dunion {fmu.activeEquations | fmu in set rng fmus} -- Equations are actived by the clocks
 		and dom imp.schedule = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> and clock.interval <> <triggered>}, {}) | fmu in set rng fmus }-- We only have time based clocks in the schedule
 		---and imp.activeEquations = {c.equations | c in set clocks & c.ref in set imp.activeClocks} -- Invariant for the paper TYPE MISMATCH
+		and imp.endtime >= imp.time -- The simulation cannot not proceed once the endtime is reached
 		;
 
 functions
@@ -501,14 +506,14 @@ functions
 
 	
 	/*
-		Function to run a single action
+		Runs a single action
 	*/
 	runAction: Importer * Action -> Importer
 	runAction(I, A)==
 	cases A:
 		mk_Action(<get>, fmu, port) -> getPort(I, mk_FMURef(fmu.name, port)),
 		mk_Action(<set>, fmu, port) -> setPort(I, mk_FMURef(fmu.name, port)),
-		mk_Action(<step>, fmu, port) -> stepFMU(I, fmu),
+		mk_Action(<step>, fmu, port) -> stepFMU(I, fmu), -- Nick can I sepcify that I don't care about the port here?
 		mk_Action(<setC>, fmu, clock) -> setClock(I, fmu, clock, true),
 		mk_Action(<getC>, fmu, clock) -> queryClock(I, fmu, clock)
 	end;
@@ -571,15 +576,21 @@ functions
 	*/
 	preSetI: Importer * FMU * Ref -> bool
 	preSetI(I, fmu, port)==
-		is not yet specified;
+		let input = derefInput(fmu, port) in
+		(fmu.mode = <EVENT> <=> mk_FMURef(fmu.name, port) in set (I.activeEquations \ I.calculatedEquations) and input.type = <discrete>)
+			and (fmu.mode = <STEP> <=> input.type = <continous>)
+			and preSet(fmu, port);
 
 	preGetI: Importer * FMU * Ref -> bool
 	preGetI(I, fmu, port)==
-		is not yet specified;
+		let output = derefOutput(fmu, port) in
+		(fmu.mode = <EVENT> <=> mk_FMURef(fmu.name, port) in set (I.activeEquations \ I.calculatedEquations) and output.type = <discrete>)
+			and (fmu.mode = <STEP> <=> output.type = <continous>)
+			and preGet(fmu, port);
 
 	preStepI: Importer * FMU -> bool
 	preStepI(I, fmu)==
-		inputsDefined(fmu);
+		preStep(fmu, I.stepSize);
 
 	preGetCI: Importer * FMU * Ref -> bool
 	preGetCI(I, fmu, clock) ==
@@ -603,9 +614,11 @@ functions
 			and fmu.mode <> <DONE>;
 	
 	preGet: FMU * Ref -> bool
-	preGet(fmu, output)==
-		exists v in set fmu.outputs & v.ref = output and v.causality = <output>
-			and fmu.mode <> <DONE>;
+	preGet(fmu, ref)==
+		let output = derefOutput(fmu, ref) in
+		exists v in set fmu.outputs & v.ref = ref and v.causality = <output>
+			and fmu.mode <> <DONE>
+			and feedthroughSatisfied(fmu.inputs, output);
 
 	preStep: FMU * real -> bool
 	preStep(fmu, stepSize)==
@@ -618,8 +631,14 @@ functions
 
 	preGetC: FMU * Ref -> bool
 	preGetC(fmu, clock)==
-	 	exists v in set fmu.clocks & v.ref = clock and v.type = <output>; -- We can only get an output clock
+	 	exists v in set fmu.clocks & v.ref = clock and v.type = <output>
+		 and fmu.mode = <EVENT>; -- We can only get an output clock
 
+	feedthroughSatisfied : set of Variable * Variable -> bool
+	feedthroughSatisfied(inputs, output)==
+		forall i in set inputs & i.ref in set output.dependsOn
+			--and fmu.env(i)
+	pre forall i in set inputs & i.causality = <input>;
 
 	/*
 	 * This is the initialization procedure that makes the scenario ready for simulation
@@ -640,11 +659,10 @@ functions
          */
         enterStepMode(I2, dom I2.scenario.fmus)
 	pre forall m' in set rng I.scenario.fmus & m'.mode = <INIT> 
-		and card { fmu.time | fmu in set rng I.scenario.fmus } = 1
+		and fmusSynchronized(I.scenario)
     post forall m' in set rng RESULT.scenario.fmus & m'.mode = <STEP> 
 		and variablesSynchronized(RESULT.scenario) 
-		and card { fmu.time | fmu in set rng I.scenario.fmus } = 1;
-
+		and fmusSynchronized(RESULT.scenario);
 
 	/*
 		This function calculates the set of clocks that should be ticked
@@ -682,14 +700,22 @@ functions
         /*
             Perform the rest of the simulation
         */
-		cosimStep(I3)
-		
+		let I4 = cosimStep(I3) in
+
+		if I4.endtime >= I4.time 
+			then cosimulationStep(I4) 
+		else I4
 	pre forall m' in set rng I.scenario.fmus & m'.mode = <STEP> 
 		and variablesSynchronized(I.scenario) 
-		and card { fmu.time | fmu in set rng I.scenario.fmus } = 1
+		and fmusSynchronized(I.scenario)
     post forall m' in set rng RESULT.scenario.fmus & m'.mode = <STEP> 
 		and variablesSynchronized(RESULT.scenario) 
-		and card { fmu.time | fmu in set rng I.scenario.fmus } = 1;
+		and fmusSynchronized(RESULT.scenario)
+	measure I.endtime.r - I.time.r;
+
+	fmusSynchronized: Machine -> bool
+	fmusSynchronized(M) ==
+		 card { fmu.time | fmu in set rng M.fmus } = 1;
 
 
     -- Calculate an appropiate step duration that all FMUs can take
@@ -773,7 +799,7 @@ functions
 		 */
 		enterStepMode(I5, relevantFMUs)
 
-	pre card { fmu.time | fmu in set rng I.scenario.fmus } = 1 
+	pre fmusSynchronized(I.scenario)
 		and forall fmu in set rng I.scenario.fmus & fmu.mode = <STEP>;
 
 
