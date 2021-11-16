@@ -451,8 +451,12 @@ functions
 	calculateInput(I, equation)==
 		let I1 = setPort(I, equation) in
 			updateEnvironmentEquation(I1, I.scenario.fmus(equation.name), equation)
-	pre equation in set I.activeEquations \ I.calculatedEquations -- The value should be active and not calculated before
-		and equation in set dom I.valueMap; -- A value to set should be accessible
+	pre 
+		let fmu = I.scenario.fmus(equation.name) in
+			equation in set I.activeEquations \ I.calculatedEquations -- The value should be active and not calculated before
+			and equation in set dom I.valueMap -- A value to set should be accessible
+			and fmu.mode = <EVENT>
+			and (exists v in set fmu.inputs & v.ref = equation.ref and v.type = <discrete>); 
 
 	/*
 	* Calculates an output equation that needs to be calculated.
@@ -462,7 +466,11 @@ functions
 	calculateOutput(I, equation)==
 		let I1 = getPort(I, equation) in
 			updateEnvironmentEquation(I1, I.scenario.fmus(equation.name), equation)
-	pre equation in set I.activeEquations \ I.calculatedEquations;
+	pre 
+		let fmu = I.scenario.fmus(equation.name) in
+		equation in set I.activeEquations \ I.calculatedEquations
+		and fmu.mode = <EVENT>
+		and (exists v in set fmu.outputs & v.ref = equation.ref and v.type = <discrete>); 
 
 	updateEnvironmentEquation : Importer * FMU * FMURef -> Importer
 	updateEnvironmentEquation(I, fmu, equation)==
@@ -506,11 +514,16 @@ functions
 			inputs = {mk_Action(<set>, I.scenario.fmus(input.name), input.ref) | input in set rng connections & derefInput(I.scenario.fmus(input.name), input.ref).type = <continous>},
 			steps = {mk_Action(<step>, fmu, 1) | fmu in set fmus} in
 				runAlgorithm(I, outputs union inputs union steps)
-	pre forall fmu in set rng I.scenario.fmus & fmu.mode = <STEP> and variablesSynchronized(I.scenario)
-    post forall fmu in set rng I.scenario.fmus & fmu.mode = <STEP> and variablesSynchronized(RESULT.scenario);
+	pre 
+		let scenario = I.scenario in
+			(forall fmu in set rng scenario.fmus & fmu.mode = <STEP>) and variablesSynchronized(scenario) and fmusSynchronized(scenario)
+    post 
+		let scenario = RESULT.scenario in
+			(forall fmu in set rng scenario.fmus & fmu.mode = <STEP>) and variablesSynchronized(scenario) and fmusSynchronized(scenario);
 
 	/*
 		Function to run a set of actions (algorithm) until completion
+		We pick an enabled action and perform it until the set of actions is empty
 	*/
 	runAlgorithm : Importer * set of Action -> Importer
 	runAlgorithm(I, algorithm)==
