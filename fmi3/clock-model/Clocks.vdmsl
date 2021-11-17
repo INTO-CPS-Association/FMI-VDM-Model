@@ -328,18 +328,15 @@ functions
 		)
 	pre
 	let relevantFMUs = rng (fmus  <: I.scenario.fmus) in
-		assertFMUMode(relevantFMUs, <EVENT>)
+		assertFMUMode(relevantFMUs, {<EVENT>})
 		and fmusSynchronized(relevantFMUs)
 	post 
-	let relevantFMUs = rng (fmus  <: RESULT.scenario.fmus),
+	let newFmus = rng (fmus  <: RESULT.scenario.fmus),
 		oldFMUs = rng (fmus  <: I.scenario.fmus)
 	in
-		assertFMUMode(relevantFMUs, <EVENT>)
-		and fmusSynchronized(relevantFMUs)
-		and forall fmu in set relevantFMUs & 
-			exists1 oldFMU in set oldFMUs & oldFMU.name = fmu.name 
-				and oldFMU.time.r = fmu.time.r
-				and	oldFMU.time.i + 1 = fmu.time.i;
+		assertFMUMode(newFmus, {<EVENT>})
+		and fmusSynchronized(newFmus)
+		and timeAdvanced(newFmus, oldFMUs, true);
 
 	/**
 	 * Dereference a clock in a given FMU.
@@ -379,18 +376,23 @@ functions
 	 */
 	enterStepMode: Importer * set of Name -> Importer
 	enterStepMode(I, fmus) ==
-		mu(I, scenario |-> mu(I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <EVENT>) | name in set dom I.scenario.fmus & name in set fmus }))
-	pre forall m' in set rng I.scenario.fmus & m'.time.i = 0 
-		and m'.mode in set {<INIT>, <EVENT>}
-	post forall m' in set rng I.scenario.fmus & m'.time.i = 0 
-		and m'.mode = <STEP>;
+		mu(I, scenario |-> mu(I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <EVENT>) | name in set fmus }))
+	pre 
+		let relevantFMUs = rng (fmus <: I.scenario.fmus) in
+		assertFMUMode(relevantFMUs, {<INIT>, <EVENT>})
+		and forall m' in set relevantFMUs & m'.time.i = 0 
+	post 
+		let relevantFMUs = rng (fmus <: RESULT.scenario.fmus) in
+		assertFMUMode(relevantFMUs, {<STEP>})
+		and 
+		forall m' in set relevantFMUs & m'.time.i = 0;
 
 	/**
 	 * Activate the clocks in all FMUs that are due to tick at this time.
 	 * All clocks should be input clocks
 	 */
 	activateClocks: Importer * set of FMURef -> Importer 
-	activateClocks(I, clocks)==
+	activateClocks(I, clocks) ==
 		if clocks = {} then I
 		else 
 		let clock in set clocks in
@@ -508,8 +510,15 @@ functions
 		let outputs = {mk_Action(<get>, I.scenario.fmus(output.name), output.ref) | output in set dom connections},
 			inputs = {mk_Action(<set>, I.scenario.fmus(input.name), input.ref) | input in set rng connections} in
 				runAlgorithm(I, outputs union inputs)
-	pre forall fmu in set rng I.scenario.fmus & fmu.mode = <INIT>
-    post variablesSynchronized(RESULT.scenario);
+	pre 
+	let fmus = rng I.scenario.fmus in
+		assertFMUMode(fmus, {<INIT>})
+		and fmusSynchronized(fmus)
+	post 
+	let fmus = rng RESULT.scenario.fmus in
+		assertFMUMode(fmus, {<INIT>})
+		and fmusSynchronized(fmus)
+		and variablesSynchronized(RESULT.scenario);
 
     /*
 		This function runs a co-simulation step after the step negotiation
@@ -527,11 +536,15 @@ functions
 		let actions = outputs union inputs union steps in
 			runAlgorithm(I, actions)
 	pre 
-		let scenario = I.scenario in
-			(forall fmu in set rng scenario.fmus & fmu.mode = <STEP>) and variablesSynchronized(scenario) and fmusSynchronized(rng scenario.fmus)
+		let scenario = I.scenario, fmus = rng scenario.fmus in
+			assertFMUMode(fmus, {<STEP>}) and variablesSynchronized(scenario) and fmusSynchronized(fmus)
     post 
-		let scenario = RESULT.scenario in
-			(forall fmu in set rng scenario.fmus & fmu.mode = <STEP>) and variablesSynchronized(scenario) and fmusSynchronized(rng scenario.fmus);
+		let scenario = RESULT.scenario, fmus = rng scenario.fmus in
+			assertFMUMode(fmus, {<STEP>}) 
+				and variablesSynchronized(scenario) 
+				and fmusSynchronized(fmus)
+				and timeAdvanced(fmus, rng I.scenario.fmus, false);
+-- All variables have been exhanged 
 
 	/*
 		Function to run a set of actions (algorithm) until completion
@@ -668,15 +681,16 @@ functions
 		else I4
 	pre 
 	let fmus = rng I.scenario.fmus in
-		assertFMUMode(fmus, <STEP>)
+		assertFMUMode(fmus, {<STEP>})
 		and variablesSynchronized(I.scenario) 
 		and fmusSynchronized(fmus)
     post 
-		let fmus = rng RESULT.scenario.fmus in
-		assertFMUMode(fmus, <STEP>)
+		let fmus = rng RESULT.scenario.fmus,
+			oldFMUs = rng I.scenario.fmus in
+		assertFMUMode(fmus, {<STEP>})
 		and variablesSynchronized(RESULT.scenario) 
 		and fmusSynchronized(fmus)
-		-- We need to make sure that we have progressed in time
+		and timeAdvanced(fmus, oldFMUs, false)
 	measure I.endtime.r - I.time.r;
 
     -- Calculate an appropiate step duration that all FMUs can take
@@ -747,12 +761,12 @@ functions
 	pre 
 		let fmus = rng I.scenario.fmus in
 		fmusSynchronized(fmus)
-		and assertFMUMode(fmus, <STEP>)
+		and assertFMUMode(fmus, {<STEP>})
 		and (I.fmusWithEvent <> {} or clocks <> {}) -- An event is active
 	post 		
 		let fmus = rng RESULT.scenario.fmus in
 		fmusSynchronized(fmus)
-		and assertFMUMode(fmus, <STEP>)
+		and assertFMUMode(fmus, {<STEP>})
 	-- I do not know the measure - it has something to do with the events that FMUs trigger
 	measure is not yet specified;
 
@@ -784,9 +798,11 @@ eventIteration(I, relevantFMUs)==
 	pre 
 		let fmus = rng (relevantFMUs <: I.scenario.fmus) in
 		fmusSynchronized(fmus)
-		and assertFMUMode(fmus, <EVENT>)
-	post eventSolved(RESULT, relevantFMUs, I.scenario.fmus);
-
+		and assertFMUMode(fmus, {<EVENT>})
+	post 
+		let newfmus = rng (relevantFMUs <: RESULT.scenario.fmus),
+			oldfmus = rng (relevantFMUs <: I.scenario.fmus)
+		in eventSolved(RESULT, newfmus, oldfmus);
 
 
 /*
@@ -835,7 +851,7 @@ createSchedule(I) ==
 		updateSchedule(I, fmus, {<constant>, <fixed>, <calculated>, <tunable>, <changing>, <countdown>})
 pre 
 	let fmus = rng I.scenario.fmus in
-	assertFMUMode(fmus, <INIT>)
+	assertFMUMode(fmus, {<INIT>})
 	and fmusSynchronized(fmus)
 	and variablesSynchronized(I.scenario)
 post 
@@ -845,7 +861,7 @@ post
 	in 
 	dom RESULT.schedule = timeBasedClocks
 	  -- all time-based clocks must have a schedule
-	and assertFMUMode(fmus, <INIT>)
+	and assertFMUMode(fmus, {<INIT>})
 	and fmusSynchronized(fmus)
 	and variablesSynchronized(I.scenario);
 

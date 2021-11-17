@@ -37,7 +37,7 @@ functions
 
 	/*
 	 * Is an Action activated?
-	 * It is if its precondition is satisfied
+	 * It is if the Importer think that its precondition is satisfied
 	 */
 	isActionEnabled : Importer * Action -> bool
 	isActionEnabled(I, A) ==
@@ -50,7 +50,9 @@ functions
 	end;
 
 	/*
-		The preconditions of the actions from the Importer's perspective from the paper
+		The preconditions of the actions from the Importer's perspective
+        The Importer can look at the global state of the simulation to ensure synchronization between the FMUs
+        But it does also ensure that the precondition of the action is satisfied
 	*/
 	preSetI: Importer * FMU * Ref -> bool
 	preSetI(I, fmu, port)==
@@ -116,7 +118,8 @@ functions
 	preSetC: FMU * Ref * bool -> bool
 	preSetC(fmu, clock, val)==
 	 	exists v in set fmu.clocks & v.ref = clock and v.type = <input>
-			and val <=> not clock in set fmu.activeClocks; -- We can only activate a clock that 
+			and val <=> not clock in set fmu.activeClocks -- We can only activate a clock that 
+            and fmu.mode = <EVENT>;
 
 	preGetC: FMU * Ref -> bool
 	preGetC(fmu, clock)==
@@ -135,18 +138,40 @@ functions
 		 card { fmu.time | fmu in set fmus } = 1;
 
 
-    eventSolved : Importer * set of Name * map Name to FMU -> bool
-    eventSolved(I, fmus, oldFmusModel)==
-        let fmusModel = I.scenario.fmus in
-            (forall fmu in set fmus & fmusModel(fmu).mode = <EVENT> 
-                    and fmusModel(fmu).activeClocks = {} -- No clocks are active any more
-                    and fmusModel(fmu).time.i = oldFmusModel(fmu).time.i + 1 
-                    and fmusModel(fmu).time.r = oldFmusModel(fmu).time.r)
-                and I.activeEquations \ I.calculatedEquations = {} -- Event solved
-                and I.relevantInputClocks union I.relevantOutputClocks = {} -- no more clocks to activate
-                 ;
+    eventSolved : Importer * set of FMU * set of FMU -> bool
+    eventSolved(I, newFmus, oldFmus) ==
+            assertFMUMode(newFmus, {<EVENT>})
+            and timeAdvanced(newFmus, oldFmus, true)
+            and I.activeEquations \ I.calculatedEquations = {} -- Event solved
+            and I.relevantInputClocks union I.relevantOutputClocks = {} -- no more clocks to activate
+
+        pre sameSetOfFMUs(newFmus, oldFmus);
 
 
-    assertFMUMode : set of FMU * FMUMode -> bool
-    assertFMUMode(fmus, mode)==
-        forall fmu in set fmus & fmu.mode = mode;
+    /*
+        Asserts that all FMUs are in the same state/mode
+     */
+    assertFMUMode : set of FMU * set of FMUMode -> bool
+    assertFMUMode(fmus, modes) ==
+        exists1 mode in set modes &
+            forall fmu in set fmus & fmu.mode = mode;
+
+
+    timeAdvanced: set of FMU * set of FMU * bool -> bool
+    timeAdvanced(newFMUs, oldFMUs, discreteTime) ==
+        forall m' in set newFMUs &
+            exists1 m in set oldFMUs & m.name = m'.name 
+            and m.time <= m'.time -- The FMU is advanced in time
+            and (discreteTime => (m.time.i + 1 = m'.time.i and m.time.r = m'.time.r))
+            and (not discreteTime => (m.time.i = m'.time.i and m.time.r <= m'.time.r))
+        pre sameSetOfFMUs(newFMUs, oldFMUs);
+            
+
+    /*
+        This function ensures that the two sets contain the same FMUs
+     */
+    sameSetOfFMUs : set of FMU * set of FMU -> bool
+    sameSetOfFMUs(fmus1, fmus2)==
+    -- The old and new FMUs should contain the same set of FMUs
+            card fmus1 = card fmus2
+                and {m.name | m in set fmus1} = {m.name | m in set fmus2};
