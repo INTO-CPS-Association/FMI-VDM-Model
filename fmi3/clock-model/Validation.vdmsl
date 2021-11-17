@@ -137,14 +137,12 @@ functions
 	fmusSynchronized(fmus) ==
 		 card { fmu.time | fmu in set fmus } = 1;
 
-
     eventSolved : Importer * set of FMU * set of FMU -> bool
     eventSolved(I, newFmus, oldFmus) ==
             assertFMUMode(newFmus, {<EVENT>})
             and timeAdvanced(newFmus, oldFmus, true)
             and I.activeEquations \ I.calculatedEquations = {} -- Event solved
             and I.relevantInputClocks union I.relevantOutputClocks = {} -- no more clocks to activate
-
         pre sameSetOfFMUs(newFmus, oldFmus);
 
 
