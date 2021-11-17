@@ -158,13 +158,11 @@ functions
 	pre 
 		let fmus = rng I.scenario.fmus in
 		assertFMUMode(fmus, {<INIT>})
-		and fmusSynchronized(fmus)
+		and fmusSynchronizedAtTime(fmus, I.time)
+		and I.time = mk_Time(0,0)
     post 
-	let fmus = rng RESULT.scenario.fmus in
-		assertFMUMode(fmus, {<STEP>})
-		and variablesSynchronized(RESULT.scenario) 
-		and fmusSynchronized(fmus);
--- and timeNotChanged
+		preCoSimulationStep(RESULT.scenario, RESULT.time)
+		and RESULT.time = mk_Time(0,0);
 
     /*
 		This function runs a co-simulation step after the step negotiation
@@ -212,27 +210,24 @@ functions
         /*
             Select a step duration using step negotiation
          */
-		let I3 = mu(I, stepSize |-> stepnegotiation(I2)) in
+		let I3 = mu(I2, stepSize |-> stepnegotiation(I2)) in
         /*
             Perform the rest of the simulation
         */
 		let I4 = cosimStep(I3) in
 
-		if I4.endtime >= I4.time 
-			then cosimulationStep(I4) 
-		else I4
-	pre 
-	let fmus = rng I.scenario.fmus in
-		assertFMUMode(fmus, {<STEP>})
-		and variablesSynchronized(I.scenario) 
-		and fmusSynchronized(fmus)
-    post 
-		let fmus = rng RESULT.scenario.fmus,
-			oldFMUs = rng I.scenario.fmus in
-		assertFMUMode(fmus, {<STEP>})
-		and variablesSynchronized(RESULT.scenario) 
-		and fmusSynchronized(fmus)
-		and timeAdvanced(fmus, oldFMUs, false)
+		let I5 = mu(I4, time |-> mk_Time(I4.time.r + I.stepSize, I4.time.i)) in
+
+		if I5.endtime >= I5.time 
+			then cosimulationStep(I5) 
+		else I5
+	pre preCoSimulationStep(I.scenario, I.time)
+    post preCoSimulationStep(RESULT.scenario, RESULT.time) 
+		and I.time <= RESULT.time
+		and 
+		let M' = rng RESULT.scenario.fmus,
+			M = rng I.scenario.fmus in
+         	timeAdvanced(M', M, false)
 	measure I.endtime.r - I.time.r;
 
     -- Calculate an appropiate step duration that all FMUs can take
@@ -242,8 +237,6 @@ functions
 		is not yet specified
 	post RESULT >= 0 
 		and forall fmu in set rng M.scenario.fmus & fmu.maxStep >= RESULT;
-
-
     
 	/*
 		Performing the actions from the Importer's perspective
@@ -265,7 +258,6 @@ functions
 		updateEnvironmentClock(I1, fmuUpdated, clock, val.value)
 	pre mk_FMURef(fmu.name,clock) in set I.relevantOutputClocks -- a clock should be relevant if we should query it
 		and clock in set {c.ref | c in set fmu.clocks & c.type = <input>}; 
-
 
 	/*
 	 * This function sets the activation status of the clock
@@ -293,7 +285,10 @@ functions
 					scenario |-> mu(I.scenario, fmus |-> I.scenario.fmus ++ {fmu.name |-> fmu}), 
 					valueMap |-> {port} <-: I.valueMap
 				)
-	pre port in set dom I.valueMap; -- A value to set should be accessible
+	pre preSetI(I, I.scenario.fmus(port.name), port.ref)
+	post fmusNotAffected(rng ({port.name} <-: I.scenario.fmus), rng ({port.name} <-: RESULT.scenario.fmus));
+
+	--post All Other FMUs are not affect and time is not progressed
 
 	-- This action obtains a value from an output		
 	getPort : Importer * FMURef -> Importer
@@ -304,7 +299,11 @@ functions
 				scenario |-> mu(I.scenario, fmus |-> I.scenario.fmus ++ {fmu.name |-> fmu}),
 				valueMap |-> I.valueMap ++ {connectedInput |-> val}
 			)
-	pre I.scenario.connections(port) not in set dom I.valueMap;
+	pre preGetI(I, I.scenario.fmus(port.name), port.ref)
+	post fmusNotAffected(rng ({port.name} <-: I.scenario.fmus), rng ({port.name} <-: RESULT.scenario.fmus));
+
+	
+	--post All Other FMUs are not affect and time is not progressed
 
 	/*
 	 * This action progresses an FMU in time
@@ -317,4 +316,6 @@ functions
 				scenario |-> mu(I.scenario, fmus |-> I.scenario.fmus ++ {fmuUpdated.name |-> fmuUpdated}),
 				fmusWithEvent |-> if event then I.fmusWithEvent union {fmu.name} else I.fmusWithEvent,
 				stepSize |-> step -- adjust the stepsize 
-			);
+			)
+	pre preStepI(I, fmu)
+	post fmusNotAffected(rng ({fmu.name} <-: I.scenario.fmus), rng ({fmu.name} <-: RESULT.scenario.fmus));
