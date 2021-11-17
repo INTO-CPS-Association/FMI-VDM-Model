@@ -1,0 +1,152 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+functions
+    -- All connections shall be synchronized meaning their value should be identical
+    variablesSynchronized: Machine -> bool
+    variablesSynchronized(M) ==
+        forall srcPort in set dom M.connections &
+            let trgPort = M.connections(srcPort) in
+            (M.fmus(srcPort.name)).env(srcPort.ref) = (M.fmus(trgPort.name)).env(trgPort.ref);
+
+
+	/*
+	 * Is an Action activated?
+	 * It is if its precondition is satisfied
+	 */
+	isActionEnabled : Importer * Action -> bool
+	isActionEnabled(I, A) ==
+		cases A:
+		mk_Action(<get>, fmu, port) -> preGetI(I, fmu, port),
+		mk_Action(<set>, fmu, port) -> preSetI(I, fmu, port),
+		mk_Action(<step>, fmu, -) -> preStepI(I, fmu),
+		mk_Action(<setC>, fmu, clock) -> preSetCI(I, fmu, clock),
+		mk_Action(<getC>, fmu, clock) -> preGetCI(I, fmu, clock)
+	end;
+
+	/*
+		The preconditions of the actions from the Importer's perspective from the paper
+	*/
+	preSetI: Importer * FMU * Ref -> bool
+	preSetI(I, fmu, port)==
+		let input = derefInput(fmu, port) in
+		(fmu.mode = <EVENT> <=> mk_FMURef(fmu.name, port) in set (I.activeEquations \ I.calculatedEquations) and input.type = <discrete>)
+			and (fmu.mode = <STEP> <=> input.type = <continous>)
+			and preSet(fmu, port);
+
+	preGetI: Importer * FMU * Ref -> bool
+	preGetI(I, fmu, port)==
+		let output = derefOutput(fmu, port) in
+		(fmu.mode = <EVENT> <=> mk_FMURef(fmu.name, port) in set (I.activeEquations \ I.calculatedEquations) and output.type = <discrete>)
+			and (fmu.mode = <STEP> <=> output.type = <continous>)
+			and preGet(fmu, port);
+
+	preStepI: Importer * FMU -> bool
+	preStepI(I, fmu)==
+		preStepT(fmu, I.stepSize);
+
+	preGetCI: Importer * FMU * Ref -> bool
+	preGetCI(I, fmu, clock) ==
+		let output = mk_FMURef(fmu.name, clock) in
+			output in set I.relevantOutputClocks
+				and preGetC(fmu, clock);
+	
+	preSetCI: Importer * FMU * Ref -> bool
+	preSetCI(I, fmu, clock) ==
+		let input = mk_FMURef(fmu.name, clock) in
+		let val = I.valueMap(input) in
+			preSetC(fmu, clock, val.value) and input in set I.relevantInputClocks;
+
+
+	/*
+		The preconditions of the actions from the paper - notice that the actions are only valid when the FMUs are not in the done state
+	*/
+
+	preSet: FMU * Ref -> bool
+	preSet(fmu, input)==
+		exists v in set fmu.inputs & v.ref = input and v.causality = <input>
+			and fmu.mode <> <DONE>;
+	
+	/*
+		
+	 */
+	preGet: FMU * Ref -> bool
+	preGet(fmu, ref)==
+		let output = derefOutput(fmu, ref) in
+		exists v in set fmu.outputs & v.ref = ref and v.causality = <output>
+			and fmu.mode <> <DONE>
+			and feedthroughSatisfied(fmu, output);
+
+	preStepT: FMU * real -> bool
+	preStepT(fmu, stepSize)==
+		forall i in set fmu.inputs &
+			 		(i.contract = <reactive> => fmu.env(i.ref).time.r = fmu.time.r + stepSize)
+					and (i.contract = <delayed> => fmu.env(i.ref).time = fmu.time)
+			and stepSize >= 0.0 and fmu.mode = <STEP>;
+
+	preStepE: FMU -> bool
+	preStepE(fmu)==
+		fmu.mode = <EVENT>;
+
+	preSetC: FMU * Ref * bool -> bool
+	preSetC(fmu, clock, val)==
+	 	exists v in set fmu.clocks & v.ref = clock and v.type = <input>
+			and val <=> not clock in set fmu.activeClocks; -- We can only activate a clock that 
+
+	preGetC: FMU * Ref -> bool
+	preGetC(fmu, clock)==
+	 	exists v in set fmu.clocks & v.ref = clock and v.type = <output>
+		 and fmu.mode = <EVENT>; -- We can only get an output clock
+
+	feedthroughSatisfied : FMU * Variable -> bool
+	feedthroughSatisfied(fmu, output)==
+		forall i in set fmu.inputs & i.ref in set output.dependsOn 
+			and (i.contract = <reactive> => fmu.env(i.ref).time >= fmu.time)
+			and (i.contract = <delayed> => fmu.env(i.ref).time = fmu.time)
+	pre forall i in set fmu.inputs & i.causality = <input>;
+
+	fmusSynchronized: set of FMU -> bool
+	fmusSynchronized(fmus) ==
+		 card { fmu.time | fmu in set fmus } = 1;
+
+
+    eventSolved : Importer * set of Name * map Name to FMU -> bool
+    eventSolved(I, fmus, oldFmusModel)==
+        let fmusModel = I.scenario.fmus in
+            (forall fmu in set fmus & fmusModel(fmu).mode = <EVENT> 
+                    and fmusModel(fmu).activeClocks = {} -- No clocks are active any more
+                    and fmusModel(fmu).time.i = oldFmusModel(fmu).time.i + 1 
+                    and fmusModel(fmu).time.r = oldFmusModel(fmu).time.r)
+                and I.activeEquations \ I.calculatedEquations = {} -- Event solved
+                and I.relevantInputClocks union I.relevantOutputClocks = {} -- no more clocks to activate
+                 ;
+
+
+    assertFMUMode : set of FMU * FMUMode -> bool
+    assertFMUMode(fmus, mode)==
+        forall fmu in set fmus & fmu.mode = mode;
