@@ -47,7 +47,7 @@ functions
 		mk_Action(<step>, fmu, -) -> preStepI(I, I.scenario.fmus(fmu)),
 		mk_Action(<setC>, fmu, clock) -> preSetCI(I, I.scenario.fmus(fmu), clock),
 		mk_Action(<getC>, fmu, clock) -> preGetCI(I, I.scenario.fmus(fmu), clock),
-		- -> false --default Match
+		others -> false --default Match
 	end;
 
 	/*

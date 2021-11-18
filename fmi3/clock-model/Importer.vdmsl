@@ -125,7 +125,7 @@ functions
 		mk_Action(<step>, fmu, -) -> stepFMU(I, I.scenario.fmus(fmu)),
 		mk_Action(<setC>, fmu, clock) -> setClock(I, I.scenario.fmus(fmu), clock, true),
 		mk_Action(<getC>, fmu, clock) -> queryClock(I, I.scenario.fmus(fmu), clock),
-		- -> I -- Default match
+		others -> I -- Default match
 	end;
 
 	/**
