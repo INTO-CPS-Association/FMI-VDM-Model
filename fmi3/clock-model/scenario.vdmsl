@@ -8,6 +8,7 @@ functions
             outputs,
             <INIT>,
             mk_Time(0,0),
+            false,
             5.0,
             -- I have added a default value
             { 10 |-> mk_Value(1,mk_Time(0,0))},

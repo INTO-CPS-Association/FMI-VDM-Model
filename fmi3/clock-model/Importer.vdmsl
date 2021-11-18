@@ -94,7 +94,7 @@ functions
 	runScenario: () -> Importer
 	runScenario() ==
 		let scenario = createScenario() in
-		let I = createImporter(scenario, mk_Time(5,0), 5) in
+		let I = createImporter(scenario, mk_Time(10,0), 5) in
 		let I1 = initialization(I) in
 		let I2 = cosimulationStep(I1) in
 		terminate(I2);
@@ -133,7 +133,7 @@ functions
 	updateDiscreteState: Importer * set of Name -> Importer
 	updateDiscreteState(I,fmus) ==
 		let M = I.scenario in
-		let res = {fmu |-> step_e(M.fmus(fmu)) | fmu in set dom M.fmus & fmu in set fmus} in 
+		let res = {fmu |-> step_e(M.fmus(fmu)) | fmu in set fmus} in 
 		let fmuMap = { fmu |-> res(fmu).#1 | fmu in set dom res}, 
 			eventFMUs = { fmu | fmu in set dom res & res(fmu).#2 = true} -- fmus that triggered an event
 		in
@@ -146,6 +146,7 @@ functions
 		assertFMUMode(relevantFMUs, {<EVENT>})
 		and fmusSynchronized(relevantFMUs)
 	post 
+	ImporterNotAffected(I, RESULT) and
 	let newFmus = rng (fmus  <: RESULT.scenario.fmus),
 		oldFMUs = rng (fmus  <: I.scenario.fmus)
 	in
@@ -159,20 +160,28 @@ functions
 	enterEventMode: Importer * set of Name -> Importer
 	enterEventMode(I, fmus) ==
 		mu(I, scenario |-> mu(I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <EVENT>) | name in set dom I.scenario.fmus & name in set fmus }))
-	pre forall m' in set rng I.scenario.fmus & m'.time.i = 0 and m'.mode = <STEP>
-	post forall m' in set rng I.scenario.fmus & m'.time.i = 0 and m'.mode = <EVENT>;
+	pre assertFMUMode(rng (fmus <: I.scenario.fmus), {<STEP>})
+	post
+		ImporterNotAffected(I, RESULT)
+		and assertFMUMode(rng (fmus <: RESULT.scenario.fmus), {<EVENT>})
+	 	and forall m' in set rng RESULT.scenario.fmus & m'.time.i = 0 and m'.mode = <EVENT>;
 
     /**
 	 * Move all FMUs in M into Step mode.
 	 */
 	enterStepMode: Importer * set of Name -> Importer
 	enterStepMode(I, fmus) ==
-		mu(I, scenario |-> mu(I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <STEP>) | name in set fmus }))
+		mu(I, 
+			scenario |-> mu(
+								I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <STEP>, time |-> mk_Time(I.scenario.fmus(name).time.r, 0)) | name in set fmus }
+							),
+			time |-> mk_Time(I.time.r, 0)
+			)
 	pre 
 		let relevantFMUs = rng (fmus <: I.scenario.fmus) in
 		assertFMUMode(relevantFMUs, {<INIT>, <EVENT>})
-		and forall m' in set relevantFMUs & m'.time.i = 0 
 	post 
+		ImporterNotAffected(I, RESULT) and
 		let relevantFMUs = rng (fmus <: RESULT.scenario.fmus) in
 			assertFMUMode(relevantFMUs, {<STEP>})
 			and forall m' in set relevantFMUs & m'.time.i = 0;
@@ -245,6 +254,7 @@ functions
                 and fmusSynchronized(fmus)
                 and timeAdvanced(fmus, rng I.scenario.fmus, false);
 
+
 	terminate : Importer -> Importer
 	terminate(I) ==
 	let fmus = dom I.scenario.fmus in
@@ -277,7 +287,10 @@ functions
         */
 		let I4 = cosimStep(I2) in
 
-		let I5 = mu(I4, time |-> mk_Time(I4.time.r + I.stepSize, I4.time.i)) in
+		let I5 = mu(I4, 
+						scenario |-> mu(I4.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), stepped |-> false) | name in set dom I4.scenario.fmus }),
+						time |-> mk_Time(I4.time.r + I.stepSize, I4.time.i)
+					) in
 
 		if I5.endtime > I5.time 
 			then cosimulationStep(I5) 
@@ -285,6 +298,7 @@ functions
 	pre preCoSimulationStep(I.scenario, I.time)
     post preCoSimulationStep(RESULT.scenario, RESULT.time) 
 		and I.time.r <= RESULT.time.r
+		and	ImporterNotAffected(I, RESULT)
 		and 
 		let M' = rng RESULT.scenario.fmus,
 			M = rng I.scenario.fmus in

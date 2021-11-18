@@ -56,6 +56,8 @@
 	 */
 	ActionType = <get> | <set> | <step> | <getC> | <setC> ;  
 
+	ValueType = real | int | bool;
+
 	/*
 		An FMU action has a type and some infomration describe the paramters of the actions
 	*/
@@ -93,7 +95,7 @@
 	 * It contains a time and a value
 	 */
 	Value ::
-		value : real | int | bool
+		value : ValueType
 		time : Time;
 
 	/**
@@ -144,6 +146,7 @@
         outputs             : set of Variable   -- Ym
 		mode				: FMUMode -- Mode of the FMU
 		time				: Time				-- time is per FMU
+		stepped				: bool 				-- Has the FMU been stepped
         maxStep             : real				-- How far can the FMU step
 		env					: Environment
 		activeClocks		: set of Ref		-- 
@@ -255,28 +258,51 @@ functions
         let mk_(stepTaken, eventTriggered) = 
 			if step >= fmu.maxStep then mk_(fmu.maxStep, true) else mk_(step, false)
 		in
-		mk_(mu(fmu, time |-> mk_Time(fmu.time.r + stepTaken, fmu.time.i)), stepTaken, eventTriggered)
+		let newTime = mk_Time(fmu.time.r + stepTaken, fmu.time.i) in
+		let updatedFMU = mu(fmu, 
+								time |-> newTime,
+								env |-> updateOutputs(fmu, newTime),
+								stepped |-> true
+							)
+		in
+		mk_(updatedFMU, stepTaken, eventTriggered)
 	pre preStepT(fmu, step)
 	post RESULT.#2 <= step -- We cannot take a step larger than what the Importer requested
         and RESULT.#2 <= fmu.maxStep; -- We cannot take a step larger than what the FMU is capable of
 		
 	step_e: FMU +> FMU * bool
 	step_e(fmu) ==
-		is not yet specified
+	let updatedFMU = mu(fmu, time |-> mk_Time(fmu.time.r, fmu.time.i + 1)) in
+		mk_(updatedFMU, false) -- We never trigger a state event 
 	pre preStepE(fmu)
 	post RESULT.#1.mode = <EVENT> 		-- FMU remains in event mode - it always does the Importer should bring it out
         and RESULT.#1.time.i = fmu.time.i + 1 -- The Integer component of the FMU should be increased
 		and RESULT.#1.activeClocks = {} ; -- All clocks get disabled when we step the FMU
 
+	types
+	RealNaNLF = real | <NaN>;
+	functions
 	/*
 	 * 
 	 */
-	next_tm: FMU * Ref +> real | <NaN>
+	next_tm: FMU * Ref +> RealNaNLF
 	next_tm(fmu, ref) ==
 		is not yet specified
 	pre exists v in set fmu.clocks & v.ref = ref
 		and v.interval in set { <tunable>, <changing>, <countdown> };
 
+
+	/*
+	 * This function updates the value at the outputs
+	 */
+	updateOutputs : FMU * Time -> Environment
+	updateOutputs(fmu, time) ==
+		let outputRef = {o.ref | o in set fmu.outputs} in
+			{oValue |-> calculate(oValue, fmu.env, time) | oValue in set dom fmu.env & oValue in set outputRef};
+	
+	calculate : Ref * Environment * Time -> Value 
+	calculate(ref, env, time) ==
+		mk_Value(env(ref).value, time);
 
 	/**
 	 * Dereference a clock in a given FMU.
@@ -320,6 +346,7 @@ functions
 		)
 	pre let fmuRef = mk_FMURef(fmu.name,clock) in 
 		fmuRef in set I.relevantInputClocks or fmuRef in set I.relevantOutputClocks;
+	-- I need to create a stronger post condition here
 
 	/*
 	* Calculates an input equation that needs to be calculated
@@ -334,7 +361,11 @@ functions
 			equation in set I.activeEquations \ I.calculatedEquations -- The value should be active and not calculated before
 			and equation in set dom I.valueMap -- A value to set should be accessible
 			and fmu.mode = <EVENT>
-			and (exists v in set fmu.inputs & v.ref = equation.ref and v.type = <discrete>); 
+			and (exists v in set fmu.inputs & v.ref = equation.ref and v.type = <discrete>)
+	post
+	let fmu = I.scenario.fmus(equation.name) in
+		fmu.mode =  <EVENT>
+	and equation in set I.calculatedEquations;
 
 	/*
 	* Calculates an output equation that needs to be calculated.
@@ -348,7 +379,11 @@ functions
 		let fmu = I.scenario.fmus(equation.name) in
 		equation in set I.activeEquations \ I.calculatedEquations
 		and fmu.mode = <EVENT>
-		and (exists v in set fmu.outputs & v.ref = equation.ref and v.type = <discrete>); 
+		and (exists v in set fmu.outputs & v.ref = equation.ref and v.type = <discrete>)
+	post
+	let fmu = I.scenario.fmus(equation.name) in
+		fmu.mode =  <EVENT>
+		and equation in set I.calculatedEquations;
 
 	updateEnvironmentEquation : Importer * FMU * FMURef -> Importer
 	updateEnvironmentEquation(I, fmu, equation)==
@@ -454,8 +489,7 @@ functions
 		 *    zero interval, go to Step 3 (start iteration t.i + 1).
 		 */
 
-		if I3.fmusWithEvent <> {} 
-			then enterStepMode(I3, relevantFMUs)
+		if I3.fmusWithEvent = {} then enterStepMode(I3, relevantFMUs)
 		else clockedSimulationAlgorithm(I, clocks)
 
 	pre 
@@ -511,22 +545,40 @@ eventIteration(I, relevantFMUs)==
  * Clock actions should also be performed before regular port actions.
  */
 solveSystemOfEquations : Importer -> Importer
-solveSystemOfEquations(I)==
+solveSystemOfEquations(I) ==
 	if I.activeEquations \ I.calculatedEquations = {} then I
 	else
-	let clockActions = { mk_Action(<setC>, clock.name, clock.ref) | clock in set I.relevantInputClocks }
-						union { mk_Action(<getC>, clock.name, clock.ref) | clock in set I.relevantOutputClocks } in
-		if clockActions <> {} and {a | a in set clockActions & isActionEnabled(I,a)} <> {} then
-		   let clockAction in set {a | a in set clockActions & isActionEnabled(I, a)} in
-				solveSystemOfEquations(runAction(I, clockAction))
-		else
-			let portActions = {mk_Action(<set>, input.name, input.ref) | input in set I.activeEquations \ I.calculatedEquations }
-						union {mk_Action(<get>, output.name, output.ref) | output in set I.activeEquations \ I.calculatedEquations } in
-				let portAction in set {a | a in set portActions & isActionEnabled(I, a)} in
-					solveSystemOfEquations(runAction(I, portAction))
+	let action = selectAction(I)
+		in solveSystemOfEquations(runAction(I, action))
 	post RESULT.activeEquations \ RESULT.calculatedEquations = {}
 	measure card I.readyEquations + card (I.activeEquations \ I.calculatedEquations);
 
+
+/*
+* This function finds an appropiate action to solve the active event.
+* It pick a clockAction (setC or getC) if it is possible otherwise it selects a regular port action.
+ */
+selectAction : Importer -> Action
+selectAction(I) ==
+	let queryClockActions = { mk_Action(<getC>, clock.name, clock.ref) | clock in set I.relevantOutputClocks }, 
+		setClockActions = { mk_Action(<setC>, clock.name, clock.ref) | clock in set I.relevantInputClocks } in
+
+	let clockActions = queryClockActions union setClockActions in
+		if clockActions <> {} and {a | a in set clockActions & isActionEnabled(I,a)} <> {} then
+		   let clockAction in set {a | a in set clockActions & isActionEnabled(I, a)} in
+		   clockAction
+		else
+			let portActions = {mk_Action(<set>, input.name, input.ref) | input in set I.activeEquations \ I.calculatedEquations }
+						union {mk_Action(<get>, output.name, output.ref) | output in set I.activeEquations \ I.calculatedEquations } in
+			let portAction in set {a | a in set portActions & isActionEnabled(I, a)} in
+			portAction
+	pre I.activeEquations \ I.calculatedEquations <> {}
+	post 
+		RESULT.actionType <> <step> 
+		and
+		-- I will always select a clock action if it is possible
+		(RESULT.actionType in set {<getC>, <setC>} => (I.relevantOutputClocks union I.relevantInputClocks) <> {})
+		and (RESULT.actionType not in set {<getC>, <setC>} => (I.relevantOutputClocks union I.relevantInputClocks) = {});
 
 /*
 	This function updates the schedule

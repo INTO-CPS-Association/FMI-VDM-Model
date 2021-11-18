@@ -27,7 +27,7 @@
  * See the full INTO-CPS Association Public License conditions for more details.
  */
 functions
-    -- All connections shall be synchronized meaning their value should be identical
+    -- All connections are synchronized meaning the input and output value is identical
     variablesSynchronized: Machine -> bool
     variablesSynchronized(M) ==
         forall srcPort in set dom M.connections &
@@ -68,8 +68,10 @@ functions
 		let output = derefOutput(fmu, port),
 			fmuRef = mk_FMURef(fmu.name, port),
 			connectedInput = I.scenario.connections(fmuRef) in
+			let input = derefInput(I.scenario.fmus(connectedInput.name), connectedInput.ref) in
 		(fmu.mode = <EVENT> <=> fmuRef in set (I.activeEquations \ I.calculatedEquations) and output.type = <discrete>)
-		and (fmu.mode = <STEP> => output.type = <continous>)
+		and (fmu.mode = <STEP> => (output.type = <continous> ))
+		and (input.contract = <delayed> => fmu.stepped)
 		and preGet(fmu, port)
 		and connectedInput not in set dom I.valueMap;
 
@@ -191,9 +193,32 @@ functions
                 and variablesSynchronized(scenario) 
                 and fmusSynchronizedAtTime(fmus, time);
 
+
+	/*
+		Nick do I need to define equality for FMUs?
+	*/
 	fmusNotAffected : set of FMU * set of FMU -> bool
 	fmusNotAffected(oldFMUs, newFMUs) == oldFMUs = newFMUs
 	pre sameSetOfFMUs(oldFMUs, newFMUs);
+
+
+	ImporterNotAffected : Importer * Importer -> bool
+	ImporterNotAffected(oldImporter, newImporter) == 
+		oldImporter.schedule = newImporter.schedule
+		and oldImporter.activeClocks = newImporter.activeClocks
+		and oldImporter.readyClocks = newImporter.readyClocks
+		and oldImporter.inactiveClocks = newImporter.inactiveClocks
+		--and oldImporter.fmusWithEvent = newImporter.fmusWithEvent
+		and oldImporter.relevantOutputClocks = newImporter.relevantOutputClocks
+		and oldImporter.relevantInputClocks = newImporter.relevantInputClocks
+		and oldImporter.activeEquations = newImporter.activeEquations
+		and oldImporter.calculatedEquations = newImporter.calculatedEquations
+		and oldImporter.readyEquations = newImporter.readyEquations
+		--and oldImporter.time = newImporter.time
+		and oldImporter.endtime = newImporter.endtime
+		and oldImporter.stepSize = newImporter.stepSize
+		and oldImporter.valueMap = newImporter.valueMap;
+
 	
     /*
         This function ensures that the two sets contain the same FMUs
