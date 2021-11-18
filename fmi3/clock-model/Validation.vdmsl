@@ -102,7 +102,6 @@ functions
 	/*
 		The preconditions of the actions from the paper - notice that the actions are only valid when the FMUs are not in the done state
 	*/
-
 	preSet: FMU * Ref -> bool
 	preSet(fmu, input)==
 		exists v in set fmu.inputs & v.ref = input and v.causality = <input>

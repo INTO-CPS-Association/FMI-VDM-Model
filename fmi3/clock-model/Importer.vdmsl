@@ -50,20 +50,20 @@
 		valueMap : map FMURef to Value
 	inv imp ==
 		let fmus = imp.scenario.fmus in
-		let inputclocks = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> }, {}) | fmu in set rng fmus } in
-		let outputclocks = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <output> }, {}) | fmu in set rng fmus } in
+		let inputclocks = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> }) | fmu in set rng fmus } in
+		let outputclocks = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <output> }) | fmu in set rng fmus } in
 		let clocks = inputclocks union outputclocks
 		in
 		imp.activeClocks union imp.inactiveClocks = clocks  -- a clock is either inactive or active
 		and imp.activeClocks inter imp.inactiveClocks = {} -- a clock cannot be active and inactive
 		and imp.activeClocks inter imp.readyClocks = {} -- an active clock can not be ready
-		and imp.activeClocks = dunion {createFMURefs(fmu, fmu.activeClocks, {}) | fmu in set rng fmus }
+		and imp.activeClocks = dunion {createFMURefs(fmu, fmu.activeClocks) | fmu in set rng fmus }
 		and imp.fmusWithEvent subset dom fmus -- all fmus that wishes to enter event mode is in the scenario
 		and imp.relevantInputClocks subset inputclocks -- a relevant input clock needs to be an input clock
 		and imp.relevantOutputClocks subset outputclocks -- a relevant output clock needs to be an output clock
 		and imp.relevantInputClocks inter imp.relevantOutputClocks = {}
 		--and imp.activeEquations = dunion {fmu.activeEquations | fmu in set rng fmus} -- Equations are actived by the clocks
-		and dom imp.schedule = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> and clock.interval <> <triggered>}, {}) | fmu in set rng fmus }-- We only have time based clocks in the schedule
+		and dom imp.schedule = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> and clock.interval <> <triggered>}) | fmu in set rng fmus }-- We only have time based clocks in the schedule
 		---and imp.activeEquations = {c.equations | c in set clocks & c.ref in set imp.activeClocks} -- Invariant for the paper TYPE MISMATCH
 		and imp.endtime >= imp.time -- The simulation cannot not proceed once the endtime is reached
 		and imp.activeEquations inter imp.readyEquations = {}

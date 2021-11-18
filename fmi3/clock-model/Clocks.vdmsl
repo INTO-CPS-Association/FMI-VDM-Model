@@ -335,7 +335,7 @@ functions
 	updateEnvironmentClock : Importer * FMU * Ref * bool -> Importer
 	updateEnvironmentClock(I, fmu, clock, val)==
 		let fmuref = mk_FMURef(fmu.name, clock),
-			activatedVariables = createFMURefs(fmu, dunion {c.equations | c in set fmu.clocks & clock = c.ref}, {}) in
+			activatedVariables = createFMURefs(fmu, dunion {c.equations | c in set fmu.clocks & clock = c.ref}) in
 		mu(I,
 			scenario |-> mu(I.scenario, fmus |-> I.scenario.fmus ++ {fmu.name |-> fmu}),
 			activeClocks |-> if val then I.activeClocks union {fmuref} else I.activeClocks \ {fmuref},
@@ -590,7 +590,7 @@ updateSchedule(I, fmus, intervalSet)==
 	let name in set fmus in
 		let fmu = I.scenario.fmus(name) in
 			let relevantClocks = {c.ref | c in set fmu.clocks & c.interval in set intervalSet} in  
-				let scheduleEntries = calculateSchedule(fmu, relevantClocks, {|->}) in
+				let scheduleEntries = calculateSchedule(fmu, relevantClocks) in
 					let I1 = mu(I, schedule |-> I.schedule ++ scheduleEntries) in
 						updateSchedule(I1, fmus \ {name}, intervalSet)
 measure card fmus;
@@ -610,7 +610,7 @@ pre
 post 
 	let fmus = rng RESULT.scenario.fmus in
 	let
-	timeBasedClocks = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> and clock.interval <> <triggered>}, {}) | fmu in set fmus}
+	timeBasedClocks = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> and clock.interval <> <triggered>}) | fmu in set fmus}
 	in 
 	dom RESULT.schedule = timeBasedClocks
 	  -- all time-based clocks must have a schedule
@@ -618,22 +618,14 @@ post
 	and fmusSynchronized(fmus)
 	and variablesSynchronized(I.scenario);
 
-calculateSchedule: FMU * set of Ref * map FMURef to real -> map FMURef to real
-calculateSchedule(fmu, clocks, schedule)== 
-	if clocks = {} then schedule
-	else
-	let clock in set clocks in
-		let fmuRef = mk_FMURef(fmu.name, clock) in
-		let S1 = schedule ++ {fmuRef |-> next_tm(fmu, clock)} in
-		calculateSchedule(fmu, clocks \ {clock}, S1)
-pre 
-let cref = {c.ref | c in set fmu.clocks & c.type = <input> and c.interval <> <triggered> } in 
+calculateSchedule: FMU * set of Ref -> map FMURef to real
+calculateSchedule(fmu, clocks)== 
+{ mk_FMURef(fmu.name, clock) |-> next_tm(fmu, clock) | clock in set clocks }
+pre let cref = {c.ref | c in set fmu.clocks & c.type = <input> and c.interval <> <triggered> } in 
 	clocks subset cref
-measure card clocks; 
+post card dom RESULT = card clocks;
 
-createFMURefs: FMU * set of Ref * set of FMURef -> set of FMURef
-createFMURefs(fmu, clocks, res)==
-	if clocks = {} then res
-	else let clock in set clocks in
-	createFMURefs(fmu, clocks \ {clock}, res union {mk_FMURef(fmu.name, clock)})
-measure card clocks;
+createFMURefs: FMU * set of Ref -> set of FMURef
+createFMURefs(fmu, clocks) ==
+{ mk_FMURef(fmu.name, clock) | clock in set clocks }
+post card RESULT = card clocks;
