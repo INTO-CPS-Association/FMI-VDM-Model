@@ -46,6 +46,11 @@
 
 	FMUMode = <INIT> | <DONE> | <STEP> | <EVENT>;
 
+	Contract = <none> | <reactive> | <delayed> ;
+
+	PortType = <discrete> | <continous>; 
+
+	Causality = <input> | <output>;
 	/**
 	 * The different types of actions
 	 */
@@ -56,7 +61,7 @@
 	*/
 	Action ::
 		actionType : ActionType
-		fmu : FMU
+		fmu : Name
 		port : Ref;
 	
 
@@ -103,11 +108,11 @@
 	Variable ::
 		ref			: Ref
         time        : Time
-        causality	: <input> | <output>
-        type		: <discrete> | <continous>
+        causality	: Causality
+        type		: PortType
 		clocks		: set of Ref -- clocks that the variable can active
         dependsOn   : set of Ref -- feedthrough only relevant for outputs
-        contract    : <none> | <reactive> | <delayed>   
+        contract    : Contract 
 	inv var ==
 		(var.causality = <output> => var.contract = <none>) -- input contract only relevant for inputs
 		and var.causality = <input> => var.dependsOn = {} ;
@@ -118,7 +123,7 @@
 	 */
 	Clock ::
 		ref			: Ref
-		type		: <input> | <output>
+		type		: Causality
 		interval	: Interval
         timeToTick  : Time
 		dependsOn 	: set of Ref -- The clocks that can trigger an clock
@@ -247,8 +252,10 @@ functions
 
 	step_tm: FMU * real +> FMU * real * bool
 	step_tm(fmu, step) ==
-        if step >= fmu.maxStep then mk_(fmu, fmu.maxStep, true) -- We should at it to the set of FMUs that wants to enter event mode
-        else mk_(fmu, step, false)
+        let mk_(stepTaken, eventTriggered) = 
+			if step >= fmu.maxStep then mk_(fmu.maxStep, true) else mk_(step, false)
+		in
+		mk_(mu(fmu, time |-> mk_Time(fmu.time.r + stepTaken, fmu.time.i)), stepTaken, eventTriggered)
 	pre preStepT(fmu, step)
 	post RESULT.#2 <= step -- We cannot take a step larger than what the Importer requested
         and RESULT.#2 <= fmu.maxStep; -- We cannot take a step larger than what the FMU is capable of
@@ -366,8 +373,8 @@ functions
     initializeData: Importer -> Importer
     initializeData(I) ==
 	let connections = I.scenario.connections in
-		let outputs = {mk_Action(<get>, I.scenario.fmus(output.name), output.ref) | output in set dom connections},
-			inputs = {mk_Action(<set>, I.scenario.fmus(input.name), input.ref) | input in set rng connections} in
+		let outputs = {mk_Action(<get>, output.name, output.ref) | output in set dom connections},
+			inputs = {mk_Action(<set>, input.name, input.ref) | input in set rng connections} in
 				runAlgorithm(I, outputs union inputs)
 	pre 
 	let fmus = rng I.scenario.fmus in
@@ -378,32 +385,6 @@ functions
 		assertFMUMode(fmus, {<INIT>})
 		and fmusSynchronized(fmus)
 		and variablesSynchronized(RESULT.scenario);
-
-
-	/*
-		Function to run a set of actions (algorithm) until completion
-		We pick an enabled action and perform it until the set of actions is empty
-	*/
-	runAlgorithm : Importer * set of Action -> Importer
-	runAlgorithm(I, algorithm)==
-		if algorithm = {} then I
-		else
-		let action in set  {action | action in set algorithm & isActionEnabled(I, action)} in
-			runAlgorithm(runAction(I, action), algorithm \ {action})
-	measure card algorithm;
-	
-	/*
-		Runs a single action
-	*/
-	runAction: Importer * Action -> Importer
-	runAction(I, A)==
-	cases A:
-		mk_Action(<get>, fmu, port) -> getPort(I, mk_FMURef(fmu.name, port)),
-		mk_Action(<set>, fmu, port) -> setPort(I, mk_FMURef(fmu.name, port)),
-		mk_Action(<step>, fmu, -) -> stepFMU(I, fmu),
-		mk_Action(<setC>, fmu, clock) -> setClock(I, fmu, clock, true),
-		mk_Action(<getC>, fmu, clock) -> queryClock(I, fmu, clock)
-	end;
 
 
 	/*
@@ -533,14 +514,14 @@ solveSystemOfEquations : Importer -> Importer
 solveSystemOfEquations(I)==
 	if I.activeEquations \ I.calculatedEquations = {} then I
 	else
-	let clockActions = { mk_Action(<setC>, I.scenario.fmus(clock.name), clock.ref) | clock in set I.relevantInputClocks }
-						union { mk_Action(<getC>, I.scenario.fmus(clock.name), clock.ref) | clock in set I.relevantOutputClocks } in
+	let clockActions = { mk_Action(<setC>, clock.name, clock.ref) | clock in set I.relevantInputClocks }
+						union { mk_Action(<getC>, clock.name, clock.ref) | clock in set I.relevantOutputClocks } in
 		if clockActions <> {} and {a | a in set clockActions & isActionEnabled(I,a)} <> {} then
 		   let clockAction in set {a | a in set clockActions & isActionEnabled(I, a)} in
 				solveSystemOfEquations(runAction(I, clockAction))
 		else
-			let portActions = {mk_Action(<set>, I.scenario.fmus(input.name), input.ref) | input in set I.activeEquations \ I.calculatedEquations }
-						union {mk_Action(<get>, I.scenario.fmus(output.name), output.ref) | output in set I.activeEquations \ I.calculatedEquations } in
+			let portActions = {mk_Action(<set>, input.name, input.ref) | input in set I.activeEquations \ I.calculatedEquations }
+						union {mk_Action(<get>, output.name, output.ref) | output in set I.activeEquations \ I.calculatedEquations } in
 				let portAction in set {a | a in set portActions & isActionEnabled(I, a)} in
 					solveSystemOfEquations(runAction(I, portAction))
 	post RESULT.activeEquations \ RESULT.calculatedEquations = {}

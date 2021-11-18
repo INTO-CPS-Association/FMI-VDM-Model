@@ -42,11 +42,11 @@ functions
 	isActionEnabled : Importer * Action -> bool
 	isActionEnabled(I, A) ==
 		cases A:
-		mk_Action(<get>, fmu, port) -> preGetI(I, fmu, port),
-		mk_Action(<set>, fmu, port) -> preSetI(I, fmu, port),
-		mk_Action(<step>, fmu, -) -> preStepI(I, fmu),
-		mk_Action(<setC>, fmu, clock) -> preSetCI(I, fmu, clock),
-		mk_Action(<getC>, fmu, clock) -> preGetCI(I, fmu, clock)
+		mk_Action(<get>, fmu, port) -> preGetI(I, I.scenario.fmus(fmu), port),
+		mk_Action(<set>, fmu, port) -> preSetI(I, I.scenario.fmus(fmu), port),
+		mk_Action(<step>, fmu, -) -> preStepI(I, I.scenario.fmus(fmu)),
+		mk_Action(<setC>, fmu, clock) -> preSetCI(I, I.scenario.fmus(fmu), clock),
+		mk_Action(<getC>, fmu, clock) -> preGetCI(I, I.scenario.fmus(fmu), clock)
 	end;
 
 	/*
@@ -59,7 +59,7 @@ functions
 		let input = derefInput(fmu, port),
 			fmuRef = mk_FMURef(fmu.name, port) in
 		(fmu.mode = <EVENT> <=> fmuRef in set (I.activeEquations \ I.calculatedEquations) and input.type = <discrete>)
-		and (fmu.mode = <STEP> <=> input.type = <continous>)
+		and (fmu.mode = <STEP> => input.type = <continous>)
 		and preSet(fmu, port)
 		and fmuRef in set dom I.valueMap;
 
@@ -69,9 +69,9 @@ functions
 			fmuRef = mk_FMURef(fmu.name, port),
 			connectedInput = I.scenario.connections(fmuRef) in
 		(fmu.mode = <EVENT> <=> fmuRef in set (I.activeEquations \ I.calculatedEquations) and output.type = <discrete>)
-			and (fmu.mode = <STEP> <=> output.type = <continous>)
-			and preGet(fmu, port)
-			and connectedInput not in set dom I.valueMap;
+		and (fmu.mode = <STEP> => output.type = <continous>)
+		and preGet(fmu, port)
+		and connectedInput not in set dom I.valueMap;
 
 	preStepI: Importer * FMU -> bool
 	preStepI(I, fmu) ==
@@ -112,7 +112,7 @@ functions
 	preGet: FMU * Ref -> bool
 	preGet(fmu, ref)==
 		let output = derefOutput(fmu, ref) in
-		exists v in set fmu.outputs & v.ref = ref and v.causality = <output>
+		(exists1 v in set fmu.outputs & v.ref = ref and v.causality = <output>)
 			and fmu.mode <> <DONE>
 			and feedthroughSatisfied(fmu, output);
 
@@ -140,10 +140,11 @@ functions
 
 	feedthroughSatisfied : FMU * Variable -> bool
 	feedthroughSatisfied(fmu, output)==
-		forall i in set fmu.inputs & i.ref in set output.dependsOn 
-			and (i.contract = <reactive> => fmu.env(i.ref).time >= fmu.time)
-			and (i.contract = <delayed> => fmu.env(i.ref).time = fmu.time)
-	pre forall i in set fmu.inputs & i.causality = <input>;
+		let inputs = {input | input in set fmu.inputs & input.ref in set output.dependsOn} in
+		forall i in set inputs &
+				i.ref in set dom fmu.env
+				and (i.contract = <reactive> => fmu.env(i.ref).time >= fmu.time)
+				and (i.contract = <delayed> => fmu.env(i.ref).time = fmu.time);
 
 	fmusSynchronized: set of FMU -> bool
 	fmusSynchronized(fmus) ==

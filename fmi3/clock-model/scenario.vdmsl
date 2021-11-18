@@ -1,0 +1,51 @@
+functions
+    createFMU : Name * set of Clock * set of Variable * set of Variable -> FMU
+    createFMU(name, clocks, inputs, outputs) ==
+            mk_FMU(
+            name,
+            clocks,
+            inputs,
+            outputs,
+            <INIT>,
+            mk_Time(0,0),
+            5.0,
+            -- I have added a default value
+            { 10 |-> mk_Value(1,mk_Time(0,0))},
+            {},
+            {}
+        );
+
+    createVariable : Ref * Causality * PortType * set of Ref * set of Ref * Contract-> Variable
+    createVariable(ref, causality, type, clocks, dependsOn, contract) ==
+        mk_Variable(ref, mk_Time(0,0), causality, type, clocks, dependsOn, contract);
+
+
+    createClock : Ref * Causality * Interval * Time * set of Ref * set of Ref -> Clock
+    createClock(ref, causality, interval, timeToTick, dependsOn, equations) ==
+    	mk_Clock(
+            ref, causality, interval, timeToTick, dependsOn, equations
+        );
+
+    createScenario : () -> Machine
+    createScenario() ==
+        let ctrlInputs = {createVariable(0, <input>, <continous>, {}, {}, <delayed>)} in
+        let ctrlOutputs = {createVariable(10, <output>, <continous>, {}, {0}, <none>)} in
+        let ctrlFMU = createFMU("ctrl", {}, ctrlInputs, ctrlOutputs) in
+        
+        let sensorInputs = {createVariable(0, <input>, <continous>, {}, {}, <delayed>)} in
+        let sensorOutputs = {createVariable(10, <output>, <continous>, {}, {}, <none>)} in
+        let sensorFMU = createFMU("sensor", {}, sensorInputs, sensorOutputs) in
+
+        let fmus = {fmu.name |-> fmu | fmu in set {sensorFMU, ctrlFMU}} in
+        let connections = { mk_FMURef(sensorFMU.name, 10) |-> mk_FMURef(ctrlFMU.name, 0),
+                            mk_FMURef(ctrlFMU.name, 10) |-> mk_FMURef(sensorFMU.name, 0)} in
+
+        mk_Machine(
+            fmus, 
+            connections, 
+            {|->}
+        );
+
+        
+
+

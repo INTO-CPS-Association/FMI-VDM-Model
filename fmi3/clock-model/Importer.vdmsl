@@ -71,6 +71,61 @@
 		;
 
 functions
+	createImporter : Machine * Time * real -> Importer
+	createImporter(M, endtime, stepSize) ==
+		mk_Importer(
+			M,
+			{|->},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			{},
+			mk_Time(0,0),
+			endtime,
+			stepSize,
+			{|->}
+		);
+
+	runScenario: () -> Importer
+	runScenario() ==
+		let scenario = createScenario() in
+		let I = createImporter(scenario, mk_Time(5,0), 5) in
+		let I1 = initialization(I) in
+		let I2 = cosimulationStep(I1) in
+		terminate(I2);
+
+
+	
+	/*
+		Function to run a set of actions (algorithm) until completion
+		We pick an enabled action and perform it until the set of actions is empty
+	*/
+	runAlgorithm : Importer * set of Action -> Importer
+	runAlgorithm(I, algorithm)==
+		if algorithm = {} then I
+		else
+		let action in set  {action | action in set algorithm & isActionEnabled(I, action)} in
+			--@Printf("Action to execute: %s\n", action)
+			runAlgorithm(runAction(I, action), algorithm \ {action})
+	measure card algorithm;
+	
+	/*
+		Runs a single action
+	*/
+	runAction: Importer * Action -> Importer
+	runAction(I, A)==
+	cases A:
+		mk_Action(<get>, fmu, port) -> getPort(I, mk_FMURef(fmu, port)),
+		mk_Action(<set>, fmu, port) -> setPort(I, mk_FMURef(fmu, port)),
+		mk_Action(<step>, fmu, -) -> stepFMU(I, I.scenario.fmus(fmu)),
+		mk_Action(<setC>, fmu, clock) -> setClock(I, I.scenario.fmus(fmu), clock, true),
+		mk_Action(<getC>, fmu, clock) -> queryClock(I, I.scenario.fmus(fmu), clock)
+	end;
 
 	/**
 	 * Update the discrete state of all FMUs.
@@ -112,16 +167,15 @@ functions
 	 */
 	enterStepMode: Importer * set of Name -> Importer
 	enterStepMode(I, fmus) ==
-		mu(I, scenario |-> mu(I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <EVENT>) | name in set fmus }))
+		mu(I, scenario |-> mu(I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <STEP>) | name in set fmus }))
 	pre 
 		let relevantFMUs = rng (fmus <: I.scenario.fmus) in
 		assertFMUMode(relevantFMUs, {<INIT>, <EVENT>})
 		and forall m' in set relevantFMUs & m'.time.i = 0 
 	post 
 		let relevantFMUs = rng (fmus <: RESULT.scenario.fmus) in
-		assertFMUMode(relevantFMUs, {<STEP>})
-		and 
-		forall m' in set relevantFMUs & m'.time.i = 0;
+			assertFMUMode(relevantFMUs, {<STEP>})
+			and forall m' in set relevantFMUs & m'.time.i = 0;
 
 	/**
 	 * Activate the clocks in all FMUs that are due to tick at this time.
@@ -174,9 +228,9 @@ functions
 	let connections = I.scenario.connections in
 		let fmus = rng I.scenario.fmus in
 		-- Calculate all the actions that should be performed in the co-simulation step
-		let outputs = {mk_Action(<get>, I.scenario.fmus(output.name), output.ref) | output in set dom connections & derefOutput(I.scenario.fmus(output.name), output.ref).type = <continous>},
-			inputs = {mk_Action(<set>, I.scenario.fmus(input.name), input.ref) | input in set rng connections & derefInput(I.scenario.fmus(input.name), input.ref).type = <continous>},
-			steps = {mk_Action(<step>, fmu, 1) | fmu in set fmus} in
+		let outputs = {mk_Action(<get>, output.name, output.ref) | output in set dom connections & derefOutput(I.scenario.fmus(output.name), output.ref).type = <continous>},
+			inputs = {mk_Action(<set>, input.name, input.ref) | input in set rng connections & derefInput(I.scenario.fmus(input.name), input.ref).type = <continous>},
+			steps = {mk_Action(<step>, fmu.name, 1) | fmu in set fmus} in
 		let actions = outputs union inputs union steps in
 			runAlgorithm(I, actions)
 	pre 
@@ -191,6 +245,13 @@ functions
                 and fmusSynchronized(fmus)
                 and timeAdvanced(fmus, rng I.scenario.fmus, false);
 
+	terminate : Importer -> Importer
+	terminate(I) ==
+	let fmus = dom I.scenario.fmus in
+		mu(I, scenario |-> mu(I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <DONE>) | name in set fmus }))
+	pre preCoSimulationStep(I.scenario, I.endtime)
+		and I.time.r = I.endtime.r
+	post assertFMUMode(rng RESULT.scenario.fmus, {<DONE>}); 
 
     	/*
 	 * This is the co-simulation step procedure that moves the scenario from time "t" to time "t+H"
@@ -210,20 +271,20 @@ functions
         /*
             Select a step duration using step negotiation
          */
-		let I3 = mu(I2, stepSize |-> stepnegotiation(I2)) in
+		--let I3 = mu(I2, stepSize |-> stepnegotiation(I2)) in
         /*
             Perform the rest of the simulation
         */
-		let I4 = cosimStep(I3) in
+		let I4 = cosimStep(I2) in
 
 		let I5 = mu(I4, time |-> mk_Time(I4.time.r + I.stepSize, I4.time.i)) in
 
-		if I5.endtime >= I5.time 
+		if I5.endtime > I5.time 
 			then cosimulationStep(I5) 
 		else I5
 	pre preCoSimulationStep(I.scenario, I.time)
     post preCoSimulationStep(RESULT.scenario, RESULT.time) 
-		and I.time <= RESULT.time
+		and I.time.r <= RESULT.time.r
 		and 
 		let M' = rng RESULT.scenario.fmus,
 			M = rng I.scenario.fmus in
@@ -257,7 +318,9 @@ functions
 		) in
 		updateEnvironmentClock(I1, fmuUpdated, clock, val.value)
 	pre mk_FMURef(fmu.name,clock) in set I.relevantOutputClocks -- a clock should be relevant if we should query it
-		and clock in set {c.ref | c in set fmu.clocks & c.type = <input>}; 
+		and clock in set {c.ref | c in set fmu.clocks & c.type = <output>}
+	post mk_FMURef(fmu.name,clock) not in set RESULT.relevantOutputClocks;
+
 
 	/*
 	 * This function sets the activation status of the clock
@@ -301,9 +364,6 @@ functions
 			)
 	pre preGetI(I, I.scenario.fmus(port.name), port.ref)
 	post fmusNotAffected(rng ({port.name} <-: I.scenario.fmus), rng ({port.name} <-: RESULT.scenario.fmus));
-
-	
-	--post All Other FMUs are not affect and time is not progressed
 
 	/*
 	 * This action progresses an FMU in time
