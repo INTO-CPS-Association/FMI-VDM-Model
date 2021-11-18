@@ -46,7 +46,8 @@ functions
 		mk_Action(<set>, fmu, port) -> preSetI(I, I.scenario.fmus(fmu), port),
 		mk_Action(<step>, fmu, -) -> preStepI(I, I.scenario.fmus(fmu)),
 		mk_Action(<setC>, fmu, clock) -> preSetCI(I, I.scenario.fmus(fmu), clock),
-		mk_Action(<getC>, fmu, clock) -> preGetCI(I, I.scenario.fmus(fmu), clock)
+		mk_Action(<getC>, fmu, clock) -> preGetCI(I, I.scenario.fmus(fmu), clock),
+		- -> false --default Match
 	end;
 
 	/*
@@ -70,8 +71,7 @@ functions
 			connectedInput = I.scenario.connections(fmuRef) in
 			let input = derefInput(I.scenario.fmus(connectedInput.name), connectedInput.ref) in
 		(fmu.mode = <EVENT> <=> fmuRef in set (I.activeEquations \ I.calculatedEquations) and output.type = <discrete>)
-		and (fmu.mode = <STEP> => (output.type = <continous> ))
-		and (input.contract = <delayed> => fmu.stepped)
+		and (fmu.mode = <STEP> => (output.type = <continous> and (input.contract = <delayed> => fmu.stepped)))
 		and preGet(fmu, port)
 		and connectedInput not in set dom I.valueMap;
 

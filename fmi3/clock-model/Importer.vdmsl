@@ -124,7 +124,8 @@ functions
 		mk_Action(<set>, fmu, port) -> setPort(I, mk_FMURef(fmu, port)),
 		mk_Action(<step>, fmu, -) -> stepFMU(I, I.scenario.fmus(fmu)),
 		mk_Action(<setC>, fmu, clock) -> setClock(I, I.scenario.fmus(fmu), clock, true),
-		mk_Action(<getC>, fmu, clock) -> queryClock(I, I.scenario.fmus(fmu), clock)
+		mk_Action(<getC>, fmu, clock) -> queryClock(I, I.scenario.fmus(fmu), clock),
+		- -> I -- Default match
 	end;
 
 	/**
@@ -288,7 +289,7 @@ functions
 		let I4 = cosimStep(I2) in
 
 		let I5 = mu(I4, 
-						scenario |-> mu(I4.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), stepped |-> false) | name in set dom I4.scenario.fmus }),
+						scenario |-> mu(I4.scenario, fmus |-> { name |-> mu(I4.scenario.fmus(name), stepped |-> false) | name in set dom I4.scenario.fmus }),
 						time |-> mk_Time(I4.time.r + I.stepSize, I4.time.i)
 					) in
 
