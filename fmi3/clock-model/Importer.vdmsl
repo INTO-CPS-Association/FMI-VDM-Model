@@ -54,7 +54,8 @@
 		let outputclocks = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <output> }) | fmu in set rng fmus } in
 		let clocks = inputclocks union outputclocks
 		in
-		imp.activeClocks union imp.inactiveClocks = clocks  -- a clock is either inactive or active
+		--imp.activeClocks union imp.inactiveClocks = clocks  -- a clock is either inactive or active
+		card (imp.activeClocks union imp.inactiveClocks) = card clocks
 		and imp.activeClocks inter imp.inactiveClocks = {} -- a clock cannot be active and inactive
 		and imp.activeClocks inter imp.readyClocks = {} -- an active clock can not be ready
 		and imp.activeClocks = dunion {createFMURefs(fmu, fmu.activeClocks) | fmu in set rng fmus }
@@ -63,7 +64,7 @@
 		and imp.relevantOutputClocks subset outputclocks -- a relevant output clock needs to be an output clock
 		and imp.relevantInputClocks inter imp.relevantOutputClocks = {}
 		--and imp.activeEquations = dunion {fmu.activeEquations | fmu in set rng fmus} -- Equations are actived by the clocks
-		and dom imp.schedule = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> and clock.interval <> <triggered>}) | fmu in set rng fmus }-- We only have time based clocks in the schedule
+		--and dom imp.schedule = dunion {createFMURefs(fmu, {clock.ref | clock in set fmu.clocks & clock.type = <input> and clock.interval <> <triggered>}) | fmu in set rng fmus }-- We only have time based clocks in the schedule
 		---and imp.activeEquations = {c.equations | c in set clocks & c.ref in set imp.activeClocks} -- Invariant for the paper TYPE MISMATCH
 		and imp.endtime >= imp.time -- The simulation cannot not proceed once the endtime is reached
 		and imp.activeEquations inter imp.readyEquations = {}
@@ -73,12 +74,13 @@
 functions
 	createImporter : Machine * Time * real -> Importer
 	createImporter(M, endtime, stepSize) ==
+	let clocks = dunion {createFMURefs(fmu, {c.ref | c in set fmu.clocks}) | fmu in set rng M.fmus} in
 		mk_Importer(
 			M,
 			{|->},
 			{},
-			{},
-			{},
+			clocks,
+			clocks,
 			{},
 			{},
 			{},

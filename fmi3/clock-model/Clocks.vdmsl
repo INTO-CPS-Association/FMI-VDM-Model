@@ -48,6 +48,9 @@
 
 	Contract = <none> | <reactive> | <delayed> ;
 
+	RealNaN = real | <NaN>;
+
+
 	PortType = <discrete> | <continous>; 
 
 	Causality = <input> | <output>;
@@ -82,7 +85,10 @@
 	 */
 	FMURef ::
 		name	: Name
-		ref		: Ref;
+		ref		: Ref
+	eq x = y == 
+		x.name = y.name
+		and x.ref = y.ref;
 
 	/**
 	 * The current known FMU variable values. These are usually used by FMUs, but note that
@@ -108,6 +114,7 @@
 	 * A variable is identified by a Ref (within an FMU).
 	 */
 	Variable ::
+		name 		: Name
 		ref			: Ref
         time        : Time
         causality	: Causality
@@ -120,19 +127,30 @@
 		and var.causality = <input> => var.dependsOn = {} ;
 
 
+	TimeBasedClock ::
+		name		: Name
+		shift 		: real
+		period		: real
+		interval	: Interval
+	inv clock ==
+		clock.shift >= 0.0
+		and clock.period >= 0.0
+		and clock.interval <> <triggered>;
+
 	/**
 	 * A clock is identified by a Ref (within an FMU) and activates a set of equations.
 	 */
 	Clock ::
+		name 		: Name 
 		ref			: Ref
 		type		: Causality
 		interval	: Interval
-        timeToTick  : Time
 		dependsOn 	: set of Ref -- The clocks that can trigger an clock
 		equations	: set of Ref -- variables the clock activates
+		master		: bool -- Is the FMU controlling the clock - a clock cna only have one master
 	inv clock ==
 		(clock.type = <output> => clock.interval = <triggered>)	-- An output clock must be of type triggered 
-		and (clock.type = <input> => clock.dependsOn = {}); -- Only output clocks are subject to feedthrough
+		and (clock.type = <input> => clock.dependsOn = {});  -- Only output clocks are subject to feedthrough
 
 	/**
 	 * An FMU is comprised of a set of clocks and variables, plus an environment that holds
@@ -182,9 +200,11 @@
 	 * sources must be FMU outputs and the destinations must be FMU inputs.
 	 */
 	Machine ::
-		fmus				: map Name to FMU
-		connections			: map FMURef to FMURef
-		clockConnections	: map FMURef to FMURef
+		fmus					: map Name to FMU
+		timeBasedClocks 		: set of TimeBasedClock
+		connections				: map FMURef to FMURef
+		clockConnections		: map FMURef to FMURef
+		timedClockConnections	: map Name to set of FMURef
 	inv m ==
 		(forall srcRef in set dom m.connections &
 			-- Every connection's source is a known FMU
@@ -210,17 +230,17 @@
 			fmuref.name in set dom m.fmus
 			-- Every connection's source is an output from its FMU
 			and let fmu = m.fmus(fmuref.name) in
-				exists v in set fmu.clocks & fmuref.ref = v.ref and v.type = <output>)
+				exists v in set fmu.clocks & fmuref.ref = v.ref and v.type = <output> and v.interval = <triggered>)
 		and
 		(forall fmuref in set rng m.clockConnections &
 			-- Every connection's destination is a known FMU
 			fmuref.name in set dom m.fmus
 			-- Every connection's destination is an input of its FMU
 			and let fmu = m.fmus(fmuref.name) in
-				exists v in set fmu.clocks & fmuref.ref = v.ref and v.type = <input>)
+				exists v in set fmu.clocks & fmuref.ref = v.ref and v.type = <input> and v.interval = <triggered>)
 		and dom m.clockConnections inter dom m.connections = {}
-		and rng m.clockConnections inter rng m.connections = {};
-  
+		and rng m.clockConnections inter rng m.connections = {}
+		and dom m.timedClockConnections = {c.name | c in set m.timeBasedClocks};
 	
 functions
 	/**
@@ -279,13 +299,10 @@ functions
         and RESULT.#1.time.i = fmu.time.i + 1 -- The Integer component of the FMU should be increased
 		and RESULT.#1.activeClocks = {} ; -- All clocks get disabled when we step the FMU
 
-	types
-	RealNaNLF = real | <NaN>;
-	functions
 	/*
 	 * 
 	 */
-	next_tm: FMU * Ref +> RealNaNLF
+	next_tm: FMU * Ref +> RealNaN
 	next_tm(fmu, ref) ==
 		is not yet specified
 	pre exists v in set fmu.clocks & v.ref = ref
@@ -620,7 +637,7 @@ post
 
 calculateSchedule: FMU * set of Ref -> map FMURef to real
 calculateSchedule(fmu, clocks)== 
-{ mk_FMURef(fmu.name, clock) |-> next_tm(fmu, clock) | clock in set clocks }
+	{ mk_FMURef(fmu.name, clock) |-> next_tm(fmu, clock) | clock in set clocks }
 pre let cref = {c.ref | c in set fmu.clocks & c.type = <input> and c.interval <> <triggered> } in 
 	clocks subset cref
 post card dom RESULT = card clocks;
