@@ -28,12 +28,22 @@
  */
 functions
     -- All connections are synchronized meaning the input and output value is identical
-    variablesSynchronized: Machine -> bool
-    variablesSynchronized(M) ==
-        forall srcPort in set dom M.connections &
+    variablesSynchronized: Machine * set of PortType -> bool
+    variablesSynchronized(M, variableTypes) ==
+		let outputs = filterOutputs(rng M.fmus, variableTypes) in
+        forall srcPort in set outputs &
             let trgPort = M.connections(srcPort) in
             (M.fmus(srcPort.name)).env(srcPort.ref) = (M.fmus(trgPort.name)).env(trgPort.ref);
 
+
+	-- This can probably be done inline
+	filterOutputs : set of FMU * set of PortType -> set of FMURef
+	filterOutputs(fmus, variableTypes) ==
+	if fmus = {} then {}
+	else
+	let fmu in set fmus in
+	{mk_FMURef(fmu.name, output.ref) | output in set fmu.outputs & output.type in set variableTypes} union filterOutputs(fmus \ {fmu}, variableTypes)
+	measure card fmus;
 
 	/*
 	 * Is an Action activated?
@@ -60,9 +70,12 @@ functions
 		let input = derefInput(fmu, port),
 			fmuRef = mk_FMURef(fmu.name, port) in
 		(fmu.mode = <EVENT> <=> fmuRef in set (I.activeEquations \ I.calculatedEquations) and input.type = <discrete>)
-		and (fmu.mode = <STEP> => input.type = <continous>)
-		and preSet(fmu, port)
-		and fmuRef in set dom I.valueMap;
+		and fmuRef in set dom I.valueMap
+		and	let val = I.valueMap(fmuRef) in 
+		 (fmu.mode = <STEP> => (input.type = <continous> and (input.contract = <reactive> => val.time > fmu.time) 
+		 												 and (input.contract = <delayed> => val.time = fmu.time))
+		)
+		and preSet(fmu, port);
 
 	preGetI: Importer * FMU * Ref -> bool
 	preGetI(I, fmu, port)==
@@ -119,7 +132,8 @@ functions
 
 	preStepT: FMU * real -> bool
 	preStepT(fmu, stepSize)==
-		forall i in set fmu.inputs &
+		let continousInputs = {i | i in set fmu.inputs & i.type = <continous>} in
+		forall i in set continousInputs &
 			 		(i.contract = <reactive> => fmu.env(i.ref).time.r = fmu.time.r + stepSize)
 					and (i.contract = <delayed> => fmu.env(i.ref).time = fmu.time)
 			and stepSize >= 0.0 and fmu.mode = <STEP>;
@@ -189,7 +203,7 @@ functions
     preCoSimulationStep(scenario, time) ==
         let fmus = rng scenario.fmus in
                 assertFMUMode(fmus, {<STEP>})
-                and variablesSynchronized(scenario) 
+                and variablesSynchronized(scenario, {<continous>}) 
                 and fmusSynchronizedAtTime(fmus, time);
 
 
@@ -203,8 +217,8 @@ functions
 
 	ImporterNotAffected : Importer * Importer -> bool
 	ImporterNotAffected(oldImporter, newImporter) == 
-		oldImporter.schedule = newImporter.schedule
-		and oldImporter.activeClocks = newImporter.activeClocks
+		--oldImporter.schedule = newImporter.schedule
+		oldImporter.activeClocks = newImporter.activeClocks
 		and oldImporter.readyClocks = newImporter.readyClocks
 		and oldImporter.inactiveClocks = newImporter.inactiveClocks
 		--and oldImporter.fmusWithEvent = newImporter.fmusWithEvent
@@ -215,7 +229,7 @@ functions
 		and oldImporter.readyEquations = newImporter.readyEquations
 		--and oldImporter.time = newImporter.time
 		and oldImporter.endtime = newImporter.endtime
-		and oldImporter.stepSize = newImporter.stepSize
+		--and oldImporter.stepSize = newImporter.stepSize
 		and oldImporter.valueMap = newImporter.valueMap;
 
 	
