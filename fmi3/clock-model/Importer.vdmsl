@@ -174,13 +174,13 @@ functions
 		mu(I, scenario |-> mu(I.scenario, 
 		fmus |-> I.scenario.fmus ++
 			{ name |->  mu(I.scenario.fmus(name), mode |-> <EVENT>) | name in set dom I.scenario.fmus & name in set fmus }))
-	pre assertFMUMode(rng (fmus <: I.scenario.fmus), {<STEP>})
-		and I.activeClocks = {}
+	pre preCoSimulationStep(I.scenario, I.time)
 	post
 		let fmusAffected = rng (fmus <: RESULT.scenario.fmus) in
 		ImporterNotAffected(I, RESULT)
 		and assertFMUMode(fmusAffected, {<EVENT>})
-	 	and forall m' in set fmusAffected & m'.time.i = 0;
+	 	and forall m' in set fmusAffected & m'.time.i = 0
+		and variablesSynchronized(RESULT.scenario, {<continous>});
 
     /**
 	 * Move all FMUs in M into Step mode.
@@ -196,12 +196,10 @@ functions
 	pre 
 		let relevantFMUs = rng (fmus <: I.scenario.fmus) in
 		assertFMUMode(relevantFMUs, {<INIT>, <EVENT>})
-		and I.activeClocks = {}
-	post 
-		ImporterNotAffected(I, RESULT) and
-		let relevantFMUs = rng (fmus <: RESULT.scenario.fmus) in
-			assertFMUMode(relevantFMUs, {<STEP>})
-			and forall m' in set relevantFMUs & m'.time.i = 0;
+		and fmusSynchronized(relevantFMUs)
+		and variablesSynchronized(I.scenario, {<continous>})
+	post postStepMode(RESULT, I, fmus);
+
 
 	/**
 	 * Activate the clocks in all FMUs that are due to tick at this time.
@@ -243,13 +241,9 @@ functions
          */
 		-- @Printf("Initialization done\n")
         enterStepMode(I2, dom I2.scenario.fmus)
-	pre 
-		let fmus = rng I.scenario.fmus in
-		assertFMUMode(fmus, {<INIT>})
-		and fmusSynchronizedAtTime(fmus, I.time)
-		and I.time = mk_Time(0,0)
-    post 
-		preCoSimulationStep(RESULT.scenario, RESULT.time)
+	pre preInitialization(I)
+    post preCoSimulationStep(RESULT.scenario, RESULT.time)
+		and ImporterNotAffected(RESULT, I)
 		and RESULT.time = mk_Time(0,0);
 
     /*
@@ -260,37 +254,27 @@ functions
     cosimStep: Importer -> Importer
     cosimStep(I) ==
 	let connections = I.scenario.connections in
-		let fmus = rng I.scenario.fmus in
-		-- Calculate all the actions that should be performed in the co-simulation step
-		let outputs = {mk_Action(<get>, output.name, output.ref) | output in set dom connections & derefOutput(I.scenario.fmus(output.name), output.ref).type = <continous>},
+		/* 
+			1. Calculate all the actions that should be performed in the co-simulation step
+			2. Execute the actions in a correct ordeer.
+		*/
+		let outputs = {mk_Action(<get>, output.name, output.ref) | output in set dom connections 
+																	& derefOutput(I.scenario.fmus(output.name), output.ref).type = <continous>},
 			inputs = {mk_Action(<set>, input.name, input.ref) | input in set rng connections & derefInput(I.scenario.fmus(input.name), input.ref).type = <continous>},
-			steps = {mk_Action(<step>, fmu.name, 1) | fmu in set fmus} in
+			steps = {mk_Action(<step>, fmu.name, 1) | fmu in set rng I.scenario.fmus} in
 		let actions = outputs union inputs union steps in
 			runAlgorithm(I, actions)
-	pre 
-		let scenario = I.scenario, fmus = rng scenario.fmus in
-			assertFMUMode(fmus, {<STEP>}) 
-                and variablesSynchronized(scenario, {<continous>}) 
-                and fmusSynchronized(fmus)
-    post 
-		let scenario = RESULT.scenario, fmus = rng scenario.fmus in
-			assertFMUMode(fmus, {<STEP>}) 
-                and variablesSynchronized(scenario, {<continous>}) 
-                and fmusSynchronized(fmus)
-                and timeAdvanced(fmus, rng I.scenario.fmus, false);
-
+	pre preCoSimulationStep(I.scenario, I.time)
+    post postCosimulationStep(RESULT.scenario, rng I.scenario.fmus);
 
 	terminate : Importer -> Importer
 	terminate(I) ==
-	let fmus = dom I.scenario.fmus in
-		mu(I, scenario |-> mu(I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <DONE>) | name in set fmus }))
-	pre preCoSimulationStep(I.scenario, I.endtime)
-		and I.time.r = I.endtime.r
-	post assertFMUMode(rng RESULT.scenario.fmus, {<DONE>})
-		and fmusSynchronized(rng RESULT.scenario.fmus)
-		and ImporterNotAffected(I,RESULT); 
+		mu(I, scenario |-> mu(I.scenario, fmus |-> { name |-> mu(I.scenario.fmus(name), mode |-> <DONE>) | name in set dom I.scenario.fmus }))
+	pre preTermination(I)
+	post postTermination(RESULT, I);
+	
 
-    	/*
+	/*
 	 * This is the co-simulation step procedure that moves the scenario from time "t" to time "t+H"
 	 */
     cosimulationStep: Importer -> Importer 
@@ -343,7 +327,10 @@ functions
 			timeLeft = I.endtime.r - I.time.r in
 		selectMinStep(maxSteps union scheduling union {timeLeft})
 	post RESULT >= 0 
-		and forall fmu in set rng I.scenario.fmus & fmu.maxStep >= RESULT;
+		and (forall fmu in set rng I.scenario.fmus & fmu.maxStep >= RESULT) -- We ensure that the step is allowed
+		and (forall clockTicks in set rng I.schedule & (clockTicks - I.time.r) >= RESULT) -- We do not miss a clock tick
+		and RESULT <= I.stepSize -- We do not find a step larger than we want to take
+		and RESULT <= I.endtime.r - I.time.r; -- We should not select a
 
     
 	/*
@@ -405,9 +392,9 @@ functions
 					valueMap |-> {port} <-: I.valueMap
 				)
 	pre preSetI(I, I.scenario.fmus(port.name), port.ref)
-	post fmusNotAffected(rng ({port.name} <-: I.scenario.fmus), rng ({port.name} <-: RESULT.scenario.fmus));
+	post fmusNotAffected(rng ({port.name} <-: I.scenario.fmus), rng ({port.name} <-: RESULT.scenario.fmus))
+	and card dom RESULT.valueMap + 1= card dom I.valueMap;
 
-	--post All Other FMUs are not affect and time is not progressed
 
 	-- This action obtains a value from an output		
 	getPort : Importer * FMURef -> Importer
@@ -419,7 +406,8 @@ functions
 				valueMap |-> I.valueMap ++ {connectedInput |-> val}
 			)
 	pre preGetI(I, I.scenario.fmus(port.name), port.ref)
-	post fmusNotAffected(rng ({port.name} <-: I.scenario.fmus), rng ({port.name} <-: RESULT.scenario.fmus));
+	post fmusNotAffected(rng ({port.name} <-: I.scenario.fmus), rng ({port.name} <-: RESULT.scenario.fmus))
+	and card dom RESULT.valueMap = card dom I.valueMap + 1;
 
 	/*
 	 * This action progresses an FMU in time
@@ -434,4 +422,7 @@ functions
 				stepSize |-> step -- adjust the stepsize 
 			)
 	pre preStepI(I, fmu)
-	post fmusNotAffected(rng ({fmu.name} <-: I.scenario.fmus), rng ({fmu.name} <-: RESULT.scenario.fmus));
+	post fmusNotAffected(rng ({fmu.name} <-: I.scenario.fmus), rng ({fmu.name} <-: RESULT.scenario.fmus))
+	and I.fmusWithEvent subset RESULT.fmusWithEvent
+	and I.stepSize >= RESULT.stepSize
+	and ImporterNotAffected(I, RESULT);

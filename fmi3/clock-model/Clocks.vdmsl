@@ -187,6 +187,8 @@
 			and (fmu.mode <> <EVENT> => fmu.activeClocks = {})
 			-- An equation can only be active when the fmu is in event mode
 			and (fmu.mode <> <EVENT> => fmu.activeEquations = {})
+			-- The integer clock can only be nonzero in event mode
+			and (fmu.mode <> <EVENT> => fmu.time.i = 0)
 			-- All variables' clocks are defined
 			and (forall var in set vars & var.clocks subset crefs)
 			-- An active variable is active by a clock Todo
@@ -256,13 +258,17 @@ functions
 	set_m(fmu, ref, val) ==
 		mu(fmu, env |-> fmu.env ++ { ref |-> val })
 		-- and calculate equations?
-	pre preSet(fmu, ref);
+	pre preSet(fmu, ref)
+	post RESULT.mode = fmu.mode
+	and RESULT.time = fmu.time
+	and RESULT.inputs = fmu.inputs;
 
 	get_m: FMU * Ref +> FMU * Value
 	get_m(fmu, ref) ==
 		-- calculate equations?
 		mk_(fmu, fmu.env(ref))
-	pre preGet(fmu, ref);
+	pre preGet(fmu, ref)
+	post fmu.mode <> <EVENT> => fmusNotAffected({RESULT.#1}, {fmu});
 
 	set_cm: FMU * Ref * bool +> FMU
 	set_cm(fmu, ref, val) ==
@@ -291,8 +297,8 @@ functions
 		in
 		mk_(updatedFMU, stepTaken, eventTriggered)
 	pre preStepT(fmu, step)
-	post RESULT.#2 <= step -- We cannot take a step larger than what the Importer requested
-        and RESULT.#2 <= fmu.maxStep; -- We cannot take a step larger than what the FMU is capable of
+	post postStepT(RESULT.#1, RESULT.#2, RESULT.#3, fmu, step);
+		
 		
 	step_e: FMU +> FMU * bool
 	step_e(fmu) ==
@@ -302,9 +308,8 @@ functions
 		in
 		mk_(updatedFMU, false) -- We never trigger a state event 
 	pre preStepE(fmu)
-	post RESULT.#1.mode = <EVENT> 		-- FMU remains in event mode - it always does the Importer should bring it out
-        and RESULT.#1.time.i = fmu.time.i + 1 -- The Integer component of the FMU should be increased
-		and RESULT.#1.activeClocks = {} ; -- All clocks get disabled when we step the FMU
+	post postStepE(RESULT.#1, fmu, RESULT.#2);
+	
 
 	/*
 	 * 
@@ -372,8 +377,9 @@ functions
 	(val => (I.activeClocks subset RESULT.activeClocks
 			and RESULT.readyClocks psubset I.readyClocks
 			and RESULT.inactiveClocks psubset I.inactiveClocks
-			and fmuRef in set RESULT.activeClocks));
-	-- I need to create a stronger post condition here
+			and fmuRef in set RESULT.activeClocks))
+	and
+	(not val => (fmuRef in set RESULT.inactiveClocks));
 
 	/*
 	* Calculates an input equation that needs to be calculated
@@ -387,13 +393,17 @@ functions
 	pre 
 		let fmu = I.scenario.fmus(equation.name) in
 			equation in set I.activeEquations \ I.calculatedEquations -- The value should be active and not calculated before
-			and equation in set dom I.valueMap -- A value to set should be accessible
 			and fmu.mode = <EVENT>
-			and (exists v in set fmu.inputs & v.ref = equation.ref and v.type = <discrete>)
+			and preSetI(I, fmu, equation.ref)
 	post
-	let fmu = I.scenario.fmus(equation.name) in
-		fmu.mode =  <EVENT>
-	and equation in set RESULT.calculatedEquations;
+	let newFMU = RESULT.scenario.fmus(equation.name),
+		oldFMU = I.scenario.fmus(equation.name) 
+	in
+		newFMU.mode = oldFMU.mode
+		and newFMU.time = oldFMU.time
+		and newFMU.outputs = oldFMU.outputs
+		and fmusNotAffected(rng ({equation.name} <-: I.scenario.fmus), rng ({equation.name} <-: RESULT.scenario.fmus))
+		and equation in set RESULT.calculatedEquations;
 
 	/*
 	* Calculates an output equation that needs to be calculated.
@@ -408,11 +418,8 @@ functions
 		let fmu = I.scenario.fmus(equation.name) in
 		equation in set I.activeEquations \ I.calculatedEquations
 		and fmu.mode = <EVENT>
-		and (exists v in set fmu.outputs & v.ref = equation.ref and v.type = <discrete>)
-	post
-	let fmu = RESULT.scenario.fmus(equation.name) in
-		fmu.mode =  <EVENT>
-		and equation in set RESULT.calculatedEquations;
+		and preGetI(I, fmu, equation.ref)
+	post postVaraibleCalculation(equation, I, RESULT);
 
 	updateEnvironmentEquation : Importer * FMU * FMURef -> Importer
 	updateEnvironmentEquation(I, fmu, equation)==
@@ -427,7 +434,11 @@ functions
 			relevantOutputClocks |-> I.relevantOutputClocks union triggeredOutputs
 		)
 	pre equation in set I.activeEquations \ I.calculatedEquations
-	post equation in set RESULT.calculatedEquations;
+		and fmu.mode =  <EVENT>
+	post equation in set RESULT.calculatedEquations
+		and I.relevantInputClocks subset RESULT.relevantInputClocks
+		and I.relevantOutputClocks subset RESULT.relevantOutputClocks
+		and fmusNotAffected(rng ({fmu.name} <-: I.scenario.fmus), rng ({fmu.name} <-: RESULT.scenario.fmus));
 
     /*
 		This function exchanges values between all connected Inputs and Outputs
@@ -440,16 +451,8 @@ functions
 		let outputs = {mk_Action(<get>, output.name, output.ref) | output in set dom connections},
 			inputs = {mk_Action(<set>, input.name, input.ref) | input in set rng connections} in
 				runAlgorithm(I, outputs union inputs)
-	pre 
-	let fmus = rng I.scenario.fmus in
-		assertFMUMode(fmus, {<INIT>})
-		and fmusSynchronized(fmus)
-	post 
-	let fmus = rng RESULT.scenario.fmus in
-		assertFMUMode(fmus, {<INIT>})
-		and fmusSynchronized(fmus)
-		and variablesSynchronized(RESULT.scenario, {<continous>, <discrete>});
-
+	pre preInitialization(I)
+	post postInitialization(RESULT);
 
 	/*
 		This function calculates the set of clocks that should be ticked
@@ -459,14 +462,13 @@ functions
 		-- Clocks to tick at the current time
         let clocksToTick = dom (I.schedule :> {I.time.r}) in
 
-		
 		let affectededInputs = dunion rng (clocksToTick <: I.scenario.timedClockConnections) in
 		-- Update the schedule for the ticked clocks to a new point in time
-		--let updatedSchedule = clocks
+		let updatedSchedule = {c.name |-> c.period + I.time.r | c in set I.scenario.timeBasedClocks & c.name in set clocksToTick} in
 		-- The clocks (input) are now relevant and their schedule is now updated
 		let I1 = mu(I, 
 					relevantInputClocks |-> affectededInputs,
-					schedule |-> I.schedule ++ {c.name |-> c.period + I.time.r | c in set I.scenario.timeBasedClocks & c.name in set clocksToTick}
+					schedule |-> I.schedule ++ updatedSchedule
 		) in
 		mk_(I1, affectededInputs);
 
@@ -532,15 +534,8 @@ functions
 			enterStepMode(I3, relevantFMUs)
 		else clockedSimulationAlgorithm(I, clocks)
 
-	pre 
-		let fmus = rng I.scenario.fmus in
-		fmusSynchronized(fmus)
-		and assertFMUMode(fmus, {<STEP>})
-		and (I.fmusWithEvent <> {} or clocks <> {}) -- An event is active
-	post 		
-		let fmus = rng RESULT.scenario.fmus in
-		fmusSynchronized(fmus)
-		and assertFMUMode(fmus, {<STEP>})
+	pre preEventMode(I, clocks)
+	post postEventMode(RESULT)
 	-- I do not know the measure - it has something to do with the events that FMUs trigger
 	measure is not yet specified;
 
