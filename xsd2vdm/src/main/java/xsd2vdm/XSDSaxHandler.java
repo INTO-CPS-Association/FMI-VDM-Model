@@ -44,6 +44,7 @@ public class XSDSaxHandler extends DefaultHandler
 	private List<XSDElement> roots = new Vector<XSDElement>();
 	private List<String> includes = new Vector<String>();
 	private Locator locator = null;
+	private String currentPrefix = null;
 
 	public XSDSaxHandler()
 	{
@@ -68,13 +69,13 @@ public class XSDSaxHandler extends DefaultHandler
 	@Override
 	public void startPrefixMapping(String prefix, String uri) throws SAXException
 	{
-		return;
+		currentPrefix = prefix;
 	}
 	
 	@Override
 	public void endPrefixMapping(String prefix) throws SAXException
 	{
-		return;
+		currentPrefix = null;
 	}
 
 	@Override
