@@ -41,7 +41,7 @@ public class PatternFacet extends Facet
 	@Override
 	public String toVDM(String var, Type fieldtype)
 	{
-		return "XSD`xsdPattern(" + var + ", \"" + value + "\")";
+		return "XSD`xsdPattern(" + var + ", \"" + value.replaceAll("\\\\", "\\\\\\\\") + "\")";
 	}
 	
 	@Override

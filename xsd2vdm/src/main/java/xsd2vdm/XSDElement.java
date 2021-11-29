@@ -57,7 +57,7 @@ public class XSDElement
 	 */
 	public final static XSDElement XML_LANG = new XSDElement("xml:lang", "xs:string");
 	
-	public XSDElement(String qName, Attributes attributes, Locator locator)
+	public XSDElement(String prefix, String qName, Attributes attributes, Locator locator)
 	{
 		this.line = locator.getLineNumber();
 		this.file = getFile(locator);
@@ -74,7 +74,16 @@ public class XSDElement
 			
 			if (name != null)
 			{
-				referenceMap.put(name, this);
+				if (prefix != null)
+				{
+					referenceMap.put(prefix + ":" + name, this);
+					System.err.println("Added " + prefix + ":" + name);
+				}
+				else
+				{
+					referenceMap.put(name, this);
+					System.err.println("Added " + name);
+				}
 			}
 		}
 	}

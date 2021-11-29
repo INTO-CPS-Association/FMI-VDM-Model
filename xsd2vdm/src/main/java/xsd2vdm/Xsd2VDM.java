@@ -233,7 +233,7 @@ public class Xsd2VDM
 	public Map<String, Type> createVDMSchema(File xsdFile, File vdmFile, boolean writeVDM, boolean noWarn) throws Exception
 	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
-		factory.setNamespaceAware(true);
+		// factory.setNamespaceAware(true);
 		SAXParser saxParser = factory.newSAXParser();
 		
 		Set<File> processed = new HashSet<File>();
@@ -250,6 +250,7 @@ public class Xsd2VDM
 			if (!processed.contains(file))
 			{
 				XSDSaxHandler handler = new XSDSaxHandler();
+				System.err.println("Processing " + file);
 				saxParser.parse(file, handler);
 				
 				processed.add(file);

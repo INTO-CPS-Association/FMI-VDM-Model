@@ -120,11 +120,11 @@ abstract public class XSDConverter
 				default:
 					if (attr.startsWith("xmlns:"))
 					{
-						String abbreviation = attr.substring(6);	// eg. "xs"
+						String prefix = attr.substring(6);	// eg. "xs"
 						String namespace = attributes.get(attr);
-						namespaces.put(namespace, abbreviation);
+						namespaces.put(namespace, prefix);
 					}
-					break;	// ignore
+					break;	// else ignore
 			}
 		}
 		
@@ -252,11 +252,7 @@ abstract public class XSDConverter
 	 */
 	protected XSDElement lookup(String name)
 	{
-		if (name.startsWith(targetPrefix + ":"))
-		{
-			return XSDElement.lookup(name.substring(targetPrefix.length() + 1));
-		}
-		else if (name.equals("xml:lang"))
+		if (name.equals("xml:lang"))
 		{
 			return XSDElement.XML_LANG;
 		}
