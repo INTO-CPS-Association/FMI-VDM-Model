@@ -64,6 +64,18 @@ public class XSDSaxHandler extends DefaultHandler
 	{
 		this.locator = locator;
 	}
+	
+	@Override
+	public void startPrefixMapping(String prefix, String uri) throws SAXException
+	{
+		return;
+	}
+	
+	@Override
+	public void endPrefixMapping(String prefix) throws SAXException
+	{
+		return;
+	}
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes)
