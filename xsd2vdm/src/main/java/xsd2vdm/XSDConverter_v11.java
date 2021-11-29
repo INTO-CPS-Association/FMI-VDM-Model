@@ -1644,6 +1644,8 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
+		importNamespace(element);
+		
 		stack.pop();
 		return;
 	}

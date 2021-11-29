@@ -70,7 +70,7 @@ public class XSDSaxHandler extends DefaultHandler
 	{
 		stack.push(map(new XSDElement(qName, attributes, locator)));
 		
-		if (qName.equals("xs:include"))
+		if (qName.equals("xs:include") || qName.equals("xs:import"))
 		{
 			includes.add(attributes.getValue("schemaLocation"));
 		}

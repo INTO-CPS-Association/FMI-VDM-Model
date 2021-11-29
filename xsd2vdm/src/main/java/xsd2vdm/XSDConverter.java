@@ -135,6 +135,20 @@ abstract public class XSDConverter
 	}
 	
 	/**
+	 * Import new namespace data from import element.
+	 */
+	protected void importNamespace(XSDElement xsimport)
+	{
+		assert xsimport.getType().equals("xs:import");
+		Map<String, String> attributes = xsimport.getAttrs();
+		
+		String namespace = attributes.get("namespace");
+		String schemaLocation = attributes.get("schemaLocation");
+		
+		namespaces.put(namespace, schemaLocation);
+	}
+	
+	/**
 	 * Look for a specific attribute in the enclosing elements, until you reach an
 	 * xs:element or xs:attribute (ie. limit the search to the enclosing type, but
 	 * consider complexTypes, complexContent, sequences and so on).
