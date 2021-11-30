@@ -70,15 +70,19 @@ public class XSDSaxHandler extends DefaultHandler
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes)
 	{
-		stack.push(map(new XSDElement(prefix, qName, attributes, locator)));
+		XSDElement element = map(new XSDElement(prefix, qName, attributes, locator));
+		stack.push(element);
 		
-		if (qName.equals("xs:schema"))
+		switch (element.getType())
 		{
-			prefix = namespaces.addNamespaces(attributes);
-		}
-		else if (qName.equals("xs:include") || qName.equals("xs:import"))
-		{
-			includes.add(attributes.getValue("schemaLocation"));
+			case "xs:schema":
+				prefix = namespaces.addNamespaces(element.getAttrs());
+				break;
+		
+			case "xs:include":
+			case "xs:import":
+				includes.add(attributes.getValue("schemaLocation"));
+				break;
 		}
 	}
 	

@@ -31,8 +31,6 @@ package xsd2vdm;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.xml.sax.Attributes;
-
 public class Namespaces
 {
 	private Map<String, String> namespaces = new HashMap<String, String>();	// URL -> prefix
@@ -40,29 +38,6 @@ public class Namespaces
 	public void addNamespace(String namespace, String prefix)
 	{
 		namespaces.put(namespace, prefix);
-	}
-	
-	public String addNamespaces(Attributes attributes)
-	{
-		String targetNamespace = null;
-		
-		for (int i=0; i<attributes.getLength(); i++)
-		{
-			String aname = attributes.getQName(i);
-			
-			if (aname.equals("targetNamespace"))
-			{
-				targetNamespace = attributes.getValue(i);
-			}
-			else if (aname.startsWith("xmlns:"))
-			{
-				String prefix = aname.substring(6);	// eg. "xmlns:xs" gives "xs"
-				String namespace = attributes.getValue(i);
-				addNamespace(namespace, prefix);
-			}
-		}
-		
-		return getPrefix(targetNamespace);
 	}
 	
 	public String addNamespaces(Map<String, String> attributes)
