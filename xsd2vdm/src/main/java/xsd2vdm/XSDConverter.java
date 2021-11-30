@@ -30,7 +30,6 @@
 package xsd2vdm;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,10 +64,9 @@ abstract public class XSDConverter
 	protected boolean suppressWarnings = false;
 	
 	/**
-	 * Set to the schema target namespace, if set.
+	 * Set to the schema namespaces.
 	 */
-	protected String targetNamespace = null;
-	protected Map<String, String> namespaces = new HashMap<String, String>();
+	protected Namespaces namespaces = new Namespaces();
 	protected String targetPrefix = null;
 
 	/**
@@ -104,34 +102,8 @@ abstract public class XSDConverter
 	protected void setNamespaces(XSDElement schema)
 	{
 		assert schema.getType().equals("xs:schema");
-		targetNamespace = null;
-		targetPrefix = "";
 		namespaces.clear();
-		Map<String, String> attributes = schema.getAttrs();
-		
-		for (String attr: attributes.keySet())
-		{
-			switch (attr)
-			{
-				case "targetNamespace":
-					targetNamespace = attributes.get(attr);
-					break;
-					
-				default:
-					if (attr.startsWith("xmlns:"))
-					{
-						String prefix = attr.substring(6);	// eg. "xs"
-						String namespace = attributes.get(attr);
-						namespaces.put(namespace, prefix);
-					}
-					break;	// else ignore
-			}
-		}
-		
-		if (targetNamespace != null && namespaces.containsKey(targetNamespace))
-		{
-			targetPrefix = namespaces.get(targetNamespace);
-		}
+		targetPrefix = namespaces.addNamespaces(schema.getAttrs());
 	}
 	
 	/**
@@ -145,7 +117,7 @@ abstract public class XSDConverter
 		String namespace = attributes.get("namespace");
 		String schemaLocation = attributes.get("schemaLocation");
 		
-		namespaces.put(namespace, schemaLocation);
+		namespaces.addNamespace(namespace, schemaLocation);
 	}
 	
 	/**
@@ -255,6 +227,10 @@ abstract public class XSDConverter
 		if (name.equals("xml:lang"))
 		{
 			return XSDElement.XML_LANG;
+		}
+		else if (!name.contains(":") && !targetPrefix.isEmpty())
+		{
+			return XSDElement.lookup(targetPrefix + ":" + name);
 		}
 		else
 		{

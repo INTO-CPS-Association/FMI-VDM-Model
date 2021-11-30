@@ -29,9 +29,7 @@
 
 package xsd2vdm;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -46,7 +44,7 @@ public class XSDSaxHandler extends DefaultHandler
 	private List<XSDElement> roots = new Vector<XSDElement>();
 	private List<String> includes = new Vector<String>();
 	private Locator locator = null;
-	private Map<String, String> namespaces = new HashMap<String, String>();	// URL -> prefix
+	private Namespaces namespaces = new Namespaces();
 	private String prefix = null;
 
 	public XSDSaxHandler()
@@ -76,30 +74,7 @@ public class XSDSaxHandler extends DefaultHandler
 		
 		if (qName.equals("xs:schema"))
 		{
-			String targetNamespace = null;
-			
-			for (int i=0; i<attributes.getLength(); i++)
-			{
-				String aname = attributes.getQName(i);
-				
-				if (aname.equals("targetNamespace"))
-				{
-					targetNamespace = attributes.getValue(i);
-				}
-				else if (aname.startsWith("xmlns:"))
-				{
-					String prefix = aname.substring(6);	// eg. "xs"
-					String namespace = attributes.getValue(i);
-					namespaces.put(namespace, prefix);
-					System.err.println("Namespace " + namespace + " = " + prefix);
-				}
-			}
-			
-			if (targetNamespace != null && namespaces.containsKey(targetNamespace))
-			{
-				prefix = namespaces.get(targetNamespace);
-				System.err.println("Prefix = " + prefix);
-			}
+			prefix = namespaces.addNamespaces(attributes);
 		}
 		else if (qName.equals("xs:include") || qName.equals("xs:import"))
 		{

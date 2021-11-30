@@ -41,9 +41,9 @@ public class UnionType extends Type
 	private final String name;
 	private final List<Type> types;
 	
-	public UnionType(String name)
+	public UnionType(String prefix, String name)
 	{
-		this.name = name;
+		this.name = prefixed(prefix, name);
 		this.types = new Vector<Type>();
 	}
 	

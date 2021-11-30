@@ -43,21 +43,21 @@ public class RecordType extends Type
 	private final String name;
 	private final List<Field> fields;
 
-	public RecordType(String name)
+	public RecordType(String prefix, String name)
 	{
-		this.name = name;
+		this.name = prefixed(prefix, name);
 		this.fields = new Vector<Field>();
 	}
 
-	public RecordType(String name, Field field)
+	public RecordType(String prefix, String name, Field field)
 	{
-		this(name);
+		this(prefix, name);
 		addField(field);
 	}
 
-	public RecordType(String name, List<Field> fields)
+	public RecordType(String prefix, String name, List<Field> fields)
 	{
-		this(name);
+		this(prefix, name);
 		addFields(fields);
 	}
 	

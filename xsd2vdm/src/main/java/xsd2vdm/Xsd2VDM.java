@@ -250,7 +250,6 @@ public class Xsd2VDM
 			if (!processed.contains(file))
 			{
 				XSDSaxHandler handler = new XSDSaxHandler();
-				System.err.println("Processing " + file);
 				saxParser.parse(file, handler);
 				
 				processed.add(file);

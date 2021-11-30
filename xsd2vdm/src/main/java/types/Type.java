@@ -202,4 +202,17 @@ abstract public class Type
 			}
 		}
 	}
+	
+	protected String prefixed(String prefix, String name)
+	{
+		if (prefix == null || prefix.isEmpty())
+		{
+			return name;
+		}
+		else
+		{
+			prefix = prefix.replaceAll("\\.", "_");
+			return prefix + "$" + name;
+		}
+	}
 }

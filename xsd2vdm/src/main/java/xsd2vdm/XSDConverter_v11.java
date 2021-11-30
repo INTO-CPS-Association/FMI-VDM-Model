@@ -130,7 +130,7 @@ public class XSDConverter_v11 extends XSDConverter
 		assert element.isType("xs:schema");
 		stack.push(element);
 		
-		setNamespaces(element);
+		setNamespaces(element);		// Sets targetPrefix
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -518,7 +518,7 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
-		RecordType result = new RecordType(stackAttr("name"), fields);
+		RecordType result = new RecordType(targetPrefix, stackAttr("name"), fields);
 		stack.pop();
 		return result;
 	}
@@ -722,7 +722,7 @@ public class XSDConverter_v11 extends XSDConverter
 					
 				default:
 					dumpStack("Unexpected xs:element ref type", ref);
-					record = new RecordType("?");
+					record = new RecordType("?", "?");
 					break;
 			}
 		}
@@ -738,7 +738,7 @@ public class XSDConverter_v11 extends XSDConverter
 				if (element.hasAttr("minOccurs") || element.hasAttr("maxOccurs"))
 				{
 					// Might be different to existing
-					RecordType modified = new RecordType(elementName, existing.getFields());
+					RecordType modified = new RecordType(targetPrefix, elementName, existing.getFields());
 					modified.setMinOccurs(element);
 					modified.setMaxOccurs(element);
 					return modified;
@@ -749,7 +749,7 @@ public class XSDConverter_v11 extends XSDConverter
 				}
 			}
 
-			record = new RecordType(typeName(elementName));
+			record = new RecordType(targetPrefix, typeName(elementName));
 			converted.put(elementName, record);
 			
 			if (element.hasAttr("type"))
@@ -894,7 +894,7 @@ public class XSDConverter_v11 extends XSDConverter
 						case "xs:all":
 						case "xs:sequence":
 						{
-							RecordType record = new RecordType(stackAttr("name"));
+							RecordType record = new RecordType(targetPrefix, stackAttr("name"));
 							
 							for (Field field: fields)
 							{
@@ -907,7 +907,7 @@ public class XSDConverter_v11 extends XSDConverter
 						
 						case "xs:choice":
 						{
-							UnionType union = new UnionType(stackAttr("name"));
+							UnionType union = new UnionType(targetPrefix, stackAttr("name"));
 							
 							for (Field field: fields)
 							{
@@ -1016,7 +1016,7 @@ public class XSDConverter_v11 extends XSDConverter
 		assert element.isType("xs:choice");
 		stack.push(element);
 		String name = element.getAttr("name");
-		UnionType union = new UnionType(name);
+		UnionType union = new UnionType(targetPrefix, name);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -2111,7 +2111,7 @@ public class XSDConverter_v11 extends XSDConverter
 			return toField((UnionType)converted.get(unionName));
 		}
 		
-		UnionType union = new UnionType(unionName);
+		UnionType union = new UnionType(targetPrefix, unionName);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -2801,7 +2801,12 @@ public class XSDConverter_v11 extends XSDConverter
 	 */
 	private String fieldName(String fname)
 	{
-		fname = fname.replace(":", "_");	// for names like "xml:lang"
+		if (fname.contains("$"))	// prefix$name in records
+		{
+			fname = fname.substring(fname.lastIndexOf('$') + 1);
+		}
+		
+		fname = fname.replaceAll("\\.", "_");
 		String name = fname.substring(0, 1).toLowerCase() + fname.substring(1);
 		return (converted.containsKey(name)) ? name : name;
 	}
@@ -2831,7 +2836,7 @@ public class XSDConverter_v11 extends XSDConverter
 		if (!enums.isEmpty())
 		{
 			String typename = typeName(field.getFieldName());
-			UnionType union = new UnionType(typename);
+			UnionType union = new UnionType(targetPrefix, typename);
 			
 			for (String e: enums)
 			{

@@ -45,7 +45,9 @@ public class XSDElement
 {
 	private final int line;
 	private final File file;
+	private final String prefix;
 	private final String type;
+
 	private final Map<String, String> attributes = new HashMap<String, String>();;
 	private final List<XSDElement> children = new Vector<XSDElement>();
 	private final static Map<String, XSDElement> referenceMap = new HashMap<String, XSDElement>();
@@ -61,6 +63,7 @@ public class XSDElement
 	{
 		this.line = locator.getLineNumber();
 		this.file = getFile(locator);
+		this.prefix = prefix;
 		this.type = qName;
 		
 		for (int i=0; i<attributes.getLength(); i++)
@@ -74,15 +77,13 @@ public class XSDElement
 			
 			if (name != null)
 			{
-				if (prefix != null)
+				if (!prefix.isEmpty())
 				{
 					referenceMap.put(prefix + ":" + name, this);
-					System.err.println("Added " + prefix + ":" + name);
 				}
 				else
 				{
 					referenceMap.put(name, this);
-					System.err.println("Added " + name);
 				}
 			}
 		}
@@ -92,6 +93,7 @@ public class XSDElement
 	{
 		this.line = locator.getLineNumber();
 		this.file = getFile(locator);
+		this.prefix = "";
 		this.type = null;	// eg. a Content string
 	}
 	
@@ -99,6 +101,7 @@ public class XSDElement
 	{
 		this.file = new File("xml");
 		this.line = 0;
+		this.prefix = "";
 		this.type = "xs:attribute";
 		
 		attributes.put("name", xmlName);
@@ -115,6 +118,11 @@ public class XSDElement
 		{
 			return new File("?");
 		}
+	}
+	
+	public String getPrefix()
+	{
+		return prefix;
 	}
 
 	public String getType()
