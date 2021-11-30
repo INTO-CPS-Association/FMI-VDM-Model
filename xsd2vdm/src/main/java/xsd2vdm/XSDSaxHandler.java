@@ -81,7 +81,7 @@ public class XSDSaxHandler extends DefaultHandler
 		
 			case "xs:include":
 			case "xs:import":
-				includes.add(attributes.getValue("schemaLocation"));
+				includes.add(element.getAttr("schemaLocation"));
 				break;
 		}
 	}
