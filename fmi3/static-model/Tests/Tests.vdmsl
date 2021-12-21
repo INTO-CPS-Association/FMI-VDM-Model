@@ -136,12 +136,12 @@ functions
                 nil,  -- description
                 c,    -- causality
                 v,    -- variabilty
-                i,    -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                i,    -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit

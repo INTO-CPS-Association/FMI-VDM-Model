@@ -301,11 +301,11 @@ functions
 					eCausality <> <independent>
 			),
 
-			/* @OnFail(1465, "2.2.8 Clock variable %s cannot define initial or start at %s",
-				sv.name, loc2str(sv.location)) */
-			(
-				is_Clock(sv) => sv.initial = nil and sv.start = nil
-			),
+--			/* @OnFail(1465, "2.2.8 Clock variable %s cannot define initial or start at %s",
+--				sv.name, loc2str(sv.location)) */
+--			(
+--				is_Clock(sv) => sv.initial = nil and sv.start = nil
+--			),
 
 			/* @OnFail(1466, "2.2.8 Variable %s initial/variability/start %s/%s/%s invalid at %s",
 				sv.name, eInitial, eVariability, sv.start, loc2str(sv.location)) */
