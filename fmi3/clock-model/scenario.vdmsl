@@ -48,7 +48,7 @@ functions
             plantOutputs = {createVariable("x", 10, <output>, <continous>, {}, {}, <none>)},
             plantClocks = {} 
             in
-        let plantFMU = createFMU("plant", plantClocks, plantInputs, plantOutputs) in
+        let plantFMU : FMU = createFMU("plant", plantClocks, plantInputs, plantOutputs) in
         
         let sensorInputs = {createVariable("x", 0, <input>, <continous>, {}, {}, <delayed>)},
             sensorOutputs = {createVariable("x_r",10, <output>, <discrete>, {}, {}, <none>)},
