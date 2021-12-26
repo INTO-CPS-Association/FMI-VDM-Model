@@ -67,7 +67,8 @@
 	Action ::
 		actionType : ActionType
 		fmu : Name
-		port : Ref;
+		port : Ref
+	ord a < b == a.port < b.port;
 	
 
 	/**
@@ -86,6 +87,7 @@
 	FMURef ::
 		name	: Name
 		ref		: Ref
+	ord a < b == a.ref < b.ref
 	eq x = y == 
 		x.name = y.name
 		and x.ref = y.ref;
@@ -124,7 +126,8 @@
         contract    : Contract 
 	inv var ==
 		(var.causality = <output> => var.contract = <none>) -- input contract only relevant for inputs
-		and var.causality = <input> => var.dependsOn = {} 
+		and (var.causality = <input> => var.dependsOn = {})
+		and (var.type = <continous> => var.clocks = {})
 	eq v1 = v2 ==
 		v1.name = v2.name and v1.ref = v2.ref and v1.causality = v2.causality;
 
@@ -153,6 +156,7 @@
 	inv clock ==
 		(clock.type = <output> => clock.interval = <triggered>)	-- An output clock must be of type triggered 
 		and (clock.type = <input> => clock.dependsOn = {})  -- Only output clocks are subject to feedthrough
+	ord c1 < c2 == c1.ref < c2.ref 
 	eq c1 = c2 == 
 		c1.name = c2.name and c1.ref = c2.ref and c1.type = c2.type;
 
@@ -162,6 +166,7 @@
 	 * the environment must all refer to known variables.
 	 */
 	FMU ::
+		id 					: nat
 		name				: Name				-- m
 		clocks				: set of Clock		-- Ucm + Ycm
 		inputs				: set of Variable	-- Um 
@@ -174,7 +179,7 @@
 		activeClocks		: set of Ref		-- 
 		activeEquations		: set of Equation	-- I think this needs to be a set of reference
 	inv fmu ==
-		let vars : set of Variable = fmu.inputs union fmu.outputs in
+		let vars : set1 of Variable = fmu.inputs union fmu.outputs in
 		let crefs : set of Ref  = { c.ref | c in set fmu.clocks },
 			vrefs : set of Ref  = { v.ref | v in set vars},
 			refs : set of Ref = crefs union vrefs
@@ -199,7 +204,7 @@
 			--and (forall (cref |-> val) in set fmu.activeEquations 
 			---		& exists c in set fmu.clocks & c.ref in set fmu.activeClocks and equation in set c.equations)
 			-- All scheduled clocks are defined
-			;
+		ord fmu1 < fmu2 == fmu1.id < fmu2.id;
 
 	/**
 	 * A machine is a collection of FMUs, plus a connection map between them. The connection
@@ -250,8 +255,7 @@
 		and forall t in set m.timeBasedClocks & t.master in set m.timedClockConnections(t.name)
 		and forall c in set dunion {c | c in set rng m.timedClockConnections} & 
 																				let clock = derefClock(m.fmus(c.name),c.ref) in
-																				clock.interval <> <triggered> and clock.type = <input>;
-	
+																				clock.interval <> <triggered> and clock.type = <input>;	
 functions
 	/**
 	 * These functions are total, because the error conditions that you would expect
@@ -451,10 +455,10 @@ functions
 	*/
     initializeData: Importer -> Importer
     initializeData(I) ==
-	let connections = I.scenario.connections in
+	let connections : map FMURef to FMURef = I.scenario.connections in
 		let outputs : set of Action = {mk_Action(<get>, output.name, output.ref) | output in set dom connections},
 			inputs : set of Action = {mk_Action(<set>, input.name, input.ref) | input in set rng connections} in
-				runAlgorithm(I, outputs union inputs)
+				runAlgorithm(I, [act | act in set outputs union inputs])
 	pre preInitialization(I)
 	post postInitialization(RESULT);
 
@@ -521,7 +525,7 @@ functions
 		 *    Ucm union Ycm and any instance m in set M;
 		 */
 		-- @Printf("Ticking the clocks : %s\n", clocks)
-		let I2 : Importer = activateClocks(I1, clocks) in
+		let I2 : Importer = activateClocks(I1, [clock | clock in set clocks]) in
 		/*
 			The event Iteration solves the system of equations, updates the schedule and the discrete state of the FMUs
 		 */

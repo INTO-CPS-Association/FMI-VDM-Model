@@ -109,14 +109,14 @@ functions
 		Function to run a set of actions (algorithm) until completion
 		We pick an enabled action and perform it until the set of actions is empty
 	*/
-	runAlgorithm : Importer * set of Action -> Importer
+	runAlgorithm : Importer * seq of Action -> Importer
 	runAlgorithm(I, algorithm)==
-		if algorithm = {} then I
+		if algorithm = [] then I
 		else
-		let action in set {action | action in set algorithm & isActionEnabled(I, action)} in
+		let action in set {action | action in seq algorithm & isActionEnabled(I, action)} in
 			--@Printf("Action to execute: %s\n", action)
-			runAlgorithm(runAction(I, action), algorithm \ {action})
-	measure card algorithm;
+			runAlgorithm(runAction(I, action), [act | act in seq algorithm & act <> action])
+	measure len algorithm;
 	
 	/*
 		Runs a single action
@@ -205,22 +205,26 @@ functions
 	 * Activate the clocks in all FMUs that are due to tick at this time.
 	 * All clocks should be input clocks
 	 */
-	activateClocks: Importer * set of FMURef -> Importer 
+	activateClocks: Importer * seq of FMURef -> Importer 
 	activateClocks(I, clocks) ==
-		if clocks = {} then I
+		if clocks = [] then I
 		else 
-		let clock in set clocks in
+		let clock : FMURef = hd clocks in
 		let I1 : Importer = setClock(I, I.scenario.fmus(clock.name), clock.ref, true) in
-		activateClocks(I1, clocks \ {clock})		
-	pre clocks subset I.readyClocks inter I.relevantInputClocks
-		and let fmusOfClocks = {I.scenario.fmus(clock.name) | clock in set clocks} in
+		activateClocks(I1, tl clocks)		
+	pre 
+		let clockSet : set of FMURef = {clock | clock in seq clocks} in
+		clockSet subset I.readyClocks inter I.relevantInputClocks
+		and let fmusOfClocks = {I.scenario.fmus(clock.name) | clock in seq clocks} in
 		assertFMUMode(fmusOfClocks, {<EVENT>})
-	post clocks subset RESULT.activeClocks
-		and (clocks <> {} => not clocks  subset RESULT.readyClocks)
-		and (clocks <> {} => not clocks  subset RESULT.relevantInputClocks)
-		and let fmusOfClocks = {RESULT.scenario.fmus(clock.name) | clock in set clocks} in
+	post 
+		let clockSet : set of FMURef = {clock | clock in seq clocks} in
+		clockSet subset RESULT.activeClocks
+		and (clockSet <> {} => not clockSet subset RESULT.readyClocks)
+		and (clockSet <> {} => not clockSet subset RESULT.relevantInputClocks)
+		and let fmusOfClocks = {RESULT.scenario.fmus(clock.name) | clock in seq clocks} in
 		assertFMUMode(fmusOfClocks, {<EVENT>})
-	measure card clocks;
+	measure len clocks;
 
 	/*
 	 * This is the initialization procedure that makes the scenario ready for simulation
@@ -262,7 +266,7 @@ functions
 																	& derefOutput(I.scenario.fmus(output.name), output.ref).type = <continous>},
 			inputs : set1 of Action = {mk_Action(<set>, input.name, input.ref) | input in set rng connections & derefInput(I.scenario.fmus(input.name), input.ref).type = <continous>},
 			steps : set1 of Action = {mk_Action(<step>, fmu.name, 1) | fmu in set rng I.scenario.fmus} in
-		let actions : set1 of Action = outputs union inputs union steps in
+		let actions : seq1 of Action = [act | act in set outputs union inputs union steps] in
 			runAlgorithm(I, actions)
 	pre preCoSimulationStep(I.scenario, I.time)
     post postCosimulationStep(RESULT.scenario, rng I.scenario.fmus);

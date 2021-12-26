@@ -30,20 +30,20 @@ functions
     -- All connections are synchronized meaning the input and output value is identical
     variablesSynchronized: Machine * set of PortType -> bool
     variablesSynchronized(M, variableTypes) ==
-		let outputs : set of FMURef = filterOutputs(rng M.fmus, variableTypes) in
+		let outputs : set of FMURef = filterOutputs([fmu | fmu in set rng M.fmus], variableTypes) in
         forall srcPort in set outputs &
             let trgPort : FMURef = M.connections(srcPort) in
             (M.fmus(srcPort.name)).env(srcPort.ref) = (M.fmus(trgPort.name)).env(trgPort.ref);
 
 
 	-- This can probably be done inline
-	filterOutputs : set of FMU * set of PortType -> set of FMURef
+	filterOutputs : seq of FMU * set of PortType -> set of FMURef
 	filterOutputs(fmus, variableTypes) ==
-	if fmus = {} then {}
+	if fmus = [] then {}
 	else
-	let fmu in set fmus in
-	{mk_FMURef(fmu.name, output.ref) | output in set fmu.outputs & output.type in set variableTypes} union filterOutputs(fmus \ {fmu}, variableTypes)
-	measure card fmus;
+	let fmu : FMU = hd fmus in
+	{mk_FMURef(fmu.name, output.ref) | output in set fmu.outputs & output.type in set variableTypes} union filterOutputs(tl fmus, variableTypes)
+	measure len fmus;
 
 	/*
 	 * Is an Action activated?
@@ -215,7 +215,7 @@ functions
             (forall fmu in set fmus & fmu.mode = mode);
 
 
-    timeAdvanced: set of FMU * set of FMU * bool -> bool
+    timeAdvanced: set1 of FMU * set1 of FMU * bool -> bool
     timeAdvanced(newFMUs, oldFMUs, discreteTime) ==
         (forall m' in set newFMUs &
             (exists1 m in set oldFMUs & m.name = m'.name 
@@ -235,7 +235,7 @@ functions
                 and fmusSynchronizedAtTime(fmus, time);
 
 	
-	postCosimulationStep: Machine * set of FMU -> bool
+	postCosimulationStep: Machine * set1 of FMU -> bool
     postCosimulationStep(scenario, oldFMUs) ==
 		let fmus : set1 of FMU = rng scenario.fmus in
 			assertFMUMode(fmus, {<STEP>}) 
@@ -244,7 +244,7 @@ functions
                 and timeAdvanced(fmus, oldFMUs, false);
 
 
-	postStepMode : Importer * Importer * set of Name -> bool
+	postStepMode : Importer * Importer * set1 of Name -> bool
 	postStepMode(I, oldImporter, fmus) ==
 		ImporterNotAffected(oldImporter, I) and
 		let relevantFMUs : set of FMU = rng (fmus <: I.scenario.fmus) in
