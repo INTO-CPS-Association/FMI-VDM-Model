@@ -235,7 +235,7 @@ functions
 					<input> ->
 						(eVariability in set {<discrete>, <continuous>}
 						 -- and eInitial = nil
-						 and sv.start <> nil),	-- (D)
+						 and not is_Clock(sv) => sv.start <> nil),	-- (D)
 
 					<independent> ->
 						eVariability = <continuous>
@@ -297,8 +297,9 @@ functions
 			/* @OnFail(1464, "2.2.8 Variable %s initial/causality %s/%s invalid at %s",
 				sv.name, sv.initial, eCausality, loc2str(sv.location)) */
 			(
-				sv.initial <> nil =>
-					eCausality <> <independent>
+				not is_Clock(sv) =>
+					sv.initial <> nil =>
+						eCausality <> <independent>
 			),
 
 --			/* @OnFail(1465, "2.2.8 Clock variable %s cannot define initial or start at %s",
@@ -312,14 +313,14 @@ functions
 			(
 				cases eInitial:
 					<exact> ->
-						sv.start <> nil,
+						not is_Clock(sv) => sv.start <> nil,
 
 					<approx> ->
-						sv.start <> nil
+						(not is_Clock(sv) => sv.start <> nil)
 						and eVariability <> <constant>,
 
 					<calculated> ->
-						sv.start = nil
+						(not is_Clock(sv) => sv.start = nil)
 						and eVariability <> <constant>,
 
 					nil ->		-- Note that eInitial can be nil
@@ -451,9 +452,10 @@ functions
 	union
 	{
 		-- @OnFail(1481, "2.2.8 Dimension of %s do not match start vector at %s", sv.name, loc2str(sv.location))
-		( sv.start <> nil =>
-			let size = dimensionProduct(svs, sv.dimension) in
-				size > 0 => size = len sv.start )
+		( not is_Clock(sv) =>
+			sv.start <> nil =>
+				let size = dimensionProduct(svs, sv.dimension) in
+					size > 0 => size = len sv.start )
 
 		| sv in seq svs
 	}
@@ -464,7 +466,8 @@ functions
 			let refmap = getAliasRefMap(svs) in
 			card dom refmap < len svs => dunion	-- Must be some aliases
 			{
-				let aliases = refmap(ref) in
+				let aliases = refmap(ref),
+				    noclocks = { a | a in set aliases & not is_Clock(a) } in
 				{
 					/* @OnFail(1483, "2.2.8 Multiple aliases of reference %s are settable: %s", ref,
 							{ a.name | a in set aliases & isSettable(a) }) */
@@ -476,10 +479,10 @@ functions
 					( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
 
 					-- @OnFail(1485, "2.2.8 Too many aliases of reference %s have start set", ref)
-					( card { a.start | a in set aliases & a.variability <> <constant> and a.start <> nil } <= 1 ),
+					( card { a.start | a in set noclocks & a.variability <> <constant> and a.start <> nil } <= 1 ),
 
 					-- @OnFail(1486, "2.2.8 Constant aliases of reference %s have different start values", ref)
-					( card { a.start | a in set aliases & a.variability = <constant> and a.start <> nil } <= 1 ),
+					( card { a.start | a in set noclocks & a.variability = <constant> and a.start <> nil } <= 1 ),
 
 					-- @OnFail(1487, "2.2.8 Aliases of reference %s must all be constant or variable", ref)
 					( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
@@ -548,9 +551,7 @@ functions
 	 */
 	effectiveInitial: Variable * Causality * Variability -> [Initial]
 	effectiveInitial(v, eCausality, eVariability) ==
-		let i = v.initial in
-			if i <> nil	then i
-		else if is_Clock(v)
+		if is_Clock(v)
 		then
 			cases eCausality:
 				<input> -> <exact>,
@@ -558,6 +559,8 @@ functions
 				<local> -> <calculated>,
 				others -> nil
 			end
+		else let i = v.initial in
+			if i <> nil	then i
 		else cases eCausality:
 				<structuralParameter> ->
 					cases eVariability:
@@ -670,11 +673,16 @@ functions
 		let causality	= effectiveCausality(v.causality),
 			variability	= effectiveVariability(v),
 			initial		= effectiveInitial(v, causality, variability),
-			newv		= mu(v,
-				causality	|-> causality,
-				variability	|-> variability,
-				initial		|-> initial
-			)
+			newv		= if is_Clock(v)
+							then
+								mu(v,
+									causality	|-> causality,
+									variability	|-> variability)
+							else
+								mu(v,
+									causality	|-> causality,
+									variability	|-> variability,
+									initial		|-> initial)
 		in
 		if v.declaredType = nil or typedefs = nil
 		then newv
