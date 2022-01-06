@@ -30,19 +30,7 @@
 /**
  * 2.2.7 Vendor Annotations
  */
-types
-	Tool ::
-		location	: Location
-		name		: NormalizedString
-		annotation	: [token];
-
-	fmi3Annotation = seq of Tool;
-
 functions
-	isValidVendorAnnotation: [fmi3Annotation] +> bool
-	isValidVendorAnnotation(tools) ==
-		tools <> nil =>
-			/* @OnFail(1400, "2.2.7 VendorAnnotations tool names are not unique: %s",
-				{ tools(a).name | a, b in set inds tools &
-					a <> b and tools(a).name = tools(b).name }) */
-			( card { t.name | t in seq tools } = len tools );
+	isValidVendorAnnotation: [Annotations] +> bool
+	isValidVendorAnnotation(-) ==
+		true;	-- No checks

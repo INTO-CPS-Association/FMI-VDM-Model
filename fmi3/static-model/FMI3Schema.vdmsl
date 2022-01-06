@@ -1,5 +1,5 @@
 /**
- * VDM schema created from fmi3.xsd on Sun Jul 25 13:01:40 BST 2021
+ * VDM schema created from fmi3.xsd on Thu Jan 06 13:09:27 GMT 2022
  * DO NOT EDIT!
  */
 types
@@ -52,7 +52,8 @@ ModelExchange ::
     providesDirectionalDerivatives       : [bool]
     providesAdjointDerivatives           : [bool]
     providesPerElementDependencies       : [bool]
-    completedIntegratorStepNotNeeded     : [bool]
+    needsCompletedIntegratorStep         : [bool]
+    providesEvaluateDiscreteStates       : [bool]
     annotations                          : [Annotations]
 ;
 
@@ -75,29 +76,28 @@ CoSimulation ::
     providesAdjointDerivatives              : [bool]
     providesPerElementDependencies          : [bool]
     canHandleVariableCommunicationStepSize  : [bool]
-    maxOutputDerivativeOrder                : [nat]
-    providesIntermediateUpdate              : [bool]
-    recommendedIntermediateInputSmoothness  : [int]
-    canReturnEarlyAfterIntermediateUpdate   : [bool]
     fixedInternalStepSize                   : [real]
+    maxOutputDerivativeOrder                : [nat]
+    recommendedIntermediateInputSmoothness  : [int]
+    providesIntermediateUpdate              : [bool]
+    mightReturnEarlyFromDoStep              : [bool]
+    canReturnEarlyAfterIntermediateUpdate   : [bool]
     hasEventMode                            : [bool]
+    providesEvaluateDiscreteStates          : [bool]
     annotations                             : [Annotations]
 ;
 
 ScheduledExecution ::
-    location                                : Location
-    modelIdentifier                         : NormalizedString
-    needsExecutionTool                      : [bool]
-    canBeInstantiatedOnlyOncePerProcess     : [bool]
-    canGetAndSetFMUState                    : [bool]
-    canSerializeFMUState                    : [bool]
-    providesDirectionalDerivatives          : [bool]
-    providesAdjointDerivatives              : [bool]
-    providesPerElementDependencies          : [bool]
-    maxOutputDerivativeOrder                : [nat]
-    providesIntermediateUpdate              : [bool]
-    recommendedIntermediateInputSmoothness  : [int]
-    annotations                             : [Annotations]
+    location                             : Location
+    modelIdentifier                      : NormalizedString
+    needsExecutionTool                   : [bool]
+    canBeInstantiatedOnlyOncePerProcess  : [bool]
+    canGetAndSetFMUState                 : [bool]
+    canSerializeFMUState                 : [bool]
+    providesDirectionalDerivatives       : [bool]
+    providesAdjointDerivatives           : [bool]
+    providesPerElementDependencies       : [bool]
+    annotations                          : [Annotations]
 ;
 
 UnitDefinitions = seq1 of (Unit);
@@ -273,6 +273,8 @@ EnumerationType ::
     name         : NormalizedString
     description  : [AnyString]
     quantity     : [NormalizedString]
+    min          : [int]
+    max          : [int]
     annotations  : [Annotations]
     item         : seq1 of (Item)
 ;
@@ -286,22 +288,22 @@ Item ::
 ;
 
 ClockType ::
-    location          : Location
-    name              : NormalizedString
-    description       : [AnyString]
-    canBeDeactivated  : [bool]
-    priority          : [nat]
-    interval          : Interval
-    intervalDecimal   : [real]
-    shiftDecimal      : [real]
-    supportsFraction  : [bool]
-    resolution        : [nat]
-    intervalCounter   : [nat]
-    shiftCounter      : [nat]
-    annotations       : [Annotations]
+    location             : Location
+    name                 : NormalizedString
+    description          : [AnyString]
+    canBeDeactivated     : [bool]
+    priority             : [nat]
+    intervalVariability  : IntervalVariability
+    intervalDecimal      : [real]
+    shiftDecimal         : [real]
+    supportsFraction     : [bool]
+    resolution           : [nat]
+    intervalCounter      : [nat]
+    shiftCounter         : [nat]
+    annotations          : [Annotations]
 ;
 
-Interval = <constant> | <fixed> | <calculated> | <tunable> | <changing> | <countdown> | <triggered>;
+IntervalVariability = <constant> | <fixed> | <calculated> | <tunable> | <changing> | <countdown> | <triggered>;
 
 fmi3TypeDefinition = Float32Type | Float64Type | Int8Type | UInt8Type | Int16Type | UInt16Type | Int32Type | UInt32Type | Int64Type | UInt64Type | BooleanType | StringType | BinaryType | EnumerationType | ClockType;
 
@@ -349,20 +351,20 @@ Float32 ::
     start                               : [seq of (real)]
     derivative                          : [nat]
     reinit                              : [bool]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
+
+Causality = <parameter> | <calculatedParameter> | <input> | <output> | <local> | <independent> | <structuralParameter>;
+
+Variability = <constant> | <fixed> | <tunable> | <discrete> | <continuous>;
 
 Dimension ::
     location        : Location
     start           : [nat]
     valueReference  : [nat]
 ;
-
-Causality = <parameter> | <calculatedParameter> | <input> | <output> | <local> | <independent> | <structuralParameter>;
-
-Variability = <constant> | <fixed> | <tunable> | <discrete> | <continuous>;
 
 Initial = <exact> | <approx> | <calculated>;
 
@@ -397,8 +399,8 @@ Float64 ::
     start                               : [seq of (real)]
     derivative                          : [nat]
     reinit                              : [bool]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
@@ -419,8 +421,8 @@ Int8 ::
     min                                 : [int]
     max                                 : [int]
     start                               : [seq of (int)]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
@@ -441,8 +443,8 @@ UInt8 ::
     min                                 : [nat]
     max                                 : [nat]
     start                               : [seq of (nat)]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
@@ -463,8 +465,8 @@ Int16 ::
     min                                 : [int]
     max                                 : [int]
     start                               : [seq of (int)]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
@@ -485,8 +487,8 @@ UInt16 ::
     min                                 : [nat]
     max                                 : [nat]
     start                               : [seq of (nat)]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
@@ -507,8 +509,8 @@ Int32 ::
     min                                 : [int]
     max                                 : [int]
     start                               : [seq of (int)]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
@@ -529,8 +531,8 @@ UInt32 ::
     min                                 : [nat]
     max                                 : [nat]
     start                               : [seq of (nat)]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
@@ -551,8 +553,8 @@ Int64 ::
     min                                 : [int]
     max                                 : [int]
     start                               : [seq of (int)]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
@@ -573,8 +575,8 @@ UInt64 ::
     min                                 : [nat]
     max                                 : [nat]
     start                               : [seq of (nat)]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
@@ -592,8 +594,8 @@ Boolean ::
     declaredType                        : [NormalizedString]
     initial                             : [Initial]
     start                               : [seq of (bool)]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
@@ -610,8 +612,8 @@ String ::
     clocks                              : [seq of (nat)]
     declaredType                        : [NormalizedString]
     initial                             : [Initial]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     start                               : [seq of (Start)]
     alias                               : [seq of (Alias)]
 ;
@@ -634,30 +636,20 @@ Binary ::
     mimeType                            : [NormalizedString]
     maxSize                             : [nat]
     start                               : [seq of (seq1 of char)]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
     alias                               : [seq of (Alias)]
 ;
 
 Enumeration ::
-    location                            : Location
-    name                                : NormalizedString
-    valueReference                      : nat
-    description                         : [AnyString]
-    causality                           : [Causality]
-    variability                         : [Variability]
-    canHandleMultipleSetPerTimeInstant  : [bool]
-    intermediateUpdate                  : [bool]
-    previous                            : [nat]
-    clocks                              : [seq of (nat)]
-    declaredType                        : NormalizedString
-    quantity                            : [NormalizedString]
-    min                                 : [int]
-    max                                 : [int]
-    start                               : [seq of (int)]
-    dimension                           : [seq of (Dimension)]
-    annotations                         : [Annotations]
-    alias                               : [seq of (Alias)]
+    location      : Location
+    declaredType  : NormalizedString
+    initial       : [Initial]
+    quantity      : [NormalizedString]
+    min           : [int]
+    max           : [int]
+    start         : [seq of (int)]
+    alias         : [seq of (Alias)]
 ;
 
 Clock ::
@@ -674,14 +666,13 @@ Clock ::
     declaredType                        : [NormalizedString]
     canBeDeactivated                    : [bool]
     priority                            : [nat]
-    interval                            : Interval
+    intervalVariability                 : IntervalVariability
     intervalDecimal                     : [real]
     shiftDecimal                        : [real]
     supportsFraction                    : [bool]
     resolution                          : [nat]
     intervalCounter                     : [nat]
     shiftCounter                        : [nat]
-    dimension                           : [seq of (Dimension)]
     annotations                         : [Annotations]
     alias                               : [seq of (Alias)]
 ;

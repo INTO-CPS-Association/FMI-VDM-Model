@@ -361,7 +361,7 @@ functions
 									sv.name, sv.declaredType, sv.location) */
 								( is_Binary(sv) ),
 
-							mk_EnumerationType(-, -, -, -, -, -) ->
+							mk_EnumerationType(-, -, -, -, -, -, -, -) ->
 								/* @OnFail(1041, "2.2.8 Variable %s, EnumerationType not referenced by Enumeration variable %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( is_Enumeration(sv) ),

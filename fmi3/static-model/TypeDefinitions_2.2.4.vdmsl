@@ -117,7 +117,7 @@ functions
 			-- enumeration (in order that the mapping between "name" and "value" is
 			-- bijective). An Enumeration element must have at least one Item.
 
-			mk_EnumerationType(-, -, -, -, -, items) ->
+			mk_EnumerationType(-, -, -, -, -, -, -, items) ->
 				-- @OnFail(1157, "2.2.3 Type %s, Enumeration item name/values do not form a bijection", stype.name)
 				(
 					card { i.name | i in seq items } = len items

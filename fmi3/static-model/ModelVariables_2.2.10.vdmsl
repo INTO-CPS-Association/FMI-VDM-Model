@@ -434,7 +434,7 @@ functions
 				mk_UInt8(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
 					isInRange[int](min, max, start, sv, sv.initial),
 
-				mk_Enumeration(-, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
+				mk_Enumeration(-, -, -, -, min, max, start, -) ->
 					isInRange[nat](min, max, start, sv, sv.initial),	-- TODO kind of enum?
 
 				mk_Binary(-, -, -, -, -, -, -, -, -, -, -, -, -, -, start, -, -, -) ->
@@ -723,7 +723,7 @@ functions
 							else
 								newv,	-- Error reported elsewhere
 
-						mk_EnumerationType(-, -, -, quantity, -, -) ->
+						mk_EnumerationType(-, -, -, quantity, -, -, -, -) ->
 							if is_Enumeration(v) then
 								mu(newv,
 									quantity	|-> override[NormalizedString](v.quantity, quantity)
@@ -735,15 +735,15 @@ functions
 									shiftDecimal, supportsFraction, resolution, intervalCounter,
 									shiftCounter, -) ->
 							mu(newv,
-								canBeDeactivated  |-> override[bool](v.canBeDeactivated, canBeDeactivated),
-								priority          |-> override[nat](v.priority, priority),
-								interval          |-> override[Interval](v.interval, interval),
-								intervalDecimal   |-> override[real](v.intervalDecimal, intervalDecimal),
-								shiftDecimal      |-> override[real](v.shiftDecimal, shiftDecimal),
-								supportsFraction  |-> override[bool](v.supportsFraction, supportsFraction),
-								resolution        |-> override[nat](v.resolution, resolution),
-								intervalCounter   |-> override[nat](v.intervalCounter, intervalCounter),
-								shiftCounter      |-> override[nat](v.shiftCounter, shiftCounter)),
+								canBeDeactivated  	|-> override[bool](v.canBeDeactivated, canBeDeactivated),
+								priority          	|-> override[nat](v.priority, priority),
+								intervalVariability	|-> override[IntervalVariability](v.intervalVariability, interval),
+								intervalDecimal   	|-> override[real](v.intervalDecimal, intervalDecimal),
+								shiftDecimal      	|-> override[real](v.shiftDecimal, shiftDecimal),
+								supportsFraction  	|-> override[bool](v.supportsFraction, supportsFraction),
+								resolution        	|-> override[nat](v.resolution, resolution),
+								intervalCounter   	|-> override[nat](v.intervalCounter, intervalCounter),
+								shiftCounter		|-> override[nat](v.shiftCounter, shiftCounter)),
 
 						others ->
 							newv

@@ -70,8 +70,8 @@ traces
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 a,    -- annotations
+                nil,  -- dimension
                 -- alias
                 [
                     mk_Alias
@@ -81,7 +81,7 @@ traces
                         "desc",
                         nil   -- displayUnit
                     )
-                ] 
+                ]
             ),
 
            mk_Int64
@@ -105,8 +105,8 @@ traces
                 [
                     123
                 ],
-                nil,  -- dimension
                 a,    -- annotations
+                nil,  -- dimension
                 -- alias
                 [
                     mk_Alias
