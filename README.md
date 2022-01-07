@@ -2,6 +2,8 @@
 
 This repository contains a VDM model of the FMI standard, plus supporting tools. The repository contains the following projects:
 
+For FMI2:
+
 * **fmi2.static-model** - a VDM-SL model of the static semantics of FMI 2.0 modelDescription XML files
 * **fmi2.dynamic-model** - a VDM-SL model of the dynamic semantics of the FMI 2.0 API
 * **fmi2.cosim-test** - a VDM-SL model to test the dynamic semantics of co-simulation FMUs
@@ -9,18 +11,20 @@ This repository contains a VDM model of the FMI standard, plus supporting tools.
 * **fmi2.static-tests** - a set of test XML files for the static semantics
 * **fmi2.vdmcheck** - a Java tool to convert FMI 2.0 modeDescription XML files to VDM-SL and check them
 
+For FMI3
 
 * **fmi3.static-model** - a VDM-SL model of the static semantics of FMI 3.0 modelDescription XML files
 * **fmi3.dynamic-model** - a VDM-SL model of the dynamic semantics of the FMI 3.0 API
 * **fmi3.dynamic-matrix** - a spreadsheet of the mode/state callability of the FMI3 API functions
 * **fmi3.vdmcheck** - a Java tool to convert FMI 3.0 modeDescription XML files to VDM-SL and check them
 
+General projects:
 
 * **fmi2.cosim** - a VDM-SL model of the interaction of a set of FMUs
 * **fmi2.cosim2vdm** - a Java tool to convert Maestro JSON configurations to VDM-SL.
 * **xsd2vdm** - a Java tool to convert XSD schemas into VDM-SL schemas
 
-The FMI\{2,3\} static semantic models and the FMI\{2,3\} VDM conversion tools are packaged in the release to create stand-alone tools for verifying FMU files, called VDMCheck\{2,3\}. These can be used to check existing FMI version 2 or 3 FMU files against the standard; a pure Java version of each tool is available, which does not depend on the bash shell (eg. for use on Windows).
+The FMI\{2,3\} static semantic models and the FMI\{2,3\} VDM conversion tools are packaged in the release to create stand-alone tools for verifying FMU files, called **VDMCheck\{2,3\}**. These can be used to check existing FMI version 2 or 3 FMU files against the standard; a pure Java version of each tool is available, which does not depend on the bash shell (eg. for use on Windows).
 
 ## Installation
 
