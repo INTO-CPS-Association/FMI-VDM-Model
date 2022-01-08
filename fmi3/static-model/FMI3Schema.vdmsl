@@ -39,7 +39,7 @@ FmiModelDescription ::
     modelStructure            : ModelStructure
     annotations               : [Annotations]
 inv rec ==
-    (rec.fmiVersion = "3.0-beta.2")
+    (rec.fmiVersion = "3.0-beta.3")
 ;
 
 ModelExchange ::

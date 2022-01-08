@@ -453,7 +453,7 @@ functions
 	{
 		-- @OnFail(1481, "2.2.8 Dimension of %s do not match start vector at %s", sv.name, loc2str(sv.location))
 		( not is_Clock(sv) =>
-			sv.start <> nil =>
+			sv.start <> nil and len sv.start > 1 =>
 				let size = dimensionProduct(svs, sv.dimension) in
 					size > 0 => size = len sv.start )
 
