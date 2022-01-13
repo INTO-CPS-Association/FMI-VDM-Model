@@ -257,7 +257,7 @@ public class VDMCheck
 			
 			File schema = new File(jarLocation.getAbsolutePath() + File.separator + "schema/fmi3.xsd");
 			
-			runCommand(jarLocation, tempOUT,
+			int exit = runCommand(jarLocation, tempOUT,
 					"java", "-jar", "xsd2vdm.jar", 
 					"-xsd", schema.getCanonicalPath(),
 					"-xml", tempXML.file.getCanonicalPath(),
@@ -265,6 +265,12 @@ public class VDMCheck
 					"-name", varName,
 					"-nowarn");
 			
+			if (exit != 0)
+			{
+				System.out.printf("Problem converting %s to VDM-SL?\n", tempXML.name);
+				return false;
+			}
+				
 			String[] dependencies = {"vdmj.jar", "annotations.jar"};
 	
 			runCommand(jarLocation, tempOUT,
@@ -276,7 +282,7 @@ public class VDMCheck
 					"^true$", "No errors found.",
 					"^false$", "Errors found.");
 			
-			int exit = grep("^true$", tempOUT) ? 0 : 1;
+			exit = grep("^true$", tempOUT) ? 0 : 1;
 	
 			if (vdmOUT != null)
 			{

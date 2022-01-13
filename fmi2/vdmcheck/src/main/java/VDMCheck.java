@@ -180,7 +180,7 @@ public class VDMCheck
 				schema = new File(jarLocation.getAbsolutePath() + File.separator + schema.getPath());
 			}
 			
-			runCommand(jarLocation, tempOUT,
+			int exit = runCommand(jarLocation, tempOUT,
 					"java", "-jar", "xsd2vdm.jar", 
 					"-xsd", schema.getCanonicalPath(),
 					"-xml", tempXML.getCanonicalPath(),
@@ -188,6 +188,12 @@ public class VDMCheck
 					"-name", varName,
 					"-nowarn");
 			
+			if (exit != 0)
+			{
+				System.out.printf("Problem converting modelDescription to VDM-SL?\n");
+				return exit;
+			}
+
 			tempOUT = File.createTempFile("out", "tmp");
 			
 			String[] dependencies = {"vdmj.jar", "annotations.jar"};
@@ -201,7 +207,7 @@ public class VDMCheck
 					"^true$", "No errors found.",
 					"^false$", "Errors found.");
 			
-			int exit = grep("^true$", tempOUT) ? 0 : 1;
+			exit = grep("^true$", tempOUT) ? 0 : 1;
 
 			if (vdmOUT != null)
 			{
