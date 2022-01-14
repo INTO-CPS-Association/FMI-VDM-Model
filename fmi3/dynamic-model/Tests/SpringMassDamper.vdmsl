@@ -140,11 +140,13 @@ values
             nil,  -- providesPerElementDependencies
             true,
             nil,  -- maxOutputDerivativeOrder
+			nil,  -- recommendedIntermediateInputSmoothness
             nil,  -- providesIntermediateUpdate
             nil,  -- recommendedIntermediateInputSmoothness
             nil,  -- canReturnEarlyAfterIntermediateUpdate
             nil,  -- fixedInternalStepSize
             nil,  -- hasEventMode
+			nil,  -- providesEvaluateDiscreteStates
             nil   -- annotations
         ),
         nil,  -- scheduledExecution

@@ -30,9 +30,6 @@ values
             nil,  -- providesDirectionalDerivatives
             nil,  -- providesAdjointDerivatives
             nil,  -- providesPerElementDependencies
-            nil,  -- maxOutputDerivativeOrder
-            nil,  -- providesIntermediateUpdate
-            nil,  -- recommendedIntermediateInputSmoothness
             nil   -- annotations
         ),
         nil,  -- unitDefinitions

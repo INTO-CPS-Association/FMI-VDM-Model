@@ -128,8 +128,8 @@ functions
 		let mk_(s, enterEventMode, terminateSimulation) = mk_(<fmi3OK>, false, false) in	-- TODO calculate?
 			mk_(s, enterEventMode, terminateSimulation)
 	pre
-		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3CompletedIntegratorStep
-		and not nilBool(c.xmlModel.modelExchange.completedIntegratorStepNotNeeded);
+		mk_(c.fmuKind, c.fmuState) in set STATES_fmi3CompletedIntegratorStep;
+		-- and not nilBool(c.xmlModel.modelExchange.completedIntegratorStepNotNeeded);
 
 	fmi3CompletedIntegratorStep(
 		c									: fmi3Instance,
@@ -138,8 +138,8 @@ functions
 		if mk_(c.fmuKind, c.fmuState) not in set STATES_fmi3CompletedIntegratorStep
 		then logAPIError(c, "Cannot call fmi3CompletedIntegratorStep in this state", mk_(<fmi3Error>, nil, nil))
 
-		elseif nilBool(c.xmlModel.modelExchange.completedIntegratorStepNotNeeded)
-		then logAPIError(c, "fmi3CompletedIntegratorStep not needed", mk_(<fmi3Error>, nil, nil))
+--		elseif nilBool(c.xmlModel.modelExchange.completedIntegratorStepNotNeeded)
+--		then logAPIError(c, "fmi3CompletedIntegratorStep not needed", mk_(<fmi3Error>, nil, nil))
 
 	 	else fmi3CompletedIntegratorStep_Impl(c, noSetFMUStatePriorToCurrentPoint)
 	 post

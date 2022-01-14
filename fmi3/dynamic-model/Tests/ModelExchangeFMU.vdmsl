@@ -28,7 +28,8 @@ values
             nil,  -- providesDirectionalDerivatives
             nil,  -- providesAdjointDerivatives
             true,
-            nil,  -- completedIntegratorStepNotNeeded
+            nil,  -- needsCompletedIntegratorStep
+			nil,  -- providesEvaluateDiscreteStates
             nil   -- annotations
         ),
         nil,  -- coSimulation
