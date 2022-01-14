@@ -404,7 +404,7 @@ functions
 					v.causality <> <structuralParameter> )
 			}
 
-			| v in seq vars
+			| v in seq vars & not is_Clock(v)	-- Clocks have no dimensions
 		}
 		= {true};
 
