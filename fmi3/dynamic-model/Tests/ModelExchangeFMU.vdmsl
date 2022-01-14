@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("ModelExchangeFMU.xml", 9),
-        "3.0-beta.2",
+        "3.0-beta.3",
         "MyLibrary.SpringMassDamper",
         "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
         "Rotational Spring Mass Damper System",
@@ -29,7 +29,7 @@ values
             nil,  -- providesAdjointDerivatives
             true,
             nil,  -- needsCompletedIntegratorStep
-			nil,  -- providesEvaluateDiscreteStates
+            nil,  -- providesEvaluateDiscreteStates
             nil   -- annotations
         ),
         nil,  -- coSimulation
@@ -251,8 +251,8 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -283,8 +283,8 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -312,8 +312,8 @@ values
                 nil,  -- start
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -341,8 +341,8 @@ values
                 nil,  -- start
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -373,8 +373,8 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -405,8 +405,8 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -434,8 +434,8 @@ values
                 nil,  -- start
                 0,
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -463,8 +463,8 @@ values
                 nil,  -- start
                 1,
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Int64
@@ -488,8 +488,8 @@ values
                 [
                     123
                 ],
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             )
         ],

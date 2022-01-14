@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("ScheduledExecutionFMU.xml", 3),
-        "3.0-beta.2",
+        "3.0-beta.3",
         "ThreeInputClocks",
         "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
         nil,  -- description
@@ -63,12 +63,12 @@ values
                 nil,  -- description
                 <input>,
                 nil,  -- variability
-                nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -83,8 +83,8 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -95,12 +95,12 @@ values
                 nil,  -- description
                 <input>,
                 nil,  -- variability
-                nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -115,8 +115,8 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -127,12 +127,12 @@ values
                 nil,  -- description
                 <output>,
                 nil,  -- variability
-                nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -144,8 +144,8 @@ values
                 nil,  -- start
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -156,12 +156,12 @@ values
                 nil,  -- description
                 <input>,
                 nil,  -- variability
-                nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -176,8 +176,8 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -188,12 +188,12 @@ values
                 nil,  -- description
                 <output>,
                 nil,  -- variability
-                nil,  -- initial
                 nil,  -- canHandleMultipleSetPerTimeInstant
                 nil,  -- intermediateUpdate
                 nil,  -- previous
                 nil,  -- clocks
                 nil,  -- declaredType
+                nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -205,8 +205,8 @@ values
                 nil,  -- start
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             )
         ],

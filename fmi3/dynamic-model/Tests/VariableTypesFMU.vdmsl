@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("VariableTypesFMU.xml", 2),
-        "3.0-beta.2",
+        "3.0-beta.3",
         "VariableTypes",
         "",
         nil,  -- description
@@ -30,14 +30,14 @@ values
             nil,  -- providesAdjointDerivatives
             nil,  -- providesPerElementDependencies
             nil,  -- canHandleVariableCommunicationStepSize
-            nil,  -- maxOutputDerivativeOrder
-            nil,  -- providesIntermediateUpdate
-            nil,  -- recommendedIntermediateInputSmoothness
-			nil,  -- providesIntermediateUpdate
-			nil,  -- mightReturnEarlyFromDoStep
-            nil,  -- canReturnEarlyAfterIntermediateUpdate
             nil,  -- fixedInternalStepSize
+            nil,  -- maxOutputDerivativeOrder
+            nil,  -- recommendedIntermediateInputSmoothness
+            nil,  -- providesIntermediateUpdate
+            nil,  -- mightReturnEarlyFromDoStep
+            nil,  -- canReturnEarlyAfterIntermediateUpdate
             nil,  -- hasEventMode
+            nil,  -- providesEvaluateDiscreteStates
             nil   -- annotations
         ),
         nil,  -- scheduledExecution

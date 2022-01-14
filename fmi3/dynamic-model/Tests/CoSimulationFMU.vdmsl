@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("CoSimulationFMU.xml", 9),
-        "3.0-beta.2",
+        "3.0-beta.3",
         "MyLibrary.SpringMassDamper",
         "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
         "Rotational Spring Mass Damper System",
@@ -30,14 +30,14 @@ values
             true,
             nil,  -- providesPerElementDependencies
             true,
-			nil,  -- fixedInternalStepSize
-            nil,  -- maxOutputDerivativeOrder
-            nil,  -- providesIntermediateUpdate
-            nil,  -- recommendedIntermediateInputSmoothness
-            nil,  -- canReturnEarlyAfterIntermediateUpdate
             nil,  -- fixedInternalStepSize
+            nil,  -- maxOutputDerivativeOrder
+            nil,  -- recommendedIntermediateInputSmoothness
+            nil,  -- providesIntermediateUpdate
+            nil,  -- mightReturnEarlyFromDoStep
+            nil,  -- canReturnEarlyAfterIntermediateUpdate
             nil,  -- hasEventMode
-			nil,  -- providesEvaluateDiscreteStates
+            nil,  -- providesEvaluateDiscreteStates
             nil   -- annotations
         ),
         nil,  -- scheduledExecution
@@ -227,7 +227,7 @@ values
                 nil,  -- previous
                 nil,  -- clocks
                 "Modelica.Units.SI.Inertia",
-				nil,  -- initial
+                nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -242,8 +242,8 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -274,8 +274,8 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -303,8 +303,8 @@ values
                 nil,  -- start
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -332,8 +332,8 @@ values
                 nil,  -- start
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
@@ -364,8 +364,8 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             )
         ],
