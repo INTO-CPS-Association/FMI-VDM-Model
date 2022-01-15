@@ -117,12 +117,28 @@ functions
 			-- enumeration (in order that the mapping between "name" and "value" is
 			-- bijective). An Enumeration element must have at least one Item.
 
-			mk_EnumerationType(-, -, -, -, -, -, -, items) ->
+			mk_EnumerationType(-, -, -, -, min, max, -, items) ->
+			{
 				-- @OnFail(1157, "2.2.3 Type %s, Enumeration item name/values do not form a bijection", stype.name)
 				(
 					card { i.name | i in seq items } = len items
 					and	card { i.value | i in seq items } = len items
-				),
+				)
+			}
+			union
+			{
+				let mk_(kmin, kmax) = minMaxKind(<Int64>) in	-- xs:long is Int64
+				{
+					max <> nil =>
+						--@OnFail(1155, "2.2.3 max %s is not a valid value for Enumerations", max)
+						( max <= kmax and max >= kmin ),
+
+					min <> nil =>
+						--@OnFail(1156, "2.2.3 min %s is not a valid value for Enumerations", min)
+						( min <= kmax and min >= kmin )
+				}
+			}
+			= {true},
 
 			others -> true		-- String, Boolean and Clock
 		end;
