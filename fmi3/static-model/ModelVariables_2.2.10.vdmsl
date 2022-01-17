@@ -435,7 +435,7 @@ functions
 					isInRange[int](min, max, start, sv, sv.initial),
 
 				mk_Enumeration(-, -, -, -, min, max, start, -) ->
-					isInRange[nat](min, max, start, sv, sv.initial),	-- TODO kind of enum?
+					isInRange[int](min, max, start, sv, sv.initial),	-- TODO kind of enum?
 
 				mk_Binary(-, -, -, -, -, -, -, -, -, -, -, -, -, -, start, -, -, -) ->
 					-- @OnFail(1480, "2.2.8 Binary %s start is not hex-binary at %s", sv.name, loc2str(sv.location))
