@@ -54,7 +54,7 @@ public class SimpleValue extends VDMValue
 		
 		if (quoted)
 		{
-			this.value = "\"" + value + "\"";
+			this.value = "\"" + value.replaceAll("\"", "\\\\\"") + "\"";
 		}
 		else
 		{
