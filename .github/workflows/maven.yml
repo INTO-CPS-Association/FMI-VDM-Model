@@ -21,7 +21,7 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
       - name: Build with Maven
-        run: mvn clean package
+        run: mvn "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn" "-Dhttp.keepAlive=false" "-Dmaven.wagon.http.pool=false" "-Dmaven.wagon.httpconnectionManager.ttlSeconds=120" clean package
 
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/development'
@@ -42,7 +42,7 @@ jobs:
             server-username: MAVEN_USERNAME
             server-password: MAVEN_PASSWORD
         - name: Deploy
-          run: mvn -B -X deploy
+          run: mvn "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn" "-Dhttp.keepAlive=false" "-Dmaven.wagon.http.pool=false" "-Dmaven.wagon.httpconnectionManager.ttlSeconds=120" -B -X deploy
           env:
             MAVEN_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
             MAVEN_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
