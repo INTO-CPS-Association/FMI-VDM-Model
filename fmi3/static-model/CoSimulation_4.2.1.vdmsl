@@ -45,7 +45,7 @@ functions
 							cs.modelIdentifier, loc2str(cs.location)) */
 			( cs.modelIdentifier <> ""
 				and cs.modelIdentifier(1) in set elems NONDIGITS )
-			}
+		}
 		= {true};
 
 
