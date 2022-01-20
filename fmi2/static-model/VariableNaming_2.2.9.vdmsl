@@ -58,12 +58,12 @@ functions
 		then let mk_(ok, tail) = identifier(source(5, ..., len source)) in
 			if ok and tail <> [] then
 				if hd tail = ','
-				then let mk_(ok2, tail2) = unsigned(tail(2, ..., len tail)) in
+				then let mk_(ok2, tail2) = unsigned(tl tail) in
 					if ok2 and tail2 <> [] and hd tail2 = ')'
-					then mk_(true, tail2(2, ..., len tail2))
+					then mk_(true, tl tail2)
 					else mk_(false, source)
 				else if hd tail = ')'
-					then mk_(true, tail(2, ..., len tail))
+					then mk_(true, tl tail)
 					else mk_(false, source)
 			else mk_(false, source)
 		else identifier(source)
@@ -75,14 +75,14 @@ functions
 		let mk_(ok, tail) = bname(source) in
 			if ok
 			then if tail <> [] and hd tail = '.'
-				then let mk_(ok2, tail2) = identifier(tail(2, ..., len tail)) in
+				then let mk_(ok2, tail2) = identifier(tl tail) in
 					if ok2
 					then mk_(ok2, tail2)
 					else mk_(false, source)
 				else let mk_(ok2, tail2) = arrayIndices(tail) in
 					if ok2
 					then if tail2 <> [] and hd tail2 = '.'
-						then let mk_(ok3, tail3) = identifier(tail2(2, ..., len tail2)) in
+						then let mk_(ok3, tail3) = identifier(tl tail2) in
 							if ok3
 							then mk_(ok3, tail3)
 							else mk_(false, source)
@@ -118,9 +118,9 @@ functions
 	qname: seq of char -> bool * seq of char
 	qname(source) ==
 		if source <> [] and hd source = '\''
-		then let mk_(ok, tail) = qcharsOrEscapes(source(2, ..., len source)) in
+		then let mk_(ok, tail) = qcharsOrEscapes(tl source) in
 			if ok and tail <> [] and hd tail = '\''
-			then mk_(true, tail(2, ..., len tail))
+			then mk_(true, tl tail)
 			else mk_(false, source)
 		else mk_(false, source)
 	post RESULT.#1 <=> source <> RESULT.#2;
@@ -154,7 +154,7 @@ functions
 	qchar: seq of char -> bool * seq of char
 	qchar(source) ==
 		if source <> [] and hd source in set elems (QCHARS ^ DIGITS ^ NONDIGITS)
-		then mk_(true, source(2, ..., len source))
+		then mk_(true, tl source)
 		else mk_(false, source)
 	post RESULT.#1 <=> source <> RESULT.#2;
 
@@ -181,9 +181,9 @@ functions
 	arrayIndices: seq of char -> bool * seq of char
 	arrayIndices(source) ==
 		if source <> [] and hd source = '['
-		then let mk_(ok, tail) = unsignedSeq(source(2, ..., len source)) in
+		then let mk_(ok, tail) = unsignedSeq(tl source) in
 			if ok and tail <> [] and hd tail = ']'
-			then mk_(true, tail(2, ..., len tail))
+			then mk_(true, tl tail)
 			else mk_(false, source)
 		else mk_(false, source)
 	post RESULT.#1 <=> source <> RESULT.#2;
@@ -195,7 +195,7 @@ functions
 		then let mk_(ok, tail) = unsigned(source) in
 			if ok
 			then if tail <> [] and hd tail = ','
-				then let mk_(ok2, tail2) = unsignedSeq(tail(2, ..., len tail)) in
+				then let mk_(ok2, tail2) = unsignedSeq(tl tail) in
 					if ok2
 					then mk_(true, tail2)
 					else mk_(false, source)
