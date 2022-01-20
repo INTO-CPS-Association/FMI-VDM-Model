@@ -99,14 +99,14 @@ case $(file -b --mime-type $FILE) in
 		
 		TMPX=/tmp/temp$$.xml
 		
-		if unzip -p "$FILE" source/buildDescription.xml >$TMPX 2>/dev/null
+		if unzip -p "$FILE" sources/buildDescription.xml >$TMPX 2>/dev/null
 		then
 			cp $TMPX $XML_BD
 		else
 			rm -f $XML_BD
 		fi
 		
-		if unzip -p "$FILE" icon/terminalsAndIcons.xml >$TMPX 2>/dev/null
+		if unzip -p "$FILE" terminalsAndIcons/terminalsAndIcons.xml >$TMPX 2>/dev/null
 		then
 			cp $TMPX $XML_TI
 		else
@@ -198,11 +198,11 @@ if ! check "$XML_MD" modelDescription.xml
 then EXIT=1
 fi
 
-if ! check "$XML_BD" source/buildDescription.xml
+if ! check "$XML_BD" sources/buildDescription.xml
 then EXIT=1
 fi
 
-if ! check "$XML_TI" icon/terminalsAndIcons.xml
+if ! check "$XML_TI" terminalsAndIcons/terminalsAndIcons.xml
 then EXIT=1
 fi
 
