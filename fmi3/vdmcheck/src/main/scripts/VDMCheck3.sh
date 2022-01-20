@@ -103,14 +103,26 @@ case $(file -b --mime-type $FILE) in
 		then
 			cp $TMPX $XML_BD
 		else
-			rm -f $XML_BD
+			if unzip -p "$FILE" 'sources\\buildDescription.xml' >$TMPX 2>/dev/null
+			then
+				echo "WARNING: pathname sources\\buildDescription.xml contains backslashes"
+				cp $TMPX $XML_BD
+			else
+				rm -f $XML_BD
+			fi
 		fi
 		
 		if unzip -p "$FILE" terminalsAndIcons/terminalsAndIcons.xml >$TMPX 2>/dev/null
 		then
 			cp $TMPX $XML_TI
 		else
-			rm -f $XML_TI
+			if unzip -p "$FILE" 'terminalsAndIcons\\terminalsAndIcons.xml' >$TMPX 2>/dev/null
+			then
+				echo "WARNING: pathname terminalsAndIcons\\terminalsAndIcons.xml contains backslashes"
+				cp $TMPX $XML_TI
+			else
+				rm -f $XML_TI
+			fi
 		fi
 		
 		rm -f $TMPX $XML_XM

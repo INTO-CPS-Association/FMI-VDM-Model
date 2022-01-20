@@ -173,6 +173,16 @@ public class VDMCheck
 					
 					entry = zip.getEntry("terminalsAndIcons/terminalsAndIcons.xml");
 					
+					if (entry == null)
+					{
+						entry = zip.getEntry("terminalsAndIcons\\terminalsAndIcons.xml");
+						
+						if (entry != null)
+						{
+							System.out.println("WARNING: pathname terminalsAndIcons\\terminalsAndIcons.xml contains backslashes");
+						}
+					}
+					
 					if (entry != null)
 					{
 						File tempXML2 = File.createTempFile("terminalsAndIcons", "tmp");
@@ -182,10 +192,20 @@ public class VDMCheck
 					}
 					else
 					{
-						System.out.println("FMU has no terminalsAndIcons/terminalsAndIcons.xml");
+						// System.out.println("FMU has no terminalsAndIcons/terminalsAndIcons.xml");
 					}
 					
 					entry = zip.getEntry("sources/buildDescription.xml");
+
+					if (entry == null)
+					{
+						entry = zip.getEntry("sources\\buildDescription.xml");
+						
+						if (entry != null)
+						{
+							System.out.println("WARNING: pathname sources\\buildDescription.xml contains backslashes");
+						}
+					}
 					
 					if (entry != null)
 					{
@@ -196,7 +216,7 @@ public class VDMCheck
 					}
 					else
 					{
-						System.out.println("FMU has no sources/buildDescription.xml");
+						// System.out.println("FMU has no sources/buildDescription.xml");
 					}
 				}
 				catch (ZipException e)	// Not a zip file, assume raw XML
