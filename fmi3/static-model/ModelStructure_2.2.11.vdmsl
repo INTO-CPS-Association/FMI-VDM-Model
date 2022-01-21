@@ -50,8 +50,8 @@ functions
 		-- @OnFail(1502, "2.4.8 ModelStructure has invalid clockedState")
 		( ms.clockedState <> nil =>
 			let allcvs = { v.valueReference | v in seq svs & v.clocks <> nil },
-				allpvs = { v.previous | v in seq svs & v.previous <> nil },
-				allcvpvs = allcvs union allpvs,
+				allpvs = { v.valueReference | v in seq svs & v.previous <> nil },
+				allcvpvs = allcvs inter allpvs,
 				allcs = [ u.valueReference | u in seq ms.clockedState ] in
 			{
 				-- @OnFail(1503, "ClockState has duplicates at %s", loc2str(ms.location))
@@ -60,8 +60,8 @@ functions
 				-- @OnFail(1504, "ClockState should be %s at %s", allcvpvs, loc2str(ms.location))
 				( elems allcs = allcvpvs ),
 
-				-- @OnFail(1505, "Clocks and previous variables do not match at %s", loc2str(ms.location))
-				( card allcvs = card allpvs ),
+--				-- @OnFail(1505, "Clocks and previous variables do not match at %s", loc2str(ms.location))
+--				( card allcvs = card allpvs ),
 
 				forall u in seq ms.clockedState &
 					isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location)
