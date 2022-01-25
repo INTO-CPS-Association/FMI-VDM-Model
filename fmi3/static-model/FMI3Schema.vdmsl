@@ -1,5 +1,5 @@
 /**
- * VDM schema created from fmi3.xsd on Thu Jan 06 13:09:27 GMT 2022
+ * VDM schema created from fmi3.xsd on Tue Jan 25 16:38:18 GMT 2022
  * DO NOT EDIT!
  */
 types
@@ -642,14 +642,25 @@ Binary ::
 ;
 
 Enumeration ::
-    location      : Location
-    declaredType  : NormalizedString
-    initial       : [Initial]
-    quantity      : [NormalizedString]
-    min           : [int]
-    max           : [int]
-    start         : [seq of (int)]
-    alias         : [seq of (Alias)]
+    location                            : Location
+    declaredType                        : NormalizedString
+    name                                : NormalizedString
+    valueReference                      : nat
+    description                         : [AnyString]
+    causality                           : [Causality]
+    variability                         : [Variability]
+    canHandleMultipleSetPerTimeInstant  : [bool]
+    intermediateUpdate                  : [bool]
+    previous                            : [nat]
+    clocks                              : [seq of (nat)]
+    initial                             : [Initial]
+    quantity                            : [NormalizedString]
+    min                                 : [int]
+    max                                 : [int]
+    start                               : [seq of (int)]
+    annotations                         : [Annotations]
+    dimension                           : [seq of (Dimension)]
+    alias                               : [seq of (Alias)]
 ;
 
 Clock ::

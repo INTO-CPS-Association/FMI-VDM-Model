@@ -126,7 +126,7 @@ functions
 				)
 			}
 			union
-			{
+			(
 				let mk_(kmin, kmax) = minMaxKind(<Int64>) in	-- xs:long is Int64
 				{
 					max <> nil =>
@@ -137,7 +137,7 @@ functions
 						--@OnFail(1156, "2.2.3 min %s is not a valid value for Enumerations", min)
 						( min <= kmax and min >= kmin )
 				}
-			}
+			)
 			= {true},
 
 			others -> true		-- String, Boolean and Clock
