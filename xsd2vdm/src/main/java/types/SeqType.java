@@ -60,12 +60,16 @@ public class SeqType extends Type
 	@Override
 	public VDMValue valueOf(String avalue, Locator locator)
 	{
-		String[] values = avalue.split("\\s+");
 		SeqValue result = new SeqValue(itemtype, locator);
 		
-		for (String value: values)
+		if (!avalue.isEmpty())
 		{
-			result.add(itemtype.valueOf(value, locator));
+			String[] values = avalue.split("\\s+");
+
+			for (String value: values)
+			{
+				result.add(itemtype.valueOf(value, locator));
+			}
 		}
 		
 		return result;

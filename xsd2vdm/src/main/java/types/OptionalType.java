@@ -78,7 +78,7 @@ public class OptionalType extends Type
 	@Override
 	public VDMValue valueOf(String avalue, Locator locator)
 	{
-		if (avalue == null || avalue.isEmpty())
+		if (avalue == null)
 		{
 			return new SimpleValue(type, locator);	// nil
 		}

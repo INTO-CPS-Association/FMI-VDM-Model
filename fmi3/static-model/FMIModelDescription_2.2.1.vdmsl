@@ -242,7 +242,7 @@ functions
 				md.modelStructure.eventIndicator <> nil =>
 				{
 					/* @OnFail(1030, "2.2.9 EventIndicator valueReference %s invalid at %s",
-						ei.valueReference, ei.location)	 */
+						ei.valueReference, loc2str(ei.location)) */
 					( exists sv in seq eModelVariables &
 						sv.valueReference = ei.valueReference )
 
@@ -262,7 +262,7 @@ functions
 				] in
 					allUnknowns <> [] =>
 					{
-						unk.dependencies <> nil =>
+						unk.dependencies <> nil and unk.dependencies <> [] =>
 						{
 							-- @OnFail(1031, "2.2.9 Unknown dependency %s invalid at %s", vr, unk.location)
 							( exists sv in seq eModelVariables & sv.valueReference = vr )
