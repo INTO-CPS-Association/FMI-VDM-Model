@@ -2002,7 +2002,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		List<Field> results = new Vector<>();
-
+		
 		for (XSDElement child: element.getChildren())
 		{
 			switch (child.getType())
@@ -2036,7 +2036,33 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
-		if (!complex)
+		if (complex)
+		{
+			if (result.getType() instanceof RecordType)
+			{
+				RecordType base = (RecordType)result.getType();
+				
+				for (Field f: base.getFields())
+				{
+					boolean override = false;
+					
+					for (Field rest: results)
+					{
+						if (f.getFieldName().equals(rest.getFieldName()))
+						{
+							override = true;	// restrict this one's value
+							break;
+						}
+					}
+					
+					if (!override)
+					{
+						results.add(f);
+					}
+				}
+			}
+		}
+		else
 		{
 			result = adjustField(element.getPrefix(), result, facets);
 			results.add(result);
