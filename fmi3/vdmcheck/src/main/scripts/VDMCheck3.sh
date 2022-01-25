@@ -83,7 +83,7 @@ VDM=/tmp/vdm$$.vdmsl
 
 trap "rm -f $XML_MD $XML_BD $XML_TI $XML_XM $INXML $VDM" EXIT
 
-case $(file -b --mime-type $FILE) in
+case $(file -b --mime-type "$FILE") in
 	application/zip)
 		if ! type unzip 2>/dev/null 1>&2
 		then
@@ -129,7 +129,7 @@ case $(file -b --mime-type $FILE) in
 	;;
 		
 	application/xml|text/xml)
-		cp $FILE $XML_XM
+		cp "$FILE" $XML_XM
 		rm -f $XML_MD
 		rm -f $XML_BD
 		rm -f $XML_TI

@@ -80,7 +80,7 @@ VDM=/tmp/vdm$$.vdmsl
 
 trap "rm -f $XML $VDM $TMPX" EXIT
 
-case $(file -b --mime-type $FILE) in
+case $(file -b --mime-type "$FILE") in
 	application/zip)
 		if ! type unzip 2>/dev/null 1>&2
 		then
@@ -136,7 +136,7 @@ EXIT=$?		# From subshell above
 
 if [ "$SAVE" ]
 then
-	if [ $FILE="" ]; then FILE="XML"; fi
+	if [ "$FILE"="" ]; then FILE="XML"; fi
 	sed -e "s+generated from $XML+generated from $FILE+" $VDM > "$SAVE"
 	echo "VDM source written to $SAVE"
 fi
