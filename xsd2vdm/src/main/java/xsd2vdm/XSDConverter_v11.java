@@ -2041,6 +2041,7 @@ public class XSDConverter_v11 extends XSDConverter
 			if (result.getType() instanceof RecordType)
 			{
 				RecordType base = (RecordType)result.getType();
+				List<Field> combined = new Vector<>();
 				
 				for (Field f: base.getFields())
 				{
@@ -2057,9 +2058,12 @@ public class XSDConverter_v11 extends XSDConverter
 					
 					if (!override)
 					{
-						results.add(f);
+						combined.add(f);
 					}
 				}
+				
+				combined.addAll(results);	// add overrides
+				results = combined;
 			}
 		}
 		else
