@@ -130,14 +130,20 @@ public class RecordValue extends VDMValue
 				
 				if (source.containsKey(field.getElementName()))
 				{
-					String value = source.get(field.getElementName()).toVDM(indent + "    ");
+					VDMValue vdmValue = source.get(field.getElementName());
+					String value = vdmValue.toVDM(indent + "    ");
 
-					if (value.trim().startsWith("["))	// Sequence
+					if (vdmValue instanceof SeqValue)	// Label opening "["
 					{
 						sb.append(indent + "    -- " + field.getFieldName() +  "\n");
 					}
 					
 					sb.append(value);
+					
+					if (vdmValue instanceof SimpleValue)
+					{
+						comment = "  -- " + field.getFieldName() + "\n";
+					}
 				}
 				else if (field.getType().isOptional())
 				{
