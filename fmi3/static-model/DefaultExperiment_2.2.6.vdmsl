@@ -43,5 +43,7 @@ functions
 
 				-- @OnFail(1252, "2.2.5 DefaultExperiment stepSize must be less than start-stop interval at %s", loc2str(e.location))
 				( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
-					e.stopTime - e.startTime > e.stepSize )
+					e.stopTime - e.startTime > e.stepSize ),
+
+				isValidAnnotations(e.annotations)
 			} = {true};

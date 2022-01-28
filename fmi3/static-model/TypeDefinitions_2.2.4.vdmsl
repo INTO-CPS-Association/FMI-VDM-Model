@@ -68,7 +68,9 @@ functions
 				( max <> nil and min <> nil => max >= min ),
 
 				-- @OnFail(1151, "2.2.3 Type %s, Real unit must be defined for displayUnit %s", stype.name, dunit)
-				( dunit <> nil => unit <> nil )
+				( dunit <> nil => unit <> nil ),
+
+				isValidAnnotations(stype.annotations)
 			}
 			union
 			(
@@ -95,7 +97,9 @@ functions
 			mk_UInt8Type(-, -, -, -, min, max, -) ->
 			{
 				-- @OnFail(1154, "2.2.3 Type %s, Integer max %s not >= min %s", stype.name, max, min)
-				( max <> nil and min <> nil => max >= min )
+				( max <> nil and min <> nil => max >= min ),
+
+				isValidAnnotations(stype.annotations)
 			}
 			union
 			(
@@ -123,7 +127,9 @@ functions
 				(
 					card { i.name | i in seq items } = len items
 					and	card { i.value | i in seq items } = len items
-				)
+				),
+
+				isValidAnnotations(stype.annotations)
 			}
 			union
 			(

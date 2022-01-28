@@ -35,7 +35,8 @@ functions
 	isValidFMITerminalsAndIcons(tandi) ==
 	{
 		isValidGraphicalRepresentation(tandi.graphicalRepresentation),
-		isValidTerminals(tandi.terminals)
+		isValidTerminals(tandi.terminals),
+		isValidAnnotations(tandi.annotations)
 	}
 	= {true};
 
@@ -48,7 +49,8 @@ functions
 				( isValidTerminal(t) ),
 
 				isValidTerminals(t.terminal),
-				isValidTerminalGraphicalRepresentation(t.terminalGraphicalRepresentation)
+				isValidTerminalGraphicalRepresentation(t.terminalGraphicalRepresentation),
+				isValidAnnotations(t.annotations)
 			}
 
 			| t in seq terminals
@@ -59,8 +61,13 @@ functions
 	isValidTerminal: Terminal +> bool
 	isValidTerminal(term) ==
 		term.terminalMemberVariable <> nil =>
+		{
 			-- @OnFail(1301, "2.2.6.2 Terminal member variables not unique at %s", loc2str(term.location))
-			( card { v | v in seq term.terminalMemberVariable } = len term.terminalMemberVariable );
+			( card { v | v in seq term.terminalMemberVariable } = len term.terminalMemberVariable ),
+			
+			isValidAnnotations(term.annotations)
+		}
+		= {true};
 
 
 	isValidTerminalGraphicalRepresentation: [TerminalGraphicalRepresentation] +> bool
@@ -78,7 +85,6 @@ functions
 				( gt.defaultConnectionStrokeSize <> nil =>
 					gt.defaultConnectionStrokeSize > 0 ),
 
-				-- @OnFail(1305, "2.2.6.2 Terminal vendor annotations invalid at %s", loc2str(gt.location))
-				( isValidVendorAnnotation(gt.annotations) )
+				isValidAnnotations(gt.annotations)
 			}
 			= {true};

@@ -28,9 +28,16 @@
  */
 
 /**
- * 2.2.7 Vendor Annotations
+ * 2.2.7 Annotations
  */
 functions
-	isValidVendorAnnotation: [Annotations] +> bool
-	isValidVendorAnnotation(-) ==
-		true;	-- No checks
+	isValidAnnotations: [Annotations] +> bool
+	isValidAnnotations(annotations) ==
+		annotations <> nil =>
+		{
+			-- @OnFail(1200, "Illegal annotation at %s", loc2str(a.location))
+			( true )	-- No annotation checks as yet
+			
+			| a in seq annotations
+		}
+		= {true};

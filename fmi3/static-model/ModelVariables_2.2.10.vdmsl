@@ -204,6 +204,10 @@ functions
 			( isValidVariableAttributes(sv) )
 
 			| sv in seq svs
+		}
+		union
+		{
+			isValidAnnotations(sv.annotations) | sv in seq svs
 		} = {true};
 
 	/**
@@ -302,12 +306,6 @@ functions
 						eCausality <> <independent>
 			),
 
---			/* @OnFail(1465, "2.2.8 Clock variable %s cannot define initial or start at %s",
---				sv.name, loc2str(sv.location)) */
---			(
---				is_Clock(sv) => sv.initial = nil and sv.start = nil
---			),
-
 			/* @OnFail(1466, "2.2.8 Variable %s initial/variability/start %s/%s/%s invalid at %s",
 				sv.name, eInitial, eVariability, sv.start, loc2str(sv.location)) */
 			(
@@ -326,10 +324,7 @@ functions
 					nil ->		-- Note that eInitial can be nil
 						true	-- Tests on eInitial above are sufficient
 				end
-			),
-
-			-- @OnFail(1467, "2.2.8 Variable %s VendorAnnotations invalid", sv.name)
-			( isValidVendorAnnotation(sv.annotations) )
+			)
 		} = {true};
 
 	/**
@@ -424,14 +419,14 @@ functions
 					-- @OnFail(1479, "2.2.8 Real nominal must be >0.0 at %s", loc2str(sv.location))
 					and (nominal <> nil => nominal > 0.0),
 
-				mk_Int64(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
-				mk_Int32(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
-				mk_Int16(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
-				mk_Int8(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_Int64 (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_Int32 (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_Int16 (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_Int8  (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
 				mk_UInt64(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
 				mk_UInt32(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
 				mk_UInt16(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
-				mk_UInt8(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
+				mk_UInt8 (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
 					isInRange[int](min, max, start, sv, sv.initial),
 
 				mk_Enumeration(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->

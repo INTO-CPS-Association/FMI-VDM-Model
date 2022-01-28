@@ -40,12 +40,12 @@ functions
 		-- @OnFail(1500, "2.4.8 ModelStructure has invalid initialUnknowns")
 		( ms.initialUnknown <> nil =>
 			forall u in seq ms.initialUnknown &
-				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location) ),
 
 		-- @OnFail(1501, "2.4.8 ModelStructure has invalid continuousStateDerivative")
 		( ms.continuousStateDerivative <> nil =>
 			forall u in seq ms.continuousStateDerivative &
-				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location) ),
 
 		-- @OnFail(1502, "2.4.8 ModelStructure has invalid clockedState")
 		( ms.clockedState <> nil =>
@@ -60,11 +60,8 @@ functions
 				-- @OnFail(1504, "ClockState should be %s at %s", allcvpvs, loc2str(ms.location))
 				( elems allcs = allcvpvs ),
 
---				-- @OnFail(1505, "Clocks and previous variables do not match at %s", loc2str(ms.location))
---				( card allcvs = card allpvs ),
-
 				forall u in seq ms.clockedState &
-					isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location)
+					isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location)
 					and let cv = lookup(svs, u.valueReference) in
 					{
 						-- @OnFail(1506, "ClockState reference %s cannot be a clock at %s", cv.valueReference, loc2str(ms.location))
@@ -81,7 +78,7 @@ functions
 		-- @OnFail(1509, "2.4.8 ModelStructure has invalid eventIndicator")
 		( ms.eventIndicator <> nil =>
 			forall u in seq ms.eventIndicator &
-				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.location) ),
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location) ),
 
 		-- @OnFail(1510, "2.4.8 InitialUnknowns are not of kind dependent or constant")
 		(
@@ -96,24 +93,29 @@ functions
 	/**
 	 * Validate an Unknown structure in isolation.
 	 */
-	isValidUnknown: fmi3ValueReference * [seq of fmi3ValueReference] * [seq of DependenciesKind] * Location +> bool
-	isValidUnknown(valueReference, dependencies, dependenciesKind, location) ==
-	-- @OnFail(1511, "2.4.8 Unknown %s has invalid dependencies/kinds at %s", valueReference, loc2str(location))
-	(
-		if dependencies <> nil
-		then dependenciesKind <> nil =>
-			{
-				-- @OnFail(1512, "2.4.8 Dependencies list does not match dependenciesKind at %s", loc2str(location))
-				( len dependencies = len dependenciesKind ),
+	isValidUnknown: fmi3ValueReference * [seq of fmi3ValueReference] * [seq of DependenciesKind] * [Annotations] * Location +> bool
+	isValidUnknown(valueReference, dependencies, dependenciesKind, annotations, location) ==
+	{
+		-- @OnFail(1511, "2.4.8 Unknown %s has invalid dependencies/kinds at %s", valueReference, loc2str(location))
+		(
+			if dependencies <> nil
+			then dependenciesKind <> nil =>
+				{
+					-- @OnFail(1512, "2.4.8 Dependencies list does not match dependenciesKind at %s", loc2str(location))
+					( len dependencies = len dependenciesKind ),
 
-				/* @OnFail(1513, "2.4.8 Unknown has duplicate indexes %s at %s",
-					{ dependencies(a) | a, b in set inds dependencies &
-						a <> b and dependencies(a) = dependencies(b) }, loc2str(location) ) */
-				( len dependencies = card elems dependencies),
+					/* @OnFail(1513, "2.4.8 Unknown has duplicate indexes %s at %s",
+						{ dependencies(a) | a, b in set inds dependencies &
+							a <> b and dependencies(a) = dependencies(b) }, loc2str(location) ) */
+					( len dependencies = card elems dependencies),
 
-				-- @OnFail(1514, "2.4.8 Unknown cannot depend on itself at %s", loc2str(location))
-				(true) -- CHECK THIS! ( u.index not in set elems u.dependencies )
-			} = {true}
-		else
-			dependenciesKind = nil
-	);
+					-- @OnFail(1514, "2.4.8 Unknown cannot depend on itself at %s", loc2str(location))
+					(true) -- CHECK THIS! ( u.index not in set elems u.dependencies )
+				} = {true}
+			else
+				dependenciesKind = nil
+		),
+
+		isValidAnnotations(annotations)
+	}
+	= {true};

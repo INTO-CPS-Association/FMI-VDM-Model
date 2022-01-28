@@ -36,7 +36,8 @@ functions
 		gr <> nil =>
 		{
 			isValidCoordinateSystem(gr.coordinateSystem),
-			isValidIcon(gr.icon)
+			isValidIcon(gr.icon),
+			isValidAnnotations(gr.annotations)
 		} = {true};
 
 	isValidCoordinateSystem: [CoordinateSystem] +> bool

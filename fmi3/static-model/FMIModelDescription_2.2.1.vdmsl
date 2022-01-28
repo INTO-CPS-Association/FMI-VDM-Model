@@ -63,8 +63,8 @@ functions
 			-- @OnFail(1007, "2.2.1 DefaultExperiment invalid at %s", loc2str(md.defaultExperiment.location))
 			( isValidDefaultExperiment(md.defaultExperiment) ),
 
-			-- @OnFail(1008, "2.2.1 VendorAnnotations invalid")
-			( isValidVendorAnnotation(md.annotations) ),
+			-- @OnFail(1008, "2.2.1 Annotations invalid")
+			( isValidAnnotations(md.annotations) ),
 
 			-- @OnFail(1009, "2.2.1 Variables invalid")
 			( isValidModelVariables(md.modelVariables) ),		-- NOTE: NOT effective variables!

@@ -38,27 +38,24 @@ functions
 	isValidCoSimulation(cs) ==
 		cs <> nil =>
 		{
-			-- @OnFail(1550, "4.3.1 Annotations invalid at %s", loc2str(cs.location))
-			( isValidVendorAnnotation(cs.annotations) ),
-
 			/* @OnFail(1551, "4.3.1 modelIdentifer %s not valid C variable name at %s",
 							cs.modelIdentifier, loc2str(cs.location)) */
 			( cs.modelIdentifier <> ""
-				and cs.modelIdentifier(1) in set elems NONDIGITS )
+				and cs.modelIdentifier(1) in set elems NONDIGITS ),
+
+			isValidAnnotations(cs.annotations)
 		}
 		= {true};
-
 
 	isValidScheduledExecution: [ScheduledExecution] +> bool
 	isValidScheduledExecution(se) ==
 		se <> nil => 
 		{
-			-- @OnFail(1552, "4.3.1 Annotations invalid at %s", loc2str(se.location))
-			( isValidVendorAnnotation(se.annotations) ),
-
 			/* @OnFail(1553, "4.3.1 modelIdentifer %s not valid C variable name at %s",
 							se.modelIdentifier, loc2str(se.location)) */
 			( se.modelIdentifier <> ""
-				and se.modelIdentifier(1) in set elems NONDIGITS )
+				and se.modelIdentifier(1) in set elems NONDIGITS ),
+
+			isValidAnnotations(se.annotations)
 		}
 		= {true};
