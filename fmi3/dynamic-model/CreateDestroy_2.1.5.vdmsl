@@ -395,6 +395,20 @@ functions
 		eModelVariables(i) | i in set inds eModelVariables & isContinuousTimeState(i, eModelVariables)
 	];
 
+
+	/**
+	 * Get the alias refmap, from valueReferences to sets of SVs.
+	 *
+	 * THIS IS LIFTED FROM FMI2 and NEEDS FIXING BECAUSE ALIASES ARE DIFFERENT!!
+	 */
+	getAliasRefMap: seq1 of Variable -> map fmi3ValueReference to set of Variable
+	getAliasRefMap(svs) ==
+		let vrefs = { svi |-> svs(svi).valueReference | svi in set inds svs } in
+		{
+			vrefs(svi) |-> { svs(v) | v in set inds svs & vrefs(v) = vrefs(svi) }
+			| svi in set inds svs
+		};
+
 	/**
 	 * Implementation of fmi3FreeInstance. See API method below.
 	 */
