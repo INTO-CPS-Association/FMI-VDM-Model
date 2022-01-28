@@ -28,7 +28,7 @@
  */
 
 /**
- *"2.4.8 Definition of the Model Structure (ModelStructure)
+ * 2.4.8 Definition of the Model Structure (ModelStructure)
  */
 functions
 	/**
@@ -54,23 +54,23 @@ functions
 				allcvpvs = allcvs inter allpvs,
 				allcs = [ u.valueReference | u in seq ms.clockedState ] in
 			{
-				-- @OnFail(1503, "ClockState has duplicates at %s", loc2str(ms.location))
+				-- @OnFail(1503, "2.4.8 ClockState has duplicates at %s", loc2str(ms.location))
 				( len allcs = card elems allcs ),
 
-				-- @OnFail(1504, "ClockState should be %s at %s", allcvpvs, loc2str(ms.location))
+				-- @OnFail(1504, "2.4.8 ClockState should be %s at %s", allcvpvs, loc2str(ms.location))
 				( elems allcs = allcvpvs ),
 
 				forall u in seq ms.clockedState &
 					isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location)
 					and let cv = lookup(svs, u.valueReference) in
 					{
-						-- @OnFail(1505, "ClockState reference %s cannot be a clock at %s", cv.valueReference, loc2str(ms.location))
+						-- @OnFail(1505, "2.4.8 ClockState reference %s cannot be a clock at %s", cv.valueReference, loc2str(ms.location))
 						( not is_(cv, Clock) ),
 
-						-- @OnFail(1506, "ClockState reference %s is not clocked var or previous at %s", cv.valueReference, loc2str(ms.location))
+						-- @OnFail(1506, "2.4.8 ClockState reference %s is not clocked var or previous at %s", cv.valueReference, loc2str(ms.location))
 						( cv.valueReference in set allcvpvs ),
 
-						-- @OnFail(1507, "ClockState reference %s not 'discrete' at %s", cv.valueReference, loc2str(ms.location))
+						-- @OnFail(1507, "2.4.8 ClockState reference %s not 'discrete' at %s", cv.valueReference, loc2str(ms.location))
 						( cv.variability = <discrete> )
 					} = {true}
 			 } = {true} ),

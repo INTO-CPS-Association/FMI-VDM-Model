@@ -28,21 +28,18 @@
  */
 
 /**
- * 4.3.1 Definition of a ModelExchange section of an FMU.
+ * 4.4 Definition of a CoSimulation section of an FMU.
  */
 functions
-	/**
-	 * Check ModelExchange values.
-	 */
-	isValidModelExchange: [ModelExchange] +> bool
-	isValidModelExchange(me) ==
-		me <> nil =>
+	isValidCoSimulation: [CoSimulation] +> bool
+	isValidCoSimulation(cs) ==
+		cs <> nil =>
 		{
-			/* @OnFail(1600, "4.3.1 ModelExchange modelIdentifer %s not valid C variable name at %s",
-						 me.modelIdentifier, loc2str(me.location)) */
-			( me.modelIdentifier <> ""
-			  and me.modelIdentifier(1) in set elems NONDIGITS ),
+			/* @OnFail(1550, "4.4 modelIdentifer %s not valid C variable name at %s",
+							cs.modelIdentifier, loc2str(cs.location)) */
+			( cs.modelIdentifier <> ""
+				and cs.modelIdentifier(1) in set elems NONDIGITS ),
 
-			isValidAnnotations(me.annotations)
+			isValidAnnotations(cs.annotations)
 		}
 		= {true};

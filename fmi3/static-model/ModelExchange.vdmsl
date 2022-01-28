@@ -28,22 +28,18 @@
  */
 
 /**
- * 2.2.5 Default Experiment
+ * 3.4 Definition of a ModelExchange section of an FMU.
  */
 functions
-	isValidDefaultExperiment: [DefaultExperiment] +> bool
-	isValidDefaultExperiment(e) ==
-		e <> nil =>
-			{
-				-- @OnFail(1250, "2.2.5 DefalutExperiment tolerance must be >= 0 at %s", loc2str(e.location))
-				( e.tolerance <> nil => e.tolerance >= 0),
+	isValidModelExchange: [ModelExchange] +> bool
+	isValidModelExchange(me) ==
+		me <> nil =>
+		{
+			/* @OnFail(1600, "3.4 ModelExchange modelIdentifer %s not valid C variable name at %s",
+						 me.modelIdentifier, loc2str(me.location)) */
+			( me.modelIdentifier <> ""
+			  and me.modelIdentifier(1) in set elems NONDIGITS ),
 
-				-- @OnFail(1251, "2.2.5 DefaultExperiment stop time must be later than start time at %s", loc2str(e.location))
-				( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime ),
-
-				-- @OnFail(1252, "2.2.5 DefaultExperiment stepSize must be less than start-stop interval at %s", loc2str(e.location))
-				( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
-					e.stopTime - e.startTime > e.stepSize ),
-
-				isValidAnnotations(e.annotations)
-			} = {true};
+			isValidAnnotations(me.annotations)
+		}
+		= {true};

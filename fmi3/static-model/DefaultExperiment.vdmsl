@@ -28,31 +28,22 @@
  */
 
 /**
- * 2.2.6.1 Definition of GraphicalRepresentation
+ * 2.4.6 Default Experiment
  */
 functions
-	isValidGraphicalRepresentation: [GraphicalRepresentation] +> bool
-	isValidGraphicalRepresentation(gr) ==
-		gr <> nil =>
-		{
-			isValidCoordinateSystem(gr.coordinateSystem),
-			isValidIcon(gr.icon),
-			isValidAnnotations(gr.annotations)
-		} = {true};
+	isValidDefaultExperiment: [DefaultExperiment] +> bool
+	isValidDefaultExperiment(e) ==
+		e <> nil =>
+			{
+				-- @OnFail(1250, "2.4.6 DefalutExperiment tolerance must be >= 0 at %s", loc2str(e.location))
+				( e.tolerance <> nil => e.tolerance >= 0),
 
-	isValidCoordinateSystem: [CoordinateSystem] +> bool
-	isValidCoordinateSystem(cs) ==
-		cs <> nil =>
-		{
-			-- @OnFail(1350, "2.2.6.1 Coordinate area is not bottom left to top right at %s", loc2str(cs.location))
-			( cs.x1 < cs.x2 and cs.y1 < cs.y2 ),
+				-- @OnFail(1251, "2.4.6 DefaultExperiment stop time must be later than start time at %s", loc2str(e.location))
+				( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime ),
 
-			-- @OnFail(1351, "2.2.6.1 suggestedScalingFactorTo_mm must be >0 at %s", loc2str(cs.location))
-			( cs.suggestedScalingFactorTo_mm > 0 )
-		} = {true};
+				-- @OnFail(1252, "2.4.6 DefaultExperiment stepSize must be less than start-stop interval at %s", loc2str(e.location))
+				( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
+					e.stopTime - e.startTime > e.stepSize ),
 
-	isValidIcon: [Icon] +> bool
-	isValidIcon(icon) ==
-		icon <> nil =>
-			-- @OnFail(1352, "2.2.6.1 Icon area is not bottom left to top right at %s", loc2str(icon.location))
-			( icon.x1 < icon.x2 and icon.y1 < icon.y2 );
+				isValidAnnotations(e.annotations)
+			} = {true};

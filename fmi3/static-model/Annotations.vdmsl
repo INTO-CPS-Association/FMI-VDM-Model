@@ -28,20 +28,16 @@
  */
 
 /**
- * 2.2.4 Log Categories
+ * 2.4 Annotations
  */
 functions
-	isValidLogCategories: [seq1 of Category] +> bool
-	isValidLogCategories(cats) ==
-		cats <> nil =>
+	isValidAnnotations: [Annotations] +> bool
+	isValidAnnotations(annotations) ==
+		annotations <> nil =>
 		{
-			/* @OnFail(1200, "2.2.4 LogCategory names are not unique: %s",
-				{ cats(a).name | a, b in set inds cats &
-					a <> b and cats(a).name = cats(b).name }) */
-			( card { c.name | c in seq cats } = len cats )
-		}
-		union
-		{
-			isValidAnnotations(cat.annotations) | cat in seq cats
+			-- @OnFail(1200, "2.4 Illegal annotation at %s", loc2str(a.location))
+			( true )	-- No annotation checks as yet
+			
+			| a in seq annotations
 		}
 		= {true};

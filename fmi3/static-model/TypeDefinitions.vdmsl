@@ -28,7 +28,7 @@
  */
 
 /**
- * 2.2.3 Definition of Types (TypeDefinitions)
+ * 2.4.4 Definition of Types (TypeDefinitions)
  */
 types
 	VariableType =
@@ -64,10 +64,10 @@ functions
 			mk_Float32Type(-, -, -, -, unit, dunit, -, -, min, max, -, -),
 			mk_Float64Type(-, -, -, -, unit, dunit, -, -, min, max, -, -) ->
 			{
-				-- @OnFail(1150, "2.2.3 Type %s, Float max %s not >= min %s", stype.name, max, min)
+				-- @OnFail(1150, "2.4.4 Type %s, Float max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
 
-				-- @OnFail(1151, "2.2.3 Type %s, Real unit must be defined for displayUnit %s", stype.name, dunit)
+				-- @OnFail(1151, "2.4.4 Type %s, Real unit must be defined for displayUnit %s", stype.name, dunit)
 				( dunit <> nil => unit <> nil ),
 
 				isValidAnnotations(stype.annotations)
@@ -77,26 +77,26 @@ functions
 				let mk_(kmin, kmax) = minMaxKind(kindOf(stype)) in
 				{
 					max <> nil =>
-						--@OnFail(1152, "2.2.3 max %s is not a valid value of this type", max)
+						--@OnFail(1152, "2.4.4 max %s is not a valid value of this type", max)
 						( max <= kmax and max >= kmin ),
 
 					min <> nil =>
-						--@OnFail(1153, "2.2.3 min %s is not a valid value of this type", min)
+						--@OnFail(1153, "2.4.4 min %s is not a valid value of this type", min)
 						( min <= kmax and min >= kmin )
 				}
 			)
 			= {true},
 
-			mk_Int64Type(-, -, -, -, min, max, -),
-			mk_Int32Type(-, -, -, -, min, max, -),
-			mk_Int16Type(-, -, -, -, min, max, -),
-			mk_Int8Type(-, -, -, -, min, max, -),
+			mk_Int64Type (-, -, -, -, min, max, -),
+			mk_Int32Type (-, -, -, -, min, max, -),
+			mk_Int16Type (-, -, -, -, min, max, -),
+			mk_Int8Type  (-, -, -, -, min, max, -),
 			mk_UInt64Type(-, -, -, -, min, max, -),
 			mk_UInt32Type(-, -, -, -, min, max, -),
 			mk_UInt16Type(-, -, -, -, min, max, -),
-			mk_UInt8Type(-, -, -, -, min, max, -) ->
+			mk_UInt8Type (-, -, -, -, min, max, -) ->
 			{
-				-- @OnFail(1154, "2.2.3 Type %s, Integer max %s not >= min %s", stype.name, max, min)
+				-- @OnFail(1154, "2.4.4 Type %s, Integer max %s not >= min %s", stype.name, max, min)
 				( max <> nil and min <> nil => max >= min ),
 
 				isValidAnnotations(stype.annotations)
@@ -106,11 +106,11 @@ functions
 				let mk_(kmin, kmax) = minMaxKind(kindOf(stype)) in
 				{
 					max <> nil =>
-						--@OnFail(1155, "2.2.3 max %s is not a valid value of this type", max)
+						--@OnFail(1155, "2.4.4 max %s is not a valid value of this type", max)
 						( max <= kmax and max >= kmin ),
 
 					min <> nil =>
-						--@OnFail(1156, "2.2.3 min %s is not a valid value of this type", min)
+						--@OnFail(1156, "2.4.4 min %s is not a valid value of this type", min)
 						( min <= kmax and min >= kmin )
 				}
 			)
@@ -123,7 +123,7 @@ functions
 
 			mk_EnumerationType(-, -, -, -, min, max, -, items) ->
 			{
-				-- @OnFail(1157, "2.2.3 Type %s, Enumeration item name/values do not form a bijection", stype.name)
+				-- @OnFail(1157, "2.4.4 Type %s, Enumeration item name/values do not form a bijection", stype.name)
 				(
 					card { i.name | i in seq items } = len items
 					and	card { i.value | i in seq items } = len items
@@ -136,11 +136,11 @@ functions
 				let mk_(kmin, kmax) = minMaxKind(<Int64>) in	-- xs:long is Int64
 				{
 					max <> nil =>
-						--@OnFail(1158, "2.2.3 max %s is not a valid value for Enumerations", max)
+						--@OnFail(1158, "2.4.4 max %s is not a valid value for Enumerations", max)
 						( max <= kmax and max >= kmin ),
 
 					min <> nil =>
-						--@OnFail(1159, "2.2.3 min %s is not a valid value for Enumerations", min)
+						--@OnFail(1159, "2.4.4 min %s is not a valid value for Enumerations", min)
 						( min <= kmax and min >= kmin )
 				}
 			)
@@ -153,13 +153,13 @@ functions
 	isValidTypeDefinitions(defs) ==
 		defs <> nil =>
 			{
-				/* @OnFail(1160, "2.2.3 TypeDefinitions names are not unique: %s",
+				/* @OnFail(1160, "2.4.4 TypeDefinitions names are not unique: %s",
 					{ a.name | a, b in seq defs & a <> b and a.name = b.name }) */
 				( card { stype.name | stype in seq defs } = len defs )
 			}
 			union
 			{
-				-- @OnFail(1161, "2.2.3 TypeDefinition %s invalid at %s", stype.name, loc2str(stype.location))
+				-- @OnFail(1161, "2.4.4 TypeDefinition %s invalid at %s", stype.name, loc2str(stype.location))
 				( isValidType(stype) )
 
 				| stype in seq defs

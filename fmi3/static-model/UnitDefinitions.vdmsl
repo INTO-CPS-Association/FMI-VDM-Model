@@ -28,34 +28,20 @@
  */
 
 /**
- * 4.3.1 Definition of a CoSimulation and ScheduledExecution section of an FMU.
+ * 2.4.3 Unit Definitions.
  */
 functions
-	/**
-	 * Check CoSimulation and ScheduledExecution values.
-	 */
-	isValidCoSimulation: [CoSimulation] +> bool
-	isValidCoSimulation(cs) ==
-		cs <> nil =>
+	isValidUnitDefinitions: [seq1 of Unit] +> bool
+	isValidUnitDefinitions(units) ==
+		units <> nil =>
 		{
-			/* @OnFail(1550, "4.3.1 modelIdentifer %s not valid C variable name at %s",
-							cs.modelIdentifier, loc2str(cs.location)) */
-			( cs.modelIdentifier <> ""
-				and cs.modelIdentifier(1) in set elems NONDIGITS ),
-
-			isValidAnnotations(cs.annotations)
+			/* @OnFail(1100, "2.4.3 UnitDefinitions names are not unique: %s",
+				{ units(a).name | a, b in set inds units &
+					a <> b and units(a).name = units(b).name }) */
+			( card { unit.name | unit in seq units } = len units )
 		}
-		= {true};
-
-	isValidScheduledExecution: [ScheduledExecution] +> bool
-	isValidScheduledExecution(se) ==
-		se <> nil => 
+		union
 		{
-			/* @OnFail(1551, "4.3.1 modelIdentifer %s not valid C variable name at %s",
-							se.modelIdentifier, loc2str(se.location)) */
-			( se.modelIdentifier <> ""
-				and se.modelIdentifier(1) in set elems NONDIGITS ),
-
-			isValidAnnotations(se.annotations)
+			isValidAnnotations(u.annotations) | u in seq units
 		}
 		= {true};

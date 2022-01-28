@@ -28,20 +28,31 @@
  */
 
 /**
- * 2.2.2 Unit Definitions.
+ * 2.4.9 Definition of GraphicalRepresentation
  */
 functions
-	isValidUnitDefinitions: [seq1 of Unit] +> bool
-	isValidUnitDefinitions(units) ==
-		units <> nil =>
+	isValidGraphicalRepresentation: [GraphicalRepresentation] +> bool
+	isValidGraphicalRepresentation(gr) ==
+		gr <> nil =>
 		{
-			/* @OnFail(1100, "2.2.2 UnitDefinitions names are not unique: %s",
-				{ units(a).name | a, b in set inds units &
-					a <> b and units(a).name = units(b).name }) */
-			( card { unit.name | unit in seq units } = len units )
-		}
-		union
+			isValidCoordinateSystem(gr.coordinateSystem),
+			isValidIcon(gr.icon),
+			isValidAnnotations(gr.annotations)
+		} = {true};
+
+	isValidCoordinateSystem: [CoordinateSystem] +> bool
+	isValidCoordinateSystem(cs) ==
+		cs <> nil =>
 		{
-			isValidAnnotations(u.annotations) | u in seq units
-		}
-		= {true};
+			-- @OnFail(1350, "2.4.9 Coordinate area is not bottom left to top right at %s", loc2str(cs.location))
+			( cs.x1 < cs.x2 and cs.y1 < cs.y2 ),
+
+			-- @OnFail(1351, "2.4.9 suggestedScalingFactorTo_mm must be >0 at %s", loc2str(cs.location))
+			( cs.suggestedScalingFactorTo_mm > 0 )
+		} = {true};
+
+	isValidIcon: [Icon] +> bool
+	isValidIcon(icon) ==
+		icon <> nil =>
+			-- @OnFail(1352, "2.4.9 Icon area is not bottom left to top right at %s", loc2str(icon.location))
+			( icon.x1 < icon.x2 and icon.y1 < icon.y2 );
