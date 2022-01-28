@@ -121,5 +121,5 @@ functions
 		= {true};
 
 	isValidLibrary: Library +> bool
-	isValidLibrary(-) ==
-		true;
+	isValidLibrary(lib) ==
+		isValidAnnotations(lib.annotations);
