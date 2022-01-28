@@ -454,64 +454,31 @@ functions
 
 		| sv in seq svs
 	}
-	union
+	union dunion
 	{
-		/* @OnFail(1480, "2.4.7 Invalid Variable aliasing") */
-		(
-			let refmap = getAliasRefMap(svs) in
-			card dom refmap < len svs => dunion	-- Must be some aliases
+		{
 			{
-				let aliases = refmap(ref),
-				    noclocks = { a | a in set aliases & not is_Clock(a) } in
-				{
-					/* @OnFail(1481, "2.4.7 Multiple aliases of reference %s are settable: %s", ref,
-							{ a.name | a in set aliases & isSettable(a) }) */
-					( card { a | a in set aliases & isSettable(a) } <= 1 ),
+				-- @OnFail(1480, "2.4.7 Alias name %s duplicates variable at %s", alias.name, loc2str(alias.location))
+				( not exists v in seq svs & v.name = alias.name ),
 
-					/* @OnFail(1482, "2.4.7 Aliases of reference %s are settable and independent: %s", ref,
-							{ {a.name, b.name} | a, b in set aliases &
-								a <> b and isSettable(a) and b.causality = <independent> } ) */
-					( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
+				-- @OnFail(1481, "2.4.7 Alias name %s duplicates alias at %s", alias.name, loc2str(alias.location))
+				( forall v in seq svs &
+					v.alias <> nil =>
+						not exists a in seq v.alias & a <> alias and a.name = alias.name ),
 
-					-- @OnFail(1483, "2.4.7 Too many aliases of reference %s have start set", ref)
-					( card { a.start | a in set noclocks & a.variability <> <constant> and a.start <> nil } <= 1 ),
-
-					-- @OnFail(1484, "2.4.7 Constant aliases of reference %s have different start values", ref)
-					( card { a.start | a in set noclocks & a.variability = <constant> and a.start <> nil } <= 1 ),
-
-					-- @OnFail(1485, "2.4.7 Aliases of reference %s must all be constant or variable", ref)
-					( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
-
-					-- @OnFail(1486, "2.4.7 Aliases of reference %s must all have same unit/baseUnits", ref)
-					( card { a.unit | a in set aliases & isReal(a) } <= 1 ),
-
-					/*
-					 * In case of different variability among the set of alias variables, and if that set of aliases
-					 * does not contain an input or parameter, the variability should be the highest of the variables
-					 * in the set, e.g. continuous > discrete > tunable > fixed. If the set includes a parameter or
-					 * input the aliases will have the stated variability of that parameter or input.
-					 */
-					 let vars = { a.variability | a in set aliases } in
-					 	if exists a in set aliases & a.causality in set {<input>, <parameter>}
-					 	then
-					 		let a in set aliases be st a.causality in set {<input>, <parameter>} in
-				 				/* @OnFail(1487, "2.4.7 Warning: aliases of reference %s must all be %s, because of %s",
-				 						ref, a.variability, a.name) */
-				 				( vars = { a.variability } ) or true
-					 	else
-					 		let highest in set vars be st not exists v in set vars & orderOf(v) > orderOf(highest) in
-					 			-- @OnFail(1488, "2.4.7 Warning: aliases of reference %s must all be %s", ref, highest)
-					 			( vars = { highest } ) or true
-				}
-
-				| ref in set dom refmap & card refmap(ref) > 1
+				-- @OnFail(1482, "2.4.7 Alias name %s cannot have displayUnit at %s", alias.name, loc2str(alias.location))
+				( alias.displayUnit <> nil => isReal(sv) )
 			}
 			= {true}
-		)
+
+			| alias in seq sv.alias
+		}
+
+		| sv in seq svs & sv.alias <> nil
 	}
 	union
 	{
-		-- @OnFail(1489, "2.2.9 Variable %s invalid at %s", sv.name, loc2str(sv.location))
+		-- @OnFail(1483, "2.2.9 Variable %s invalid at %s", sv.name, loc2str(sv.location))
 		( isValidClockAttributes(sv, svs) )
 
 		| sv in seq svs
@@ -810,14 +777,3 @@ functions
 		else let mk_(o, r) = getDerivativeBase(svs(vr).derivative, svs) in
 			mk_(o+1, r)
 	measure is not yet specified;
-
-	/**
-	 * Get the alias refmap, from valueReferences to sets of SVs
-	 */
-	getAliasRefMap: seq1 of Variable -> map fmi3ValueReference to set of Variable
-	getAliasRefMap(svs) ==
-		let vrefs = { svi |-> svs(svi).valueReference | svi in set inds svs } in
-		{
-			vrefs(svi) |-> { svs(v) | v in set inds svs & vrefs(v) = vrefs(svi) }
-			| svi in set inds svs
-		};

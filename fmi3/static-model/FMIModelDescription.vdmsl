@@ -154,7 +154,7 @@ functions
 				{
 					let sv = eModelVariables(svi) in
 						isReal(sv) and sv.reinit <> nil =>
-						/* @OnFail(1021, "2.4.7 Variable %s, Real reinit for model exchange continuous time only at %s",
+						/* @OnFail(1022, "2.4.7 Variable %s, Real reinit for model exchange continuous time only at %s",
 								sv.name, loc2str(sv.location)) */
 						( isContinuousTimeState(svi, eModelVariables) and md.modelExchange <> nil )
 
@@ -170,16 +170,16 @@ functions
 				in
 					if outputRefs <> {}
 					then
-						/* @OnFail(1022, "2.4.9 Output variables but no outputs declared at %s",
+						/* @OnFail(1023, "2.4.9 Output variables but no outputs declared at %s",
 							loc2str(md.modelStructure.location)) */
 						( structRefs <> {} )
 
 						and
-						/* @OnFail(1023, "2.4.9 Outputs section does not match output variables at %s",
+						/* @OnFail(1024, "2.4.9 Outputs section does not match output variables at %s",
 							loc2str(md.modelStructure.location)) */
 						( structRefs = outputRefs )
 					else
-						/* @OnFail(1024, "2.4.9 Outputs should be omitted at %s", loc2str(md.modelStructure.location)) */
+						/* @OnFail(1025, "2.4.9 Outputs should be omitted at %s", loc2str(md.modelStructure.location)) */
 						( structRefs = {} )
 			),
 
@@ -191,15 +191,15 @@ functions
 						derivatives <> {} =>
 						{
 							let sv = lookup(eModelVariables, uk.valueReference) in
-								/* @OnFail(1025, "2.4.9 Derivative valueReference unknown at %s", loc2str(uk.location)) */
+								/* @OnFail(1026, "2.4.9 Derivative valueReference unknown at %s", loc2str(uk.location)) */
 								( sv <> nil )
 
 								and
 								{
-									/* @OnFail(1026, "2.4.9 SV not a state derivative at %s", loc2str(uk.location)) */
+									/* @OnFail(1027, "2.4.9 SV not a state derivative at %s", loc2str(uk.location)) */
 									( isStateDerivative(sv) ),
 
-									/* @OnFail(1027, "2.4.9 Derivative must be continuous at %s", loc2str(uk.location)) */
+									/* @OnFail(1028, "2.4.9 Derivative must be continuous at %s", loc2str(uk.location)) */
 									( uk.dependencies <> nil => sv.variability = <continuous> )
 								}
 								= {true}
@@ -230,10 +230,10 @@ functions
 						let ius = [ iu |
 							iu in seq nilSeq[InitialUnknown](md.modelStructure.initialUnknown) ] in
 						{
-							-- @OnFail(1028, "2.4.9 InitialUnknowns must include refs: %s", initRefs)
+							-- @OnFail(1029, "2.4.9 InitialUnknowns must include refs: %s", initRefs)
 							( ius <> [] ),
 
-							-- @OnFail(1029, "2.4.9 InitialUnknowns must only include refs: %s", initRefs)
+							-- @OnFail(1030, "2.4.9 InitialUnknowns must only include refs: %s", initRefs)
 							( { u.valueReference | u in seq ius } subset initRefs )
 						} = {true}
 			),
@@ -241,7 +241,7 @@ functions
 			(
 				md.modelStructure.eventIndicator <> nil =>
 				{
-					/* @OnFail(1030, "2.4.9 EventIndicator valueReference %s invalid at %s",
+					/* @OnFail(1031, "2.4.9 EventIndicator valueReference %s invalid at %s",
 						ei.valueReference, loc2str(ei.location)) */
 					( exists sv in seq eModelVariables &
 						sv.valueReference = ei.valueReference )
@@ -264,7 +264,7 @@ functions
 					{
 						unk.dependencies <> nil and unk.dependencies <> [] =>
 						{
-							-- @OnFail(1031, "2.4.9 Unknown dependency %s invalid at %s", vr, unk.location)
+							-- @OnFail(1032, "2.4.9 Unknown dependency %s invalid at %s", vr, unk.location)
 							( exists sv in seq eModelVariables & sv.valueReference = vr )
 
 							| vr in seq unk.dependencies
@@ -289,11 +289,11 @@ functions
 					td in seq nilSeq[VariableType](typedefs) &
 					td.name = sv.declaredType } in
 				{
-					/* @OnFail(1032, "2.4.4 Typedefs have multiple matching names: %s",
+					/* @OnFail(1033, "2.4.4 Typedefs have multiple matching names: %s",
 						{ m.name | m in set matchingTypes } ) */
 					( matchingTypes <> {} => card matchingTypes = 1 ),
 
-					/* @OnFail(1033, "2.4.4 Declared type %s unknown at %s",
+					/* @OnFail(1034, "2.4.4 Declared type %s unknown at %s",
 						sv.declaredType, sv.location ) */
 					( card matchingTypes <> 0 ),
 
@@ -302,7 +302,7 @@ functions
 						cases simpleType:
 							mk_Float64Type(-, -, -, -, -, -, -, -, min, max, -, -),
 							mk_Float32Type(-, -, -, -, -, -, -, -, min, max, -, -) ->
-								/* @OnFail(1034, "2.4.7 Variable %s min/max exceeds RealType %s at %s",
+								/* @OnFail(1035, "2.4.7 Variable %s min/max exceeds RealType %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( (min <> nil and sv.min <> nil => min <= sv.min)
 									and
@@ -316,7 +316,7 @@ functions
 							mk_UInt32Type(-, -, -, -, min, max, -),
 							mk_UInt16Type(-, -, -, -, min, max, -),
 							mk_UInt8Type(-, -, -, -, min, max, -) ->
-								/* @OnFail(1035, "2.4.7 Variable %s min/max exceeds IntegerType %s at %s",
+								/* @OnFail(1036, "2.4.7 Variable %s min/max exceeds IntegerType %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( (min <> nil and sv.min <> nil => min <= sv.min)
 									and
@@ -330,7 +330,7 @@ functions
 						cases simpleType:
 							mk_Float64Type(-, -, -, -, -, -, -, -, -, -, -, -),
 							mk_Float32Type(-, -, -, -, -, -, -, -, -, -, -, -) ->
-								/* @OnFail(1036, "2.4.7 Variable %s, RealType not referenced by Real variable %s at %s",
+								/* @OnFail(1037, "2.4.7 Variable %s, RealType not referenced by Real variable %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( isReal(sv) ),
 
@@ -342,32 +342,32 @@ functions
 							mk_UInt32Type(-, -, -, -, -, -, -),
 							mk_UInt16Type(-, -, -, -, -, -, -),
 							mk_UInt8Type(-, -, -, -, -, -, -) ->
-								/* @OnFail(1037, "2.4.7 Variable %s, IntegerType not referenced by Integer variable %s at %s",
+								/* @OnFail(1038, "2.4.7 Variable %s, IntegerType not referenced by Integer variable %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( isInteger(sv) ),
 
 							mk_BooleanType(-, -, -, -) ->
-								/* @OnFail(1038, "2.4.7 Variable %s, BooleanType not referenced by Boolean variable %s at %s",
+								/* @OnFail(1039, "2.4.7 Variable %s, BooleanType not referenced by Boolean variable %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( is_Boolean(sv) ),
 
 							mk_StringType(-, -, -, -) ->
-								/* @OnFail(1039, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
+								/* @OnFail(1040, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( is_String(sv) ),
 
 							mk_BinaryType(-, -, -, -, -, -) ->
-								/* @OnFail(1040, "2.4.7 Variable %s, BinaryType not referenced by Binary variable %s at %s",
+								/* @OnFail(1041, "2.4.7 Variable %s, BinaryType not referenced by Binary variable %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( is_Binary(sv) ),
 
 							mk_EnumerationType(-, -, -, -, -, -, -, -) ->
-								/* @OnFail(1041, "2.4.7 Variable %s, EnumerationType not referenced by Enumeration variable %s at %s",
+								/* @OnFail(1042, "2.4.7 Variable %s, EnumerationType not referenced by Enumeration variable %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( is_Enumeration(sv) ),
 
 							mk_ClockType(-, -, -, -, -, -, -, -, -, -, -, -, -) ->
-								/* @OnFail(1042, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
+								/* @OnFail(1043, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( is_Clock(sv) )
 						end
