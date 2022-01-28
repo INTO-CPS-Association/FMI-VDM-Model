@@ -64,23 +64,23 @@ functions
 					isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location)
 					and let cv = lookup(svs, u.valueReference) in
 					{
-						-- @OnFail(1506, "ClockState reference %s cannot be a clock at %s", cv.valueReference, loc2str(ms.location))
+						-- @OnFail(1505, "ClockState reference %s cannot be a clock at %s", cv.valueReference, loc2str(ms.location))
 						( not is_(cv, Clock) ),
 
-						-- @OnFail(1507, "ClockState reference %s is not clocked var or previous at %s", cv.valueReference, loc2str(ms.location))
+						-- @OnFail(1506, "ClockState reference %s is not clocked var or previous at %s", cv.valueReference, loc2str(ms.location))
 						( cv.valueReference in set allcvpvs ),
 
-						-- @OnFail(1508, "ClockState reference %s not 'discrete' at %s", cv.valueReference, loc2str(ms.location))
+						-- @OnFail(1507, "ClockState reference %s not 'discrete' at %s", cv.valueReference, loc2str(ms.location))
 						( cv.variability = <discrete> )
 					} = {true}
 			 } = {true} ),
 
-		-- @OnFail(1509, "2.4.8 ModelStructure has invalid eventIndicator")
+		-- @OnFail(1508, "2.4.8 ModelStructure has invalid eventIndicator")
 		( ms.eventIndicator <> nil =>
 			forall u in seq ms.eventIndicator &
 				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location) ),
 
-		-- @OnFail(1510, "2.4.8 InitialUnknowns are not of kind dependent or constant")
+		-- @OnFail(1509, "2.4.8 InitialUnknowns are not of kind dependent or constant")
 		(
 			ms.initialUnknown <> nil =>
 				forall iu in seq ms.initialUnknown &
@@ -96,20 +96,20 @@ functions
 	isValidUnknown: fmi3ValueReference * [seq of fmi3ValueReference] * [seq of DependenciesKind] * [Annotations] * Location +> bool
 	isValidUnknown(valueReference, dependencies, dependenciesKind, annotations, location) ==
 	{
-		-- @OnFail(1511, "2.4.8 Unknown %s has invalid dependencies/kinds at %s", valueReference, loc2str(location))
+		-- @OnFail(1510, "2.4.8 Unknown %s has invalid dependencies/kinds at %s", valueReference, loc2str(location))
 		(
 			if dependencies <> nil
 			then dependenciesKind <> nil =>
 				{
-					-- @OnFail(1512, "2.4.8 Dependencies list does not match dependenciesKind at %s", loc2str(location))
+					-- @OnFail(1511, "2.4.8 Dependencies list does not match dependenciesKind at %s", loc2str(location))
 					( len dependencies = len dependenciesKind ),
 
-					/* @OnFail(1513, "2.4.8 Unknown has duplicate indexes %s at %s",
+					/* @OnFail(1512, "2.4.8 Unknown has duplicate indexes %s at %s",
 						{ dependencies(a) | a, b in set inds dependencies &
 							a <> b and dependencies(a) = dependencies(b) }, loc2str(location) ) */
 					( len dependencies = card elems dependencies),
 
-					-- @OnFail(1514, "2.4.8 Unknown cannot depend on itself at %s", loc2str(location))
+					-- @OnFail(1513, "2.4.8 Unknown cannot depend on itself at %s", loc2str(location))
 					(true) -- CHECK THIS! ( u.index not in set elems u.dependencies )
 				} = {true}
 			else

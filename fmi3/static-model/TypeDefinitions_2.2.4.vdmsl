@@ -136,11 +136,11 @@ functions
 				let mk_(kmin, kmax) = minMaxKind(<Int64>) in	-- xs:long is Int64
 				{
 					max <> nil =>
-						--@OnFail(1155, "2.2.3 max %s is not a valid value for Enumerations", max)
+						--@OnFail(1158, "2.2.3 max %s is not a valid value for Enumerations", max)
 						( max <= kmax and max >= kmin ),
 
 					min <> nil =>
-						--@OnFail(1156, "2.2.3 min %s is not a valid value for Enumerations", min)
+						--@OnFail(1159, "2.2.3 min %s is not a valid value for Enumerations", min)
 						( min <= kmax and min >= kmin )
 				}
 			)
@@ -153,13 +153,13 @@ functions
 	isValidTypeDefinitions(defs) ==
 		defs <> nil =>
 			{
-				/* @OnFail(1158, "2.2.3 TypeDefinitions names are not unique: %s",
+				/* @OnFail(1160, "2.2.3 TypeDefinitions names are not unique: %s",
 					{ a.name | a, b in seq defs & a <> b and a.name = b.name }) */
 				( card { stype.name | stype in seq defs } = len defs )
 			}
 			union
 			{
-				-- @OnFail(1159, "2.2.3 TypeDefinition %s invalid at %s", stype.name, loc2str(stype.location))
+				-- @OnFail(1161, "2.2.3 TypeDefinition %s invalid at %s", stype.name, loc2str(stype.location))
 				( isValidType(stype) )
 
 				| stype in seq defs

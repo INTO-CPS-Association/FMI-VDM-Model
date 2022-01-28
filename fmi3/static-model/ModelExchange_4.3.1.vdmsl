@@ -38,7 +38,7 @@ functions
 	isValidModelExchange(me) ==
 		me <> nil =>
 		{
-			/* @OnFail(1601, "4.3.1 ModelExchange modelIdentifer %s not valid C variable name at %s",
+			/* @OnFail(1600, "4.3.1 ModelExchange modelIdentifer %s not valid C variable name at %s",
 						 me.modelIdentifier, loc2str(me.location)) */
 			( me.modelIdentifier <> ""
 			  and me.modelIdentifier(1) in set elems NONDIGITS ),

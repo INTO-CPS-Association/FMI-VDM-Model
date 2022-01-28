@@ -38,7 +38,7 @@ functions
 	isValidCoSimulation(cs) ==
 		cs <> nil =>
 		{
-			/* @OnFail(1551, "4.3.1 modelIdentifer %s not valid C variable name at %s",
+			/* @OnFail(1550, "4.3.1 modelIdentifer %s not valid C variable name at %s",
 							cs.modelIdentifier, loc2str(cs.location)) */
 			( cs.modelIdentifier <> ""
 				and cs.modelIdentifier(1) in set elems NONDIGITS ),
@@ -51,7 +51,7 @@ functions
 	isValidScheduledExecution(se) ==
 		se <> nil => 
 		{
-			/* @OnFail(1553, "4.3.1 modelIdentifer %s not valid C variable name at %s",
+			/* @OnFail(1551, "4.3.1 modelIdentifer %s not valid C variable name at %s",
 							se.modelIdentifier, loc2str(se.location)) */
 			( se.modelIdentifier <> ""
 				and se.modelIdentifier(1) in set elems NONDIGITS ),
