@@ -6,30 +6,30 @@ values
     mk_FmiModelDescription
     (
         mk_Location("CoSimulationFMU.xml", 9),
-        "3.0-beta.3",
-        "MyLibrary.SpringMassDamper",
-        "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
-        "Rotational Spring Mass Damper System",
+        "3.0-beta.3",  -- fmiVersion
+        "MyLibrary.SpringMassDamper",  -- modelName
+        "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",  -- instantiationToken
+        "Rotational Spring Mass Damper System",  -- description
         nil,  -- author
-        "1.0",
+        "1.0",  -- version
         nil,  -- copyright
         nil,  -- license
         nil,  -- generationTool
-        "2011-09-23T16:57:33Z",
-        <structured>,
+        "2011-09-23T16:57:33Z",  -- generationDateAndTime
+        <structured>,  -- variableNamingConvention
         nil,  -- modelExchange
         mk_CoSimulation
         (
             mk_Location("CoSimulationFMU.xml", 15),
-            "MyLibrary_SpringMassDamper",
+            "MyLibrary_SpringMassDamper",  -- modelIdentifier
             nil,  -- needsExecutionTool
             nil,  -- canBeInstantiatedOnlyOncePerProcess
-            true,
+            true,  -- canGetAndSetFMUState
             nil,  -- canSerializeFMUState
-            true,
-            true,
+            true,  -- providesDirectionalDerivatives
+            true,  -- providesAdjointDerivatives
             nil,  -- providesPerElementDependencies
-            true,
+            true,  -- canHandleVariableCommunicationStepSize
             nil,  -- fixedInternalStepSize
             nil,  -- maxOutputDerivativeOrder
             nil,  -- recommendedIntermediateInputSmoothness
@@ -41,12 +41,11 @@ values
             nil   -- annotations
         ),
         nil,  -- scheduledExecution
-        -- unitDefinitions
         [
             mk_Unit
             (
                 mk_Location("CoSimulationFMU.xml", 17),
-                "rad",
+                "rad",  -- name
                 mk_BaseUnit
                 (
                     mk_Location("CoSimulationFMU.xml", 18),
@@ -57,7 +56,7 @@ values
                     nil,  -- k
                     nil,  -- mol
                     nil,  -- cd
-                    1,
+                    1,  -- rad
                     nil,  -- factor
                     nil   -- offset
                 ),
@@ -66,8 +65,8 @@ values
                     mk_DisplayUnit
                     (
                         mk_Location("CoSimulationFMU.xml", 19),
-                        "deg",
-                        57.2957795130823,
+                        "deg",  -- name
+                        57.2957795130823,  -- factor
                         nil,  -- offset
                         nil,  -- inverse
                         nil   -- annotations
@@ -78,18 +77,18 @@ values
             mk_Unit
             (
                 mk_Location("CoSimulationFMU.xml", 21),
-                "rad/s",
+                "rad/s",  -- name
                 mk_BaseUnit
                 (
                     mk_Location("CoSimulationFMU.xml", 22),
                     nil,  -- kg
                     nil,  -- m
-                    -1,
+                    -1,  -- s
                     nil,  -- a
                     nil,  -- k
                     nil,  -- mol
                     nil,  -- cd
-                    1,
+                    1,  -- rad
                     nil,  -- factor
                     nil   -- offset
                 ),
@@ -99,12 +98,12 @@ values
             mk_Unit
             (
                 mk_Location("CoSimulationFMU.xml", 24),
-                "kg.m2",
+                "kg.m2",  -- name
                 mk_BaseUnit
                 (
                     mk_Location("CoSimulationFMU.xml", 25),
-                    1,
-                    2,
+                    1,  -- kg
+                    2,  -- m
                     nil,  -- s
                     nil,  -- a
                     nil,  -- k
@@ -120,13 +119,13 @@ values
             mk_Unit
             (
                 mk_Location("CoSimulationFMU.xml", 27),
-                "N.m",
+                "N.m",  -- name
                 mk_BaseUnit
                 (
                     mk_Location("CoSimulationFMU.xml", 28),
-                    1,
-                    2,
-                    -2,
+                    1,  -- kg
+                    2,  -- m
+                    -2,  -- s
                     nil,  -- a
                     nil,  -- k
                     nil,  -- mol
@@ -139,19 +138,18 @@ values
                 nil   -- annotations
             )
         ],
-        -- typeDefinitions
         [
             mk_Float64Type
             (
                 mk_Location("CoSimulationFMU.xml", 32),
-                "Modelica.Units.SI.Inertia",
+                "Modelica.Units.SI.Inertia",  -- name
                 nil,  -- description
-                "MomentOfInertia",
-                "kg.m2",
+                "MomentOfInertia",  -- quantity
+                "kg.m2",  -- unit
                 nil,  -- displayUnit
                 nil,  -- relativeQuantity
                 nil,  -- unbounded
-                0.0,
+                0.0,  -- min
                 nil,  -- max
                 nil,  -- nominal
                 nil   -- annotations
@@ -159,10 +157,10 @@ values
             mk_Float64Type
             (
                 mk_Location("CoSimulationFMU.xml", 33),
-                "Modelica.Units.SI.Torque",
+                "Modelica.Units.SI.Torque",  -- name
                 nil,  -- description
-                "Torque",
-                "N.m",
+                "Torque",  -- quantity
+                "N.m",  -- unit
                 nil,  -- displayUnit
                 nil,  -- relativeQuantity
                 nil,  -- unbounded
@@ -174,10 +172,10 @@ values
             mk_Float64Type
             (
                 mk_Location("CoSimulationFMU.xml", 34),
-                "Modelica.Units.SI.AngularVelocity",
+                "Modelica.Units.SI.AngularVelocity",  -- name
                 nil,  -- description
-                "AngularVelocity",
-                "rad/s",
+                "AngularVelocity",  -- quantity
+                "rad/s",  -- unit
                 nil,  -- displayUnit
                 nil,  -- relativeQuantity
                 nil,  -- unbounded
@@ -189,10 +187,10 @@ values
             mk_Float64Type
             (
                 mk_Location("CoSimulationFMU.xml", 35),
-                "Modelica.Units.SI.Angle",
+                "Modelica.Units.SI.Angle",  -- name
                 nil,  -- description
-                "Angle",
-                "rad",
+                "Angle",  -- quantity
+                "rad",  -- unit
                 nil,  -- displayUnit
                 nil,  -- relativeQuantity
                 nil,  -- unbounded
@@ -206,27 +204,26 @@ values
         mk_DefaultExperiment
         (
             mk_Location("CoSimulationFMU.xml", 37),
-            0.0,
-            3.0,
-            0.0001,
+            0.0,  -- startTime
+            3.0,  -- stopTime
+            0.0001,  -- tolerance
             nil,  -- stepSize
             nil   -- annotations
         ),
-        -- modelVariables
         [
             mk_Float64
             (
                 mk_Location("CoSimulationFMU.xml", 41),
-                "inertia1.J",
-                1073741824,
-                "Moment of load inertia",
-                <structuralParameter>,
-                <fixed>,
+                "inertia1.J",  -- name
+                1073741824,  -- valueReference
+                "Moment of load inertia",  -- description
+                <structuralParameter>,  -- causality
+                <fixed>,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
-                "Modelica.Units.SI.Inertia",
+                "Modelica.Units.SI.Inertia",  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
@@ -249,16 +246,16 @@ values
             mk_Float64
             (
                 mk_Location("CoSimulationFMU.xml", 44),
-                "torque.tau",
-                536870912,
-                "Accelerating torque acting at flange (= -flange.tau)",
-                <input>,
+                "torque.tau",  -- name
+                536870912,  -- valueReference
+                "Accelerating torque acting at flange (= -flange.tau)",  -- description
+                <input>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
-                "Modelica.Units.SI.Torque",
+                "Modelica.Units.SI.Torque",  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
@@ -281,16 +278,16 @@ values
             mk_Float64
             (
                 mk_Location("CoSimulationFMU.xml", 47),
-                "inertia1.phi",
-                805306368,
-                "Absolute rotation angle of component",
-                <output>,
+                "inertia1.phi",  -- name
+                805306368,  -- valueReference
+                "Absolute rotation angle of component",  -- description
+                <output>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
-                "Modelica.Units.SI.Angle",
+                "Modelica.Units.SI.Angle",  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
@@ -310,16 +307,16 @@ values
             mk_Float64
             (
                 mk_Location("CoSimulationFMU.xml", 50),
-                "inertia1.w",
-                805306369,
-                "Absolute angular velocity of component (= der(phi))",
-                <output>,
+                "inertia1.w",  -- name
+                805306369,  -- valueReference
+                "Absolute angular velocity of component (= der(phi))",  -- description
+                <output>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
-                "Modelica.Units.SI.AngularVelocity",
+                "Modelica.Units.SI.AngularVelocity",  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
@@ -339,15 +336,15 @@ values
             mk_Float64
             (
                 mk_Location("CoSimulationFMU.xml", 51),
-                "Testing",
-                99,
+                "Testing",  -- name
+                99,  -- valueReference
                 nil,  -- description
-                <input>,
+                <input>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
@@ -377,7 +374,7 @@ values
                 mk_Output
                 (
                     mk_Location("CoSimulationFMU.xml", 54),
-                    805306368,
+                    805306368,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -385,7 +382,7 @@ values
                 mk_Output
                 (
                     mk_Location("CoSimulationFMU.xml", 55),
-                    805306369,
+                    805306369,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -398,7 +395,7 @@ values
                 mk_InitialUnknown
                 (
                     mk_Location("CoSimulationFMU.xml", 56),
-                    805306368,
+                    805306368,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -406,7 +403,7 @@ values
                 mk_InitialUnknown
                 (
                     mk_Location("CoSimulationFMU.xml", 57),
-                    805306369,
+                    805306369,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations

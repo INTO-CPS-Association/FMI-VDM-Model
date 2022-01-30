@@ -191,9 +191,9 @@ functions
 			( card { sv.name | sv in seq svs } = len svs ),
 
 			/* @OnFail(1458, "2.4.7 Variable previous fields are not unique: %s",
-				{ svs(a).name | a, b in set inds svs &
+				{ svs(a).name | a, b in set inds svs & not is_Clock(a) and not is_Clock(b) and
 					a <> b and svs(a).previous <> nil and svs(a).previous = svs(b).previous } ) */
-			( let plist =  [ sv.previous | sv in seq svs & sv.previous <> nil ] in
+			( let plist =  [ sv.previous | sv in seq svs & not is_Clock(sv) and sv.previous <> nil ] in
 			  	card elems plist = len plist ),
 
 			isValidVariableDimension(svs)
@@ -332,38 +332,32 @@ functions
 	 */
 	isValidClockAttributes: Variable * seq1 of Variable +> bool
 	isValidClockAttributes(sv, svs) ==
-		if is_(sv, Clock)
-		then
-			-- @OnFail(1466, "Clock variable cannot have previous field set at %s", loc2str(sv.location))
-			( sv.previous = nil )
+		{
+			sv.clocks <> nil =>
+				-- @OnFail(1467, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
+				( sv.variability = <discrete> or sv.variability = <tunable> ),
 
-		else
-			{
-				sv.clocks <> nil =>
-					-- @OnFail(1467, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
-					( sv.variability = <discrete> or sv.variability = <tunable> ),
+			not is_Clock(sv) and sv.previous <> nil =>
+				let p = lookup(svs, sv.previous) in
+				{
+					-- @OnFail(1468, "Variable previous setting unknown at %s", loc2str(sv.location))
+					( p <> nil ),
 
-				sv.previous <> nil =>
-					let p = lookup(svs, sv.previous) in
-					{
-						-- @OnFail(1468, "Variable previous setting unknown at %s", loc2str(sv.location))
-						( p <> nil ),
+					-- @OnFail(1469, "Variable previous setting wrong kind at %s", loc2str(sv.location))
+					( kindOf(p) = kindOf(sv) )
+				} = {true}
+		}
+		union
+		{
+			let cvar = lookup(svs, cref) in
+				-- @OnFail(1470, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
+				( cvar <> nil )
 
-						-- @OnFail(1469, "Variable previous setting wrong kind at %s", loc2str(sv.location))
-						( kindOf(p) = kindOf(sv) )
-					} = {true}
-			}
-			union
-			{
-				let cvar = lookup(svs, cref) in
-					-- @OnFail(1470, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
-					( cvar <> nil )
+				-- @OnFail(1471, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
+				and ( is_(cvar, Clock) )
 
-					-- @OnFail(1471, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
-					and ( is_(cvar, Clock) )
-
-				| cref in seq nilSeq[nat](sv.clocks)
-			} = {true};
+			| cref in seq nilSeq[nat](sv.clocks)
+		} = {true};
 
 	/**
 	 * Check Dimension structures.
@@ -432,7 +426,7 @@ functions
 				mk_Enumeration(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
 					isInRange[int](min, max, start, sv, sv.initial),	-- TODO kind of enum?
 
-				mk_Binary(-, -, -, -, -, -, -, -, -, -, -, -, -, -, start, -, -, -) ->
+				mk_Binary(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, start, -) ->
 					-- @OnFail(1478, "2.4.7 Binary %s start is not hex-binary at %s", sv.name, loc2str(sv.location))
 					( start = nil or forall s in seq start &
 						forall c in seq s &

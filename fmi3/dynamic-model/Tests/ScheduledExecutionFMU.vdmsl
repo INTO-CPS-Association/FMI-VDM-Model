@@ -6,9 +6,9 @@ values
     mk_FmiModelDescription
     (
         mk_Location("ScheduledExecutionFMU.xml", 3),
-        "3.0-beta.3",
-        "ThreeInputClocks",
-        "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
+        "3.0-beta.3",  -- fmiVersion
+        "ThreeInputClocks",  -- modelName
+        "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",  -- instantiationToken
         nil,  -- description
         nil,  -- author
         nil,  -- version
@@ -22,9 +22,9 @@ values
         mk_ScheduledExecution
         (
             mk_Location("ScheduledExecutionFMU.xml", 4),
-            "ThreeInputClocks",
+            "ThreeInputClocks",  -- modelIdentifier
             nil,  -- needsExecutionTool
-            true,
+            true,  -- canBeInstantiatedOnlyOncePerProcess
             nil,  -- canGetAndSetFMUState
             nil,  -- canSerializeFMUState
             nil,  -- providesDirectionalDerivatives
@@ -34,39 +34,37 @@ values
         ),
         nil,  -- unitDefinitions
         nil,  -- typeDefinitions
-        -- logCategories
         [
             mk_Category
             (
                 mk_Location("ScheduledExecutionFMU.xml", 6),
-                "logStatusError",
-                "Log error messages",
+                "logStatusError",  -- name
+                "Log error messages",  -- description
                 nil   -- annotations
             )
         ],
         mk_DefaultExperiment
         (
             mk_Location("ScheduledExecutionFMU.xml", 8),
-            0,
-            6,
+            0,  -- startTime
+            6,  -- stopTime
             nil,  -- tolerance
-            0.001,
+            0.001,  -- stepSize
             nil   -- annotations
         ),
-        -- modelVariables
         [
             mk_Float64
             (
                 mk_Location("ScheduledExecutionFMU.xml", 11),
-                "AIn1",
-                0,
+                "AIn1",  -- name
+                0,  -- valueReference
                 nil,  -- description
-                <input>,
+                <input>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
@@ -90,15 +88,15 @@ values
             mk_Float64
             (
                 mk_Location("ScheduledExecutionFMU.xml", 12),
-                "AIn2",
-                1,
+                "AIn2",  -- name
+                1,  -- valueReference
                 nil,  -- description
-                <input>,
+                <input>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
@@ -122,15 +120,15 @@ values
             mk_Float64
             (
                 mk_Location("ScheduledExecutionFMU.xml", 13),
-                "AOut",
-                2,
+                "AOut",  -- name
+                2,  -- valueReference
                 nil,  -- description
-                <output>,
+                <output>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
@@ -151,15 +149,15 @@ values
             mk_Float64
             (
                 mk_Location("ScheduledExecutionFMU.xml", 16),
-                "BIn",
-                3,
+                "BIn",  -- name
+                3,  -- valueReference
                 nil,  -- description
-                <input>,
+                <input>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
@@ -183,15 +181,15 @@ values
             mk_Float64
             (
                 mk_Location("ScheduledExecutionFMU.xml", 17),
-                "BOut",
-                4,
+                "BOut",  -- name
+                4,  -- valueReference
                 nil,  -- description
-                <output>,
+                <output>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
@@ -218,7 +216,7 @@ values
                 mk_Output
                 (
                     mk_Location("ScheduledExecutionFMU.xml", 20),
-                    2,
+                    2,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -226,7 +224,7 @@ values
                 mk_Output
                 (
                     mk_Location("ScheduledExecutionFMU.xml", 21),
-                    4,
+                    4,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -239,7 +237,7 @@ values
                 mk_InitialUnknown
                 (
                     mk_Location("ScheduledExecutionFMU.xml", 22),
-                    2,
+                    2,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -247,7 +245,7 @@ values
                 mk_InitialUnknown
                 (
                     mk_Location("ScheduledExecutionFMU.xml", 23),
-                    4,
+                    4,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations

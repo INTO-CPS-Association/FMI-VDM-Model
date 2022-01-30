@@ -50,7 +50,7 @@ functions
 		-- @OnFail(1502, "2.4.8 ModelStructure has invalid clockedState")
 		( ms.clockedState <> nil =>
 			let allcvs = { v.valueReference | v in seq svs & v.clocks <> nil },
-				allpvs = { v.valueReference | v in seq svs & v.previous <> nil },
+				allpvs = { v.valueReference | v in seq svs & not is_Clock(v) and v.previous <> nil },
 				allcvpvs = allcvs inter allpvs,
 				allcs = [ u.valueReference | u in seq ms.clockedState ] in
 			{
