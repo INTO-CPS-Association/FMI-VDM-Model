@@ -16,8 +16,12 @@
 			<filtered>true</filtered>
 		</file>
 		<file>
-			<source>../../LICENCE</source>
-			<destName>LICENCE</destName>
+			<source>../../GPL3-LICENCE</source>
+			<destName>GPL3-LICENCE</destName>
+		</file>
+		<file>
+			<source>../../MIT-LICENCE</source>
+			<destName>MIT-LICENCE</destName>
 		</file>
 		<file>
 			<source>src/main/resources/XSD.vdmsl</source>
