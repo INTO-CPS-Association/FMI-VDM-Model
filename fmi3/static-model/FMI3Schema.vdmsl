@@ -1,5 +1,5 @@
 /**
- * VDM schema created from fmi3.xsd on Wed Feb 16 13:56:38 GMT 2022
+ * VDM schema created from fmi3.xsd on Wed Feb 16 15:57:15 GMT 2022
  * DO NOT EDIT!
  */
 types
@@ -52,7 +52,7 @@ ModelExchange ::
     providesDirectionalDerivatives       : [bool]
     providesAdjointDerivatives           : [bool]
     providesPerElementDependencies       : [bool]
-    any                                  : [token]
+    any                                  : [seq1 of (token)]
     needsCompletedIntegratorStep         : [bool]
     providesEvaluateDiscreteStates       : [bool]
     annotations                          : [Annotations]
@@ -76,7 +76,7 @@ CoSimulation ::
     providesDirectionalDerivatives          : [bool]
     providesAdjointDerivatives              : [bool]
     providesPerElementDependencies          : [bool]
-    any                                     : [token]
+    any                                     : [seq1 of (token)]
     canHandleVariableCommunicationStepSize  : [bool]
     fixedInternalStepSize                   : [real]
     maxOutputDerivativeOrder                : [nat]
@@ -99,7 +99,7 @@ ScheduledExecution ::
     providesDirectionalDerivatives       : [bool]
     providesAdjointDerivatives           : [bool]
     providesPerElementDependencies       : [bool]
-    any                                  : [token]
+    any                                  : [seq1 of (token)]
     annotations                          : [Annotations]
 ;
 
