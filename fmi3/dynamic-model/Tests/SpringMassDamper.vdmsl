@@ -138,6 +138,7 @@ values
             nil,  -- providesDirectionalDerivatives
             nil,  -- providesAdjointDerivatives
             nil,  -- providesPerElementDependencies
+			nil,
             true,
             nil,  -- maxOutputDerivativeOrder
 			nil,  -- recommendedIntermediateInputSmoothness
