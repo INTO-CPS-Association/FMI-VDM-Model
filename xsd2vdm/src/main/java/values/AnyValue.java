@@ -30,7 +30,7 @@ import types.BasicType;
 
 public class AnyValue extends VDMValue
 {
-	private String token;
+	public String token;
 	
 	public AnyValue(String qName, Attributes attributes, Locator locator)
 	{
@@ -50,6 +50,12 @@ public class AnyValue extends VDMValue
 		}
 		
 		this.token = sb.toString();
+	}
+	
+	public AnyValue(String avalue, Locator locator)
+	{
+		super(new BasicType("token"), locator);
+		this.token = avalue;
 	}
 	
 	@Override

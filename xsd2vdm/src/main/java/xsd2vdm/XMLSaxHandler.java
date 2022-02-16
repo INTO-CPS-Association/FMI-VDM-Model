@@ -93,7 +93,22 @@ public class XMLSaxHandler extends DefaultHandler
 					}
 					else
 					{
-						dumpStack("Field not found: " + qName + "." + aname, recordValue);
+						field = recordType.getField("any");
+						
+						if (field != null)
+						{
+							Type atype = field.getFieldType();
+							VDMValue vdmValue = atype.valueOf(avalue, locator);
+							
+							if (!recordValue.setAttribute("any", vdmValue))
+							{
+								dumpStack("Attribute not found: " + aname, recordValue);
+							}						
+						}
+						else
+						{
+							dumpStack("Field not found: " + qName + "." + aname, recordValue);
+						}
 					}
 				}
 			}

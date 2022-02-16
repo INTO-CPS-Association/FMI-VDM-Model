@@ -29,6 +29,7 @@ import java.math.BigInteger;
 
 import org.xml.sax.Locator;
 
+import values.AnyValue;
 import values.SimpleValue;
 import values.VDMValue;
 
@@ -78,6 +79,9 @@ public class BasicType extends Type
 				
 			case "bool":
 				return new SimpleValue(this, locator, Boolean.parseBoolean(avalue) || avalue.equals("1"));
+				
+			case "token":
+				return new AnyValue(avalue, locator);
 			
 			default:
 				throw new IllegalArgumentException("Unknown type string for BasicValue: " + typestring);

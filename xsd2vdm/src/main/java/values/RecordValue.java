@@ -51,6 +51,20 @@ public class RecordValue extends VDMValue
 		{
 			if (f.getElementName().equals(attrName))
 			{
+				if (attrName.equals("any"))
+				{
+					VDMValue old = source.get(attrName);
+					
+					if (old instanceof AnyValue && value instanceof AnyValue)
+					{
+						AnyValue any = (AnyValue)old;
+						AnyValue add = (AnyValue)value;
+						any.setField(add.token, null);
+						found = true;
+						break;
+					}
+				}
+				
 				source.put(f.getElementName(), value);
 				found = true;
 				break;
@@ -135,7 +149,7 @@ public class RecordValue extends VDMValue
 					
 					sb.append(value);
 					
-					if (vdmValue instanceof SimpleValue)
+					if (vdmValue instanceof SimpleValue || vdmValue instanceof AnyValue)
 					{
 						comment = "  -- " + field.getFieldName() + "\n";
 					}
