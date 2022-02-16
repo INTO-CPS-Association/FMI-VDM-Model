@@ -62,4 +62,9 @@ public class SeqValue extends VDMValue
 	{
 		values.add(value);
 	}
+
+	public void addAll(SeqValue value)
+	{
+		values.addAll(value.values);
+	}
 }

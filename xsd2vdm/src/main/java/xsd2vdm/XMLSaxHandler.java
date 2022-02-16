@@ -80,6 +80,12 @@ public class XMLSaxHandler extends DefaultHandler
 				if (!aname.startsWith("xmlns:"))	// Ignore embedded xmlns?
 				{
 					Field field = recordType.getField(aname);
+
+					if (field == null)
+					{
+						aname = "any";
+						field = recordType.getField(aname);
+					}
 					
 					if (field != null)
 					{
@@ -88,27 +94,12 @@ public class XMLSaxHandler extends DefaultHandler
 						
 						if (!recordValue.setAttribute(aname, vdmValue))
 						{
-							dumpStack("Attribute not found: " + aname, recordValue);
+							dumpStack("Attribute not set: " + aname, recordValue);
 						}
 					}
 					else
 					{
-						field = recordType.getField("any");
-						
-						if (field != null)
-						{
-							Type atype = field.getFieldType();
-							VDMValue vdmValue = atype.valueOf(avalue, locator);
-							
-							if (!recordValue.setAttribute("any", vdmValue))
-							{
-								dumpStack("Attribute not found: " + aname, recordValue);
-							}						
-						}
-						else
-						{
-							dumpStack("Field not found: " + qName + "." + aname, recordValue);
-						}
+						dumpStack("Field not found: " + qName + "." + aname, recordValue);
 					}
 				}
 			}

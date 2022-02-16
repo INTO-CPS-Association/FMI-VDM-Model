@@ -1194,11 +1194,6 @@ public class XSDConverter_v11 extends XSDConverter
 		assert element.isType("xs:anyAttribute");
 		stack.push(element);
 		
-		if (!element.hasAttr("use"))
-		{
-			element.getAttrs().put("use", "optional");	// Explicit, for Field qualifier
-		}
-
 		if (!element.getChildren().isEmpty())
 		{
 			XSDElement child = element.getFirstChild();
@@ -1214,8 +1209,10 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		Field field = new Field("any", "any", new BasicType("token"));
-		field.getType().setUse(element);
+		Type type = new BasicType("token");
+		type.setUse("optional");
+		type.setMaxOccurs("unbounded");
+		Field field = new Field("any", "any", type);
 		field.setIsAttribute(true);
 		return field;
 	}
