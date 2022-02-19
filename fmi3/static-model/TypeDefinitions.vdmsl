@@ -160,7 +160,7 @@ functions
 					( intervalCounter <> nil => intervalCounter > 0 ),
 
 					--@OnFail(1163, "2.4.4 Cannot use intervalCounter unless periodic and supportsFraction")
-					( intervalCounter <> nil => supportsFraction and periodic ),
+					( intervalCounter <> nil => supportsFraction = true and periodic ),
 
 					--@OnFail(1164, "2.4.4 shiftCounter requires an intervalCounter")
 					( shiftCounter <> nil => intervalCounter <> nil )
