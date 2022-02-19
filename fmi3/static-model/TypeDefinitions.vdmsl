@@ -146,7 +146,28 @@ functions
 			)
 			= {true},
 
-			others -> true		-- String, Boolean and Clock
+			mk_ClockType(-, -, -, -, -, intervalVariability, -, -, -,
+				supportsFraction, resolution, intervalCounter, shiftCounter, -) ->
+				let periodic = intervalVariability in set {<constant>, <fixed>, <tunable>} in
+				{
+					--@OnFail(1160, "2.4.4 resolution can only be used with periodic clocks")
+					( resolution <> nil => periodic ),
+
+					--@OnFail(1161, "2.4.4 Periodic clock with supportsFraction and intervalCounter must define resolution")
+					( periodic and supportsFraction = true and intervalCounter <> nil => resolution <> nil  ),
+
+					--@OnFail(1162, "2.4.4 intervalCounter must be >0")
+					( intervalCounter <> nil => intervalCounter > 0 ),
+
+					--@OnFail(1163, "2.4.4 Cannot use intervalCounter unless periodic and supportsFraction")
+					( intervalCounter <> nil => supportsFraction and periodic ),
+
+					--@OnFail(1164, "2.4.4 shiftCounter requires an intervalCounter")
+					( shiftCounter <> nil => intervalCounter <> nil )
+				}
+				= {true},
+
+			others -> true		-- String, Boolean
 		end;
 
 	isValidTypeDefinitions: [seq of VariableType] +> bool
