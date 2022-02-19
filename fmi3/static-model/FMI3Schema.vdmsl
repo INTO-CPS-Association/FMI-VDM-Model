@@ -1,5 +1,5 @@
 /**
- * VDM schema created from fmi3.xsd on Wed Feb 16 15:57:15 GMT 2022
+ * VDM schema created from fmi3.xsd on Sat Feb 19 13:47:16 GMT 2022
  * DO NOT EDIT!
  */
 types
@@ -39,7 +39,7 @@ FmiModelDescription ::
     modelStructure            : ModelStructure
     annotations               : [Annotations]
 inv rec ==
-    (rec.fmiVersion = "3.0-beta.3")
+    (rec.fmiVersion = "3.0-beta.4")
 ;
 
 ModelExchange ::
@@ -297,6 +297,7 @@ ClockType ::
     canBeDeactivated     : [bool]
     priority             : [nat]
     intervalVariability  : IntervalVariability
+    computed             : [bool]
     intervalDecimal      : [real]
     shiftDecimal         : [real]
     supportsFraction     : [bool]
@@ -306,7 +307,7 @@ ClockType ::
     annotations          : [Annotations]
 ;
 
-IntervalVariability = <constant> | <fixed> | <calculated> | <tunable> | <changing> | <countdown> | <triggered>;
+IntervalVariability = <constant> | <fixed> | <tunable> | <changing> | <countdown> | <triggered>;
 
 fmi3TypeDefinition = Float32Type | Float64Type | Int8Type | UInt8Type | Int16Type | UInt16Type | Int32Type | UInt32Type | Int64Type | UInt64Type | BooleanType | StringType | BinaryType | EnumerationType | ClockType;
 
@@ -679,6 +680,7 @@ Clock ::
     canBeDeactivated                    : [bool]
     priority                            : [nat]
     intervalVariability                 : IntervalVariability
+    computed                            : [bool]
     intervalDecimal                     : [real]
     shiftDecimal                        : [real]
     supportsFraction                    : [bool]

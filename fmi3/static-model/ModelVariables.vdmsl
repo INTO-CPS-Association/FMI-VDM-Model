@@ -689,13 +689,14 @@ functions
 							else
 								newv,	-- Error reported elsewhere
 
-						mk_ClockType(-, -, -, canBeDeactivated,	priority, interval, intervalDecimal,
+						mk_ClockType(-, -, -, canBeDeactivated,	priority, interval, computed, intervalDecimal,
 									shiftDecimal, supportsFraction, resolution, intervalCounter,
 									shiftCounter, -) ->
 							mu(newv,
 								canBeDeactivated  	|-> override[bool](v.canBeDeactivated, canBeDeactivated),
 								priority          	|-> override[nat](v.priority, priority),
 								intervalVariability	|-> override[IntervalVariability](v.intervalVariability, interval),
+								computed		   	|-> override[bool](v.computed, computed),
 								intervalDecimal   	|-> override[real](v.intervalDecimal, intervalDecimal),
 								shiftDecimal      	|-> override[real](v.shiftDecimal, shiftDecimal),
 								supportsFraction  	|-> override[bool](v.supportsFraction, supportsFraction),

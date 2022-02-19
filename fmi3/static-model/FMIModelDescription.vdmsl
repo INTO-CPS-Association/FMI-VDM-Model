@@ -366,7 +366,7 @@ functions
 									sv.name, sv.declaredType, sv.location) */
 								( is_Enumeration(sv) ),
 
-							mk_ClockType(-, -, -, -, -, -, -, -, -, -, -, -, -) ->
+							mk_ClockType(-, -, -, -, -, -, -, -, -, -, -, -, -, -) ->
 								/* @OnFail(1043, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( is_Clock(sv) )

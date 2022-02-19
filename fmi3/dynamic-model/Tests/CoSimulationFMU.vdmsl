@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("CoSimulationFMU.xml", 9),
-        "3.0-beta.3",  -- fmiVersion
+        "3.0-beta.4",  -- fmiVersion
         "MyLibrary.SpringMassDamper",  -- modelName
         "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",  -- instantiationToken
         "Rotational Spring Mass Damper System",  -- description
