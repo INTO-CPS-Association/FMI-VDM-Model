@@ -334,26 +334,26 @@ functions
 	isValidClockAttributes(sv, svs) ==
 		{
 			sv.clocks <> nil =>
-				-- @OnFail(1467, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
+				-- @OnFail(1466, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
 				( sv.variability = <discrete> or sv.variability = <tunable> ),
 
 			not is_Clock(sv) and sv.previous <> nil =>
 				let p = lookup(svs, sv.previous) in
 				{
-					-- @OnFail(1468, "Variable previous setting unknown at %s", loc2str(sv.location))
+					-- @OnFail(1467, "Variable previous setting unknown at %s", loc2str(sv.location))
 					( p <> nil ),
 
-					-- @OnFail(1469, "Variable previous setting wrong kind at %s", loc2str(sv.location))
+					-- @OnFail(1468, "Variable previous setting wrong kind at %s", loc2str(sv.location))
 					( kindOf(p) = kindOf(sv) )
 				} = {true}
 		}
 		union
 		{
 			let cvar = lookup(svs, cref) in
-				-- @OnFail(1470, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
+				-- @OnFail(1469, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
 				( cvar <> nil )
 
-				-- @OnFail(1471, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
+				-- @OnFail(1470, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
 				and ( is_(cvar, Clock) )
 
 			| cref in seq nilSeq[nat](sv.clocks)
@@ -367,18 +367,18 @@ functions
 		vars <> nil => dunion
 		{
 			{
-				-- @OnFail(1472, "2.4.7 Dimension of %s cannot define start and valueReference", v.name)
+				-- @OnFail(1471, "2.4.7 Dimension of %s cannot define start and valueReference", v.name)
 				( v.dimension <> nil =>
 					forall dim in seq v.dimension &
 						dim.start = nil <=> dim.valueReference <> nil ),
 
-				-- @OnFail(1473, "2.4.7 Dimension of %s cannot reference itself", v.name)
+				-- @OnFail(1472, "2.4.7 Dimension of %s cannot reference itself", v.name)
 				( v.dimension <> nil =>
 					forall dim in seq v.dimension &
 						dim.valueReference <> nil =>
 							dim.valueReference <> v.valueReference ),
 
-				-- @OnFail(1474, "2.4.7 Dimension of %s, valueReference is not Integer, constant or structuralParameter, with start", v.name)
+				-- @OnFail(1473, "2.4.7 Dimension of %s, valueReference is not Integer, constant or structuralParameter, with start", v.name)
 				( v.dimension <> nil =>
 					forall dim in seq v.dimension &
 						dim.valueReference <> nil =>
@@ -388,7 +388,7 @@ functions
 								and ( r.causality = <structuralParameter> or r.variability = <constant> )
 								and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
 
-				-- @OnFail(1475, "2.4.7 Structural parameter %s cannot have Dimension", v.name)
+				-- @OnFail(1474, "2.4.7 Structural parameter %s cannot have Dimension", v.name)
 				( v.dimension <> nil =>
 					v.causality <> <structuralParameter> )
 			}
@@ -404,13 +404,13 @@ functions
 	isValidEffectiveVariables: seq1 of Variable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail(1476, "2.4.7 Variable %s min/max/start/nominal invalid at %s", sv.name, loc2str(sv.location))
+		-- @OnFail(1475, "2.4.7 Variable %s min/max/start/nominal invalid at %s", sv.name, loc2str(sv.location))
 		(
 			cases sv:
 				mk_Float64(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -),
 				mk_Float32(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -) ->
 					isInRange[real](min, max, start, sv, sv.initial)
-					-- @OnFail(1477, "2.4.7 Real nominal must be >0.0 at %s", loc2str(sv.location))
+					-- @OnFail(1476, "2.4.7 Real nominal must be >0.0 at %s", loc2str(sv.location))
 					and (nominal <> nil => nominal > 0.0),
 
 				mk_Int64 (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
@@ -427,7 +427,7 @@ functions
 					isInRange[int](min, max, start, sv, sv.initial),	-- TODO kind of enum?
 
 				mk_Binary(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, start, -) ->
-					-- @OnFail(1478, "2.4.7 Binary %s start is not hex-binary at %s", sv.name, loc2str(sv.location))
+					-- @OnFail(1477, "2.4.7 Binary %s start is not hex-binary at %s", sv.name, loc2str(sv.location))
 					( start = nil or forall s in seq start &
 						forall c in seq s &
 							c in set elems "ABCDEFabcdef0123456789" ),
@@ -436,19 +436,19 @@ functions
 					supportsFraction, resolution, intervalCounter, shiftCounter, -, -) ->
 					let periodic = intervalVariability in set {<constant>, <fixed>, <tunable>} in
 					{
-						--@OnFail(1160, "2.4.4 resolution can only be used with periodic clocks")
+						--@OnFail(1478, "2.4.4 resolution can only be used with periodic clocks")
 						( resolution <> nil => periodic ),
 
-						--@OnFail(1161, "2.4.4 Periodic clock with supportsFraction and intervalCounter must define resolution")
+						--@OnFail(1479, "2.4.4 Periodic clock with supportsFraction and intervalCounter must define resolution")
 						( periodic and supportsFraction = true and intervalCounter <> nil => resolution <> nil  ),
 
-						--@OnFail(1162, "2.4.4 intervalCounter must be >0")
+						--@OnFail(1480, "2.4.4 intervalCounter must be >0")
 						( intervalCounter <> nil => intervalCounter > 0 ),
 
-						--@OnFail(1163, "2.4.4 Cannot use intervalCounter unless periodic and supportsFraction")
+						--@OnFail(1481, "2.4.4 Cannot use intervalCounter unless periodic and supportsFraction")
 						( intervalCounter <> nil => supportsFraction and periodic ),
 
-						--@OnFail(1164, "2.4.4 shiftCounter requires an intervalCounter")
+						--@OnFail(1482, "2.4.4 shiftCounter requires an intervalCounter")
 						( shiftCounter <> nil => intervalCounter <> nil )
 					}
 					= {true},
@@ -462,7 +462,7 @@ functions
 	}
 	union
 	{
-		-- @OnFail(1479, "2.4.7 Dimension of %s do not match start vector at %s", sv.name, loc2str(sv.location))
+		-- @OnFail(1483, "2.4.7 Dimension of %s do not match start vector at %s", sv.name, loc2str(sv.location))
 		( not is_Clock(sv) =>
 			sv.start <> nil and len sv.start > 1 =>
 				let size = dimensionProduct(svs, sv.dimension) in
@@ -474,15 +474,15 @@ functions
 	{
 		{
 			{
-				-- @OnFail(1480, "2.4.7 Alias name %s duplicates variable at %s", alias.name, loc2str(alias.location))
+				-- @OnFail(1484, "2.4.7 Alias name %s duplicates variable at %s", alias.name, loc2str(alias.location))
 				( not exists v in seq svs & v.name = alias.name ),
 
-				-- @OnFail(1481, "2.4.7 Alias name %s duplicates alias at %s", alias.name, loc2str(alias.location))
+				-- @OnFail(1485, "2.4.7 Alias name %s duplicates alias at %s", alias.name, loc2str(alias.location))
 				( forall v in seq svs &
 					v.alias <> nil =>
 						not exists a in seq v.alias & a <> alias and a.name = alias.name ),
 
-				-- @OnFail(1482, "2.4.7 Alias name %s cannot have displayUnit at %s", alias.name, loc2str(alias.location))
+				-- @OnFail(1486, "2.4.7 Alias name %s cannot have displayUnit at %s", alias.name, loc2str(alias.location))
 				( alias.displayUnit <> nil => isReal(sv) )
 			}
 			= {true}
@@ -494,7 +494,7 @@ functions
 	}
 	union
 	{
-		-- @OnFail(1483, "2.2.9 Variable %s invalid at %s", sv.name, loc2str(sv.location))
+		-- @OnFail(1487, "2.2.9 Variable %s invalid at %s", sv.name, loc2str(sv.location))
 		( isValidClockAttributes(sv, svs) )
 
 		| sv in seq svs

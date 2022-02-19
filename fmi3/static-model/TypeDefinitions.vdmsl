@@ -174,13 +174,13 @@ functions
 	isValidTypeDefinitions(defs) ==
 		defs <> nil =>
 			{
-				/* @OnFail(1160, "2.4.4 TypeDefinitions names are not unique: %s",
+				/* @OnFail(1165, "2.4.4 TypeDefinitions names are not unique: %s",
 					{ a.name | a, b in seq defs & a <> b and a.name = b.name }) */
 				( card { stype.name | stype in seq defs } = len defs )
 			}
 			union
 			{
-				-- @OnFail(1161, "2.4.4 TypeDefinition %s invalid at %s", stype.name, loc2str(stype.location))
+				-- @OnFail(1166, "2.4.4 TypeDefinition %s invalid at %s", stype.name, loc2str(stype.location))
 				( isValidType(stype) )
 
 				| stype in seq defs

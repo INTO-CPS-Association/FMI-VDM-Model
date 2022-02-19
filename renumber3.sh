@@ -3,6 +3,8 @@
 function renumber()
 {
     awk -f renumber.awk $1 > $1.ren
+    rm -f $1
+    mv $1.ren $1
     echo $1 renumbered
 }
 
