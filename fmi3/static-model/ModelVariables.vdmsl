@@ -404,7 +404,7 @@ functions
 	isValidEffectiveVariables: seq1 of Variable +> bool
 	isValidEffectiveVariables(svs) ==
 	{
-		-- @OnFail(1475, "2.4.7 Variable %s min/max/start/nominal invalid at %s", sv.name, loc2str(sv.location))
+		-- @OnFail(1475, "2.4.7 Variable %s min/max/start/nominal or clocks invalid at %s", sv.name, loc2str(sv.location))
 		(
 			cases sv:
 				mk_Float64(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -),
