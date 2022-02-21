@@ -434,7 +434,7 @@ functions
 
 				mk_Clock(-, -, -, -, -, -, -, -, -, -, -, intervalVariability, -, -, -,
 					supportsFraction, resolution, intervalCounter, shiftCounter, -, -) ->
-					let periodic = intervalVariability in set {<constant>, <fixed>, <calculated>, <tunable>} in
+					let periodic = intervalVariability in set {<constant>, <fixed>, <tunable>} in
 					{
 						--@OnFail(1478, "2.4.4 resolution can only be used with periodic clocks")
 						( resolution <> nil => periodic ),
