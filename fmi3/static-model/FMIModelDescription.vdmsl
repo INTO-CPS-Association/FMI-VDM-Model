@@ -215,7 +215,7 @@ functions
 				let ctVars = continuousTimeStates(eModelVariables),
 					sdVars = stateDerivatives(eModelVariables),
 					initRefs = { sv.valueReference | sv in seq eModelVariables &
-						(sv.clocks = nil and sv.causality = <output>
+						(sv.clocks = nil and not is_Clock(sv) and sv.causality = <output>
 							and sv.initial in set { <approx>, <calculated> })
 
 						or (sv.causality = <calculatedParameter>)
@@ -273,6 +273,21 @@ functions
 						| unk in seq allUnknowns
 					}
 					= {true}
+			),
+
+			(
+				{
+					if md.scheduledExecution <> nil
+					then
+						-- @OnFail(1043, "2.4.4 Clock must have a priority for Scheduled Execution")
+						( v.priority <> nil )
+					else
+						-- @OnFail(1044, "2.4.4 Clock must not have a priority unless Scheduled Execution")
+						( v.priority = nil )
+						
+					| v in seq eModelVariables & is_Clock(v)
+				}
+				= {true}
 			)
 		]
 		in elems results = {true};
