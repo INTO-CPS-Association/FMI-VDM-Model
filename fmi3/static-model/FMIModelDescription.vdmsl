@@ -278,12 +278,17 @@ functions
 			(
 				{
 					if md.scheduledExecution <> nil
+						and md.coSimulation = nil and md.modelExchange = nil
 					then
 						-- @OnFail(1043, "2.4.4 Clock must have a priority for Scheduled Execution")
 						( v.priority <> nil )
-					else
+					elseif md.scheduledExecution = nil
+						and (md.coSimulation <> nil or md.modelExchange <> nil)
+					then
 						-- @OnFail(1044, "2.4.4 Clock must not have a priority unless Scheduled Execution")
 						( v.priority = nil )
+					else
+						true	-- Mixture of types
 						
 					| v in seq eModelVariables & is_Clock(v)
 				}
