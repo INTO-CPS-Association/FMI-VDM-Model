@@ -432,7 +432,7 @@ functions
 						forall c in seq s &
 							c in set elems "ABCDEFabcdef0123456789" ),
 
-				mk_Clock(-, -, -, -, -, -, -, -, -, -, -, intervalVariability, -, -, -,
+				mk_Clock(-, -, -, -, -, -, -, -, -, -, -, intervalVariability, -, -,
 					supportsFraction, resolution, intervalCounter, shiftCounter, -, -) ->
 					let periodic = intervalVariability in set {<constant>, <fixed>, <tunable>} in
 					{
@@ -711,14 +711,13 @@ functions
 							else
 								newv,	-- Error reported elsewhere
 
-						mk_ClockType(-, -, -, canBeDeactivated,	priority, interval, computed, intervalDecimal,
+						mk_ClockType(-, -, -, canBeDeactivated,	priority, intervalVariability, intervalDecimal,
 									shiftDecimal, supportsFraction, resolution, intervalCounter,
 									shiftCounter, -) ->
 							mu(newv,
 								canBeDeactivated  	|-> override[bool](v.canBeDeactivated, canBeDeactivated),
 								priority          	|-> override[nat](v.priority, priority),
-								intervalVariability	|-> override[IntervalVariability](v.intervalVariability, interval),
-								computed		   	|-> override[bool](v.computed, computed),
+								intervalVariability	|-> override[IntervalVariability](v.intervalVariability, intervalVariability),
 								intervalDecimal   	|-> override[real](v.intervalDecimal, intervalDecimal),
 								shiftDecimal      	|-> override[real](v.shiftDecimal, shiftDecimal),
 								supportsFraction  	|-> override[bool](v.supportsFraction, supportsFraction),

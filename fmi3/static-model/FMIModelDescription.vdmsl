@@ -279,12 +279,12 @@ functions
 				{
 					if md.scheduledExecution <> nil then
 						-- @OnFail(1043, "2.4.4 Clock must have a priority for Scheduled Execution")
-						( v.priority <> nil )
+						( is_Clock(v) => v.priority <> nil )
 					else
 						-- @OnFail(1044, "2.4.4 Clock must not have a priority unless Scheduled Execution")
-						( v.priority = nil )
+						( is_Clock(v) => v.priority = nil )
 						
-					| v in seq eModelVariables & is_Clock(v)
+					| v in seq eModelVariables
 				}
 				= {true}
 			)
@@ -380,7 +380,7 @@ functions
 									sv.name, sv.declaredType, sv.location) */
 								( is_Enumeration(sv) ),
 
-							mk_ClockType(-, -, -, -, -, -, -, -, -, -, -, -, -, -) ->
+							mk_ClockType(-, -, -, -, -, -, -, -, -, -, -, -, -) ->
 								/* @OnFail(1042, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
 									sv.name, sv.declaredType, sv.location) */
 								( is_Clock(sv) )

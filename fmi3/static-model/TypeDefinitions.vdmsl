@@ -146,7 +146,7 @@ functions
 			)
 			= {true},
 
-			mk_ClockType(-, -, -, -, -, intervalVariability, -, -, -,
+			mk_ClockType(-, -, -, -, -, intervalVariability, -, -,
 				supportsFraction, resolution, intervalCounter, shiftCounter, -) ->
 				let periodic = intervalVariability in set {<constant>, <fixed>, <tunable>} in
 				{
