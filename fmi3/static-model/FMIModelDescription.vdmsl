@@ -264,7 +264,7 @@ functions
 					{
 						unk.dependencies <> nil and unk.dependencies <> [] =>
 						{
-							-- @OnFail(1031, "2.4.9 Unknown dependency %s invalid at %s", vr, unk.location)
+							-- @OnFail(1031, "2.4.9 Unknown dependency %s invalid at %s", vr, loc2str(unk.location))
 							( exists sv in seq eModelVariables & sv.valueReference = vr )
 
 							| vr in seq unk.dependencies
