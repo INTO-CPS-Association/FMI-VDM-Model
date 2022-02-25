@@ -278,10 +278,10 @@ functions
 			(
 				{
 					if md.scheduledExecution <> nil then
-						-- @OnFail(1043, "2.4.4 Clock must have a priority for Scheduled Execution")
+						-- @OnFail(1043, "2.4.4 Clock %s must have a priority for Scheduled Execution at %s", v.name, loc2str(v.location))
 						( is_Clock(v) => v.priority <> nil )
 					else
-						-- @OnFail(1044, "2.4.4 Clock must not have a priority unless Scheduled Execution")
+						-- @OnFail(1044, "2.4.4 Clock %s must not have a priority unless Scheduled Execution at %s", v.name, loc2str(v.location))
 						( is_Clock(v) => v.priority = nil )
 						
 					| v in seq eModelVariables
