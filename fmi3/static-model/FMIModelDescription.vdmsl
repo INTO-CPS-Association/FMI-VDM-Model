@@ -308,7 +308,7 @@ functions
 					( matchingTypes <> {} => card matchingTypes = 1 ),
 
 					/* @OnFail(1033, "2.4.4 Declared type %s unknown at %s",
-						sv.declaredType, sv.location ) */
+						sv.declaredType, loc2str(sv.location) ) */
 					( card matchingTypes <> 0 ),
 
 					-- The match is has compatible values in the Variable
@@ -317,7 +317,7 @@ functions
 							mk_Float64Type(-, -, -, -, -, -, -, -, min, max, -, -),
 							mk_Float32Type(-, -, -, -, -, -, -, -, min, max, -, -) ->
 								/* @OnFail(1034, "2.4.7 Variable %s min/max exceeds RealType %s at %s",
-									sv.name, sv.declaredType, sv.location) */
+									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( (min <> nil and sv.min <> nil => min <= sv.min)
 									and
 								  (max <> nil and sv.max <> nil => max >= sv.max) ),
@@ -331,7 +331,7 @@ functions
 							mk_UInt16Type(-, -, -, -, min, max, -),
 							mk_UInt8Type(-, -, -, -, min, max, -) ->
 								/* @OnFail(1035, "2.4.7 Variable %s min/max exceeds IntegerType %s at %s",
-									sv.name, sv.declaredType, sv.location) */
+									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( (min <> nil and sv.min <> nil => min <= sv.min)
 									and
 								  (max <> nil and sv.max <> nil => max >= sv.max) ),
@@ -345,7 +345,7 @@ functions
 							mk_Float64Type(-, -, -, -, -, -, -, -, -, -, -, -),
 							mk_Float32Type(-, -, -, -, -, -, -, -, -, -, -, -) ->
 								/* @OnFail(1036, "2.4.7 Variable %s, RealType not referenced by Real variable %s at %s",
-									sv.name, sv.declaredType, sv.location) */
+									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( isReal(sv) ),
 
 							mk_Int64Type(-, -, -, -, -, -, -),
@@ -357,32 +357,32 @@ functions
 							mk_UInt16Type(-, -, -, -, -, -, -),
 							mk_UInt8Type(-, -, -, -, -, -, -) ->
 								/* @OnFail(1037, "2.4.7 Variable %s, IntegerType not referenced by Integer variable %s at %s",
-									sv.name, sv.declaredType, sv.location) */
+									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( isInteger(sv) ),
 
 							mk_BooleanType(-, -, -, -) ->
 								/* @OnFail(1038, "2.4.7 Variable %s, BooleanType not referenced by Boolean variable %s at %s",
-									sv.name, sv.declaredType, sv.location) */
+									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( is_Boolean(sv) ),
 
 							mk_StringType(-, -, -, -) ->
 								/* @OnFail(1039, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
-									sv.name, sv.declaredType, sv.location) */
+									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( is_String(sv) ),
 
 							mk_BinaryType(-, -, -, -, -, -) ->
 								/* @OnFail(1040, "2.4.7 Variable %s, BinaryType not referenced by Binary variable %s at %s",
-									sv.name, sv.declaredType, sv.location) */
+									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( is_Binary(sv) ),
 
 							mk_EnumerationType(-, -, -, -, -, -, -, -) ->
 								/* @OnFail(1041, "2.4.7 Variable %s, EnumerationType not referenced by Enumeration variable %s at %s",
-									sv.name, sv.declaredType, sv.location) */
+									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( is_Enumeration(sv) ),
 
 							mk_ClockType(-, -, -, -, -, -, -, -, -, -, -, -, -) ->
 								/* @OnFail(1042, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
-									sv.name, sv.declaredType, sv.location) */
+									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( is_Clock(sv) )
 						end
 				} = {true}
