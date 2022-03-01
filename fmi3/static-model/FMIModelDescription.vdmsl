@@ -278,8 +278,14 @@ functions
 			(
 				{
 					if md.scheduledExecution <> nil then
-						-- @OnFail(1043, "2.4.4 Clock %s must have a priority for Scheduled Execution at %s", v.name, loc2str(v.location))
-						( is_Clock(v) and v.causality <> <output> => v.priority <> nil )
+						is_Clock(v) =>
+							if v.causality = <output>
+							then
+								-- @OnFail(1043, "2.4.4 Output clock %s must not have a priority for Scheduled Execution at %s", v.name, loc2str(v.location))
+								( v.priority = nil )
+							else
+								-- @OnFail(1043, "2.4.4 Input clock %s must have a priority for Scheduled Execution at %s", v.name, loc2str(v.location))
+								( v.priority <> nil )
 					else
 						-- @OnFail(1044, "2.4.4 Clock %s must not have a priority unless Scheduled Execution at %s", v.name, loc2str(v.location))
 						( is_Clock(v) => v.priority = nil )
