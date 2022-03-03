@@ -210,13 +210,14 @@ functions
 			),
 
 			-- InitalUnknowns must include all output (approx/calculated), calculatedParameters and 
-			-- all continuous-time states and derivatives that are approx/calculated.
+			-- all continuous-time states and derivatives that are approx/calculated. They may optionally
+			-- include clocked variables.
 			(
 				let ctVars = continuousTimeStates(eModelVariables),
 					sdVars = stateDerivatives(eModelVariables),
-					initRefs = { sv.valueReference | sv in seq eModelVariables &
-						(sv.clocks = nil and not is_Clock(sv) and sv.causality = <output>
-							and sv.initial in set { <approx>, <calculated> })
+					required = { sv.valueReference | sv in seq eModelVariables &
+						(sv.clocks = nil and sv.causality = <output>
+							and not is_Clock(sv) and sv.initial in set { <approx>, <calculated> })
 
 						or (sv.causality = <calculatedParameter>)
 
@@ -224,18 +225,17 @@ functions
 							and sv.initial in set { <approx>, <calculated> })
 
 						or (sv in set sdVars
-							and sv.initial in set { <approx>, <calculated> }) }
+							and sv.initial in set { <approx>, <calculated> }) },
+					optional = { sv.valueReference | sv in seq eModelVariables & sv.clocks <> nil },
+					allIUs = { iu.valueReference | iu in seq nilSeq[InitialUnknown](md.modelStructure.initialUnknown) }
 				in
-					initRefs <> {} =>
-						let ius = [ iu |
-							iu in seq nilSeq[InitialUnknown](md.modelStructure.initialUnknown) ] in
-						{
-							-- @OnFail(1028, "2.4.9 InitialUnknowns must include refs: %s", initRefs)
-							( ius <> [] ),
+				{
+					-- @OnFail(1028, "2.4.9 InitialUnknowns must include refs: %s", required \ allIUs)
+					( required subset allIUs ),
 
-							-- @OnFail(1029, "2.4.9 InitialUnknowns must only include refs: %s", initRefs)
-							( { u.valueReference | u in seq ius } subset initRefs )
-						} = {true}
+					-- @OnFail(1029, "2.4.9 InitialUnknowns can only include refs: %s", required union optional)
+					( allIUs subset required union optional )
+				} = {true}
 			),
 
 			(
