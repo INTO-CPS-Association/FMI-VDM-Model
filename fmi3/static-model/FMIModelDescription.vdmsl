@@ -227,26 +227,55 @@ functions
 						or (sv in set sdVars
 							and sv.initial in set { <approx>, <calculated> }) },
 					optional = { sv.valueReference | sv in seq eModelVariables & sv.clocks <> nil },
-					allIUs = { iu.valueReference | iu in seq nilSeq[InitialUnknown](md.modelStructure.initialUnknown) }
+					allIUs = { iu.valueReference | iu in seq nilSeq[InitialUnknown](md.modelStructure.initialUnknown) },
+					allEIs = { ei.valueReference | ei in seq nilSeq[EventIndicator](md.modelStructure.eventIndicator) }
 				in
 				{
-					-- @OnFail(1028, "2.4.9 InitialUnknowns must include refs: %s", required \ allIUs)
-					( required subset allIUs ),
+					-- This may not be true!
+					-- ?? @OnFail(1028, "2.4.9 InitialUnknowns must include refs: %s", required \ allIUs)
+					-- ( required subset allIUs ),
 
 					-- @OnFail(1029, "2.4.9 InitialUnknowns can only include refs: %s", required union optional)
-					( allIUs subset required union optional )
+					( allIUs subset required union optional ),
+
+					-- @OnFail(1030, "2.4.9 InitialUnknowns cannot include EventIndicators: %s ", allIUs inter allEIs)
+					( allIUs inter allEIs = {} ),
+
+					-- @OnFail(1031, "2.4.9 InitialUnknowns must not have duplicates: %s")
+					( card allIUs = len nilSeq[InitialUnknown](md.modelStructure.initialUnknown) )
+				}
+				union
+				{
+					iu.dependencies <> nil and iu.dependencies <> [] =>
+						-- @OnFail(1032, "InitialUnknown dependencies must all be known at %s", loc2str(iu.location))
+						( forall d in seq iu.dependencies & d not in set allIUs )
+
+					| iu in seq nilSeq[InitialUnknown](md.modelStructure.initialUnknown)
 				} = {true}
 			),
 
 			(
 				md.modelStructure.eventIndicator <> nil =>
 				{
-					/* @OnFail(1030, "2.4.9 EventIndicator valueReference %s invalid at %s",
+					/* @OnFail(1033, "2.4.9 EventIndicator valueReference %s invalid at %s",
 						ei.valueReference, loc2str(ei.location)) */
 					( exists sv in seq eModelVariables &
 						sv.valueReference = ei.valueReference )
 
 					| ei in seq md.modelStructure.eventIndicator
+				}
+				= {true}
+			),
+
+			(
+				md.modelStructure.output <> nil =>
+				{
+					/* @OnFail(1034, "2.4.9 Output valueReference %s is not an output at %s",
+						ei.valueReference, loc2str(ei.location)) */
+					( exists sv in seq eModelVariables &
+						sv.valueReference = ei.valueReference and sv.causality = <output> )
+
+					| ei in seq md.modelStructure.output
 				}
 				= {true}
 			),
@@ -264,7 +293,7 @@ functions
 					{
 						unk.dependencies <> nil and unk.dependencies <> [] =>
 						{
-							-- @OnFail(1031, "2.4.9 Unknown dependency %s invalid at %s", vr, loc2str(unk.location))
+							-- @OnFail(1035, "2.4.9 Unknown dependency %s invalid at %s", vr, loc2str(unk.location))
 							( exists sv in seq eModelVariables & sv.valueReference = vr )
 
 							| vr in seq unk.dependencies
@@ -281,13 +310,13 @@ functions
 						is_Clock(v) =>
 							if v.causality = <output>
 							then
-								-- @OnFail(1043, "2.4.4 Output clock %s must not have a priority for Scheduled Execution at %s", v.name, loc2str(v.location))
+								-- @OnFail(1036, "2.4.4 Output clock %s must not have a priority for Scheduled Execution at %s", v.name, loc2str(v.location))
 								( v.priority = nil )
 							else
-								-- @OnFail(1043, "2.4.4 Input clock %s must have a priority for Scheduled Execution at %s", v.name, loc2str(v.location))
+								-- @OnFail(1037, "2.4.4 Input clock %s must have a priority for Scheduled Execution at %s", v.name, loc2str(v.location))
 								( v.priority <> nil )
 					else
-						-- @OnFail(1044, "2.4.4 Clock %s must not have a priority unless Scheduled Execution at %s", v.name, loc2str(v.location))
+						-- @OnFail(1038, "2.4.4 Clock %s must not have a priority unless Scheduled Execution at %s", v.name, loc2str(v.location))
 						( is_Clock(v) => v.priority = nil )
 						
 					| v in seq eModelVariables
@@ -309,11 +338,11 @@ functions
 					td in seq nilSeq[VariableType](typedefs) &
 					td.name = sv.declaredType } in
 				{
-					/* @OnFail(1032, "2.4.4 Typedefs have multiple matching names: %s",
+					/* @OnFail(1039, "2.4.4 Typedefs have multiple matching names: %s",
 						{ m.name | m in set matchingTypes } ) */
 					( matchingTypes <> {} => card matchingTypes = 1 ),
 
-					/* @OnFail(1033, "2.4.4 Declared type %s unknown at %s",
+					/* @OnFail(1040, "2.4.4 Declared type %s unknown at %s",
 						sv.declaredType, loc2str(sv.location) ) */
 					( card matchingTypes <> 0 ),
 
@@ -322,7 +351,7 @@ functions
 						cases simpleType:
 							mk_Float64Type(-, -, -, -, -, -, -, -, min, max, -, -),
 							mk_Float32Type(-, -, -, -, -, -, -, -, min, max, -, -) ->
-								/* @OnFail(1034, "2.4.7 Variable %s min/max exceeds RealType %s at %s",
+								/* @OnFail(1041, "2.4.7 Variable %s min/max exceeds RealType %s at %s",
 									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( (min <> nil and sv.min <> nil => min <= sv.min)
 									and
@@ -336,7 +365,7 @@ functions
 							mk_UInt32Type(-, -, -, -, min, max, -),
 							mk_UInt16Type(-, -, -, -, min, max, -),
 							mk_UInt8Type(-, -, -, -, min, max, -) ->
-								/* @OnFail(1035, "2.4.7 Variable %s min/max exceeds IntegerType %s at %s",
+								/* @OnFail(1042, "2.4.7 Variable %s min/max exceeds IntegerType %s at %s",
 									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( (min <> nil and sv.min <> nil => min <= sv.min)
 									and
@@ -350,7 +379,7 @@ functions
 						cases simpleType:
 							mk_Float64Type(-, -, -, -, -, -, -, -, -, -, -, -),
 							mk_Float32Type(-, -, -, -, -, -, -, -, -, -, -, -) ->
-								/* @OnFail(1036, "2.4.7 Variable %s, RealType not referenced by Real variable %s at %s",
+								/* @OnFail(1043, "2.4.7 Variable %s, RealType not referenced by Real variable %s at %s",
 									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( isReal(sv) ),
 
@@ -362,32 +391,32 @@ functions
 							mk_UInt32Type(-, -, -, -, -, -, -),
 							mk_UInt16Type(-, -, -, -, -, -, -),
 							mk_UInt8Type(-, -, -, -, -, -, -) ->
-								/* @OnFail(1037, "2.4.7 Variable %s, IntegerType not referenced by Integer variable %s at %s",
+								/* @OnFail(1044, "2.4.7 Variable %s, IntegerType not referenced by Integer variable %s at %s",
 									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( isInteger(sv) ),
 
 							mk_BooleanType(-, -, -, -) ->
-								/* @OnFail(1038, "2.4.7 Variable %s, BooleanType not referenced by Boolean variable %s at %s",
+								/* @OnFail(1045, "2.4.7 Variable %s, BooleanType not referenced by Boolean variable %s at %s",
 									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( is_Boolean(sv) ),
 
 							mk_StringType(-, -, -, -) ->
-								/* @OnFail(1039, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
+								/* @OnFail(1046, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
 									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( is_String(sv) ),
 
 							mk_BinaryType(-, -, -, -, -, -) ->
-								/* @OnFail(1040, "2.4.7 Variable %s, BinaryType not referenced by Binary variable %s at %s",
+								/* @OnFail(1047, "2.4.7 Variable %s, BinaryType not referenced by Binary variable %s at %s",
 									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( is_Binary(sv) ),
 
 							mk_EnumerationType(-, -, -, -, -, -, -, -) ->
-								/* @OnFail(1041, "2.4.7 Variable %s, EnumerationType not referenced by Enumeration variable %s at %s",
+								/* @OnFail(1048, "2.4.7 Variable %s, EnumerationType not referenced by Enumeration variable %s at %s",
 									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( is_Enumeration(sv) ),
 
 							mk_ClockType(-, -, -, -, -, -, -, -, -, -, -, -, -) ->
-								/* @OnFail(1042, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
+								/* @OnFail(1049, "2.4.7 Variable %s, StringType not referenced by String variable %s at %s",
 									sv.name, sv.declaredType, loc2str(sv.location)) */
 								( is_Clock(sv) )
 						end
