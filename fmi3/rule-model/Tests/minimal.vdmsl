@@ -2,7 +2,7 @@
  * VDM value created from minimal.xml
  */
 values
-    minimalTest =
+    validModelType =
     mk_FmiModelDescription
     (
         mk_Location("minimal.xml", 3),

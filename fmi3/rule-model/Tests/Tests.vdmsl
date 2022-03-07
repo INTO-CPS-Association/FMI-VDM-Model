@@ -30,5 +30,6 @@ functions
 	tests: () +> seq of bool
 	tests() ==
 	[
-		validate(minimalTest)
-	];
+		validate(validModelType)
+	]
+	-- post elems RESULT = {true};

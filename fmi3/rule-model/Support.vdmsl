@@ -28,6 +28,16 @@
  *********************************************************************************/
 functions
 	/**
+	 * Check the result of a named rule and list the FMI Standard document references that
+	 * describe the correct behaviour, if the rule failed.
+	 */
+	rule: seq1 of char * bool +> bool
+	rule(name, result) ==
+		-- @OnFail("See %s\n", docReferences(name))
+		( result )
+	pre name in set dom docReferences;
+
+	/**
 	 * Apply a test function to every member of a set or sequence, and return true
 	 * if all of the results are true.
 	 */
@@ -43,9 +53,10 @@ functions
 	 * Test whether a set of booleans contains only true. Note that the empty set is
 	 * considered to be true.
 	 */
-	allOf: set of bool +> bool
+	allOf: seq1 of bool +> bool
 	allOf(s) ==
-		s = {true} or s = {};
+		let result = elems s in
+			result = {true} or result = {};
 
 	/**
 	 * Turn a Location into a printable string for errors.

@@ -29,15 +29,14 @@
 types
 	CoSimulation' = [CoSimulation]
 	inv cs == cs <> nil => allOf
-	({
+	([
 		inv_Annotations'(cs.annotations),
 
-		validCSModelIdentifier(cs)
-	});
+		rule("validCSModelIdentifier", validCSModelIdentifier(cs))
+	]);
 
 functions
 	validCSModelIdentifier: CoSimulation +> bool
 	validCSModelIdentifier(cs) ==
 		-- @OnFail("validCSModelIdentifier: %s not valid C variable name at %s", cs.modelIdentifier, loc2str(cs.location))
-		( validIdentifier(cs.modelIdentifier) )
-	pre "validCSModelIdentifier" in set dom docReferences;
+		( validIdentifier(cs.modelIdentifier) );

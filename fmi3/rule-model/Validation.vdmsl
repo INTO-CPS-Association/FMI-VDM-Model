@@ -27,6 +27,9 @@
  *
  *********************************************************************************/
 functions
+	/**
+	 * Top level function to validate a given FMIModelDescription record.
+	 */
 	validate: FmiModelDescription +> bool
 	validate(fmu) ==
 		inv_FmiModelDescription'(fmu);

@@ -29,15 +29,14 @@
 types
 	ScheduledExecution' = [ScheduledExecution]
 	inv se == se <> nil => allOf
-	({
+	([
 		inv_Annotations'(se.annotations),
 
-		validSEModelIdentifier(se)
-	});
+		rule("validSEModelIdentifier", validSEModelIdentifier(se))
+	]);
 
 functions
 	validSEModelIdentifier: ScheduledExecution +> bool
 	validSEModelIdentifier(se) ==
 		-- @OnFail("validSEModelIdentifier: %s not valid C variable nase at %s", se.modelIdentifier, loc2str(se.location))
-		( validIdentifier(se.modelIdentifier) )
-	pre "validSEModelIdentifier" in set dom docReferences;
+		( validIdentifier(se.modelIdentifier) );

@@ -34,24 +34,33 @@ types
 values
 	/**
 	 * A map from rule names to FMI Standard document locations, given in terms of a
-	 * relative URL from "fmi-standard".
+	 * relative URL from "fmi-standard". Each of these locations could, in turn, have
+	 * a link back to the named rule.
 	 */
 	docReferences : ReferenceMap =
 	{
+		"validGenerationDateAndTime" |->
+		[
+			"fmi-standard/docs/index.html#table-schema-fmiModelDescription-attributes"
+		],
+
 		"validModelTypes" |->
 		[
 			"fmi-standard/docs/index.html#table-schema-fmiModelDescription"
 		],
+
 		"validMEModelIdentifier" |->
 		[
 			"fmi-standard/docs/index.html#modelIdentifier",
 			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
 		],
+
 		"validCSModelIdentifier" |->
 		[
 			"fmi-standard/docs/index.html#modelIdentifier",
 			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
 		],
+
 		"validSEModelIdentifier" |->
 		[
 			"fmi-standard/docs/index.html#modelIdentifier",
