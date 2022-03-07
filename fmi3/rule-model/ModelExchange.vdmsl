@@ -38,5 +38,6 @@ types
 functions
 	validMEModelIdentifier: ModelExchange +> bool
 	validMEModelIdentifier(me) ==
-		/* @OnFail(1600, "3.4 modelIdentifer %s not valid C variable name at %s", me.modelIdentifier, loc2str(me.location)) */
-		( validIdentifier(me.modelIdentifier) );
+		-- @OnFail("validMEModelIdentifier: %s not valid C variable name at %s", me.modelIdentifier, loc2str(me.location))
+		( validIdentifier(me.modelIdentifier) )
+	pre "validMEModelIdentifier" in set dom docReferences;

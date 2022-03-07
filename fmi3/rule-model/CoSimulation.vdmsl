@@ -38,5 +38,6 @@ types
 functions
 	validCSModelIdentifier: CoSimulation +> bool
 	validCSModelIdentifier(cs) ==
-		/* @OnFail(1600, "3.4 modelIdentifer %s not valid C variable name at %s", cs.modelIdentifier, loc2str(cs.location)) */
-		( validIdentifier(cs.modelIdentifier) );
+		-- @OnFail("validCSModelIdentifier: %s not valid C variable name at %s", cs.modelIdentifier, loc2str(cs.location))
+		( validIdentifier(cs.modelIdentifier) )
+	pre "validCSModelIdentifier" in set dom docReferences;

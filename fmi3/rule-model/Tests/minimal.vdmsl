@@ -1,0 +1,69 @@
+/**
+ * VDM value created from minimal.xml
+ */
+values
+    minimalTest =
+    mk_FmiModelDescription
+    (
+        mk_Location("minimal.xml", 3),
+        "3.0-beta.5",  -- fmiVersion
+        "Test FMU",  -- modelName
+        "{111-222-333-444}",  -- instantiationToken
+        nil,  -- description
+        nil,  -- author
+        nil,  -- version
+        nil,  -- copyright
+        nil,  -- license
+        nil,  -- generationTool
+        nil,  -- generationDateAndTime
+        nil,  -- variableNamingConvention
+        nil,  -- modelExchange
+        nil,  -- coSimulation
+        nil,  -- scheduledExecution
+        nil,  -- unitDefinitions
+        nil,  -- typeDefinitions
+        nil,  -- logCategories
+        nil,  -- defaultExperiment
+        [
+            mk_Float64
+            (
+                mk_Location("minimal.xml", 5),
+                "varname",  -- name
+                0,  -- valueReference
+                nil,  -- description
+                nil,  -- causality
+                nil,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                nil,  -- start
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            )
+        ],
+        mk_ModelStructure
+        (
+            mk_Location("minimal.xml", 7),
+            nil,  -- output
+            nil,  -- continuousStateDerivative
+            nil,  -- clockedState
+            nil,  -- initialUnknown
+            nil   -- eventIndicator
+        ),
+        nil   -- annotations
+    );
+

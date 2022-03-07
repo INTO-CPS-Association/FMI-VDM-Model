@@ -27,32 +27,34 @@
  *
  *********************************************************************************/
 types
-	/**
-	 * The invariant type for the top level FmiModelDescription.
-	 */
-	FmiModelDescription' = FmiModelDescription
-	inv fmd == allOf
-	({
-		inv_ModelExchange'(fmd.modelExchange),
-		inv_CoSimulation'(fmd.coSimulation),
-		inv_ScheduledExecution'(fmd.scheduledExecution),
---		inv_UnitDefinitions'(fmd.unitDefinitions),
---		inv_TypeDefinitions'(fmd.typeDefinitions),
---		inv_LogCategories'(fmd.logCategories),
---		inv_DefaultExperiment'(fmd.defaultExperiment),
---		inv_ModelVariables'(fmd.modelVariables),
---		inv_ModelStructure'(fmd.modelStructure),
---		inv_Annotations'(fmd.annotations),
+	ReferenceURL = seq1 of char;
+	RuleName = seq1 of char;
+	ReferenceMap = map RuleName to seq1 of ReferenceURL;
 
-		validModelTypes(fmd)
-	});
-
-functions
+values
 	/**
-	 * Check that at least one FMU type has been included.
+	 * A map from rule names to FMI Standard document locations, given in terms of a
+	 * relative URL from "fmi-standard".
 	 */
-	validModelTypes: FmiModelDescription +> bool
-	validModelTypes(fmd) ==
-		-- @OnFail("validModelTypes: At least one of ModelExchange, CoSimulation or ScheduledExecution must be set")
-		( fmd.modelExchange <> nil or fmd.coSimulation <> nil or fmd.scheduledExecution <> nil )
-	pre "validModelTypes" in set dom docReferences;
+	docReferences : ReferenceMap =
+	{
+		"validModelTypes" |->
+		[
+			"fmi-standard/docs/index.html#table-schema-fmiModelDescription"
+		],
+		"validMEModelIdentifier" |->
+		[
+			"fmi-standard/docs/index.html#modelIdentifier",
+			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
+		],
+		"validCSModelIdentifier" |->
+		[
+			"fmi-standard/docs/index.html#modelIdentifier",
+			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
+		],
+		"validSEModelIdentifier" |->
+		[
+			"fmi-standard/docs/index.html#modelIdentifier",
+			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
+		]
+	};

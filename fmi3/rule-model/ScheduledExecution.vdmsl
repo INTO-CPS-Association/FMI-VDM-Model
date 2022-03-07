@@ -38,5 +38,6 @@ types
 functions
 	validSEModelIdentifier: ScheduledExecution +> bool
 	validSEModelIdentifier(se) ==
-		/* @OnFail(1600, "3.4 modelIdentifer %s not valid C variable nase at %s", se.modelIdentifier, loc2str(se.location)) */
-		( validIdentifier(se.modelIdentifier) );
+		-- @OnFail("validSEModelIdentifier: %s not valid C variable nase at %s", se.modelIdentifier, loc2str(se.location))
+		( validIdentifier(se.modelIdentifier) )
+	pre "validSEModelIdentifier" in set dom docReferences;

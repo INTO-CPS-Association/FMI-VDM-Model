@@ -26,33 +26,7 @@
  *	SPDX-License-Identifier: MIT
  *
  *********************************************************************************/
-types
-	/**
-	 * The invariant type for the top level FmiModelDescription.
-	 */
-	FmiModelDescription' = FmiModelDescription
-	inv fmd == allOf
-	({
-		inv_ModelExchange'(fmd.modelExchange),
-		inv_CoSimulation'(fmd.coSimulation),
-		inv_ScheduledExecution'(fmd.scheduledExecution),
---		inv_UnitDefinitions'(fmd.unitDefinitions),
---		inv_TypeDefinitions'(fmd.typeDefinitions),
---		inv_LogCategories'(fmd.logCategories),
---		inv_DefaultExperiment'(fmd.defaultExperiment),
---		inv_ModelVariables'(fmd.modelVariables),
---		inv_ModelStructure'(fmd.modelStructure),
---		inv_Annotations'(fmd.annotations),
-
-		validModelTypes(fmd)
-	});
-
 functions
-	/**
-	 * Check that at least one FMU type has been included.
-	 */
-	validModelTypes: FmiModelDescription +> bool
-	validModelTypes(fmd) ==
-		-- @OnFail("validModelTypes: At least one of ModelExchange, CoSimulation or ScheduledExecution must be set")
-		( fmd.modelExchange <> nil or fmd.coSimulation <> nil or fmd.scheduledExecution <> nil )
-	pre "validModelTypes" in set dom docReferences;
+	validate: FmiModelDescription +> bool
+	validate(fmu) ==
+		inv_FmiModelDescription'(fmu);
