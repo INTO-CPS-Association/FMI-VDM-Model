@@ -18,7 +18,29 @@ values
         nil,  -- generationDateAndTime
         nil,  -- variableNamingConvention
         nil,  -- modelExchange
-        nil,  -- coSimulation
+        mk_CoSimulation
+        (
+            mk_Location("minimal.xml", 4),
+            "Test FMU",  -- modelIdentifier
+            nil,  -- needsExecutionTool
+            nil,  -- canBeInstantiatedOnlyOncePerProcess
+            nil,  -- canGetAndSetFMUState
+            nil,  -- canSerializeFMUState
+            nil,  -- providesDirectionalDerivatives
+            nil,  -- providesAdjointDerivatives
+            nil,  -- providesPerElementDependencies
+            nil,  -- any
+            nil,  -- canHandleVariableCommunicationStepSize
+            nil,  -- fixedInternalStepSize
+            nil,  -- maxOutputDerivativeOrder
+            nil,  -- recommendedIntermediateInputSmoothness
+            nil,  -- providesIntermediateUpdate
+            nil,  -- mightReturnEarlyFromDoStep
+            nil,  -- canReturnEarlyAfterIntermediateUpdate
+            nil,  -- hasEventMode
+            nil,  -- providesEvaluateDiscreteStates
+            nil   -- annotations
+        ),
         nil,  -- scheduledExecution
         nil,  -- unitDefinitions
         nil,  -- typeDefinitions
@@ -27,7 +49,7 @@ values
         [
             mk_Float64
             (
-                mk_Location("minimal.xml", 5),
+                mk_Location("minimal.xml", 6),
                 "varname",  -- name
                 0,  -- valueReference
                 nil,  -- description
@@ -57,7 +79,7 @@ values
         ],
         mk_ModelStructure
         (
-            mk_Location("minimal.xml", 7),
+            mk_Location("minimal.xml", 8),
             nil,  -- output
             nil,  -- continuousStateDerivative
             nil,  -- clockedState

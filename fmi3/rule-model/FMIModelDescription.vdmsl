@@ -36,13 +36,13 @@ types
 		inv_ModelExchange'(fmd.modelExchange),
 		inv_CoSimulation'(fmd.coSimulation),
 		inv_ScheduledExecution'(fmd.scheduledExecution),
---		inv_UnitDefinitions'(fmd.unitDefinitions),
+		inv_UnitDefinitions'(fmd.unitDefinitions),
 --		inv_TypeDefinitions'(fmd.typeDefinitions),
 --		inv_LogCategories'(fmd.logCategories),
 --		inv_DefaultExperiment'(fmd.defaultExperiment),
 --		inv_ModelVariables'(fmd.modelVariables),
 --		inv_ModelStructure'(fmd.modelStructure),
---		inv_Annotations'(fmd.annotations),
+		inv_Annotations'(fmd.annotations),
 
 		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
 		rule("validModelTypes",	validModelTypes(fmd))

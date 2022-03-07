@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0-beta.5"
 	modelName="Test FMU" instantiationToken="{111-222-333-444}">
+	<CoSimulation modelIdentifier="Test FMU" />
 	<ModelVariables>
 		<Float64 name="varname" valueReference="0" />
 	</ModelVariables>

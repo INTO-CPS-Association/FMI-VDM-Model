@@ -27,53 +27,35 @@
  *
  *********************************************************************************/
 types
-	ReferenceURL = seq1 of char;
-	RuleName = seq1 of char;
-	ReferenceMap = map RuleName to seq1 of ReferenceURL;	-- A rule must have at least one ref
+	UnitDefinitions' = [UnitDefinitions]
+	inv units == units <> nil => allOf
+	([
+		apply[Unit](inv_Unit', units),
 
-values
-	/**
-	 * A map from rule names to FMI Standard document locations, given in terms of a
-	 * relative URL from "fmi-standard". Each of these locations could, in turn, have
-	 * a link back to the named rule.
-	 */
-	docReferences : ReferenceMap =
-	{
-		"validGenerationDateAndTime" |->
-		[
-			"fmi-standard/docs/index.html#table-schema-fmiModelDescription-attributes"
-		],
+		rule("validUnitNames", validUnitNames(units))
+	]);
 
-		"validModelTypes" |->
-		[
-			"fmi-standard/docs/index.html#table-schema-fmiModelDescription"
-		],
+	Unit' = Unit
+	inv unit == allOf
+	([
+		apply[DisplayUnit](inv_DisplayUnit', unit.displayUnit),
+		inv_Annotations'(unit.annotations),
 
-		"validMEModelIdentifier" |->
-		[
-			"fmi-standard/docs/index.html#modelIdentifier",
-			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
-		],
+		rule("validDisplayUnitNames", validDisplayUnitNames(unit))
+	]);
 
-		"validCSModelIdentifier" |->
-		[
-			"fmi-standard/docs/index.html#modelIdentifier",
-			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
-		],
+	DisplayUnit' = DisplayUnit
+	inv - == true;
 
-		"validSEModelIdentifier" |->
-		[
-			"fmi-standard/docs/index.html#modelIdentifier",
-			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
-		],
 
-		"validUnitNames" |->
-		[
-			"fmi-standard/docs/index.html#_physical_units"
-		],
+functions
+	validUnitNames: UnitDefinitions +> bool
+	validUnitNames(units) ==
+		-- @OnFail("validUnitNames: Unit names must be unique")
+		( let names = [ u.name | u in seq units ] in len names = card elems names );
 
-		"validDisplayUnitNames" |->
-		[
-			"fmi-standard/docs/index.html#figure-schema-DisplayUnit"
-		]
-	};
+	validDisplayUnitNames: Unit +> bool
+	validDisplayUnitNames(unit) ==
+		-- @OnFail("validDisplayUnitNames: DisplayUnit names must be unique within %s at %s", unit.name, loc2str(unit.location))
+		( unit.displayUnit <> nil =>
+			let names = [ u.name | u in seq unit.displayUnit ] in len names = card elems names );

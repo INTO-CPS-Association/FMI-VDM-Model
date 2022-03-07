@@ -50,13 +50,14 @@ functions
 				else { test(item) | item in set data };
 
 	/**
-	 * Test whether a set of booleans contains only true. Note that the empty set is
-	 * considered to be true.
+	 * Test whether a list of booleans contains only true. Note that the empty list is
+	 * considered to be true, as is a nil list.
 	 */
-	allOf: seq1 of bool +> bool
+	allOf: [seq1 of bool] +> bool
 	allOf(s) ==
-		let result = elems s in
-			result = {true} or result = {};
+		s <> nil =>
+			let result = elems s in
+				result = {true} or result = {};
 
 	/**
 	 * Turn a Location into a printable string for errors.
