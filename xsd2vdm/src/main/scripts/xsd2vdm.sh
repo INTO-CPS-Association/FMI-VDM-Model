@@ -12,8 +12,8 @@ for ARG in "$@"
 do
 	case $ARG in
 		-D*)		JVMARGS="$JVMARGS $ARG";;
-		*)		ARGS="$ARGS $ARG";; 
+		*)		ARGS="$ARGS '$ARG'";; 
 	esac
 done
 
-exec java $JVMARGS -jar $JAR $ARGS
+eval java $JVMARGS -jar $JAR $ARGS
