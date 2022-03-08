@@ -69,11 +69,13 @@ values
 
 		"validUnitNames" |->
 		[
-			"fmi-standard/docs/index.html#_physical_units"
+			"fmi-standard/docs/index.html#_physical_units",
+			"fmi-standard/docs/index.html#uniqueNameAttribute"
 		],
 
 		"validDisplayUnitNames" |->
 		[
-			"fmi-standard/docs/index.html#figure-schema-DisplayUnit"
+			"fmi-standard/docs/index.html#figure-schema-DisplayUnit",
+			"fmi-standard/docs/index.html#uniqueNameAttribute"
 		]
 	};

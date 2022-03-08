@@ -33,7 +33,7 @@ functions
 	 */
 	rule: seq1 of char * bool +> bool
 	rule(name, result) ==
-		-- @OnFail("See %s\n", docReferences(name))
+		-- @OnFail("See: %s", listReferences(name))
 		( result )
 	pre name in set dom docReferences;
 
@@ -58,6 +58,21 @@ functions
 		s <> nil =>
 			let result = elems s in
 				result = {true} or result = {};
+
+	/**
+	 * Format the references of a rule name, one per line.
+	 */
+	listReferences: RuleName +> seq1 of char
+	listReferences(name) ==
+		list2Str(docReferences(name))
+	pre name in set dom docReferences;
+
+	list2Str: seq of ReferenceURL +> seq of char
+	list2Str(refs) ==
+		if refs = []
+		then ""
+		else hd refs ^ "\n" ^ list2Str(tl refs)
+	measure len refs;
 
 	/**
 	 * Turn a Location into a printable string for errors.
