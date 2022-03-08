@@ -39,7 +39,23 @@ types
 	inv tdef ==
 		if     is_Float64Type(tdef) then inv_Float64Type'(tdef)
 		elseif is_Float32Type(tdef)	then inv_Float32Type'(tdef)
-		-- etc...
+
+		elseif is_Int64Type(tdef)	then is_Int64Type'(tdef)
+		elseif is_Int32Type(tdef)	then is_Int32Type'(tdef)
+		elseif is_Int16Type(tdef)	then is_Int16Type'(tdef)
+		elseif is_UInt8Type(tdef)	then is_Int8Type'(tdef)
+
+		elseif is_UInt64Type(tdef)	then is_UInt64Type'(tdef)
+		elseif is_UInt32Type(tdef)	then is_UInt32Type'(tdef)
+		elseif is_UInt16Type(tdef)	then is_UInt16Type'(tdef)
+		elseif is_UInt8Type(tdef)	then is_UInt8Type'(tdef)
+
+		elseif is_BooleanType(tdef)	then inv_BooleanType'(tdef)
+		elseif is_StringType(tdef)	then inv_StringType'(tdef)
+		elseif is_BinaryType(tdef)	then inv_BinaryType'(tdef)
+		elseif is_EnumerationType(tdef)	then inv_EnumerationType'(tdef)
+		elseif is_ClockType(tdef)	then inv_ClockType'(tdef)
+
 		else undefined;
 
 	Float64Type' = Float64Type
@@ -48,7 +64,7 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		rule("validMinMax", validMinMax(tdef, <Float64>)),
-		rule("validTypeUnits", validTypeUnits(tdef))
+		rule("validDisplayUnit", validDisplayUnit(tdef))
 	]);
 
 	Float32Type' = Float32Type
@@ -57,8 +73,116 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		rule("validMinMax", validMinMax(tdef, <Float32>)),
-		rule("validTypeUnits", validTypeUnits(tdef))
+		rule("validDisplayUnit", validDisplayUnit(tdef))
 	]);
+
+	Int64Type' = Int64Type
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations),
+
+		rule("validMinMax", validMinMax(tdef, <Int64>)),
+		rule("validDisplayUnit", validDisplayUnit(tdef))
+	]);
+
+	Int32Type' = Int32Type
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations),
+
+		rule("validMinMax", validMinMax(tdef, <Int32>)),
+		rule("validDisplayUnit", validDisplayUnit(tdef))
+	]);
+
+	Int16Type' = Int16Type
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations),
+
+		rule("validMinMax", validMinMax(tdef, <Int16>)),
+		rule("validDisplayUnit", validDisplayUnit(tdef))
+	]);
+
+	Int8Type' = Int8Type
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations),
+
+		rule("validMinMax", validMinMax(tdef, <Int8>)),
+		rule("validDisplayUnit", validDisplayUnit(tdef))
+	]);
+
+	UInt64Type' = UInt64Type
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations),
+
+		rule("validMinMax", validMinMax(tdef, <UInt64>)),
+		rule("validDisplayUnit", validDisplayUnit(tdef))
+	]);
+
+	UInt32Type' = UInt32Type
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations),
+
+		rule("validMinMax", validMinMax(tdef, <UInt32>)),
+		rule("validDisplayUnit", validDisplayUnit(tdef))
+	]);
+
+	UInt16Type' = UInt16Type
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations),
+
+		rule("validMinMax", validMinMax(tdef, <UInt16>)),
+		rule("validDisplayUnit", validDisplayUnit(tdef))
+	]);
+
+	UInt8Type' = UInt8Type
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations),
+
+		rule("validMinMax", validMinMax(tdef, <UInt8>)),
+		rule("validDisplayUnit", validDisplayUnit(tdef))
+	]);
+
+	BooleanType' = BooleanType
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations)
+	]);
+
+	StringType' = StringType
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations)
+	]);
+
+	BinaryType' = BinaryType
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations)
+	]);
+
+	EnumerationType' = EnumerationType
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations),
+
+		rule("validMinMax", validMinMax(tdef, <Enumeration>)),
+		rule("validEnumerationBijection", validEnumerationBijection(tdef))
+	]);
+
+	ClockType' = ClockType
+	inv tdef == allOf
+	([
+		inv_Annotations'(tdef.annotations),
+
+		rule("validClockType", validClockType(tdef))
+	]);
+		
 
 functions
 	validTypeDefinitionNames: [TypeDefinitions] +> bool
@@ -85,7 +209,35 @@ functions
 				( max >= min )
 		]);
 
-	validTypeUnits: fmi3TypeDefinition +> bool
-	validTypeUnits(tdef) ==
-		-- @OnFail("validTypeUnits: Type %s, unit must be defined for displayUnit %s", tdef.name, tdef.displayUnit)
+	validDisplayUnit: fmi3TypeDefinition +> bool
+	validDisplayUnit(tdef) ==
+		-- @OnFail("validDisplayUnit: Type %s, unit must be defined for displayUnit %s", tdef.name, tdef.displayUnit)
 		( tdef.displayUnit <> nil => tdef.unit <> nil );
+
+	validEnumerationBijection: EnumerationType +> bool
+	validEnumerationBijection(tdef) ==
+		-- @OnFail("validEnumerationBijection: Type %s, Enumeration item name/values do not form a bijection", tdef.name)
+		(
+			card { i.name | i in seq tdef.item } = len tdef.item
+			and	card { i.value | i in seq tdef.item } = len tdef.item
+		);
+
+	validClockType: ClockType +> bool
+	validClockType(tdef) ==
+		let periodic = tdef.intervalVariability in set {<constant>, <fixed>, <tunable>} in allOf
+		([
+			--@OnFail("validClockType: resolution can only be used with periodic clocks")
+			( tdef.resolution <> nil => periodic ),
+
+			--@OnFail("validClockType: Periodic clock with supportsFraction and intervalCounter must define resolution")
+			( periodic and tdef.supportsFraction = true and tdef.intervalCounter <> nil => tdef.resolution <> nil  ),
+
+			--@OnFail("validClockType: intervalCounter must be >0")
+			( tdef.intervalCounter <> nil => tdef.intervalCounter > 0 ),
+
+			--@OnFail("validClockType: Cannot use intervalCounter unless periodic and supportsFraction")
+			( tdef.intervalCounter <> nil => tdef.supportsFraction = true and periodic ),
+
+			--@OnFail("validClockType: shiftCounter requires an intervalCounter")
+			( tdef.shiftCounter <> nil => tdef.intervalCounter <> nil )
+		]);

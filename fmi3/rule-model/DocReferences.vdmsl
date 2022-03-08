@@ -95,6 +95,21 @@ values
 			"fmi-standard/docs/index.html#table-type-details"
 		],
 
+		"validDisplayUnit" |->
+		[
+			"fmi-standard/docs/index.html#table-type-details"
+		],
+
+		"validEnumerationBijection" |->
+		[
+			"fmi-standard/docs/index.html#figure-schema-EnumerationType"
+		],
+
+		"validClockType" |->
+		[
+			"fmi-standard/docs/index.html#figure-schema-ClockType"
+		],
+
 		"validTypeUnits" |->
 		[
 			"fmi-standard/docs/index.html#table-type-details"

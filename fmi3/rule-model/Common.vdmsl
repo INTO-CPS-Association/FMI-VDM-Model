@@ -50,7 +50,10 @@ functions
 		<Int64>			|->	mk_(-9.223372036854775808e+18, 9.223372036854775807e+18),
 		<UInt64>		|->	mk_(0, 1.8446744073709551615e+19),
 		<Enumeration>	|->	mk_(-9.223372036854775808e+18, 9.223372036854775807e+18), -- xs:long = Int64
-		<Clock>			|-> undefined
+		<Clock>			|-> undefined,
+		<Boolean>		|-> undefined,
+		<String>		|-> undefined,
+		<Binary>		|-> undefined
 	}
 	(kind);
 

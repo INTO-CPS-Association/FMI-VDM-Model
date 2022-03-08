@@ -45,7 +45,8 @@ types
 		inv_Annotations'(fmd.annotations),
 
 		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
-		rule("validModelTypes",	validModelTypes(fmd))
+		rule("validModelTypes",	validModelTypes(fmd)),
+		rule("validTypeUnits", validTypeUnits(fmd))
 	]);
 
 functions
@@ -81,3 +82,15 @@ functions
 					and dt(20) = 'Z'
 			);
 	
+	validTypeUnits: FmiModelDescription +> bool
+	validTypeUnits(fmd) ==
+		fmd.typeDefinitions <> nil => allOf
+		([
+			tdef.unit <> nil =>
+				/* @OnFail("validTypeUnits: Type %s, unit %s not defined in UnitDefinitions at %s",
+					tdef.name, tdef.unit, loc2str(tdef.location)) */
+				( fmd.unitDefinitions <> nil
+					and exists u in seq fmd.unitDefinitions & u.name = tdef.unit )
+
+			| tdef in seq fmd.typeDefinitions
+		]);
