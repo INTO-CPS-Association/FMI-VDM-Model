@@ -26,7 +26,31 @@
  *	SPDX-License-Identifier: MIT
  *
  *********************************************************************************/
+types
+	FloatKind = <Float64> | <Float32>;
+	IntegerKind = <Int64> | <Int32> | <Int16> | <Int8> | <UInt64> | <UInt32> | <UInt16> | <UInt8>;
+	Kind = FloatKind | IntegerKind | <Boolean> | <String> | <Binary> | <Enumeration> | <Clock>;
+
 functions
 	validIdentifier: NormalizedString +> bool
 	validIdentifier(s) ==
-		s <> "" and s(1) in set elems NONDIGITS;
+		s <>"" and s(1) in set elems NONDIGITS;
+
+	minMaxKind: Kind -> real * real
+	minMaxKind(kind) ==
+	{
+		<Float32> 		|-> mk_(-3.402823466385288598e+38, 3.402823466385288598e+38),
+		<Float64>		|-> mk_(-1.797693134862315708e+308, 1.797693134862315708e+308),
+		<Int8>			|->	mk_(-128, 127),
+		<UInt8>			|->	mk_(0, 255),
+		<Int16>			|->	mk_(-32768, 32767),
+		<UInt16>		|->	mk_(0, 65535),
+		<Int32>			|->	mk_(-2147483648, 2147483647),
+		<UInt32>		|->	mk_(0, 4294967295),
+		<Int64>			|->	mk_(-9.223372036854775808e+18, 9.223372036854775807e+18),
+		<UInt64>		|->	mk_(0, 1.8446744073709551615e+19),
+		<Enumeration>	|->	mk_(-9.223372036854775808e+18, 9.223372036854775807e+18), -- xs:long = Int64
+		<Clock>			|-> undefined
+	}
+	(kind);
+

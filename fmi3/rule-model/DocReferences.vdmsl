@@ -82,5 +82,21 @@ values
 		"validInverseAndOffset" |->
 		[
 			"fmi-standard/docs/index.html#figure-schema-DisplayUnit"
+		],
+
+		"validTypeDefinitionNames" |->
+		[
+			"fmi-standard/docs/index.html#definition-of-types",
+			"fmi-standard/docs/index.html#table-type-details"
+		],
+
+		"validMinMax" |->
+		[
+			"fmi-standard/docs/index.html#table-type-details"
+		],
+
+		"validTypeUnits" |->
+		[
+			"fmi-standard/docs/index.html#table-type-details"
 		]
 	};
