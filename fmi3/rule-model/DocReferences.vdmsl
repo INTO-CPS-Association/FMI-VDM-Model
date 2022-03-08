@@ -113,5 +113,10 @@ values
 		"validTypeUnits" |->
 		[
 			"fmi-standard/docs/index.html#table-type-details"
+		],
+
+		"atLeastOneUnit" |->
+		[
+			"fmi-standard/docs/index.html#figure-schema-BaseUnit"
 		]
 	};
