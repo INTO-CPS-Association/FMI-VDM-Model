@@ -77,5 +77,10 @@ values
 		[
 			"fmi-standard/docs/index.html#figure-schema-DisplayUnit",
 			"fmi-standard/docs/index.html#uniqueNameAttribute"
+		],
+
+		"validInverseAndOffset" |->
+		[
+			"fmi-standard/docs/index.html#figure-schema-DisplayUnit"
 		]
 	};
