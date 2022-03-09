@@ -35,7 +35,7 @@ types
 		rule("validTypeDefinitionNames", validTypeDefinitionNames(tdefs))
 	]);
 
-	fmi3TypeDefinition' = fmi3TypeDefinition
+	fmi3TypeDefinition' = fmi3TypeDefinition	-- The union of all types
 	inv tdef ==
 		if     is_Float64Type(tdef) then inv_Float64Type'(tdef)
 		elseif is_Float32Type(tdef)	then inv_Float32Type'(tdef)
@@ -224,7 +224,7 @@ functions
 
 	validClockType: ClockType +> bool
 	validClockType(tdef) ==
-		let periodic = tdef.intervalVariability in set {<constant>, <fixed>, <tunable>} in allOf
+		let periodic = clockIsPeriodic(tdef) in allOf
 		([
 			--@OnFail("validClockType: resolution can only be used with periodic clocks")
 			( tdef.resolution <> nil => periodic ),

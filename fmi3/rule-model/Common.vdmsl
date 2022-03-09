@@ -32,10 +32,24 @@ types
 	Kind = FloatKind | IntegerKind | <Boolean> | <String> | <Binary> | <Enumeration> | <Clock>;
 
 functions
+	/**
+	 * An identifier is a valid "C" variable name. Currently defined as any non-empty string that
+	 * does not start with a digit.
+	 */
 	validIdentifier: NormalizedString +> bool
 	validIdentifier(s) ==
-		s <>"" and s(1) in set elems NONDIGITS;
+		s <> "" and s(1) not in set elems DIGITS;
 
+	/**
+	 * The definition of a periodic clock.
+	 */
+	clockIsPeriodic: ClockType +> bool
+	clockIsPeriodic(ctype) ==
+		ctype.intervalVariability in set {<constant>, <fixed>, <tunable>};
+
+	/**
+	 * The min/max limits (inclusive) for each numeric type.
+	 */
 	minMaxKind: Kind -> real * real
 	minMaxKind(kind) ==
 	{
