@@ -246,11 +246,11 @@ functions
 				}
 				union
 				{
---					iu.dependencies <> nil and iu.dependencies <> [] =>
---						-- @OnFail(1032, "InitialUnknown dependencies must all be known at %s", loc2str(iu.location))
---						( forall d in seq iu.dependencies & d not in set allIUs )
---
---					| iu in seq nilSeq[InitialUnknown](md.modelStructure.initialUnknown)
+					iu.dependencies <> nil and iu.dependencies <> [] =>
+						-- @OnFail(1032, "InitialUnknown dependencies must all be known at %s", loc2str(iu.location))
+						( forall d in seq iu.dependencies & d not in set allIUs )
+
+					| iu in seq nilSeq[InitialUnknown](md.modelStructure.initialUnknown)
 				} = {true}
 			),
 
