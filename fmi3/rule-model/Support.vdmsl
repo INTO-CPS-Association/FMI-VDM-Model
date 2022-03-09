@@ -50,14 +50,12 @@ functions
 				else { test(item) | item in set data };
 
 	/**
-	 * Test whether a list of booleans contains only true. Note that the empty list is
-	 * considered to be true, as is a nil list.
+	 * Test whether a list of booleans contains only true. Note that the nil list is
+	 * considered to be true.
 	 */
 	allOf: [seq1 of bool] +> bool
 	allOf(s) ==
-		s <> nil =>
-			let result = elems s in
-				result = {true} or result = {};
+		s <> nil => elems s = {true};
 
 	/**
 	 * Format the references of a rule name, one per line.

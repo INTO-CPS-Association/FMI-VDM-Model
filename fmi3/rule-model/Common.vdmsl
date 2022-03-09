@@ -43,9 +43,9 @@ functions
 	/**
 	 * The definition of a periodic clock.
 	 */
-	clockIsPeriodic: ClockType +> bool
-	clockIsPeriodic(ctype) ==
-		ctype.intervalVariability in set {<constant>, <fixed>, <tunable>};
+	clockIsPeriodic: IntervalVariability +> bool
+	clockIsPeriodic(v) ==
+		v in set {<constant>, <fixed>, <tunable>};
 
 	/**
 	 * The min/max limits (inclusive) for each numeric type.
@@ -70,4 +70,21 @@ functions
 		<Binary>		|-> undefined
 	}
 	(kind);
+
+	validMinMax: [real] * [real] * Kind +> bool
+	validMinMax(min, max, kind) ==
+		let mk_(kmin, kmax) = minMaxKind(kind) in allOf
+		([
+			max <> nil =>
+				-- @OnFail("validMinMax: max %s is not a valid value of this type", max)
+				( max <= kmax and max >= kmin ),
+
+			min <> nil =>
+				-- @OnFail("validMinMax: min %s is not a valid value of this type", min)
+				( min <= kmax and min >= kmin ),
+
+			max <> nil and min <> nil =>
+				-- @OnFail("validMinMax: max %s not >= min %s", max, min)
+				( max >= min )
+		]);
 

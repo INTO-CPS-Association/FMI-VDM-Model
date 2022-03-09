@@ -1,0 +1,157 @@
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
+types
+	ModelVariables' = ModelVariables
+	inv mvs == allOf
+	([
+		apply[fmi3Variable](inv_fmi3Variable', mvs),
+
+		rule("validVariableNames", validVariableNames(mvs))
+	]);
+
+	fmi3Variable' = fmi3Variable	-- The union of all kinds
+	inv mv ==
+		if     is_Float64(mv)	then inv_Float64'(mv)
+		elseif is_Float32(mv)	then inv_Float32'(mv)
+
+		elseif is_Int64(mv)		then inv_Int64'(mv)
+		elseif is_Int32(mv)		then inv_Int32'(mv)
+		elseif is_Int16(mv)		then inv_Int16'(mv)
+		elseif is_Int8(mv)		then inv_Int8'(mv)
+
+		elseif is_UInt64(mv)	then inv_UInt64'(mv)
+		elseif is_UInt32(mv)	then inv_UInt32'(mv)
+		elseif is_UInt16(mv)	then inv_UInt16'(mv)
+		elseif is_UInt8(mv)		then inv_UInt8'(mv)
+
+		elseif is_Boolean(mv)	then inv_Boolean'(mv)
+		elseif is_String(mv)	then inv_String'(mv)
+		elseif is_Binary(mv)	then inv_Binary'(mv)
+		elseif is_Enumeration(mv)	then inv_Enumeration'(mv)
+		elseif is_Clock(mv)		then inv_Clock'(mv)
+
+		else undefined;
+
+	Float64' = Float64
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	Float32' = Float32
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	Int64' = Int64
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	Int32' = Int32
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	Int16' = Int16
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	Int8' = Int8
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	UInt64' = UInt64
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	UInt32' = UInt32
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	UInt16' = UInt16
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	UInt8' = UInt8
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	Boolean' = Boolean
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	String' = String
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	Binary' = Binary
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	Enumeration' = Enumeration
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+	Clock' = Clock
+	inv mv == allOf
+	([
+		inv_Annotations'(mv.annotations)
+	]);
+
+functions
+	validVariableNames: [ModelVariables] +> bool
+	validVariableNames(mvs) ==
+		-- @OnFail("validVariableNames: ModelVariable names must be unique")
+		( mvs <> nil =>
+			let names = [ mv.name | mv in seq mvs ] in
+				len names = card elems names );

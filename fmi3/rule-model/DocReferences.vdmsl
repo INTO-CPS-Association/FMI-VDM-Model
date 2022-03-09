@@ -90,17 +90,17 @@ values
 			"fmi-standard/docs/index.html#table-type-details"
 		],
 
-		"validMinMax" |->
+		"validTypeMinMax" |->
 		[
 			"fmi-standard/docs/index.html#table-type-details"
 		],
 
-		"validDisplayUnit" |->
+		"validTypeDisplayUnit" |->
 		[
 			"fmi-standard/docs/index.html#table-type-details"
 		],
 
-		"validEnumerationBijection" |->
+		"validEnumerationTypeBijection" |->
 		[
 			"fmi-standard/docs/index.html#figure-schema-EnumerationType"
 		],
@@ -128,5 +128,10 @@ values
 		"validDefaultExperiment" |->
 		[
 			"fmi-standard/docs/index.html#DefaultExperiment"
+		],
+
+		"validVariableNames" |->
+		[
+			"fmi-standard/docs/index.html#ModelVariables"
 		]
 	};

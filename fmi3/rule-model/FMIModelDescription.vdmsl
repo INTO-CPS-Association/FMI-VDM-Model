@@ -40,7 +40,7 @@ types
 		inv_TypeDefinitions'(fmd.typeDefinitions),
 		inv_LogCategories'(fmd.logCategories),
 		inv_DefaultExperiment'(fmd.defaultExperiment),
---		inv_ModelVariables'(fmd.modelVariables),
+		inv_ModelVariables'(fmd.modelVariables),
 --		inv_ModelStructure'(fmd.modelStructure),
 		inv_Annotations'(fmd.annotations),
 
