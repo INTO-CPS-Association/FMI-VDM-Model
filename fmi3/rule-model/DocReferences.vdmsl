@@ -118,5 +118,15 @@ values
 		"atLeastOneUnit" |->
 		[
 			"fmi-standard/docs/index.html#figure-schema-BaseUnit"
+		],
+
+		"validLogCategories" |->
+		[
+			"fmi-standard/docs/index.html#definition-of-log-categories"
+		],
+
+		"validDefaultExperiment" |->
+		[
+			"fmi-standard/docs/index.html#DefaultExperiment"
 		]
 	};
