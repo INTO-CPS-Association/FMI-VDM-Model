@@ -40,6 +40,9 @@ functions
 			( cs.modelIdentifier <> ""
 				and cs.modelIdentifier(1) in set elems NONDIGITS ),
 
+			-- @OnFail(1551, "4.4 canReturnEarlyAfterIntermediateUpdate requires providesIntermediateUpdate at %s", loc2str(cs.location))
+			( cs.canReturnEarlyAfterIntermediateUpdate = true => cs.providesIntermediateUpdate = true ),
+
 			isValidAnnotations(cs.annotations)
 		}
 		= {true};
