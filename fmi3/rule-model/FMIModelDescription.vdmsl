@@ -64,24 +64,8 @@ functions
 	 */
 	validGenerationDateAndTime: FmiModelDescription +> bool
 	validGenerationDateAndTime(fmd) ==
-		let dt = fmd.generationDateAndTime, digits = elems DIGITS in
-			-- @OnFail("validGenerationDateAndTime: generationDateAndTime should be YYYY-MM-DDThh:mm:ssZ at %s", loc2str(fmd.location))
-			(
-				dt <> nil =>
-					len dt = 20
-					and elems dt(1,...,4) subset digits
-					and dt(5) = '-'
-					and elems dt(6,...,7) subset digits
-					and dt(8) = '-'
-					and elems dt(9,...,10) subset digits
-					and dt(11) = 'T'
-					and elems dt(12,...,13) subset digits
-					and dt(14) = ':'
-					and elems dt(15,...,16) subset digits
-					and dt(17) = ':'
-					and elems dt(18,...,19) subset digits
-					and dt(20) = 'Z'
-			);
+		-- @OnFail("validGenerationDateAndTime: generationDateAndTime should be YYYY-MM-DDThh:mm:ssZ at %s", loc2str(fmd.location))
+		( fmd.generationDateAndTime <> nil => iso8601(fmd.generationDateAndTime) );
 	
 	validTypeUnits: FmiModelDescription +> bool
 	validTypeUnits(fmd) ==
@@ -93,7 +77,7 @@ functions
 				( fmd.unitDefinitions <> nil
 					and exists u in seq fmd.unitDefinitions & u.name = tdef.unit )
 
-			| tdef in seq fmd.typeDefinitions
+			| tdef in seq fmd.typeDefinitions & is_FloatKind(kindOf(tdef))
 		]);
 
 	validVariableTypes: FmiModelDescription +> bool

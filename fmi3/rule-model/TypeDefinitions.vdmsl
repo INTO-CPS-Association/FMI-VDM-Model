@@ -83,8 +83,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
-		rule("validTypeMinMax", validTypeMinMax(tdef, <Int64>)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		rule("validTypeMinMax", validTypeMinMax(tdef, <Int64>))
 	]);
 
 	Int32Type' = Int32Type
@@ -92,8 +91,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
-		rule("validTypeMinMax", validTypeMinMax(tdef, <Int32>)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		rule("validTypeMinMax", validTypeMinMax(tdef, <Int32>))
 	]);
 
 	Int16Type' = Int16Type
@@ -101,8 +99,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
-		rule("validTypeMinMax", validTypeMinMax(tdef, <Int16>)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		rule("validTypeMinMax", validTypeMinMax(tdef, <Int16>))
 	]);
 
 	Int8Type' = Int8Type
@@ -110,8 +107,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
-		rule("validTypeMinMax", validTypeMinMax(tdef, <Int8>)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		rule("validTypeMinMax", validTypeMinMax(tdef, <Int8>))
 	]);
 
 	UInt64Type' = UInt64Type
@@ -119,8 +115,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
-		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt64>)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt64>))
 	]);
 
 	UInt32Type' = UInt32Type
@@ -128,8 +123,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
-		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt32>)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt32>))
 	]);
 
 	UInt16Type' = UInt16Type
@@ -137,8 +131,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
-		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt16>)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt16>))
 	]);
 
 	UInt8Type' = UInt8Type
@@ -146,8 +139,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
-		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt8>)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt8>))
 	]);
 
 	BooleanType' = BooleanType
