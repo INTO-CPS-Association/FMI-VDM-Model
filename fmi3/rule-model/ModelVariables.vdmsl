@@ -55,9 +55,15 @@ types
 			<String>	-> inv_String'(mv),
 			<Binary>	-> inv_Binary'(mv),
 			<Enumeration>	-> inv_Enumeration'(mv),
-			<Clock>		-> inv_Clock'(mv)
+			<Clock>		-> inv_Clock'(mv),
+
+			others		-> undefined
 		end;
 
+	/**
+	 * The "prime" type invarants are tests for the variables, before the
+	 * derivation of their effective value.
+	 */
 	Float64' = Float64
 	inv mv == allOf
 	([

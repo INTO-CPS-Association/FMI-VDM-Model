@@ -1,0 +1,204 @@
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
+types
+	EffectiveVariable = fmi3Variable
+	inv ev ==
+		cases kindOf(ev):
+			<Float64>	-> inv_Float64'(ev),
+			<Float32>	-> inv_Float32'(ev),
+
+			<Int64>		-> inv_Int64'(ev),
+			<Int32>		-> inv_Int32'(ev),
+			<Int16>		-> inv_Int16'(ev),
+			<Int8>		-> inv_Int8'(ev),
+
+			<UInt64>	-> inv_UInt64'(ev),
+			<UInt32>	-> inv_UInt32'(ev),
+			<UInt16>	-> inv_UInt16'(ev),
+			<UInt8>		-> inv_UInt8'(ev),
+
+			<Boolean>	-> inv_Boolean'(ev),
+			<String>	-> inv_String'(ev),
+			<Binary>	-> inv_Binary'(ev),
+			<Enumeration>	-> inv_Enumeration'(ev),
+			<Clock>		-> inv_Clock'(ev),
+
+			others		-> undefined
+		end;
+
+functions
+	override[@T]: [@T] * [@T] * [@T] +> [@T]
+	override(value, typedef, default) ==
+		if value <> nil
+		then value
+		elseif typedef <> nil
+		then typedef
+		else default;
+
+	effectiveVariables: seq1 of fmi3Variable * [TypeDefinitions] +> seq1 of fmi3Variable
+	effectiveVariables(mvs, tdefs) ==
+		[ effectiveVariable(mv, tdefs) | mv in seq mvs ];
+
+	effectiveVariable: fmi3Variable * [TypeDefinitions] +> fmi3Variable
+	effectiveVariable(mv, tdefs) ==
+		let decltype = lookupType(mv.declaredType, tdefs),
+			kind = kindOf(mv),
+			mk_(kmin, kmax) = minMaxKind(kind),
+			declDescription = if decltype = nil or decltype.description = nil then nil else decltype.description,
+			declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+			declUnit = if decltype = nil or decltype.unit = nil then nil else decltype.unit,
+			declDisplayUnit = if decltype = nil or decltype.displayUnit = nil then nil else decltype.displayUnit,
+			declRelQuantity = if decltype = nil or decltype.relativeQuantity = nil then nil else decltype.relativeQuantity,
+			declMin = if decltype = nil or decltype.min = nil then nil else decltype.min,
+			declMax = if decltype = nil or decltype.max = nil then nil else decltype.max,
+			declNominal = if decltype = nil or decltype.nominal = nil then nil else decltype.nominal
+		in
+			cases kind:
+				<Float64> -> mk_Float64
+				(
+					mv.location,
+					mv.name,
+					mv.valueReference,
+					override[NormalizedString](mv.description, declDescription, nil),
+					effectiveCausality(mv.causality, <Float64>),
+					effectiveVariability(mv.variability, <Float64>),
+					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					mv.clocks,
+					mv.intermediateUpdate = true,
+					mv.previous,
+					mv.declaredType,
+					effectiveInitial(mv.causality, mv.variability, mv.initial, <Float64>),
+					override[NormalizedString](mv.quantity, declQuantity, nil),
+					override[NormalizedString](mv.unit, declUnit, nil),
+					override[NormalizedString](mv.displayUnit, declDisplayUnit, nil),
+					override[bool](mv.relativeQuantity, declRelQuantity, false),
+					mv.unbounded = true,
+					override[real](mv.min, declMin, kmin),
+					override[real](mv.max, declMax, kmax),
+					override[real](mv.nominal, declNominal, 1),
+					mv.start,
+					mv.derivative,
+					mv.reinit = true,
+					mv.annotations,		-- NOT inherited?
+					mv.dimension,
+					mv.alias
+				),
+
+				others -> undefined
+			end;
+
+	effectiveCausality: [Causality] * Kind +> Causality
+	effectiveCausality(causality, kind) ==
+		if causality <> nil
+		then causality
+		else
+			cases kind:
+				<Float64>, <Float32> -> <local>,
+
+				others -> undefined
+			end;
+
+	effectiveVariability: [Variability] * Kind +> Variability
+	effectiveVariability(variability, kind) ==
+		if variability <> nil
+		then variability
+		else
+			cases kind:
+				<Float64>, <Float32> -> <continuous>,
+
+				others -> undefined
+			end;
+
+	effectiveInitial: [Causality] * [Variability] * [Initial] * Kind +> [Initial]
+	effectiveInitial(causality, variability, initial, kind) ==
+		if initial <> nil
+		then initial
+		else
+			let eCausality = effectiveCausality(causality, kind),
+				eVariability = effectiveVariability(variability, kind)
+			in
+				-- See fmi-standard/docs/index.html#table-definition-initial
+				cases eCausality:
+					<structuralParameter> ->
+						cases eVariability:
+							<constant>		-> nil,
+							<fixed>			-> <exact>,
+							<tunable>		-> <exact>,
+							<discrete>		-> nil,
+							<continuous>	-> nil
+						end,
+					<parameter> ->
+						cases eVariability:
+							<constant>		-> nil,
+							<fixed>			-> <exact>,
+							<tunable>		-> <exact>,
+							<discrete>		-> nil,
+							<continuous>	-> nil
+						end,
+					<calculatedParameter> ->
+						cases eVariability:
+							<constant>		-> nil,
+							<fixed>			-> <calculated>,
+							<tunable>		-> <calculated>,
+							<discrete>		-> nil,
+							<continuous>	-> nil
+						end,
+					<input> ->
+						cases eVariability:
+							<constant>		-> nil,
+							<fixed>			-> nil,
+							<tunable>		-> nil,
+							<discrete>		-> <exact>,
+							<continuous>	-> <exact>
+						end,
+					<output> ->
+						cases eVariability:
+							<constant>		-> <exact>,
+							<fixed>			-> nil,
+							<tunable>		-> nil,
+							<discrete>		-> <calculated>,
+							<continuous>	-> <calculated>
+						end,
+					<local> ->
+						cases eVariability:
+							<constant>		-> <exact>,
+							<fixed>			-> <calculated>,
+							<tunable>		-> <calculated>,
+							<discrete>		-> <calculated>,
+							<continuous>	-> <calculated>
+						end,
+					<independent> ->
+						cases eVariability:
+							<constant>		-> nil,
+							<fixed>			-> nil,
+							<tunable>		-> nil,
+							<discrete>		-> nil,
+							<continuous>	-> nil
+						end
+				end;

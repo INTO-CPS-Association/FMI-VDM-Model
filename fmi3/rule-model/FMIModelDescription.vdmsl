@@ -46,7 +46,9 @@ types
 
 		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
 		rule("validModelTypes",	validModelTypes(fmd)),
-		rule("validTypeUnits", validTypeUnits(fmd))
+		rule("validTypeUnits", validTypeUnits(fmd)),
+
+		apply[fmi3Variable](inv_EffectiveVariable, effectiveVariables(fmd.modelVariables, fmd.typeDefinitions))
 	]);
 
 functions

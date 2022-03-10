@@ -55,7 +55,9 @@ types
 			<String>	-> inv_StringType'(tdef),
 			<Binary>	-> inv_BinaryType'(tdef),
 			<Enumeration>	-> inv_EnumerationType'(tdef),
-			<Clock>		-> inv_ClockType'(tdef)
+			<Clock>		-> inv_ClockType'(tdef),
+
+			others		-> undefined
 		end;
 
 	Float64Type' = Float64Type

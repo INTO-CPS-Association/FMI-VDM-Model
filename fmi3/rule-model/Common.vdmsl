@@ -126,3 +126,11 @@ functions
 		elseif is_(v, ClockType) then <Clock>
 
 		else undefined;
+
+	lookupType: [NormalizedString] * [TypeDefinitions] +> [fmi3TypeDefinition]
+	lookupType(name, tdefs) ==
+		if tdefs = nil or name = nil
+		then nil
+		elseif exists tdef in seq tdefs & tdef.name = name
+		then let tdef in seq tdefs be st tdef.name = name in tdef	-- Pick any type
+		else nil;
