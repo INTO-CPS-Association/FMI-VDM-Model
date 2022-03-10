@@ -88,3 +88,41 @@ functions
 				( max >= min )
 		]);
 
+	/**
+	 * Turn a Variable or Type into a Kind.
+	 */
+	kindOf: fmi3Variable | fmi3TypeDefinition +> Kind
+	kindOf(v) ==
+		if is_(v, Float32) then <Float32>
+		elseif is_(v, Float64) then <Float64>
+		elseif is_(v, Int8) then <Int8>
+		elseif is_(v, UInt8) then  <UInt8>
+		elseif is_(v, Int16) then<Int16>
+		elseif is_(v, UInt16) then <UInt16>
+		elseif is_(v, Int32) then <Int32>
+		elseif is_(v, UInt32) then <UInt32>
+		elseif is_(v, Int64) then <Int64>
+		elseif is_(v, UInt64) then <UInt64>
+		elseif is_(v, Boolean) then <Boolean>
+		elseif is_(v, String) then <String>
+		elseif is_(v, Binary) then <Binary>
+		elseif is_(v, Enumeration) then <Enumeration>
+		elseif is_(v, Clock) then <Clock>
+
+		elseif is_(v, Float32Type) then <Float32>
+		elseif is_(v, Float64Type) then <Float64>
+		elseif is_(v, Int8Type) then <Int8>
+		elseif is_(v, UInt8Type) then  <UInt8>
+		elseif is_(v, Int16Type) then<Int16>
+		elseif is_(v, UInt16Type) then <UInt16>
+		elseif is_(v, Int32Type) then <Int32>
+		elseif is_(v, UInt32Type) then <UInt32>
+		elseif is_(v, Int64Type) then <Int64>
+		elseif is_(v, UInt64Type) then <UInt64>
+		elseif is_(v, BooleanType) then <Boolean>
+		elseif is_(v, StringType) then <String>
+		elseif is_(v, BinaryType) then <Binary>
+		elseif is_(v, EnumerationType) then <Enumeration>
+		elseif is_(v, ClockType) then <Clock>
+
+		else undefined;

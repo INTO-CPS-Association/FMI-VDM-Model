@@ -37,26 +37,26 @@ types
 
 	fmi3Variable' = fmi3Variable	-- The union of all kinds
 	inv mv ==
-		if     is_Float64(mv)	then inv_Float64'(mv)
-		elseif is_Float32(mv)	then inv_Float32'(mv)
+		cases kindOf(mv):
+			<Float64>	-> inv_Float64'(mv),
+			<Float32>	-> inv_Float32'(mv),
 
-		elseif is_Int64(mv)		then inv_Int64'(mv)
-		elseif is_Int32(mv)		then inv_Int32'(mv)
-		elseif is_Int16(mv)		then inv_Int16'(mv)
-		elseif is_Int8(mv)		then inv_Int8'(mv)
+			<Int64>		-> inv_Int64'(mv),
+			<Int32>		-> inv_Int32'(mv),
+			<Int16>		-> inv_Int16'(mv),
+			<Int8>		-> inv_Int8'(mv),
 
-		elseif is_UInt64(mv)	then inv_UInt64'(mv)
-		elseif is_UInt32(mv)	then inv_UInt32'(mv)
-		elseif is_UInt16(mv)	then inv_UInt16'(mv)
-		elseif is_UInt8(mv)		then inv_UInt8'(mv)
+			<UInt64>	-> inv_UInt64'(mv),
+			<UInt32>	-> inv_UInt32'(mv),
+			<UInt16>	-> inv_UInt16'(mv),
+			<UInt8>		-> inv_UInt8'(mv),
 
-		elseif is_Boolean(mv)	then inv_Boolean'(mv)
-		elseif is_String(mv)	then inv_String'(mv)
-		elseif is_Binary(mv)	then inv_Binary'(mv)
-		elseif is_Enumeration(mv)	then inv_Enumeration'(mv)
-		elseif is_Clock(mv)		then inv_Clock'(mv)
-
-		else undefined;
+			<Boolean>	-> inv_Boolean'(mv),
+			<String>	-> inv_String'(mv),
+			<Binary>	-> inv_Binary'(mv),
+			<Enumeration>	-> inv_Enumeration'(mv),
+			<Clock>		-> inv_Clock'(mv)
+		end;
 
 	Float64' = Float64
 	inv mv == allOf
