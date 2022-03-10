@@ -40,15 +40,14 @@ types
 		inv_TypeDefinitions'(fmd.typeDefinitions),
 		inv_LogCategories'(fmd.logCategories),
 		inv_DefaultExperiment'(fmd.defaultExperiment),
-		inv_ModelVariables'(fmd.modelVariables),
+		inv_ModelVariables'(effectiveVariables(fmd.modelVariables, fmd.typeDefinitions)),
 --		inv_ModelStructure'(fmd.modelStructure),
 		inv_Annotations'(fmd.annotations),
 
 		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
 		rule("validModelTypes",	validModelTypes(fmd)),
 		rule("validTypeUnits", validTypeUnits(fmd)),
-
-		apply[fmi3Variable](inv_EffectiveVariable, effectiveVariables(fmd.modelVariables, fmd.typeDefinitions))
+		rule("vaidVariableTypes", validVariableTypes(fmd))
 	]);
 
 functions
@@ -95,4 +94,18 @@ functions
 					and exists u in seq fmd.unitDefinitions & u.name = tdef.unit )
 
 			| tdef in seq fmd.typeDefinitions
+		]);
+
+	validVariableTypes: FmiModelDescription +> bool
+	validVariableTypes(fmd) ==
+		allOf
+		([
+			mv.declaredType <> nil => let tdef = lookupType(mv.name, fmd.typeDefinitions) in
+				-- @OnFail("validVariableTypes: %s type %s not found at %s", mv.name, mv.declaredType, loc2str(mv.location))
+				( tdef <> nil )
+
+				-- @OnFail("validVariableTypes: %s type %s mismatch at %s", mv.name, mv.declaredType, loc2str(mv.location))
+				and ( kindOf(tdef) = kindOf(mv) )
+
+			| mv in seq fmd.modelVariables
 		]);

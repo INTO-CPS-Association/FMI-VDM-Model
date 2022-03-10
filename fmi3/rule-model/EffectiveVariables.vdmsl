@@ -26,32 +26,6 @@
  *	SPDX-License-Identifier: MIT
  *
  *********************************************************************************/
-types
-	EffectiveVariable = fmi3Variable
-	inv ev ==
-		cases kindOf(ev):
-			<Float64>	-> inv_Float64'(ev),
-			<Float32>	-> inv_Float32'(ev),
-
-			<Int64>		-> inv_Int64'(ev),
-			<Int32>		-> inv_Int32'(ev),
-			<Int16>		-> inv_Int16'(ev),
-			<Int8>		-> inv_Int8'(ev),
-
-			<UInt64>	-> inv_UInt64'(ev),
-			<UInt32>	-> inv_UInt32'(ev),
-			<UInt16>	-> inv_UInt16'(ev),
-			<UInt8>		-> inv_UInt8'(ev),
-
-			<Boolean>	-> inv_Boolean'(ev),
-			<String>	-> inv_String'(ev),
-			<Binary>	-> inv_Binary'(ev),
-			<Enumeration>	-> inv_Enumeration'(ev),
-			<Clock>		-> inv_Clock'(ev),
-
-			others		-> undefined
-		end;
-
 functions
 	override[@T]: [@T] * [@T] * [@T] +> [@T]
 	override(value, typedef, default) ==
@@ -67,17 +41,18 @@ functions
 
 	effectiveVariable: fmi3Variable * [TypeDefinitions] +> fmi3Variable
 	effectiveVariable(mv, tdefs) ==
-		let decltype = lookupType(mv.declaredType, tdefs),
-			kind = kindOf(mv),
+		let decltype        = lookupType(mv.declaredType, tdefs),
+			kind            = kindOf(mv),
 			mk_(kmin, kmax) = minMaxKind(kind),
+
 			declDescription = if decltype = nil or decltype.description = nil then nil else decltype.description,
-			declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-			declUnit = if decltype = nil or decltype.unit = nil then nil else decltype.unit,
+			declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+			declUnit        = if decltype = nil or decltype.unit = nil then nil else decltype.unit,
 			declDisplayUnit = if decltype = nil or decltype.displayUnit = nil then nil else decltype.displayUnit,
 			declRelQuantity = if decltype = nil or decltype.relativeQuantity = nil then nil else decltype.relativeQuantity,
-			declMin = if decltype = nil or decltype.min = nil then nil else decltype.min,
-			declMax = if decltype = nil or decltype.max = nil then nil else decltype.max,
-			declNominal = if decltype = nil or decltype.nominal = nil then nil else decltype.nominal
+			declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
+			declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
+			declNominal     = if decltype = nil or decltype.nominal = nil then nil else decltype.nominal
 		in
 			cases kind:
 				<Float64> -> mk_Float64

@@ -28,11 +28,14 @@
  *********************************************************************************/
 types
 	ModelVariables' = ModelVariables
-	inv mvs == allOf
+	inv evs == allOf
 	([
-		apply[fmi3Variable](inv_fmi3Variable', mvs),
+		apply[fmi3Variable](inv_fmi3Variable', evs),
 
-		rule("validVariableNames", validVariableNames(mvs))
+		rule("validVariableNames", validVariableNames(evs)),
+		rule("validIndependentVariable", validIndependentVariable(evs)),
+		rule("validPreviousVariables", validPreviousVariables(evs)),
+		rule("validVariableDimensions", validVariableDimensions(evs))
 	]);
 
 	fmi3Variable' = fmi3Variable	-- The union of all kinds
@@ -61,8 +64,8 @@ types
 		end;
 
 	/**
-	 * The "prime" type invarants are tests for the variables, before the
-	 * derivation of their effective value.
+	 * The "prime" type invarants are tests for the variables, after the
+	 * derivation of their effective values.
 	 */
 	Float64' = Float64
 	inv mv == allOf
@@ -155,9 +158,57 @@ types
 	]);
 
 functions
-	validVariableNames: [ModelVariables] +> bool
-	validVariableNames(mvs) ==
+	validVariableNames: ModelVariables +> bool
+	validVariableNames(evs) ==
 		-- @OnFail("validVariableNames: ModelVariable names must be unique")
-		( mvs <> nil =>
-			let names = [ mv.name | mv in seq mvs ] in
-				len names = card elems names );
+		( let names = [ ev.name | ev in seq evs ] in
+			len names = card elems names );
+
+	validIndependentVariable: ModelVariables +> bool
+	validIndependentVariable(evs) ==
+			/* @OnFail("validIndependentVariable: Variables define more than one independent variable: %s",
+				{ sv.name | sv in seq evs & sv.causality = <independent> }) */
+			( card { sv | sv in seq evs & sv.causality = <independent> } <= 1 );
+
+	validPreviousVariables: ModelVariables +> bool
+	validPreviousVariables(evs) ==
+			/* @OnFail("validPreviousVariables: Variable previous fields are not unique: %s",
+				{ evs(a).name | a, b in set inds evs & not is_Clock(a) and not is_Clock(b) and
+					a <> b and evs(a).previous <> nil and evs(a).previous = evs(b).previous } ) */
+			( let plist =  [ sv.previous | sv in seq evs & not is_Clock(sv) and sv.previous <> nil ] in
+			  	card elems plist = len plist );
+
+	validVariableDimensions: ModelVariables +> bool
+	validVariableDimensions(evs) ==
+		allOf(conc
+		[
+			[
+				-- @OnFail("validVariableDimensions: Dimension of %s cannot define start and valueReference", ev.name)
+				( ev.dimension <> nil =>
+					forall dim in seq ev.dimension &
+						dim.start = nil <=> dim.valueReference <> nil ),
+
+				-- @OnFail("validVariableDimensions: Dimension of %s cannot reference itself", ev.name)
+				( ev.dimension <> nil =>
+					forall dim in seq ev.dimension &
+						dim.valueReference <> nil =>
+							dim.valueReference <> ev.valueReference ),
+
+				-- @OnFail("validVariableDimensions: Dimension of %s, valueReference is not Integer, constant or structuralParameter, with start", ev.name)
+				( ev.dimension <> nil =>
+					forall dim in seq ev.dimension &
+						dim.valueReference <> nil =>
+							exists r in seq evs &
+								is_IntegerKind(kindOf(r)) and
+								r.valueReference = dim.valueReference
+								and ( r.causality = <structuralParameter> or r.variability = <constant> )
+								and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
+
+				-- @OnFail("validVariableDimensions: Structural parameter %s cannot have Dimension", ev.name)
+				( ev.dimension <> nil =>
+					ev.causality <> <structuralParameter> )
+			]
+
+			| ev in seq evs & not is_Clock(ev)	-- Clocks have no dimensions
+		]);
+

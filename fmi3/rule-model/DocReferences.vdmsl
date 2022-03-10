@@ -133,5 +133,26 @@ values
 		"validVariableNames" |->
 		[
 			"fmi-standard/docs/index.html#ModelVariables"
+		],
+
+		"vaidVariableTypes" |->
+		[
+			"fmi-standard/docs/index.html#ModelVariables",
+			"fmi-standard/docs/index.html#definition-of-types"
+		],
+
+		"validIndependentVariable" |->
+		[
+			"fmi-standard/docs/index.html#ModelVariables"
+		],
+
+		"validPreviousVariables" |->
+		[
+			"fmi-standard/docs/index.html#ModelVariables"
+		],
+
+		"validVariableDimensions" |->
+		[
+			"fmi-standard/docs/index.html#ModelVariables"
 		]
 	};
