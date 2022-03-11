@@ -41,8 +41,8 @@ functions
 
 	effectiveVariable: fmi3Variable * [TypeDefinitions] +> fmi3Variable
 	effectiveVariable(mv, tdefs) ==
-		let decltype        = lookupType(mv.declaredType, tdefs),
-			kind            = kindOf(mv)
+		let decltype = lookupType(mv.declaredType, tdefs),
+			kind     = kindOf(mv)
 		in
 			if decltype <> nil and kindOf(decltype) <> kind
 			then mv		-- Type error reported elsewhere
@@ -497,15 +497,10 @@ functions
 		end;
 
 	effectiveCausality: [Causality] * Kind +> Causality
-	effectiveCausality(causality, kind) ==
+	effectiveCausality(causality, -) ==
 		if causality <> nil
 		then causality
-		else
-			cases kind:
-				<Float64>, <Float32> -> <local>,
-
-				others -> undefined
-			end;
+		else <local>;
 
 	effectiveVariability: [Variability] * Kind +> Variability
 	effectiveVariability(variability, kind) ==
@@ -514,8 +509,7 @@ functions
 		else
 			cases kind:
 				<Float64>, <Float32> -> <continuous>,
-
-				others -> undefined
+				others -> <discrete>
 			end;
 
 	effectiveInitial: [Causality] * [Variability] * [Initial] * Kind +> [Initial]

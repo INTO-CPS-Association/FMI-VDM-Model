@@ -24,7 +24,8 @@
 		<Float64Type name="Modelica.Units.SI.Angle" quantity="Angle" unit="rad"/>
 	</TypeDefinitions>
 	<ModelVariables>
-		<Float64 name="varname" valueReference="0" />
+		<Float64 name="varname" valueReference="0" declaredType="Modelica.Units.SI.Inertia" />
+		<Int16 name="short" valueReference="1" />
 	</ModelVariables>
 	<ModelStructure>
 	</ModelStructure>

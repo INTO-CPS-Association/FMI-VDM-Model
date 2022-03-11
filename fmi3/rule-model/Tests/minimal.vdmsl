@@ -216,7 +216,7 @@ values
                 nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- declaredType
+                "Modelica.Units.SI.Inertia",  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
@@ -232,11 +232,33 @@ values
                 nil,  -- annotations
                 nil,  -- dimension
                 nil   -- alias
+            ),
+            mk_Int16
+            (
+                mk_Location("minimal.xml", 28),
+                "short",  -- name
+                1,  -- valueReference
+                nil,  -- description
+                nil,  -- causality
+                nil,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- min
+                nil,  -- max
+                nil,  -- start
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
             )
         ],
         mk_ModelStructure
         (
-            mk_Location("minimal.xml", 29),
+            mk_Location("minimal.xml", 30),
             nil,  -- output
             nil,  -- continuousStateDerivative
             nil,  -- clockedState

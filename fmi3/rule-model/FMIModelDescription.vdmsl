@@ -84,7 +84,7 @@ functions
 	validVariableTypes(fmd) ==
 		allOf
 		([
-			mv.declaredType <> nil => let tdef = lookupType(mv.name, fmd.typeDefinitions) in
+			mv.declaredType <> nil => let tdef = lookupType(mv.declaredType, fmd.typeDefinitions) in
 				-- @OnFail("validVariableTypes: %s type %s not found at %s", mv.name, mv.declaredType, loc2str(mv.location))
 				( tdef <> nil )
 
