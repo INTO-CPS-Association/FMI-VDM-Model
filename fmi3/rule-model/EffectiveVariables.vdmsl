@@ -42,8 +42,7 @@ functions
 	effectiveVariable: fmi3Variable * [TypeDefinitions] +> fmi3Variable
 	effectiveVariable(mv, tdefs) ==
 		let decltype        = lookupType(mv.declaredType, tdefs),
-			kind            = kindOf(mv),
-			mk_(kmin, kmax) = minMaxKind(kind)
+			kind            = kindOf(mv)
 		in
 			if decltype <> nil and kindOf(decltype) <> kind
 			then mv		-- Type error reported elsewhere
@@ -56,7 +55,8 @@ functions
 					declUnbounded   = if decltype = nil or decltype.unbounded = nil then nil else decltype.unbounded,
 					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
 					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					declNominal     = if decltype = nil or decltype.nominal = nil then nil else decltype.nominal
+					declNominal     = if decltype = nil or decltype.nominal = nil then nil else decltype.nominal,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_Float64
 					(
@@ -96,7 +96,8 @@ functions
 					declUnbounded   = if decltype = nil or decltype.unbounded = nil then nil else decltype.unbounded,
 					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
 					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					declNominal     = if decltype = nil or decltype.nominal = nil then nil else decltype.nominal
+					declNominal     = if decltype = nil or decltype.nominal = nil then nil else decltype.nominal,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_Float32
 					(
@@ -129,9 +130,10 @@ functions
 					),
 
 			<Int64> ->
-				let declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin      = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax      = if decltype = nil or decltype.max = nil then nil else decltype.max
+				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
+					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_Int64
 					(
@@ -157,9 +159,10 @@ functions
 					),
 
 			<Int32> ->
-				let declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin      = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax      = if decltype = nil or decltype.max = nil then nil else decltype.max
+				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
+					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_Int32
 					(
@@ -185,9 +188,10 @@ functions
 					),
 
 			<Int16> ->
-				let declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin      = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax      = if decltype = nil or decltype.max = nil then nil else decltype.max
+				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
+					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_Int16
 					(
@@ -213,9 +217,10 @@ functions
 					),
 
 			<Int8> ->
-				let declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin      = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax      = if decltype = nil or decltype.max = nil then nil else decltype.max
+				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
+					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_Int8
 					(
@@ -241,9 +246,10 @@ functions
 					),
 
 			<UInt64> ->
-				let declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin      = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax      = if decltype = nil or decltype.max = nil then nil else decltype.max
+				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
+					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_UInt64
 					(
@@ -269,9 +275,10 @@ functions
 					),
 
 			<UInt32> ->
-				let declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin      = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax      = if decltype = nil or decltype.max = nil then nil else decltype.max
+				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
+					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_UInt32
 					(
@@ -297,9 +304,10 @@ functions
 					),
 
 			<UInt16> ->
-				let declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin      = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax      = if decltype = nil or decltype.max = nil then nil else decltype.max
+				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
+					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_UInt16
 					(
@@ -325,9 +333,10 @@ functions
 					),
 
 			<UInt8> ->
-				let declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin      = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax      = if decltype = nil or decltype.max = nil then nil else decltype.max
+				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
+					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_UInt8
 					(
@@ -421,9 +430,10 @@ functions
 					),
 
 			<Enumeration> ->
-				let declQuantity = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin      = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax      = if decltype = nil or decltype.max = nil then nil else decltype.max
+				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
+					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
+					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
+					mk_(kmin, kmax) = minMaxKind(kind)
 				in
 					mk_Enumeration
 					(
