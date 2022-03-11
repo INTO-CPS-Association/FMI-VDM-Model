@@ -35,7 +35,8 @@ types
 		rule("validVariableNames", validVariableNames(evs)),
 		rule("validIndependentVariable", validIndependentVariable(evs)),
 		rule("validPreviousVariables", validPreviousVariables(evs)),
-		rule("validVariableDimensions", validVariableDimensions(evs))
+		rule("validVariableDimensions", validVariableDimensions(evs)),
+		rule("validAliasDisplayUnits", validAliasDisplayUnits(evs))
 	]);
 
 	fmi3Variable' = fmi3Variable	-- The union of all kinds
@@ -204,11 +205,6 @@ functions
 		allOf(conc
 		[
 			[
-				-- @OnFail("validVariableDimensions: Dimension of %s cannot define start and valueReference", ev.name)
-				( ev.dimension <> nil =>
-					forall dim in seq ev.dimension &
-						dim.start = nil <=> dim.valueReference <> nil ),
-
 				-- @OnFail("validVariableDimensions: Dimension of %s cannot reference itself", ev.name)
 				( ev.dimension <> nil =>
 					forall dim in seq ev.dimension &
@@ -220,8 +216,8 @@ functions
 					forall dim in seq ev.dimension &
 						dim.valueReference <> nil =>
 							exists r in seq evs &
-								is_IntegerKind(kindOf(r)) and
 								r.valueReference = dim.valueReference
+								and is_IntegerKind(kindOf(r))
 								and ( r.causality = <structuralParameter> or r.variability = <constant> )
 								and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
 
@@ -233,7 +229,19 @@ functions
 			| ev in seq evs & not is_Clock(ev)	-- Clocks have no dimensions
 		]);
 
-cannotSetStartAndVRef: Dimension +> bool
-cannotSetStartAndVRef(d) ==
-	-- @OnFail(1471, "cannotSetStartAndVRef: Dimension cannot define start and valueReference at %s", loc2str(d.location))
-	( d.start = nil <=> d.valueReference <> nil );
+	cannotSetStartAndVRef: Dimension +> bool
+	cannotSetStartAndVRef(d) ==
+		-- @OnFail("cannotSetStartAndVRef: Dimension cannot define start and valueReference at %s", loc2str(d.location))
+		( d.start = nil <=> d.valueReference <> nil );
+
+	validAliasDisplayUnits: ModelVariables +> bool
+	validAliasDisplayUnits(evs) ==
+		allOf(conc
+		[
+			[
+				-- @OnFail("validAliasDisplayUnits: Alias displayUnit requires unit definition at %s", a.location)
+				( a.displayUnit <> nil => ev.unit <> nil ) | a in seq ev.alias
+			]
+
+			| ev in seq evs & ev.alias <> nil
+		])

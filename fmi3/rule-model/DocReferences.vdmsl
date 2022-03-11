@@ -158,6 +158,41 @@ values
 
 		"cannotSetStartAndVRef" |->
 		[
+			"fmi-standard/docs/index.html#ModelVariables"
+		],
+
+		"validAliasDisplayUnits" |->
+		[
+			"fmi-standard/docs/index.html#ModelVariables"
+		],
+
+		"validOutput" |->
+		[
+			"?"
+		],
+
+		"validStateDerivatives" |->
+		[
+			"?"
+		],
+		
+		"validInitialUnknowns" |->
+		[
+			"?"
+		],
+		
+		"validEventIndicators" |->
+		[
+			"?"
+		],
+		
+		"validOutputReferences" |->
+		[
+			"?"
+		],
+		
+		"validUnknownDependencies" |->
+		[
 			"?"
 		]
 	};

@@ -53,9 +53,9 @@ functions
 	 * Test whether a list of booleans contains only true. Note that the nil list is
 	 * considered to be true.
 	 */
-	allOf: [seq1 of bool] +> bool
+	allOf: [seq of bool] +> bool
 	allOf(s) ==
-		s <> nil => elems s = {true};
+		s <> nil and s <> [] => elems s = {true};
 
 	/**
 	 * Format the references of a rule name, one per line.
@@ -89,3 +89,11 @@ functions
 			then [d]
 			else nat2str(n div 10) ^ [d]
 	measure n;
+
+	nilSeq[@T]: [seq of @T] +> seq of @T
+	nilSeq(s) ==
+		if s = nil then [] else s;
+
+	nilSet[@T]: [set of @T] +> set of @T
+	nilSet(s) ==
+		if s = nil then {} else s;

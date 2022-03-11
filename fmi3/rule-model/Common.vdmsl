@@ -154,3 +154,38 @@ functions
 		elseif exists tdef in seq tdefs & tdef.name = name
 		then let tdef in seq tdefs be st tdef.name = name in tdef	-- Pick any type
 		else nil;
+
+	lookupVariable: nat * ModelVariables +> [fmi3Variable]
+	lookupVariable(vref, evs) ==
+		if exists ev in seq evs & ev.valueReference = vref
+		then let ev in seq evs be st ev.valueReference = vref in ev
+		else nil;
+
+	continuousTimeStates: seq of fmi3Variable -> set of fmi3Variable
+	continuousTimeStates(svs) ==
+		{ svs(i) | i in set inds svs & isContinuousTimeState(i, svs) };
+
+	/**
+	 * Test ith index variable as a continuous time state.
+	 */
+	isContinuousTimeState: nat1 * seq of fmi3Variable +> bool
+	isContinuousTimeState(i, svs) ==
+		is_FloatKind(kindOf(svs(i)))
+		and svs(i).variability = <continuous> 
+		and exists j in seq svs &
+			is_FloatKind(kindOf(j)) and j.derivative = svs(i).valueReference;
+
+	/**
+	 * Return the Variables from a list which are state derivatives, defined to be
+	 * variables which are the derivative of some other variable.
+	 */
+	stateDerivatives: seq of fmi3Variable -> set of fmi3Variable
+	stateDerivatives(svs) ==
+		{ sv | sv in seq svs & isStateDerivative(sv) };
+
+	/**
+	 * Test Variable as a state derivative.
+	 */
+	isStateDerivative: fmi3Variable +> bool
+	isStateDerivative(sv) ==
+		is_FloatKind(kindOf(sv)) and sv.derivative <> nil;
