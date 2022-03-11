@@ -154,5 +154,10 @@ values
 		"validVariableDimensions" |->
 		[
 			"fmi-standard/docs/index.html#ModelVariables"
+		],
+
+		"cannotSetStartAndVRef" |->
+		[
+			"?"
 		]
 	};

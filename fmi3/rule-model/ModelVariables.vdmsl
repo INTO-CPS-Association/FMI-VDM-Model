@@ -70,85 +70,99 @@ types
 	Float64' = Float64
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Float32' = Float32
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Int64' = Int64
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Int32' = Int32
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Int16' = Int16
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Int8' = Int8
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	UInt64' = UInt64
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	UInt32' = UInt32
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	UInt16' = UInt16
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	UInt8' = UInt8
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Boolean' = Boolean
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	String' = String
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Binary' = Binary
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Enumeration' = Enumeration
 	inv mv == allOf
 	([
-		inv_Annotations'(mv.annotations)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Clock' = Clock
@@ -157,11 +171,18 @@ types
 		inv_Annotations'(mv.annotations)
 	]);
 
+	Dimension' = Dimension
+	inv d == allOf
+	([
+		rule("cannotSetStartAndVRef", cannotSetStartAndVRef(d))
+	]);
+
 functions
 	validVariableNames: ModelVariables +> bool
 	validVariableNames(evs) ==
-		-- @OnFail("validVariableNames: ModelVariable names must be unique")
-		( let names = [ ev.name | ev in seq evs ] in
+		-- @OnFail("validVariableNames: ModelVariable names and aliases must be unique")
+		( let aliases = conc [ [ a.name | a in seq ev.alias ] | ev in seq evs & ev.alias <> nil ],
+			names = [ ev.name | ev in seq evs ] ^ aliases in
 			len names = card elems names );
 
 	validIndependentVariable: ModelVariables +> bool
@@ -212,3 +233,7 @@ functions
 			| ev in seq evs & not is_Clock(ev)	-- Clocks have no dimensions
 		]);
 
+cannotSetStartAndVRef: Dimension +> bool
+cannotSetStartAndVRef(d) ==
+	-- @OnFail(1471, "cannotSetStartAndVRef: Dimension cannot define start and valueReference at %s", loc2str(d.location))
+	( d.start = nil <=> d.valueReference <> nil );
