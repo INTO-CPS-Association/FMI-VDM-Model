@@ -46,7 +46,11 @@ types
 		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
 		rule("validModelTypes",	validModelTypes(fmd)),
 		rule("validTypeUnits", validTypeUnits(fmd)),
-		rule("vaidVariableTypes", validVariableTypes(fmd))
+		rule("vaidVariableTypes", validVariableTypes(fmd)),
+		rule("validVariableNames", validVariableNames(fmd)),
+		rule("validTypeNames", validTypeNames(fmd)),
+		rule("validMultipleSets", validMultipleSets(fmd)),
+		rule("validClockPriorities", validClockPriorities(fmd))
 	]
 	^ let evs = effectiveVariables(fmd.modelVariables, fmd.typeDefinitions) in
 	[
@@ -82,8 +86,7 @@ functions
 		fmd.typeDefinitions <> nil => allOf
 		([
 			tdef.unit <> nil =>
-				/* @OnFail("validTypeUnits: Type %s, unit %s not defined in UnitDefinitions at %s",
-					tdef.name, tdef.unit, loc2str(tdef.location)) */
+				-- @OnFail("validTypeUnits: Type %s, unit %s not defined in UnitDefinitions at %s", tdef.name, tdef.unit, loc2str(tdef.location))
 				( fmd.unitDefinitions <> nil
 					and exists u in seq fmd.unitDefinitions & u.name = tdef.unit )
 
@@ -103,6 +106,51 @@ functions
 			| mv in seq fmd.modelVariables
 		]);
 
+	validTypeNames: FmiModelDescription +> bool
+	validTypeNames(fmd) == allOf
+		([
+			-- @OnFail("validTypeNames: TypeDefinition and Variable names overlap: %s at %s", tdef.name, loc2str(tdef.location))
+			( not exists mv in seq fmd.modelVariables & mv.name = tdef.name )
+
+			| tdef in seq fmd.typeDefinitions
+		]);
+
+	validVariableNames: FmiModelDescription +> bool
+	validVariableNames(fmd) ==
+		fmd.variableNamingConvention = <structured> => allOf(conc
+		[
+			[
+				-- @OnFail("validVariableNames: Structured name %s invalid at %s", mv.name, loc2str(mv.location))
+				( isValidStructuredName(mv.name) ),
+
+				-- @OnFail("validVariableNames: Name %s is not Float at %s", mv.name, loc2str(mv.location))
+				( mv.name(1, ..., 4) = "der(" => is_FloatKind(kindOf(mv)) )
+			]
+
+			| mv in seq fmd.modelVariables
+		]);
+
+	validMultipleSets: FmiModelDescription +> bool
+	validMultipleSets(fmd) == allOf
+		([
+			mv.canHandleMultipleSetPerTimeInstant <> nil =>
+				-- @OnFail("validMultipleSets: Variable %s, canHandleMultipleSetPerTimeInstant invalid at %s", mv.name, loc2str(mv.location))
+				( fmd.modelExchange <> nil and mv.causality = <input> )
+
+			| mv in seq fmd.modelVariables
+		]);
+
+	validReinits: FmiModelDescription +> bool
+	validReinits(fmd) == allOf
+		([
+			is_FloatKind(kindOf(mv)) and mv.reinit <> nil =>
+				-- @OnFail("validReinits: Variable %s, Float reinit for model exchange continuous time only at %s", mv.name, loc2str(mv.location))
+				( isContinuousTimeState(mv, fmd.modelVariables) and fmd.modelExchange <> nil )
+
+			| mv in seq fmd.modelVariables
+		]);
+
+
 	validOutput: FmiModelDescription * ModelVariables +> bool
 	validOutput(fmd, evs) ==
 		let outputRefs = { sv.valueReference | sv in seq evs & sv.causality = <output> },
@@ -110,16 +158,14 @@ functions
 		in
 			if outputRefs <> {}
 			then
-				/* @OnFail("validOutput: Output variables but no outputs declared at %s",
-					loc2str(fmd.modelStructure.location)) */
+				-- @OnFail("validOutput: Output variables but no outputs declared at %s", loc2str(fmd.modelStructure.location))
 				( structRefs <> {} )
 
 				and
-				/* @OnFail("validOutput: Outputs section does not match output variables at %s",
-					loc2str(fmd.modelStructure.location)) */
+				-- @OnFail("validOutput: Outputs section does not match output variables at %s", loc2str(fmd.modelStructure.location))
 				( structRefs = outputRefs )
 			else
-				/* @OnFail("validOutput: Outputs should be omitted at %s", loc2str(fmd.modelStructure.location)) */
+				-- @OnFail("validOutput: Outputs should be omitted at %s", loc2str(fmd.modelStructure.location))
 				( structRefs = {} );
 
 	validStateDerivatives: FmiModelDescription * ModelVariables +> bool
@@ -127,15 +173,15 @@ functions
 		fmd.modelExchange <> nil => allOf
 		([
 			let ev = lookupVariable(uk.valueReference, evs) in
-				/* @OnFail("validStateDerivatives: Derivative valueReference unknown at %s", loc2str(uk.location)) */
+				-- @OnFail("validStateDerivatives: Derivative valueReference unknown at %s", loc2str(uk.location))
 				( ev <> nil )
 
 				and allOf
 				([
-					/* @OnFail("validStateDerivatives: SV not a state derivative at %s", loc2str(uk.location)) */
+					-- @OnFail("validStateDerivatives: SV not a state derivative at %s", loc2str(uk.location))
 					( isStateDerivative(ev) ),
 
-					/* @OnFail("validStateDerivatives: Derivative must be continuous at %s", loc2str(uk.location)) */
+					-- @OnFail("validStateDerivatives: Derivative must be continuous at %s", loc2str(uk.location))
 					( uk.dependencies <> nil => ev.variability = <continuous> )
 				])
 
@@ -189,8 +235,7 @@ functions
 	validEventIndicators(fmd, evs) ==
 		fmd.modelStructure.eventIndicator <> nil => allOf
 		([
-			/* @OnFail("validEventIndicators: EventIndicator valueReference %s invalid at %s",
-				ei.valueReference, loc2str(ei.location)) */
+			-- @OnFail("validEventIndicators: EventIndicator valueReference %s invalid at %s", ei.valueReference, loc2str(ei.location))
 			( exists sv in seq evs & sv.valueReference = ei.valueReference )
 
 			| ei in seq fmd.modelStructure.eventIndicator
@@ -200,8 +245,7 @@ functions
 	validOutputReferences(fmd, evs) ==
 		fmd.modelStructure.output <> nil => allOf
 		([
-			/* @OnFail("validOutputReferences: Output valueReference %s is not an output at %s",
-				ei.valueReference, loc2str(ei.location)) */
+			-- @OnFail("validOutputReferences: Output valueReference %s is not an output at %s", ei.valueReference, loc2str(ei.location))
 			( exists sv in seq evs &
 				sv.valueReference = ei.valueReference and sv.causality = <output> )
 
@@ -230,3 +274,22 @@ functions
 
 				| unk in seq allUnknowns
 			]);
+
+	validClockPriorities: FmiModelDescription +> bool
+	validClockPriorities(fmd) == allOf
+		([
+			if fmd.scheduledExecution <> nil then
+				is_Clock(mv) =>
+					if mv.causality = <output>
+					then
+						-- @OnFail("validClockPriorities: Output clock %s must not have a priority for Scheduled Execution at %s", mv.name, loc2str(mv.location))
+						( mv.priority = nil )
+					else
+						-- @OnFail("validClockPriorities: Input clock %s must have a priority for Scheduled Execution at %s", mv.name, loc2str(mv.location))
+						( mv.priority <> nil )
+			else
+				-- @OnFail("validClockPriorities: Clock %s must not have a priority unless Scheduled Execution at %s", mv.name, loc2str(mv.location))
+				( is_Clock(mv) => mv.priority = nil )
+				
+			| mv in seq fmd.modelVariables
+		]);

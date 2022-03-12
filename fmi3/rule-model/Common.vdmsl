@@ -162,18 +162,18 @@ functions
 		else nil;
 
 	continuousTimeStates: seq of fmi3Variable -> set of fmi3Variable
-	continuousTimeStates(svs) ==
-		{ svs(i) | i in set inds svs & isContinuousTimeState(i, svs) };
+	continuousTimeStates(mvs) ==
+		{ mv | mv in seq mvs & isContinuousTimeState(mv, mvs) };
 
 	/**
 	 * Test ith index variable as a continuous time state.
 	 */
-	isContinuousTimeState: nat1 * seq of fmi3Variable +> bool
-	isContinuousTimeState(i, svs) ==
-		is_FloatKind(kindOf(svs(i)))
-		and svs(i).variability = <continuous> 
-		and exists j in seq svs &
-			is_FloatKind(kindOf(j)) and j.derivative = svs(i).valueReference;
+	isContinuousTimeState: fmi3Variable * seq of fmi3Variable +> bool
+	isContinuousTimeState(mv, mvs) ==
+		is_FloatKind(kindOf(mv))
+		and mv.variability = <continuous> 
+		and exists dv in seq mvs &
+			is_FloatKind(kindOf(dv)) and dv.derivative = mv.valueReference;
 
 	/**
 	 * Return the Variables from a list which are state derivatives, defined to be

@@ -40,30 +40,41 @@ types
 	Output' = Output
 	inv out == allOf
 	([
-		inv_Annotations'(out.annotations)
+		inv_Annotations'(out.annotations),
+		rule("validDependencyKinds", validDependencyKinds(out.dependencies, out.dependenciesKind))
 	]);
 
     ContinuousStateDerivative' = ContinuousStateDerivative
 	inv csd == allOf
 	([
-		inv_Annotations'(csd.annotations)
+		inv_Annotations'(csd.annotations),
+		rule("validDependencyKinds", validDependencyKinds(csd.dependencies, csd.dependenciesKind))
 	]);
 
     ClockedState' = ClockedState
 	inv cs == allOf
 	([
-		inv_Annotations'(cs.annotations)
+		inv_Annotations'(cs.annotations),
+		rule("validDependencyKinds", validDependencyKinds(cs.dependencies, cs.dependenciesKind))
 	]);
 
     InitialUnknown' = InitialUnknown
 	inv unks == allOf
 	([
-		inv_Annotations'(unks.annotations)
+		inv_Annotations'(unks.annotations),
+		rule("validDependencyKinds", validDependencyKinds(unks.dependencies, unks.dependenciesKind))
 	]);
 
     EventIndicator' = EventIndicator
 	inv eis == allOf
 	([
-		inv_Annotations'(eis.annotations)
+		inv_Annotations'(eis.annotations),
+		rule("validDependencyKinds", validDependencyKinds(eis.dependencies, eis.dependenciesKind))
 	]);
+
+functions
+	validDependencyKinds: [seq of (nat)] * [seq of (DependenciesKind)] +> bool
+	validDependencyKinds(dependencies, dependenciesKind) ==
+		dependenciesKind <> nil => dependencies <> nil
+		and len dependenciesKind = len dependencies;
 

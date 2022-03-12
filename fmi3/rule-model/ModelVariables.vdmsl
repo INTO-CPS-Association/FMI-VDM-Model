@@ -32,7 +32,7 @@ types
 	([
 		apply[fmi3Variable](inv_fmi3Variable', evs),
 
-		rule("validVariableNames", validVariableNames(evs)),
+		rule("validVariableNames", validAliasNames(evs)),
 		rule("validIndependentVariable", validIndependentVariable(evs)),
 		rule("validPreviousVariables", validPreviousVariables(evs)),
 		rule("validVariableDimensions", validVariableDimensions(evs)),
@@ -179,9 +179,9 @@ types
 	]);
 
 functions
-	validVariableNames: ModelVariables +> bool
-	validVariableNames(evs) ==
-		-- @OnFail("validVariableNames: ModelVariable names and aliases must be unique")
+	validAliasNames: ModelVariables +> bool
+	validAliasNames(evs) ==
+		-- @OnFail("validAliasNames: ModelVariable names and aliases must be unique")
 		( let aliases = conc [ [ a.name | a in seq ev.alias ] | ev in seq evs & ev.alias <> nil ],
 			names = [ ev.name | ev in seq evs ] ^ aliases in
 			len names = card elems names );
@@ -239,9 +239,11 @@ functions
 		allOf(conc
 		[
 			[
-				-- @OnFail("validAliasDisplayUnits: Alias displayUnit requires unit definition at %s", a.location)
-				( a.displayUnit <> nil => ev.unit <> nil ) | a in seq ev.alias
+				-- @OnFail("validAliasDisplayUnits: Alias displayUnit requires Float unit definition at %s", loc2str(a.location))
+				( a.displayUnit <> nil => is_FloatKind(kindOf(ev)) and ev.unit <> nil )
+				
+				| a in seq ev.alias
 			]
 
-			| ev in seq evs & ev.alias <> nil
-		])
+			| ev in seq evs & ev.alias <> nil	
+		]);

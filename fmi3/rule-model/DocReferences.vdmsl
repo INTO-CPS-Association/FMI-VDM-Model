@@ -194,5 +194,30 @@ values
 		"validUnknownDependencies" |->
 		[
 			"?"
+		],
+
+		"validDependencyKinds" |->
+		[
+			"?"
+		],
+
+		"validAliasNames" |->
+		[
+			"?"
+		],
+
+		"validTypeNames" |->
+		[
+			"?"
+		],
+
+		"validMultipleSets" |->
+		[
+			"?"
+		],
+
+		"validClockPriorities" |->
+		[
+			"?"
 		]
 	};
