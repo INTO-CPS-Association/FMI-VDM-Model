@@ -141,6 +141,11 @@ values
 			"fmi-standard/docs/index.html#definition-of-types"
 		],
 
+		"validValueReferences" |->
+		[
+			"?"
+		],
+
 		"validIndependentVariable" |->
 		[
 			"fmi-standard/docs/index.html#ModelVariables"
