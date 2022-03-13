@@ -248,7 +248,7 @@ functions
 		[
 			[
 				-- @OnFail("validAliasDisplayUnits: Alias displayUnit requires Float unit definition at %s", loc2str(a.location))
-				( a.displayUnit <> nil => is_FloatKind(kindOf(ev)) and ev.unit <> nil )
+				( a.displayUnit <> nil => isFloat(ev) and ev.unit <> nil )
 				
 				| a in seq ev.alias
 			]

@@ -48,14 +48,14 @@ types
 		rule("validTypeUnits", validTypeUnits(fmd)),
 		rule("vaidVariableTypes", validVariableTypes(fmd)),
 		rule("validVariableNames", validVariableNames(fmd)),
-		rule("validTypeNames", validTypeNames(fmd)),
-		rule("validMultipleSets", validMultipleSets(fmd)),
-		rule("validClockPriorities", validClockPriorities(fmd))
+		rule("validTypeNames", validTypeNames(fmd))
 	]
 	^ let evs = effectiveVariables(fmd.modelVariables, fmd.typeDefinitions) in
 	[
 		inv_ModelVariables'(evs),
 
+		rule("validMultipleSets", validMultipleSets(fmd, evs)),
+		rule("validClockPriorities", validClockPriorities(fmd, evs)),
 		rule("validOutput", validOutput(fmd, evs)),
 		rule("validStateDerivatives", validStateDerivatives(fmd, evs)),
 		rule("validInitialUnknowns", validInitialUnknowns(fmd, evs)),
@@ -90,7 +90,7 @@ functions
 				( fmd.unitDefinitions <> nil
 					and exists u in seq fmd.unitDefinitions & u.name = tdef.unit )
 
-			| tdef in seq fmd.typeDefinitions & is_FloatKind(kindOf(tdef))
+			| tdef in seq fmd.typeDefinitions & isFloat(tdef)
 		]);
 
 	validVariableTypes: FmiModelDescription +> bool
@@ -124,26 +124,26 @@ functions
 				( isValidStructuredName(mv.name) ),
 
 				-- @OnFail("validVariableNames: Name %s is not Float at %s", mv.name, loc2str(mv.location))
-				( mv.name(1, ..., 4) = "der(" => is_FloatKind(kindOf(mv)) )
+				( mv.name(1, ..., 4) = "der(" => isFloat(mv) )
 			]
 
 			| mv in seq fmd.modelVariables
 		]);
 
-	validMultipleSets: FmiModelDescription +> bool
-	validMultipleSets(fmd) == allOf
+	validMultipleSets: FmiModelDescription * ModelVariables +> bool
+	validMultipleSets(fmd, evs) == allOf
 		([
-			mv.canHandleMultipleSetPerTimeInstant <> nil =>
-				-- @OnFail("validMultipleSets: Variable %s, canHandleMultipleSetPerTimeInstant invalid at %s", mv.name, loc2str(mv.location))
-				( fmd.modelExchange <> nil and mv.causality = <input> )
+			ev.canHandleMultipleSetPerTimeInstant =>
+				-- @OnFail("validMultipleSets: Variable %s, canHandleMultipleSetPerTimeInstant invalid at %s", ev.name, loc2str(ev.location))
+				( fmd.modelExchange <> nil and ev.causality = <input> )
 
-			| mv in seq fmd.modelVariables
+			| ev in seq evs
 		]);
 
 	validReinits: FmiModelDescription +> bool
 	validReinits(fmd) == allOf
 		([
-			is_FloatKind(kindOf(mv)) and mv.reinit <> nil =>
+			isFloat(mv) and mv.reinit <> nil =>
 				-- @OnFail("validReinits: Variable %s, Float reinit for model exchange continuous time only at %s", mv.name, loc2str(mv.location))
 				( isContinuousTimeState(mv, fmd.modelVariables) and fmd.modelExchange <> nil )
 
@@ -275,21 +275,21 @@ functions
 				| unk in seq allUnknowns
 			]);
 
-	validClockPriorities: FmiModelDescription +> bool
-	validClockPriorities(fmd) == allOf
+	validClockPriorities: FmiModelDescription * ModelVariables +> bool
+	validClockPriorities(fmd, evs) == allOf
 		([
 			if fmd.scheduledExecution <> nil then
-				is_Clock(mv) =>
-					if mv.causality = <output>
+				is_Clock(ev) =>
+					if ev.causality = <output>
 					then
-						-- @OnFail("validClockPriorities: Output clock %s must not have a priority for Scheduled Execution at %s", mv.name, loc2str(mv.location))
-						( mv.priority = nil )
+						-- @OnFail("validClockPriorities: Output clock %s must not have a priority for Scheduled Execution at %s", ev.name, loc2str(ev.location))
+						( ev.priority = nil )
 					else
-						-- @OnFail("validClockPriorities: Input clock %s must have a priority for Scheduled Execution at %s", mv.name, loc2str(mv.location))
-						( mv.priority <> nil )
+						-- @OnFail("validClockPriorities: Input clock %s must have a priority for Scheduled Execution at %s", ev.name, loc2str(ev.location))
+						( ev.priority <> nil )
 			else
-				-- @OnFail("validClockPriorities: Clock %s must not have a priority unless Scheduled Execution at %s", mv.name, loc2str(mv.location))
-				( is_Clock(mv) => mv.priority = nil )
+				-- @OnFail("validClockPriorities: Clock %s must not have a priority unless Scheduled Execution at %s", ev.name, loc2str(ev.location))
+				( is_Clock(ev) => ev.priority = nil )
 				
-			| mv in seq fmd.modelVariables
+			| ev in seq evs
 		]);

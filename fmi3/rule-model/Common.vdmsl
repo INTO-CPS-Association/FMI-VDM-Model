@@ -147,6 +147,9 @@ functions
 
 		else undefined;
 
+	isFloat: fmi3Variable | fmi3TypeDefinition +> bool
+	isFloat(v) == kindOf(v) in set { <Float64>, <Float32> };
+
 	lookupType: [NormalizedString] * [TypeDefinitions] +> [fmi3TypeDefinition]
 	lookupType(name, tdefs) ==
 		if tdefs = nil or name = nil
@@ -170,10 +173,10 @@ functions
 	 */
 	isContinuousTimeState: fmi3Variable * seq of fmi3Variable +> bool
 	isContinuousTimeState(mv, mvs) ==
-		is_FloatKind(kindOf(mv))
+		isFloat(mv)
 		and mv.variability = <continuous> 
 		and exists dv in seq mvs &
-			is_FloatKind(kindOf(dv)) and dv.derivative = mv.valueReference;
+			isFloat(dv) and dv.derivative = mv.valueReference;
 
 	/**
 	 * Return the Variables from a list which are state derivatives, defined to be
@@ -188,4 +191,4 @@ functions
 	 */
 	isStateDerivative: fmi3Variable +> bool
 	isStateDerivative(sv) ==
-		is_FloatKind(kindOf(sv)) and sv.derivative <> nil;
+		isFloat(sv) and sv.derivative <> nil;
