@@ -109,7 +109,7 @@ functions
 		]);
 
 	validTypeNames: FmiModelDescription +> bool
-	validTypeNames(fmd) == allOf
+	validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
 		([
 			-- @OnFail("validTypeNames: TypeDefinition and Variable names overlap: %s at %s", tdef.name, loc2str(tdef.location))
 			( not exists mv in seq fmd.modelVariables & mv.name = tdef.name )

@@ -1,0 +1,146 @@
+/**
+ * VDM value created from model_structure_example3.xml
+ */
+values
+    model_structure_example3 =
+    mk_FmiModelDescription
+    (
+        mk_Location("model_structure_example3.xml", 7),
+        "3.0-beta.5",  -- fmiVersion
+        "",  -- modelName
+        "",  -- instantiationToken
+        "",  -- description
+        nil,  -- author
+        nil,  -- version
+        nil,  -- copyright
+        nil,  -- license
+        nil,  -- generationTool
+        "2019-04-14T13:06:01Z",  -- generationDateAndTime
+        nil,  -- variableNamingConvention
+        nil,  -- modelExchange
+        mk_CoSimulation
+        (
+            mk_Location("model_structure_example3.xml", 9),
+            "example",  -- modelIdentifier
+            nil,  -- needsExecutionTool
+            nil,  -- canBeInstantiatedOnlyOncePerProcess
+            nil,  -- canGetAndSetFMUState
+            nil,  -- canSerializeFMUState
+            nil,  -- providesDirectionalDerivatives
+            nil,  -- providesAdjointDerivatives
+            nil,  -- providesPerElementDependencies
+            nil,  -- any
+            nil,  -- canHandleVariableCommunicationStepSize
+            0.01,  -- fixedInternalStepSize
+            nil,  -- maxOutputDerivativeOrder
+            nil,  -- recommendedIntermediateInputSmoothness
+            nil,  -- providesIntermediateUpdate
+            nil,  -- mightReturnEarlyFromDoStep
+            nil,  -- canReturnEarlyAfterIntermediateUpdate
+            nil,  -- hasEventMode
+            nil,  -- providesEvaluateDiscreteStates
+            nil   -- annotations
+        ),
+        nil,  -- scheduledExecution
+        nil,  -- unitDefinitions
+        nil,  -- typeDefinitions
+        nil,  -- logCategories
+        nil,  -- defaultExperiment
+        [
+            mk_Float64
+            (
+                mk_Location("model_structure_example3.xml", 12),
+                "u",  -- name
+                1,  -- valueReference
+                nil,  -- description
+                nil,  -- causality
+                nil,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                nil,  -- start
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("model_structure_example3.xml", 13),
+                "y",  -- name
+                2,  -- valueReference
+                nil,  -- description
+                <output>,  -- causality
+                nil,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                nil,  -- start
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            )
+        ],
+        mk_ModelStructure
+        (
+            mk_Location("model_structure_example3.xml", 16),
+            -- output
+            [
+                mk_Output
+                (
+                    mk_Location("model_structure_example3.xml", 17),
+                    2,  -- valueReference
+                    -- dependencies
+                    [
+                        1
+                    ],
+                    -- dependenciesKind
+                    [
+                        <dependent>
+                    ],
+                    nil   -- annotations
+                )
+            ],
+            nil,  -- continuousStateDerivative
+            nil,  -- clockedState
+            -- initialUnknown
+            [
+                mk_InitialUnknown
+                (
+                    mk_Location("model_structure_example3.xml", 18),
+                    2,  -- valueReference
+                    nil,  -- dependencies
+                    nil,  -- dependenciesKind
+                    nil   -- annotations
+                )
+            ],
+            nil   -- eventIndicator
+        ),
+        nil   -- annotations
+    );
+

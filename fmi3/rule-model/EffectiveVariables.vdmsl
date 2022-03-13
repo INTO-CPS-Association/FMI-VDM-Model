@@ -584,3 +584,15 @@ functions
 							<continuous>	-> nil
 						end
 				end;
+
+	effectiveDisplayUnit: DisplayUnit +> DisplayUnit
+	effectiveDisplayUnit(dunit) ==
+		mk_DisplayUnit
+		(
+			dunit.location,
+			dunit.name,
+			if dunit.factor <> nil then dunit.factor else 1,
+			if dunit.offset <> nil then dunit.offset else 0,
+			dunit.$inverse = true,
+			dunit.annotations
+		);

@@ -30,6 +30,19 @@ functions
 	tests: () +> seq of bool
 	tests() ==
 	[
-		validate(validModelType)
+		validate(alias_example),
+		validate(co_simulation_early_return),
+		validate(co_simulation),
+		validate(minimal),
+		validate(model_exchange),
+		validate(model_structure_example1),
+		validate(model_structure_example2),
+		validate(model_structure_example3),
+		validate(model_structure_example4),
+		validate(scheduled_execution),
+		validate(string_vector_example),
+		validate(structural_parameter_example),
+		validate(unit_definition),
+		validate(variable_types)
 	]
 	-- post elems RESULT = {true};

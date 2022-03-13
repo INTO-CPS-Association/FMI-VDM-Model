@@ -48,16 +48,19 @@ types
 	BaseUnit' = [BaseUnit]
 	inv bunit == bunit <> nil => allOf
 	([
-		rule("atLeastOneUnit", atLeastOneUnit(bunit))
+		true	-- No rules for BaseUnit?
 	]);
 
 	DisplayUnit' = DisplayUnit
 	inv dunit == allOf
-	([
-		inv_Annotations'(dunit.annotations),
+	(
+		let edu = effectiveDisplayUnit(dunit) in
+		[
+			inv_Annotations'(edu.annotations),
 
-		rule("validInverseAndOffset", validInverseAndOffset(dunit))
-	]);
+			rule("validInverseAndOffset", validInverseAndOffset(edu))
+		]
+	);
 
 
 functions
@@ -66,12 +69,6 @@ functions
 		-- @OnFail("validUnitNames: Unit names must be unique")
 		( let names = [ u.name | u in seq units ] in
 			len names = card elems names );
-
-	atLeastOneUnit: BaseUnit +> bool
-	atLeastOneUnit(bunit) ==
-		-- @OnFail("atLeastOneUnit: BaseUnit must define at least one SI unit at %s", loc2str(bunit.location))
-		( bunit.kg <> nil or bunit.m <> nil or bunit.s <> nil or bunit.a <> nil
-		  or bunit.k <> nil or bunit.mol <> nil or bunit.cd <> nil or bunit.rad <> nil );
 
 	validDisplayUnitNames: Unit +> bool
 	validDisplayUnitNames(unit) ==
