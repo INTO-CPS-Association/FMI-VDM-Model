@@ -28,6 +28,13 @@
  *********************************************************************************/
 functions
 	/**
+	 * Provide a simple field default if the value is nil. Used in effective functions.
+	 */
+	default[@T]: [@T] * @T +> @T
+	default(value, ifnil) ==
+		if value = nil then ifnil else value;
+
+	/**
 	 * Check the result of a named rule and list the FMI Standard document references that
 	 * describe the correct behaviour, if the rule failed.
 	 */
