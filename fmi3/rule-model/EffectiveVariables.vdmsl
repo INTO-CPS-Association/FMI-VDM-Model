@@ -28,12 +28,12 @@
  *********************************************************************************/
 functions
 	override[@T]: [@T] * [@T] * [@T] +> [@T]
-	override(value, typedef, default) ==
+	override(value, typedef, neither) ==
 		if value <> nil
 		then value
 		elseif typedef <> nil
 		then typedef
-		else default;
+		else neither;
 
 	effectiveVariables: seq1 of fmi3Variable * [TypeDefinitions] +> seq1 of fmi3Variable
 	effectiveVariables(mvs, tdefs) ==
