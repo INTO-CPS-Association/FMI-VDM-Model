@@ -36,7 +36,7 @@ types
 	]);
 
 functions
-	validDefaultExperiment: [DefaultExperiment] +> bool
+	validDefaultExperiment: DefaultExperiment +> bool
 	validDefaultExperiment(e) == allOf
 		([
 			-- @OnFail(1250, "validDefaultExperiment: tolerance must be >= 0 at %s", loc2str(e.location))
