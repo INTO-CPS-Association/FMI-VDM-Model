@@ -43,6 +43,7 @@ types
 		inv_ModelStructure'(fmd.modelStructure),
 		inv_Annotations'(fmd.annotations),
 
+		-- If these rules use variables at all, they are the "raw" values
 		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
 		rule("validModelTypes",	validModelTypes(fmd)),
 		rule("validTypeUnits", validTypeUnits(fmd)),
@@ -54,6 +55,7 @@ types
 	[
 		inv_ModelVariables'(evs),
 
+		-- If these rules use variables, they use the effective values
 		rule("validMultipleSets", validMultipleSets(fmd, evs)),
 		rule("validClockPriorities", validClockPriorities(fmd, evs)),
 		rule("validOutput", validOutput(fmd, evs)),
@@ -280,13 +282,13 @@ functions
 		([
 			if fmd.scheduledExecution <> nil then
 				is_Clock(ev) =>
-					if ev.causality = <output>
+					if ev.causality = <input>
 					then
-						-- @OnFail("validClockPriorities: Output clock %s must not have a priority for Scheduled Execution at %s", ev.name, loc2str(ev.location))
-						( ev.priority = nil )
-					else
 						-- @OnFail("validClockPriorities: Input clock %s must have a priority for Scheduled Execution at %s", ev.name, loc2str(ev.location))
 						( ev.priority <> nil )
+					else
+						-- @OnFail("validClockPriorities: Non-input clock %s must not have a priority for Scheduled Execution at %s", ev.name, loc2str(ev.location))
+						( ev.priority = nil )
 			else
 				-- @OnFail("validClockPriorities: Clock %s must not have a priority unless Scheduled Execution at %s", ev.name, loc2str(ev.location))
 				( is_Clock(ev) => ev.priority = nil )

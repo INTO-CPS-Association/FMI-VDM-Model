@@ -143,7 +143,7 @@ values
 
 		"validValueReferences" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#_platform_dependent_definitions"
 		],
 
 		"validIndependentVariable" |->
@@ -173,56 +173,56 @@ values
 
 		"validOutput" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#ModelStructure"
 		],
 
 		"validStateDerivatives" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#ModelStructure"
 		],
 		
 		"validInitialUnknowns" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#ModelStructure"
 		],
 		
 		"validEventIndicators" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#ModelStructure"
 		],
 		
 		"validOutputReferences" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#ModelStructure"
 		],
 		
 		"validUnknownDependencies" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#ModelStructure"
 		],
 
 		"validDependencyKinds" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#ModelStructure"
 		],
 
 		"validAliasNames" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#_alias_variables"
 		],
 
 		"validTypeNames" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#table-type-details"
 		],
 
 		"validMultipleSets" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#table-variableBase-attributes"
 		],
 
 		"validClockPriorities" |->
 		[
-			"?"
+			"fmi-standard/docs/index.html#table-type-details"
 		]
 	};

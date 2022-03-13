@@ -39,6 +39,11 @@ functions
 	effectiveVariables(mvs, tdefs) ==
 		[ effectiveVariable(mv, tdefs) | mv in seq mvs ];
 
+	/**
+	 * Calculate the effective value of a variables fields, taking defaults from any declaredType,
+	 * setting optional boolean fields to true/false, and setting any defined defaults for other
+	 * fields.
+	 */
 	effectiveVariable: fmi3Variable * [TypeDefinitions] +> fmi3Variable
 	effectiveVariable(mv, tdefs) ==
 		let decltype = lookupType(mv.declaredType, tdefs),

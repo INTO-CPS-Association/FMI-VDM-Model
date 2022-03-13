@@ -27,6 +27,9 @@
  *
  *********************************************************************************/
 types
+	/**
+	 * Kind is a convenient tag for variables and typedefs of a particular type.
+	 */
 	FloatKind = <Float64> | <Float32>;
 	IntegerKind = <Int64> | <Int32> | <Int16> | <Int8> | <UInt64> | <UInt32> | <UInt16> | <UInt8>;
 	Kind = FloatKind | IntegerKind | <Boolean> | <String> | <Binary> | <Enumeration> | <Clock>;
@@ -41,7 +44,7 @@ functions
 		s <> "" and s(1) not in set elems DIGITS;
 
 	/**
-	 * Check whether date/time string is "YYYY-MM-DDThh:mm:ssZ" format.
+	 * Check whether a date/time string is "YYYY-MM-DDThh:mm:ssZ" format.
 	 */
 	iso8601: NormalizedString +> bool
 	iso8601(dt) ==
@@ -91,6 +94,9 @@ functions
 	}
 	(kind);
 
+	/**
+	 * Test whether min/max are within the limits for a Kind.
+	 */
 	validMinMax: [real] * [real] * Kind +> bool
 	validMinMax(min, max, kind) ==
 		let mk_(kmin, kmax) = minMaxKind(kind) in allOf
@@ -113,43 +119,34 @@ functions
 	 */
 	kindOf: fmi3Variable | fmi3TypeDefinition +> Kind
 	kindOf(v) ==
-		if is_(v, Float32) then <Float32>
-		elseif is_(v, Float64) then <Float64>
-		elseif is_(v, Int8) then <Int8>
-		elseif is_(v, UInt8) then  <UInt8>
-		elseif is_(v, Int16) then<Int16>
-		elseif is_(v, UInt16) then <UInt16>
-		elseif is_(v, Int32) then <Int32>
-		elseif is_(v, UInt32) then <UInt32>
-		elseif is_(v, Int64) then <Int64>
-		elseif is_(v, UInt64) then <UInt64>
-		elseif is_(v, Boolean) then <Boolean>
-		elseif is_(v, String) then <String>
-		elseif is_(v, Binary) then <Binary>
-		elseif is_(v, Enumeration) then <Enumeration>
-		elseif is_(v, Clock) then <Clock>
-
-		elseif is_(v, Float32Type) then <Float32>
-		elseif is_(v, Float64Type) then <Float64>
-		elseif is_(v, Int8Type) then <Int8>
-		elseif is_(v, UInt8Type) then  <UInt8>
-		elseif is_(v, Int16Type) then<Int16>
-		elseif is_(v, UInt16Type) then <UInt16>
-		elseif is_(v, Int32Type) then <Int32>
-		elseif is_(v, UInt32Type) then <UInt32>
-		elseif is_(v, Int64Type) then <Int64>
-		elseif is_(v, UInt64Type) then <UInt64>
-		elseif is_(v, BooleanType) then <Boolean>
-		elseif is_(v, StringType) then <String>
-		elseif is_(v, BinaryType) then <Binary>
-		elseif is_(v, EnumerationType) then <Enumeration>
-		elseif is_(v, ClockType) then <Clock>
+		if     is_(v, Float32) or is_(v, Float32Type) then <Float32>
+		elseif is_(v, Float64) or is_(v, Float64Type) then <Float64>
+		elseif is_(v, Int8) or is_(v, Int8Type) then <Int8>
+		elseif is_(v, UInt8) or is_(v, UInt8Type) then  <UInt8>
+		elseif is_(v, Int16) or is_(v, Int16Type) then<Int16>
+		elseif is_(v, UInt16) or is_(v, UInt16Type) then <UInt16>
+		elseif is_(v, Int32) or is_(v, Int32Type) then <Int32>
+		elseif is_(v, UInt32) or is_(v, UInt32Type) then <UInt32>
+		elseif is_(v, Int64) or is_(v, Int64Type) then <Int64>
+		elseif is_(v, UInt64) or is_(v, UInt64Type) then <UInt64>
+		elseif is_(v, Boolean) or is_(v, BooleanType) then <Boolean>
+		elseif is_(v, String) or is_(v, StringType) then <String>
+		elseif is_(v, Binary) or is_(v, BinaryType) then <Binary>
+		elseif is_(v, Enumeration) or is_(v, EnumerationType) then <Enumeration>
+		elseif is_(v, Clock) or is_(v, ClockType) then <Clock>
 
 		else undefined;
 
+	/**
+	 * Test whether a variable or type is a floating point kind.
+	 */
 	isFloat: fmi3Variable | fmi3TypeDefinition +> bool
-	isFloat(v) == kindOf(v) in set { <Float64>, <Float32> };
+	isFloat(v) ==
+		kindOf(v) in set { <Float64>, <Float32> };
 
+	/**
+	 * Lookup a type by name from the list of TypeDefinitions passed.
+	 */
 	lookupType: [NormalizedString] * [TypeDefinitions] +> [fmi3TypeDefinition]
 	lookupType(name, tdefs) ==
 		if tdefs = nil or name = nil
@@ -158,18 +155,25 @@ functions
 		then let tdef in seq tdefs be st tdef.name = name in tdef	-- Pick any type
 		else nil;
 
+	/**
+	 * Lookup a variable by valueReference in the list passed.
+	 */
 	lookupVariable: nat * ModelVariables +> [fmi3Variable]
 	lookupVariable(vref, evs) ==
 		if exists ev in seq evs & ev.valueReference = vref
 		then let ev in seq evs be st ev.valueReference = vref in ev
 		else nil;
 
+	/**
+	 * Return a set of continuous time states from the list passed.
+	 */
 	continuousTimeStates: seq of fmi3Variable -> set of fmi3Variable
 	continuousTimeStates(mvs) ==
 		{ mv | mv in seq mvs & isContinuousTimeState(mv, mvs) };
 
 	/**
-	 * Test ith index variable as a continuous time state.
+	 * Test whether variable as a continuous time state, defined to be
+	 * continuous Floats that have other Floats that are their derivative.
 	 */
 	isContinuousTimeState: fmi3Variable * seq of fmi3Variable +> bool
 	isContinuousTimeState(mv, mvs) ==
@@ -187,7 +191,7 @@ functions
 		{ sv | sv in seq svs & isStateDerivative(sv) };
 
 	/**
-	 * Test Variable as a state derivative.
+	 * Test whether a variable is a state derivative.
 	 */
 	isStateDerivative: fmi3Variable +> bool
 	isStateDerivative(sv) ==

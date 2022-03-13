@@ -90,6 +90,9 @@ functions
 			else nat2str(n div 10) ^ [d]
 	measure n;
 
+	/**
+	 * Turn a nil set/seq into an empty set/seq.
+	 */
 	nilSeq[@T]: [seq of @T] +> seq of @T
 	nilSeq(s) ==
 		if s = nil then [] else s;

@@ -189,10 +189,11 @@ functions
 
 	validAliasNames: ModelVariables +> bool
 	validAliasNames(evs) ==
-		-- @OnFail("validAliasNames: ModelVariable names and aliases must be unique")
-		( let aliases = conc [ [ a.name | a in seq ev.alias ] | ev in seq evs & ev.alias <> nil ],
-			names = [ ev.name | ev in seq evs ] ^ aliases in
-			len names = card elems names );
+		let aliases = conc [ [ a.name | a in seq ev.alias ] | ev in seq evs & ev.alias <> nil ],
+			names = [ ev.name | ev in seq evs ] ^ aliases
+		in
+			-- @OnFail("validAliasNames: ModelVariable names and aliases must be unique")
+			( len names = card elems names );
 
 	validIndependentVariable: ModelVariables +> bool
 	validIndependentVariable(evs) ==
@@ -202,11 +203,12 @@ functions
 
 	validPreviousVariables: ModelVariables +> bool
 	validPreviousVariables(evs) ==
+		let plist =  [ sv.previous | sv in seq evs & not is_Clock(sv) and sv.previous <> nil ]
+		in
 			/* @OnFail("validPreviousVariables: Variable previous fields are not unique: %s",
 				{ evs(a).name | a, b in set inds evs & not is_Clock(a) and not is_Clock(b) and
 					a <> b and evs(a).previous <> nil and evs(a).previous = evs(b).previous } ) */
-			( let plist =  [ sv.previous | sv in seq evs & not is_Clock(sv) and sv.previous <> nil ] in
-			  	card elems plist = len plist );
+			( card elems plist = len plist );
 
 	validVariableDimensions: ModelVariables +> bool
 	validVariableDimensions(evs) ==

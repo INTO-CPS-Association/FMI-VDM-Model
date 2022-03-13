@@ -37,8 +37,7 @@ types
 
 functions
 	validDefaultExperiment: [DefaultExperiment] +> bool
-	validDefaultExperiment(e) ==
-		e <> nil => allOf
+	validDefaultExperiment(e) == allOf
 		([
 			-- @OnFail(1250, "validDefaultExperiment: tolerance must be >= 0 at %s", loc2str(e.location))
 			( e.tolerance <> nil => e.tolerance >= 0),
