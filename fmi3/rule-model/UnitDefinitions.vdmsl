@@ -47,9 +47,12 @@ types
 
 	BaseUnit' = [BaseUnit]
 	inv bunit == bunit <> nil => allOf
-	([
-		true	-- No rules for BaseUnit?
-	]);
+	(
+		let - = effectiveBaseUnit(bunit) in
+		[
+			true	-- No rules for BaseUnit?
+		]
+	);
 
 	DisplayUnit' = DisplayUnit
 	inv dunit == allOf
