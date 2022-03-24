@@ -39,13 +39,13 @@ functions
 	validDefaultExperiment: DefaultExperiment +> bool
 	validDefaultExperiment(e) == allOf
 		([
-			-- @OnFail(1250, "validDefaultExperiment: tolerance must be >= 0 at %s", loc2str(e.location))
+			-- @OnFail("validDefaultExperiment: tolerance must be >= 0 at %s", loc2str(e.location))
 			( e.tolerance <> nil => e.tolerance >= 0),
 
-			-- @OnFail(1251, "validDefaultExperiment: stop time must be later than start time at %s", loc2str(e.location))
+			-- @OnFail("validDefaultExperiment: stop time must be later than start time at %s", loc2str(e.location))
 			( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime ),
 
-			-- @OnFail(1252, "validDefaultExperiment: stepSize must be less than start-stop interval at %s", loc2str(e.location))
+			-- @OnFail("validDefaultExperiment: stepSize must be less than start-stop interval at %s", loc2str(e.location))
 			( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
 				e.stopTime - e.startTime > e.stepSize )
 		]);

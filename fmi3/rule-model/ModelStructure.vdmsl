@@ -41,40 +41,42 @@ types
 	inv out == allOf
 	([
 		inv_Annotations'(out.annotations),
-		rule("validDependencyKinds", validDependencyKinds(out.dependencies, out.dependenciesKind))
+		rule("validDependencyKinds", validDependencyKinds(out.location, out.dependencies, out.dependenciesKind))
 	]);
 
     ContinuousStateDerivative' = ContinuousStateDerivative
 	inv csd == allOf
 	([
 		inv_Annotations'(csd.annotations),
-		rule("validDependencyKinds", validDependencyKinds(csd.dependencies, csd.dependenciesKind))
+		rule("validDependencyKinds", validDependencyKinds(csd.location, csd.dependencies, csd.dependenciesKind))
 	]);
 
     ClockedState' = ClockedState
 	inv cs == allOf
 	([
 		inv_Annotations'(cs.annotations),
-		rule("validDependencyKinds", validDependencyKinds(cs.dependencies, cs.dependenciesKind))
+		rule("validDependencyKinds", validDependencyKinds(cs.location, cs.dependencies, cs.dependenciesKind))
 	]);
 
     InitialUnknown' = InitialUnknown
 	inv unks == allOf
 	([
 		inv_Annotations'(unks.annotations),
-		rule("validDependencyKinds", validDependencyKinds(unks.dependencies, unks.dependenciesKind))
+		rule("validDependencyKinds", validDependencyKinds(unks.location, unks.dependencies, unks.dependenciesKind))
 	]);
 
     EventIndicator' = EventIndicator
 	inv eis == allOf
 	([
 		inv_Annotations'(eis.annotations),
-		rule("validDependencyKinds", validDependencyKinds(eis.dependencies, eis.dependenciesKind))
+		rule("validDependencyKinds", validDependencyKinds(eis.location, eis.dependencies, eis.dependenciesKind))
 	]);
 
 functions
-	validDependencyKinds: [seq of (nat)] * [seq of (DependenciesKind)] +> bool
-	validDependencyKinds(dependencies, dependenciesKind) ==
-		dependenciesKind <> nil => dependencies <> nil
-		and len dependenciesKind = len dependencies;
+	validDependencyKinds: Location * [seq of (nat)] * [seq of (DependenciesKind)] +> bool
+	validDependencyKinds(location, dependencies, dependenciesKind) ==
+		-- @OnFail("validDependencyKinds: dependencies do not match dependenciesKind at %s", loc2str(location))
+		( dependenciesKind <> nil =>
+			dependencies <> nil
+			and len dependenciesKind = len dependencies );
 

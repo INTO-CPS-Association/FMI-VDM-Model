@@ -28,9 +28,15 @@
  *********************************************************************************/
 functions
 	/**
-	 * Top level function to validate a given FMIModelDescription record. This just
-	 * calls the invariant function for the "prime" checked type.
+	 * Top level function to validate a given top level XML record. This just
+	 * calls the invariant function for the corresponding "prime" checked type.
 	 */
-	validate: FmiModelDescription +> bool
-	validate(fmu) ==
-		inv_FmiModelDescription'(fmu);
+	validate: FmiModelDescription | FmiBuildDescription +> bool
+	validate(data) ==
+		if is_FmiModelDescription(data)
+		then inv_FmiModelDescription'(data)
+		
+		elseif is_FmiBuildDescription(data)
+		then inv_FmiBuildDescription'(data)
+		
+		else undefined;
