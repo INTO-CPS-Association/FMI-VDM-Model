@@ -710,7 +710,6 @@ functions
 					),
 
 			<Boolean> ->
-				-- Nothing inherited from decltype?
 				mk_Boolean
 				(
 					mv.location,
@@ -732,7 +731,6 @@ functions
 				),
 
 			<String> ->
-				-- Nothing inherited from decltype?
 				mk_String
 				(
 					mv.location,
