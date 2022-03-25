@@ -381,7 +381,7 @@ functions
 					mv.previous,
 					mv.declaredType,
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-					override[NormalizedString](mv.mimeType, decltype.mimeType, nil),
+					override[NormalizedString](mv.mimeType, decltype.mimeType, "application/octet-stream"),
 					override[nat](mv.maxSize, decltype.maxSize, nil),
 					mv.annotations,		-- NOT inherited?
 					mv.dimension,
@@ -766,7 +766,7 @@ functions
 					mv.previous,
 					mv.declaredType,
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-					override[NormalizedString](mv.mimeType, nil, nil),
+					override[NormalizedString](mv.mimeType, nil, "application/octet-stream"),
 					override[nat](mv.maxSize, nil, nil),
 					mv.annotations,
 					mv.dimension,
