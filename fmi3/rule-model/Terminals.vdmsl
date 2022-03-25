@@ -95,17 +95,17 @@ functions
 			true;	-- rules here?
 
 	validTerminalGraphicalRepresentation: [TerminalGraphicalRepresentation] +> bool
-	validTerminalGraphicalRepresentation(gt) ==
-		gt <> nil => allOf
+	validTerminalGraphicalRepresentation(tgr) ==
+		tgr <> nil => allOf
 		([
-			-- @OnFail("validTerminalGraphicalRepresentation: Terminal area is not bottom left to top right at %s", loc2str(gt.location))
-			( gt.x1 < gt.x2 and gt.y1 < gt.y2 ),
+			-- @OnFail("validTerminalGraphicalRepresentation: Terminal area is not bottom left to top right at %s", loc2str(tgr.location))
+			( tgr.x1 < tgr.x2 and tgr.y1 < tgr.y2 ),
 
-			-- @OnFail("validTerminalGraphicalRepresentation: Colour attributes must be octets (<=255) at %s", loc2str(gt.location))
-			( gt.defaultConnectionColor <> nil =>
-				forall c in seq gt.defaultConnectionColor & c <= 255 ),
+			-- @OnFail("validTerminalGraphicalRepresentation: Colour attributes must be octets (<=255) at %s", loc2str(tgr.location))
+			( tgr.defaultConnectionColor <> nil =>
+				forall c in seq tgr.defaultConnectionColor & c <= 255 ),
 
-			-- @OnFail("validTerminalGraphicalRepresentation: defaultConnectionStrokeSize must be >0 at %s", loc2str(gt.location))
-			( gt.defaultConnectionStrokeSize <> nil =>
-				gt.defaultConnectionStrokeSize > 0 )
+			-- @OnFail("validTerminalGraphicalRepresentation: defaultConnectionStrokeSize must be >0 at %s", loc2str(tgr.location))
+			( tgr.defaultConnectionStrokeSize <> nil =>
+				tgr.defaultConnectionStrokeSize > 0 )
 		]);
