@@ -1,17 +1,17 @@
 # Generate all XML tests
 
-for x in *.xml
+for xml in *.xml
 do
-    echo "------------ $x"
-    n=$(basename $x .xml)
+    echo "------------ $xml"
+    name=$(basename $xml .xml)
 
-	case $n in
+	case $name in
 		build_description*)
-    		./generateTest.sh fmi3BuildDescription.xsd $x $n
+    		./generateTest.sh fmi3BuildDescription.xsd $xml $name
 			;;
 
 		*)
-			./generateTest.sh fmi3ModelDescription.xsd $x $n
+			./generateTest.sh fmi3ModelDescription.xsd $xml $name
 			;;
 	esac
 

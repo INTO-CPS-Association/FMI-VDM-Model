@@ -10,4 +10,4 @@ FMI_STANDARD="$HOME/Digital Twins/fmi-standard"
 XSD=$1
 BASE=$(basename $2 .xml)
 NAME=$3
-xsd2vdm.sh -xsd "$FMI_STANDARD/schema/$1" -xml "$BASE.xml" -vdm "$BASE.vdmsl" -name "$NAME"
+xsd2vdm.sh -xsd "$FMI_STANDARD/schema/$XSD" -xml "$BASE.xml" -vdm "$BASE.vdmsl" -name "$NAME"
