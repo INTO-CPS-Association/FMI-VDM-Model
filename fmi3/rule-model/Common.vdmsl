@@ -196,3 +196,10 @@ functions
 	isStateDerivative: fmi3Variable +> bool
 	isStateDerivative(sv) ==
 		isFloat(sv) and sv.derivative <> nil;
+
+	/**
+	 * Test coordinate/icon/terminal are top left to bottom right
+	 */
+	 isTLtoBR: real * real * real * real +> bool
+	 isTLtoBR(x1, y1, x2, y2) ==
+	 	x1 < x2 and y1 < y2;
