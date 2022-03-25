@@ -10,6 +10,10 @@ do
     		./generateTest.sh fmi3BuildDescription.xsd $xml $name
 			;;
 
+		terminals_and_icons*)
+    		./generateTest.sh fmi3TerminalsAndIcons.xsd $xml $name
+			;;
+
 		*)
 			./generateTest.sh fmi3ModelDescription.xsd $xml $name
 			;;

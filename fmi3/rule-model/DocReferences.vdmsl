@@ -244,5 +244,30 @@ values
 		"validIncludeDirectoryNames" |->
 		[
 			"fmi-standard/docs/index.html#table-IncludeDirectory-details"
+		],
+
+		"validCoordinateSystem" |->
+		[
+			"fmi-standard/docs/index.html#_coordinatesystem"
+		],
+
+		"validIcon" |->
+		[
+			"fmi-standard/docs/index.html#_icon"
+		],
+
+		"validTerminalMemberVariables" |->
+		[
+			"fmi-standard/docs/index.html#section-terminalvars"
+		],
+
+		"validTerminalGraphicalRepresentation" |->
+		[
+			"fmi-standard/docs/index.html#_terminal_graphical_representation"
+		],
+
+		"validTerminalStreamMemberVariables" |->
+		[
+			"fmi-standard/docs/index.html#_terminal_stream_member_variable"
 		]
 	};

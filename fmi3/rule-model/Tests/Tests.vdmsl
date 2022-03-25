@@ -44,6 +44,7 @@ functions
 		validate(scheduled_execution),
 		validate(string_vector_example),
 		validate(structural_parameter_example),
+		validate(terminals_and_icons),
 		validate(unit_definition),
 		validate(variable_types)
 	]
