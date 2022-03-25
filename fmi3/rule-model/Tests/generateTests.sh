@@ -4,6 +4,16 @@ for x in *.xml
 do
     echo "------------ $x"
     n=$(basename $x .xml)
-    ./generateTest.sh $x $n
+
+	case $n in
+		build_description*)
+    		./generateTest.sh fmi3BuildDescription.xsd $x $n
+			;;
+
+		*)
+			./generateTest.sh fmi3ModelDescription.xsd $x $n
+			;;
+	esac
+
     echo Done
 done

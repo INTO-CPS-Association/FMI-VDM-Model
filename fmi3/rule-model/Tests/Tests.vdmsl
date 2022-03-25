@@ -31,6 +31,8 @@ functions
 	tests() ==
 	[
 		validate(alias_example),
+		validate(build_description_complex),
+		validate(build_description_simple),
 		validate(co_simulation_early_return),
 		validate(co_simulation),
 		validate(minimal),
