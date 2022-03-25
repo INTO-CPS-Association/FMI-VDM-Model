@@ -224,5 +224,25 @@ values
 		"validClockPriorities" |->
 		[
 			"fmi-standard/docs/index.html#table-type-details"
+		],
+
+		"validCompilerOptions" |->
+		[
+			"fmi-standard/docs/index.html#table-SourceFileSet-details"
+		],
+
+		"validSourceFileNames" |->
+		[
+			"fmi-standard/docs/index.html#table-SourceFile-details"
+		],
+
+		"validPreprocessorDefinitionNames" |->
+		[
+			"fmi-standard/docs/index.html#table-ProcessorDefinition-details"
+		],
+
+		"validIncludeDirectoryNames" |->
+		[
+			"fmi-standard/docs/index.html#table-IncludeDirectory-details"
 		]
 	};
