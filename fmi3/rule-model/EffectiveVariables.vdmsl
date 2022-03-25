@@ -49,20 +49,17 @@ functions
 		let decltype = lookupType(mv.declaredType, tdefs),
 			kind     = kindOf(mv)
 		in
-			if decltype <> nil and kindOf(decltype) <> kind
+			if decltype = nil
+			then effectiveSimpleVariable(mv, kind)
+			elseif kindOf(decltype) <> kind
 			then mv		-- Type error reported elsewhere
-			else cases kind:
+			else effectiveTypedVariable(mv, decltype, kind);
+
+	effectiveTypedVariable: fmi3Variable * fmi3TypeDefinition * Kind +> fmi3Variable
+	effectiveTypedVariable(mv, decltype, kind) ==
+		cases kind:
 			<Float64> -> 
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declUnit        = if decltype = nil or decltype.unit = nil then nil else decltype.unit,
-					declDisplayUnit = if decltype = nil or decltype.displayUnit = nil then nil else decltype.displayUnit,
-					declRelQuantity = if decltype = nil or decltype.relativeQuantity = nil then nil else decltype.relativeQuantity,
-					declUnbounded   = if decltype = nil or decltype.unbounded = nil then nil else decltype.unbounded,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					declNominal     = if decltype = nil or decltype.nominal = nil then nil else decltype.nominal,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_Float64
 					(
 						mv.location,
@@ -77,14 +74,14 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[NormalizedString](mv.unit, declUnit, nil),
-						override[NormalizedString](mv.displayUnit, declDisplayUnit, nil),
-						override[bool](mv.relativeQuantity, declRelQuantity, false),
-						override[bool](mv.unbounded, declUnbounded, false),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
-						override[real](mv.nominal, declNominal, 1),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[NormalizedString](mv.unit, decltype.unit, nil),
+						override[NormalizedString](mv.displayUnit, decltype.displayUnit, nil),
+						override[bool](mv.relativeQuantity, decltype.relativeQuantity, false),
+						override[bool](mv.unbounded, decltype.unbounded, false),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
+						override[real](mv.nominal, decltype.nominal, 1),
 						mv.start,
 						mv.derivative,
 						mv.reinit = true,
@@ -94,16 +91,7 @@ functions
 					),
 
 			<Float32> ->
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declUnit        = if decltype = nil or decltype.unit = nil then nil else decltype.unit,
-					declDisplayUnit = if decltype = nil or decltype.displayUnit = nil then nil else decltype.displayUnit,
-					declRelQuantity = if decltype = nil or decltype.relativeQuantity = nil then nil else decltype.relativeQuantity,
-					declUnbounded   = if decltype = nil or decltype.unbounded = nil then nil else decltype.unbounded,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					declNominal     = if decltype = nil or decltype.nominal = nil then nil else decltype.nominal,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_Float32
 					(
 						mv.location,
@@ -118,14 +106,14 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[NormalizedString](mv.unit, declUnit, nil),
-						override[NormalizedString](mv.displayUnit, declDisplayUnit, nil),
-						override[bool](mv.relativeQuantity, declRelQuantity, false),
-						override[bool](mv.unbounded, declUnbounded, false),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
-						override[real](mv.nominal, declNominal, 1),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[NormalizedString](mv.unit, decltype.unit, nil),
+						override[NormalizedString](mv.displayUnit, decltype.displayUnit, nil),
+						override[bool](mv.relativeQuantity, decltype.relativeQuantity, false),
+						override[bool](mv.unbounded, decltype.unbounded, false),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
+						override[real](mv.nominal, decltype.nominal, 1),
 						mv.start,
 						mv.derivative,
 						mv.reinit = true,
@@ -135,11 +123,7 @@ functions
 					),
 
 			<Int64> ->
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_Int64
 					(
 						mv.location,
@@ -154,9 +138,9 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
@@ -164,11 +148,7 @@ functions
 					),
 
 			<Int32> ->
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_Int32
 					(
 						mv.location,
@@ -183,9 +163,9 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
@@ -193,11 +173,7 @@ functions
 					),
 
 			<Int16> ->
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_Int16
 					(
 						mv.location,
@@ -212,9 +188,9 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
@@ -222,11 +198,7 @@ functions
 					),
 
 			<Int8> ->
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_Int8
 					(
 						mv.location,
@@ -241,9 +213,9 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
@@ -251,11 +223,7 @@ functions
 					),
 
 			<UInt64> ->
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_UInt64
 					(
 						mv.location,
@@ -270,9 +238,9 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
@@ -280,11 +248,7 @@ functions
 					),
 
 			<UInt32> ->
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_UInt32
 					(
 						mv.location,
@@ -299,9 +263,9 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
@@ -309,11 +273,7 @@ functions
 					),
 
 			<UInt16> ->
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_UInt16
 					(
 						mv.location,
@@ -328,9 +288,9 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
@@ -338,11 +298,7 @@ functions
 					),
 
 			<UInt8> ->
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_UInt8
 					(
 						mv.location,
@@ -357,9 +313,9 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
@@ -411,37 +367,30 @@ functions
 				),
 
 			<Binary> ->
-				let declMimeType = if decltype = nil or decltype.mimeType = nil then nil else decltype.mimeType,
-					declMaxSize  = if decltype = nil or decltype.maxSize = nil then nil else decltype.maxSize
-				in
-					mk_Binary
-					(
-						mv.location,
-						mv.name,
-						mv.valueReference,
-						mv.description,		-- NOT inherited?
-						effectiveCausality(mv.causality, kind),
-						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
-						mv.clocks,
-						mv.intermediateUpdate = true,
-						mv.previous,
-						mv.declaredType,
-						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.mimeType, declMimeType, nil),
-						override[nat](mv.maxSize, declMaxSize, nil),
-						mv.annotations,		-- NOT inherited?
-						mv.dimension,
-						mv.start,
-						mv.alias
-					),
+				mk_Binary
+				(
+					mv.location,
+					mv.name,
+					mv.valueReference,
+					mv.description,		-- NOT inherited?
+					effectiveCausality(mv.causality, kind),
+					effectiveVariability(mv.variability, kind),
+					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					mv.clocks,
+					mv.intermediateUpdate = true,
+					mv.previous,
+					mv.declaredType,
+					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+					override[NormalizedString](mv.mimeType, decltype.mimeType, nil),
+					override[nat](mv.maxSize, decltype.maxSize, nil),
+					mv.annotations,		-- NOT inherited?
+					mv.dimension,
+					mv.start,
+					mv.alias
+				),
 
 			<Enumeration> ->
-				let declQuantity    = if decltype = nil or decltype.quantity = nil then nil else decltype.quantity,
-					declMin         = if decltype = nil or decltype.min = nil then nil else decltype.min,
-					declMax         = if decltype = nil or decltype.max = nil then nil else decltype.max,
-					mk_(kmin, kmax) = minMaxKind(kind)
-				in
+				let mk_(kmin, kmax) = minMaxKind(kind) in
 					mk_Enumeration
 					(
 						mv.location,
@@ -456,9 +405,9 @@ functions
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
-						override[NormalizedString](mv.quantity, declQuantity, nil),
-						override[real](mv.min, declMin, kmin),
-						override[real](mv.max, declMax, kmax),
+						override[NormalizedString](mv.quantity, decltype.quantity, nil),
+						override[real](mv.min, decltype.min, kmin),
+						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
@@ -466,42 +415,420 @@ functions
 					),
 
 			<Clock> ->
-				let declCanBeActivated      = if decltype = nil or decltype.canBeDeactivated = nil then nil else decltype.canBeDeactivated,
-					declPriority            = if decltype = nil or decltype.priority = nil then nil else decltype.priority,
-					declIntervalVariability = if decltype = nil or decltype.intervalVariability = nil then nil else decltype.intervalVariability,
-					declIntervalDecimal     = if decltype = nil or decltype.intervalDecimal = nil then nil else decltype.intervalDecimal,
-					declShiftDecimal        = if decltype = nil or decltype.shiftDecimal = nil then nil else decltype.shiftDecimal,
-					declSupportsFraction    = if decltype = nil or decltype.supportsFraction = nil then nil else decltype.supportsFraction,
-					declResolution          = if decltype = nil or decltype.resolution = nil then nil else decltype.resolution,
-					declIntervalCounter     = if decltype = nil or decltype.intervalCounter = nil then nil else decltype.intervalCounter,
-					declShiftCounter        = if decltype = nil or decltype.shiftCounter = nil then nil else decltype.shiftCounter
-				in
-					mk_Clock
+				mk_Clock
+				(
+					mv.location,
+					mv.name,
+					mv.valueReference,
+					mv.description,		-- NOT inherited?
+					effectiveCausality(mv.causality, kind),
+					effectiveVariability(mv.variability, kind),
+					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					mv.clocks,
+					mv.declaredType,
+					override[bool](mv.canBeDeactivated, decltype.canBeDeactivated, false),
+					override[nat](mv.priority, decltype.priority, nil),
+					override[IntervalVariability](mv.intervalVariability, decltype.intervalVariability, nil),
+					override[real](mv.intervalDecimal, decltype.intervalDecimal, nil),
+					override[real](mv.shiftDecimal, decltype.shiftDecimal, 0),
+					override[bool](mv.supportsFraction, decltype.supportsFraction, false),
+					override[nat](mv.resolution, decltype.resolution, nil),
+					override[nat](mv.intervalCounter, decltype.intervalCounter, nil),
+					override[nat](mv.shiftCounter, decltype.shiftCounter, 0),
+					mv.annotations,		-- NOT inherited?
+					mv.alias
+				),
+
+			others -> undefined
+		end;
+
+	effectiveSimpleVariable: fmi3Variable * Kind +> fmi3Variable
+	effectiveSimpleVariable(mv, kind) ==
+		cases kind:
+			<Float64> -> 
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_Float64
 					(
 						mv.location,
 						mv.name,
 						mv.valueReference,
-						mv.description,		-- NOT inherited?
+						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
 						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
 						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
 						mv.declaredType,
-						override[bool](mv.canBeDeactivated, declCanBeActivated, false),
-						override[nat](mv.priority, declPriority, nil),
-						override[IntervalVariability](mv.intervalVariability, declIntervalVariability, nil),
-						override[real](mv.intervalDecimal, declIntervalDecimal, nil),
-						override[real](mv.shiftDecimal, declShiftDecimal, 0),
-						override[bool](mv.supportsFraction, declSupportsFraction, false),
-						override[nat](mv.resolution, declResolution, nil),
-						override[nat](mv.intervalCounter, declIntervalCounter, nil),
-						override[nat](mv.shiftCounter, declShiftCounter, 0),
-						mv.annotations,		-- NOT inherited?
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[NormalizedString](mv.unit, nil, nil),
+						override[NormalizedString](mv.displayUnit, nil, nil),
+						override[bool](mv.relativeQuantity, nil, false),
+						override[bool](mv.unbounded, nil, false),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						override[real](mv.nominal, nil, 1),
+						mv.start,
+						mv.derivative,
+						mv.reinit = true,
+						mv.annotations,
+						mv.dimension,
 						mv.alias
 					),
 
+			<Float32> ->
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_Float32
+					(
+						mv.location,
+						mv.name,
+						mv.valueReference,
+						mv.description,
+						effectiveCausality(mv.causality, kind),
+						effectiveVariability(mv.variability, kind),
+						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
+						mv.declaredType,
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[NormalizedString](mv.unit, nil, nil),
+						override[NormalizedString](mv.displayUnit, nil, nil),
+						override[bool](mv.relativeQuantity, nil, false),
+						override[bool](mv.unbounded, nil, false),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						override[real](mv.nominal, nil, 1),
+						mv.start,
+						mv.derivative,
+						mv.reinit = true,
+						mv.annotations,
+						mv.dimension,
+						mv.alias
+					),
+
+			<Int64> ->
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_Int64
+					(
+						mv.location,
+						mv.name,
+						mv.valueReference,
+						mv.description,
+						effectiveCausality(mv.causality, kind),
+						effectiveVariability(mv.variability, kind),
+						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
+						mv.declaredType,
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						mv.start,
+						mv.annotations,
+						mv.dimension,
+						mv.alias
+					),
+
+			<Int32> ->
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_Int32
+					(
+						mv.location,
+						mv.name,
+						mv.valueReference,
+						mv.description,
+						effectiveCausality(mv.causality, kind),
+						effectiveVariability(mv.variability, kind),
+						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
+						mv.declaredType,
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						mv.start,
+						mv.annotations,
+						mv.dimension,
+						mv.alias
+					),
+
+			<Int16> ->
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_Int16
+					(
+						mv.location,
+						mv.name,
+						mv.valueReference,
+						mv.description,
+						effectiveCausality(mv.causality, kind),
+						effectiveVariability(mv.variability, kind),
+						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
+						mv.declaredType,
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						mv.start,
+						mv.annotations,
+						mv.dimension,
+						mv.alias
+					),
+
+			<Int8> ->
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_Int8
+					(
+						mv.location,
+						mv.name,
+						mv.valueReference,
+						mv.description,
+						effectiveCausality(mv.causality, kind),
+						effectiveVariability(mv.variability, kind),
+						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
+						mv.declaredType,
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						mv.start,
+						mv.annotations,
+						mv.dimension,
+						mv.alias
+					),
+
+			<UInt64> ->
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_UInt64
+					(
+						mv.location,
+						mv.name,
+						mv.valueReference,
+						mv.description,
+						effectiveCausality(mv.causality, kind),
+						effectiveVariability(mv.variability, kind),
+						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
+						mv.declaredType,
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						mv.start,
+						mv.annotations,
+						mv.dimension,
+						mv.alias
+					),
+
+			<UInt32> ->
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_UInt32
+					(
+						mv.location,
+						mv.name,
+						mv.valueReference,
+						mv.description,
+						effectiveCausality(mv.causality, kind),
+						effectiveVariability(mv.variability, kind),
+						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
+						mv.declaredType,
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						mv.start,
+						mv.annotations,
+						mv.dimension,
+						mv.alias
+					),
+
+			<UInt16> ->
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_UInt16
+					(
+						mv.location,
+						mv.name,
+						mv.valueReference,
+						mv.description,
+						effectiveCausality(mv.causality, kind),
+						effectiveVariability(mv.variability, kind),
+						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
+						mv.declaredType,
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						mv.start,
+						mv.annotations,
+						mv.dimension,
+						mv.alias
+					),
+
+			<UInt8> ->
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_UInt8
+					(
+						mv.location,
+						mv.name,
+						mv.valueReference,
+						mv.description,
+						effectiveCausality(mv.causality, kind),
+						effectiveVariability(mv.variability, kind),
+						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
+						mv.declaredType,
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						mv.start,
+						mv.annotations,
+						mv.dimension,
+						mv.alias
+					),
+
+			<Boolean> ->
+				-- Nothing inherited from decltype?
+				mk_Boolean
+				(
+					mv.location,
+					mv.name,
+					mv.valueReference,
+					mv.description,
+					effectiveCausality(mv.causality, kind),
+					effectiveVariability(mv.variability, kind),
+					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					mv.clocks,
+					mv.intermediateUpdate = true,
+					mv.previous,
+					mv.declaredType,
+					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+					mv.start,
+					mv.annotations,
+					mv.dimension,
+					mv.alias
+				),
+
+			<String> ->
+				-- Nothing inherited from decltype?
+				mk_String
+				(
+					mv.location,
+					mv.name,
+					mv.valueReference,
+					mv.description,
+					effectiveCausality(mv.causality, kind),
+					effectiveVariability(mv.variability, kind),
+					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					mv.clocks,
+					mv.intermediateUpdate = true,
+					mv.previous,
+					mv.declaredType,
+					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+					mv.annotations,
+					mv.dimension,
+					mv.start,
+					mv.alias
+				),
+
+			<Binary> ->
+				mk_Binary
+				(
+					mv.location,
+					mv.name,
+					mv.valueReference,
+					mv.description,
+					effectiveCausality(mv.causality, kind),
+					effectiveVariability(mv.variability, kind),
+					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					mv.clocks,
+					mv.intermediateUpdate = true,
+					mv.previous,
+					mv.declaredType,
+					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+					override[NormalizedString](mv.mimeType, nil, nil),
+					override[nat](mv.maxSize, nil, nil),
+					mv.annotations,
+					mv.dimension,
+					mv.start,
+					mv.alias
+				),
+
+			<Enumeration> ->
+				let mk_(kmin, kmax) = minMaxKind(kind) in
+					mk_Enumeration
+					(
+						mv.location,
+						mv.name,
+						mv.valueReference,
+						mv.description,
+						effectiveCausality(mv.causality, kind),
+						effectiveVariability(mv.variability, kind),
+						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						mv.clocks,
+						mv.intermediateUpdate = true,
+						mv.previous,
+						mv.declaredType,
+						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
+						override[NormalizedString](mv.quantity, nil, nil),
+						override[real](mv.min, nil, kmin),
+						override[real](mv.max, nil, kmax),
+						mv.start,
+						mv.annotations,
+						mv.dimension,
+						mv.alias
+					),
+
+			<Clock> ->
+				mk_Clock
+				(
+					mv.location,
+					mv.name,
+					mv.valueReference,
+					mv.description,
+					effectiveCausality(mv.causality, kind),
+					effectiveVariability(mv.variability, kind),
+					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					mv.clocks,
+					mv.declaredType,
+					override[bool](mv.canBeDeactivated, nil, false),
+					override[nat](mv.priority, nil, nil),
+					override[IntervalVariability](mv.intervalVariability, nil, nil),
+					override[real](mv.intervalDecimal, nil, nil),
+					override[real](mv.shiftDecimal, nil, 0),
+					override[bool](mv.supportsFraction, nil, false),
+					override[nat](mv.resolution, nil, nil),
+					override[nat](mv.intervalCounter, nil, nil),
+					override[nat](mv.shiftCounter, nil, 0),
+					mv.annotations,
+					mv.alias
+				),
+
 			others -> undefined
 		end;
+
 
 	effectiveCausality: [Causality] * Kind +> Causality
 	effectiveCausality(causality, -) ==
