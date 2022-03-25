@@ -35,11 +35,11 @@ types
 	]);
 
 	BuildConfiguration' = BuildConfiguration
-	inv bd == allOf
+	inv bc == allOf
 	([
-		apply[SourceFileSet](inv_SourceFileSet', bd.sourceFileSet),
-		apply[Library](inv_Library', bd.library),
-		inv_Annotations'(bd.annotations)
+		apply[SourceFileSet](inv_SourceFileSet', bc.sourceFileSet),
+		apply[Library](inv_Library', bc.library),
+		inv_Annotations'(bc.annotations)
 	]);
 
 	SourceFileSet' = SourceFileSet

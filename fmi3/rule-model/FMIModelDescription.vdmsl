@@ -156,7 +156,7 @@ functions
 	validOutput: FmiModelDescription * ModelVariables +> bool
 	validOutput(fmd, evs) ==
 		let outputRefs = { sv.valueReference | sv in seq evs & sv.causality = <output> },
-			structRefs = { u.valueReference | u in seq nilSeq[Output](fmd.modelStructure.output) }
+			structRefs = { u.valueReference | u in seq default[seq of Output](fmd.modelStructure.output, []) }
 		in
 			if outputRefs <> {}
 			then
@@ -187,7 +187,7 @@ functions
 					( uk.dependencies <> nil => ev.variability = <continuous> )
 				])
 
-			| uk in seq nilSeq[ContinuousStateDerivative](fmd.modelStructure.continuousStateDerivative)
+			| uk in seq default[seq of ContinuousStateDerivative](fmd.modelStructure.continuousStateDerivative, [])
 		]);
 
 	validInitialUnknowns: FmiModelDescription * ModelVariables +> bool
@@ -206,8 +206,8 @@ functions
 				or (sv in set sdVars
 					and sv.initial in set { <approx>, <calculated> }) },
 			optional = { sv.valueReference | sv in seq evs & sv.clocks <> nil },
-			allIUs   = { iu.valueReference | iu in seq nilSeq[InitialUnknown](fmd.modelStructure.initialUnknown) },
-			allEIs   = { ei.valueReference | ei in seq nilSeq[EventIndicator](fmd.modelStructure.eventIndicator) }
+			allIUs   = { iu.valueReference | iu in seq default[seq of InitialUnknown](fmd.modelStructure.initialUnknown, []) },
+			allEIs   = { ei.valueReference | ei in seq default[seq of EventIndicator](fmd.modelStructure.eventIndicator, []) }
 		in
 			allOf
 			([
@@ -222,7 +222,7 @@ functions
 				( allIUs inter allEIs = {} ),
 
 				-- @OnFail("validInitialUnknowns: InitialUnknowns must not have duplicates: %s")
-				( card allIUs = len nilSeq[InitialUnknown](fmd.modelStructure.initialUnknown) )
+				( card allIUs = len default[seq of InitialUnknown](fmd.modelStructure.initialUnknown, []) )
 			]
 			^
 			[
@@ -230,7 +230,7 @@ functions
 					-- @OnFail("validInitialUnknowns: InitialUnknown dependencies must all be known at %s", loc2str(iu.location))
 					( forall d in seq iu.dependencies & d not in set allIUs )
 
-				| iu in seq nilSeq[InitialUnknown](fmd.modelStructure.initialUnknown)
+				| iu in seq default[seq of InitialUnknown](fmd.modelStructure.initialUnknown, [])
 			]);
 
 	validEventIndicators: FmiModelDescription * ModelVariables +> bool
@@ -258,11 +258,11 @@ functions
 	validUnknownDependencies(fmd, evs) ==
 		let allUnknowns = conc
 		[
-			nilSeq[Output](fmd.modelStructure.output),
-			nilSeq[ContinuousStateDerivative](fmd.modelStructure.continuousStateDerivative),
-			nilSeq[ClockedState](fmd.modelStructure.clockedState),
-			nilSeq[InitialUnknown](fmd.modelStructure.initialUnknown),
-			nilSeq[EventIndicator](fmd.modelStructure.eventIndicator)
+			default[seq of Output](fmd.modelStructure.output, []),
+			default[seq of ContinuousStateDerivative](fmd.modelStructure.continuousStateDerivative, []),
+			default[seq of ClockedState](fmd.modelStructure.clockedState, []),
+			default[seq of InitialUnknown](fmd.modelStructure.initialUnknown, []),
+			default[seq of EventIndicator](fmd.modelStructure.eventIndicator, [])
 		] in
 			allUnknowns <> [] => allOf
 			([
