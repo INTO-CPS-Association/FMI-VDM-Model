@@ -33,7 +33,7 @@ types
 		apply[fmi3Variable](inv_fmi3Variable', evs),
 
 		rule("validValueReferences", validValueReferences(evs)),
-		rule("validVariableNames", validAliasNames(evs)),
+		rule("validAliasNames", validAliasNames(evs)),
 		rule("validIndependentVariable", validIndependentVariable(evs)),
 		rule("validPreviousVariables", validPreviousVariables(evs)),
 		rule("validVariableDimensions", validVariableDimensions(evs)),
