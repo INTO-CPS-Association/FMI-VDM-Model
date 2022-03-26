@@ -40,7 +40,7 @@ functions
 	 */
 	rule: seq1 of char * bool +> bool
 	rule(name, result) ==
-		-- @OnFail("See: %s", listReferences(name))
+		-- @OnFail("%s", listReferences(name))
 		( result )
 	pre name in set dom docReferences;
 
@@ -76,7 +76,7 @@ functions
 	list2Str(refs) ==
 		if refs = []
 		then ""
-		else hd refs ^ "\n" ^ list2Str(tl refs)
+		else "See: " ^ hd refs ^ "\n" ^ list2Str(tl refs)
 	measure len refs;
 
 	/**
