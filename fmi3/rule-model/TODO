@@ -1,4 +1,7 @@
 # Things that still need to be done!
 
-. Add "explanations" to more @OnFail messages
-. ?
+. Should we be using effective record values for all tests?
+. If not (above), probably need a raw/effective naming convention
+. Add better "explanations" to some @OnFail messages
+. Check proof obligations for problem hints
+. Review the model with FMI group.
