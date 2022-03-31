@@ -68,9 +68,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -84,7 +84,7 @@ functions
 						override[real](mv.nominal, decltype.nominal, 1),
 						mv.start,
 						mv.derivative,
-						mv.reinit = true,
+						default[bool](mv.reinit, false),
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
 						mv.alias
@@ -100,9 +100,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -116,7 +116,7 @@ functions
 						override[real](mv.nominal, decltype.nominal, 1),
 						mv.start,
 						mv.derivative,
-						mv.reinit = true,
+						default[bool](mv.reinit, false),
 						mv.annotations,		-- NOT inherited?
 						mv.dimension,
 						mv.alias
@@ -132,9 +132,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -157,9 +157,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -182,9 +182,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -207,9 +207,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -232,9 +232,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -257,9 +257,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -282,9 +282,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -307,9 +307,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -332,9 +332,9 @@ functions
 					mv.description,		-- NOT inherited?
 					effectiveCausality(mv.causality, kind),
 					effectiveVariability(mv.variability, kind),
-					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 					mv.clocks,
-					mv.intermediateUpdate = true,
+					default[bool](mv.intermediateUpdate, false),
 					mv.previous,
 					mv.declaredType,
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -354,9 +354,9 @@ functions
 					mv.description,		-- NOT inherited?
 					effectiveCausality(mv.causality, kind),
 					effectiveVariability(mv.variability, kind),
-					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 					mv.clocks,
-					mv.intermediateUpdate = true,
+					default[bool](mv.intermediateUpdate, false),
 					mv.previous,
 					mv.declaredType,
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -375,9 +375,9 @@ functions
 					mv.description,		-- NOT inherited?
 					effectiveCausality(mv.causality, kind),
 					effectiveVariability(mv.variability, kind),
-					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 					mv.clocks,
-					mv.intermediateUpdate = true,
+					default[bool](mv.intermediateUpdate, false),
 					mv.previous,
 					mv.declaredType,
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -399,9 +399,9 @@ functions
 						mv.description,		-- NOT inherited?
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -423,7 +423,7 @@ functions
 					mv.description,		-- NOT inherited?
 					effectiveCausality(mv.causality, kind),
 					effectiveVariability(mv.variability, kind),
-					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 					mv.clocks,
 					mv.declaredType,
 					override[bool](mv.canBeDeactivated, decltype.canBeDeactivated, false),
@@ -455,9 +455,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -471,7 +471,7 @@ functions
 						override[real](mv.nominal, nil, 1),
 						mv.start,
 						mv.derivative,
-						mv.reinit = true,
+						default[bool](mv.reinit, false),
 						mv.annotations,
 						mv.dimension,
 						mv.alias
@@ -487,9 +487,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -503,7 +503,7 @@ functions
 						override[real](mv.nominal, nil, 1),
 						mv.start,
 						mv.derivative,
-						mv.reinit = true,
+						default[bool](mv.reinit, false),
 						mv.annotations,
 						mv.dimension,
 						mv.alias
@@ -519,9 +519,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -544,9 +544,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -569,9 +569,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -594,9 +594,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -619,9 +619,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -644,9 +644,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -669,9 +669,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -694,9 +694,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -718,9 +718,9 @@ functions
 					mv.description,
 					effectiveCausality(mv.causality, kind),
 					effectiveVariability(mv.variability, kind),
-					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 					mv.clocks,
-					mv.intermediateUpdate = true,
+					default[bool](mv.intermediateUpdate, false),
 					mv.previous,
 					mv.declaredType,
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -739,9 +739,9 @@ functions
 					mv.description,
 					effectiveCausality(mv.causality, kind),
 					effectiveVariability(mv.variability, kind),
-					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 					mv.clocks,
-					mv.intermediateUpdate = true,
+					default[bool](mv.intermediateUpdate, false),
 					mv.previous,
 					mv.declaredType,
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -760,9 +760,9 @@ functions
 					mv.description,
 					effectiveCausality(mv.causality, kind),
 					effectiveVariability(mv.variability, kind),
-					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 					mv.clocks,
-					mv.intermediateUpdate = true,
+					default[bool](mv.intermediateUpdate, false),
 					mv.previous,
 					mv.declaredType,
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -784,9 +784,9 @@ functions
 						mv.description,
 						effectiveCausality(mv.causality, kind),
 						effectiveVariability(mv.variability, kind),
-						mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+						default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 						mv.clocks,
-						mv.intermediateUpdate = true,
+						default[bool](mv.intermediateUpdate, false),
 						mv.previous,
 						mv.declaredType,
 						effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
@@ -808,7 +808,7 @@ functions
 					mv.description,
 					effectiveCausality(mv.causality, kind),
 					effectiveVariability(mv.variability, kind),
-					mv.canHandleMultipleSetPerTimeInstant = true,	-- ie. true if "true" else false, not nil
+					default[bool](mv.canHandleMultipleSetPerTimeInstant, false),	-- ie. true if "true" else false, not nil
 					mv.clocks,
 					mv.declaredType,
 					override[bool](mv.canBeDeactivated, nil, false),

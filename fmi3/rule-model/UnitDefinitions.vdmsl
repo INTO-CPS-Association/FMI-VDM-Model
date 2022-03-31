@@ -71,16 +71,16 @@ functions
 		mk_BaseUnit
 		(
 			bunit.location,
-			if bunit.kg <> nil then bunit.kg else 0,
-			if bunit.m <> nil then bunit.m else 0,
-			if bunit.s <> nil then bunit.s else 0,
-			if bunit.a <> nil then bunit.a else 0,
-			if bunit.k <> nil then bunit.k else 0,
-			if bunit.mol <> nil then bunit.mol else 0,
-			if bunit.cd <> nil then bunit.cd else 0,
-			if bunit.rad <> nil then bunit.rad else 0,
-			if bunit.factor <> nil then bunit.factor else 1,
-			if bunit.offset <> nil then bunit.offset else 0
+			default[int](bunit.kg, 0),
+			default[int](bunit.m, 0),
+			default[int](bunit.s, 0),
+			default[int](bunit.a, 0),
+			default[int](bunit.k, 0),
+			default[int](bunit.mol, 0),
+			default[int](bunit.cd, 0),
+			default[int](bunit.rad, 0),
+			default[real](bunit.factor, 1),
+			default[real](bunit.offset, 0)
 		);
 
 	effectiveDisplayUnit: DisplayUnit +> DisplayUnit
@@ -89,9 +89,9 @@ functions
 		(
 			dunit.location,
 			dunit.name,
-			if dunit.factor <> nil then dunit.factor else 1,
-			if dunit.offset <> nil then dunit.offset else 0,
-			dunit.$inverse = true,
+			default[real](dunit.factor, 1),
+			default[real](dunit.offset, 0),
+			default[bool](dunit.$inverse, false),
 			dunit.annotations
 		);
 	
