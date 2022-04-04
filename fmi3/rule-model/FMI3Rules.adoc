@@ -1,0 +1,51 @@
+== Formal Static Semantics of FMI3
+
+=== Introduction
+
+The FMI Standard document contains a complete description of the semantics of the FMI API, and the structure of an FMU and its configuration files.
+
+To avoid ambiguities, this document contains formally specified rules that clarify the description in the Standard. The formal rules can be used to automatically test the compliance of an FMU with the Standard, and rule violations can give references back to the Standard where the issue is discussed. Similarly, links in the Standard refer to the rules given in this document.
+
+The rules currently only cover the _static_ semantics of the Standard. That is, they describe the rules for correctly configured XML files. The dynamic semantics of the API may be formally specified subsequently.
+
+=== VDM-SL Specifications
+
+The rules are specified in VDM-SL, the specification language of the https://en.wikipedia.org/wiki/Vienna_Development_Method>[Vienna Development Method].  The language has a formal semantics, enabling proof of the properties of models to a high level of assurance. It also has an executable subset, so that models may be tested using real world data.
+
+Free, open source tools are available to process these rules.
+
+=== Structure of the Rules
+
+Formal rules are associated with the lowest level XML type that encapsulates all of the data involved. For example, the rule that LogCategory names must be unique is associated with the LogCategory type itself; but the rule that a TypeDefinition's units must be defined in the UnitDefinitions is associated with the top level FmiModelDescription type, since that type encompasses both TypeDefinitions and UnitDefinitions.
+
+Rules contain _@OnFail_ comments, which define error messages to produce when clauses within the rules fail. These comments themselves are not part of the rules and do not affect whether the rule check succeeds or fails.
+
+Rules sometimes contain a function called _allOf_, which is passed a [...] comma-separated list of boolean values, all of which must be true for the overall rule to be met.
+
+{set:vdm}
+
+==== DefaultExperiment
+
+The validity of a DefaultExperiment is defined as follows:
+
+{vdm}
+
+----
+functions
+validDefaultExperiment: DefaultExperiment +> bool
+validDefaultExperiment(e) == allOf
+	([
+		-- @OnFail("validDefaultExperiment: tolerance must be >= 0 at %s", loc2str(e.location))
+		( e.tolerance <> nil => e.tolerance >= 0),
+
+		-- @OnFail("validDefaultExperiment: stop time must be later than start time at %s", loc2str(e.location))
+		( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime ),
+
+		-- @OnFail("validDefaultExperiment: stepSize must be less than start-stop interval at %s", loc2str(e.location))
+		( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
+			e.stopTime - e.startTime > e.stepSize )
+	]);
+----
+{vdm}
+
+
