@@ -1,5 +1,5 @@
 /**
- * VDM schema created from fmi3.xsd on Mon Mar 07 09:02:57 GMT 2022
+ * VDM schema created from fmi3.xsd on Mon Apr 04 11:06:23 BST 2022
  * DO NOT EDIT!
  */
 types
@@ -39,7 +39,7 @@ FmiModelDescription ::
     modelStructure            : ModelStructure
     annotations               : [Annotations]
 inv rec ==
-    (rec.fmiVersion = "3.0-beta.5")
+    (rec.fmiVersion = "3.0-rc.1")
 ;
 
 ModelExchange ::
