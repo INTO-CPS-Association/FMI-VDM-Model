@@ -6,6 +6,7 @@ functions
 endif::[]
 
 ==== A.{section}.{counter:subsection} TypeDefinitions Rules
+:!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeDefinitionNames
 [[validTypeDefinitionNames]]
 // {vdm}

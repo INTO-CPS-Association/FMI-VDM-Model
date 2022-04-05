@@ -6,6 +6,7 @@ functions
 endif::[]
 
 ==== A.{section}.{counter:subsection} SourceFileSet Rules
+:!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validCompilerOptions
 [[validCompilerOptions]]
 // {vdm}

@@ -6,6 +6,7 @@ functions
 endif::[]
 
 ==== A.{section}.{counter:subsection} Terminals Rules
+:!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validCoordinateSystem
 [[validCoordinateSystem]]
 // {vdm}

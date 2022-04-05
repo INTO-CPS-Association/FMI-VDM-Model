@@ -6,6 +6,7 @@ functions
 endif::[]
 
 ==== A.{section}.{counter:subsection} ModelVariables Rules
+:!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validValueReferences
 [[validValueReferences]]
 // {vdm}
@@ -116,19 +117,19 @@ See <<ModelVariables>>.
 [[validAliasDisplayUnits]]
 // {vdm}
 ----
-	validAliasDisplayUnits: ModelVariables +> bool
-	validAliasDisplayUnits(evs) ==
-		allOf(conc
+validAliasDisplayUnits: ModelVariables +> bool
+validAliasDisplayUnits(evs) ==
+	allOf(conc
+	[
 		[
-			[
-				-- @OnFail("validAliasDisplayUnits: Alias displayUnit requires Float unit definition at %s", loc2str(a.location))
-				( a.displayUnit <> nil => isFloat(ev) and ev.unit <> nil )
-				
-				| a in seq ev.alias
-			]
+			-- @OnFail("validAliasDisplayUnits: Alias displayUnit requires Float unit definition at %s", loc2str(a.location))
+			( a.displayUnit <> nil => isFloat(ev) and ev.unit <> nil )
+			
+			| a in seq ev.alias
+		]
 
-			| ev in seq evs & ev.alias <> nil	
-		]);
+		| ev in seq evs & ev.alias <> nil	
+	]);
 ----
 // {vdm}
 See <<ModelVariables>>.

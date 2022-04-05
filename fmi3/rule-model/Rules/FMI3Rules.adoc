@@ -37,29 +37,29 @@ Rules sometimes use a function called _allOf_, which is passed a comma-separated
 
 === A.{counter:section} Rules
 
-include::BuildConfiguration.adoc[]
-
-include::DefaultExperiment.adoc[]
+include::ModelExchange.adoc[]
 
 include::CoSimulation.adoc[]
 
-include::ModelExchange.adoc[]
-
 include::ScheduledExecution.adoc[]
-
-include::FmiModelDescription.adoc[]
-
-include::LogCategories.adoc[]
 
 include::UnitDefinitions.adoc[]
 
-include::ModelStructure.adoc[]
+include::TypeDefinitions.adoc[]
+
+include::LogCategories.adoc[]
+
+include::DefaultExperiment.adoc[]
 
 include::ModelVariables.adoc[]
 
-include::Terminals.adoc[]
+include::ModelStructure.adoc[]
 
-include::TypeDefinitions.adoc[]
+include::FmiModelDescription.adoc[]
+
+include::BuildConfiguration.adoc[]
+
+include::Terminals.adoc[]
 
 ifdef::hidden[]
 // {vdm}

@@ -6,6 +6,7 @@ functions
 endif::[]
 
 ==== A.{section}.{counter:subsection} FmiModelDescription Rules
+:!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validModelTypes
 [[validModelTypes]]
 // {vdm}
@@ -16,8 +17,7 @@ validModelTypes(fmd) ==
 	( fmd.modelExchange <> nil or fmd.coSimulation <> nil or fmd.scheduledExecution <> nil );
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<table-schema-fmiModelDescription>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validGenerationDateAndTime
 [[validGenerationDateAndTime]]
@@ -29,8 +29,8 @@ validGenerationDateAndTime(fmd) ==
 	( fmd.generationDateAndTime <> nil => iso8601(fmd.generationDateAndTime) );
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<table-schema-fmiModelDescription-attributes>>.
+
 	
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeUnits
 [[validTypeUnits]]
@@ -49,8 +49,8 @@ validTypeUnits(fmd) ==
 	]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<table-type-details>>.
+
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validVariableTypes
 [[validVariableTypes]]
@@ -70,8 +70,8 @@ validVariableTypes(fmd) == allOf
 	]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+- See <<ModelVariables>>.
+- See <<definition-of-types>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeNames
 [[validTypeNames]]
@@ -87,9 +87,7 @@ validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
 	]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
-
+See <<table-type-details>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validVariableNames
 [[validVariableNames]]
@@ -111,9 +109,7 @@ validVariableNames(fmd) ==
 	]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
-
+See <<ModelVariables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validMultipleSets
 [[validMultipleSets]]
@@ -130,8 +126,7 @@ validMultipleSets(fmd, evs) == allOf
 	]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<table-variableBase-attributes>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validReinits
 [[validReinits]]
@@ -148,9 +143,7 @@ validReinits(fmd) == allOf
 	]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
-
+See <<ModelVariables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validOutput
 [[validOutput]]
@@ -174,8 +167,7 @@ validOutput(fmd, evs) ==
 			( structRefs = {} );
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validStateDerivatives
 [[validStateDerivatives]]
@@ -202,8 +194,7 @@ validStateDerivatives(fmd, evs) ==
 	]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<ModelSrtucture>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validInitialUnknowns
 [[validInitialUnknowns]]
@@ -253,8 +244,7 @@ validInitialUnknowns(fmd, evs) ==
 		]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validEventIndicators
 [[validEventIndicators]]
@@ -271,8 +261,7 @@ validEventIndicators(fmd, evs) ==
 	]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validOutputReferences
 [[validOutputReferences]]
@@ -290,8 +279,7 @@ validOutputReferences(fmd, evs) ==
 	]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validUnknownDependencies
 [[validUnknownDependencies]]
@@ -321,8 +309,7 @@ validUnknownDependencies(fmd, evs) ==
 		]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validClockPriorities
 [[validClockPriorities]]
@@ -348,8 +335,7 @@ validClockPriorities(fmd, evs) == allOf
 	]);
 ----
 // {vdm}
-- See <<?>>.
-- See <<?>>.
+See <<table-type-details>>.
 
 // This adds the docrefs for VDM only
 ifdef::hidden[]
