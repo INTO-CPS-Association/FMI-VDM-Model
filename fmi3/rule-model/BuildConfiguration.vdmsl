@@ -50,7 +50,7 @@ types
 		apply[IncludeDirectory](inv_IncludeDirectory', sfs.includeDirectory),
 		inv_Annotations'(sfs.annotations),
 
-		-- Rules are defined in FMI3Rules.adoc
+		-- Rules are defined in BuildConfiguration.adoc
 		rule("validCompilerOptions", validCompilerOptions(sfs)),
 		rule("validSourceFileNames", validSourceFileNames(sfs)),
 		rule("validPreprocessorDefinitionNames", validPreprocessorDefinitionNames(sfs)),

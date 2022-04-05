@@ -94,21 +94,3 @@ functions
 			default[bool](dunit.$inverse, false),
 			dunit.annotations
 		);
-	
-	validUnitNames: UnitDefinitions +> bool
-	validUnitNames(units) ==
-		-- @OnFail("validUnitNames: Unit names must be unique")
-		( let names = [ u.name | u in seq units ] in
-			len names = card elems names );
-
-	validDisplayUnitNames: Unit +> bool
-	validDisplayUnitNames(unit) ==
-		-- @OnFail("validDisplayUnitNames: DisplayUnit names must be unique within %s at %s", unit.name, loc2str(unit.location))
-		( unit.displayUnit <> nil =>
-			let names = [ u.name | u in seq unit.displayUnit ] in
-				len names = card elems names );
-
-	validInverseAndOffset: DisplayUnit +> bool
-	validInverseAndOffset(dunit) ==
-		-- @OnFail("validInverseAndOffset: inverse is only allowed if offset = 0 at %s", loc2str(dunit.location))
-		( dunit.$inverse => dunit.offset = 0 )

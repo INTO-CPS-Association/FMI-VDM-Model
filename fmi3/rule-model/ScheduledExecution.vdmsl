@@ -34,9 +34,3 @@ types
 
 		rule("validSEModelIdentifier", validSEModelIdentifier(se))
 	]);
-
-functions
-	validSEModelIdentifier: ScheduledExecution +> bool
-	validSEModelIdentifier(se) ==
-		-- @OnFail("validSEModelIdentifier: %s not valid C variable nase at %s", se.modelIdentifier, loc2str(se.location))
-		( validIdentifier(se.modelIdentifier) );

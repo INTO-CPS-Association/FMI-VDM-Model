@@ -1,0 +1,35 @@
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
+functions
+// {vdm}
+endif::[]
+
+==== A.{section}.{counter:subsection} ModelStructure Rules
+===== A.{section}.{subsection}.{counter:typerule} Rule: validDependencyKinds
+[[validDependencyKinds]]
+// {vdm}
+----
+validDependencyKinds: Location * [seq of (nat)] * [seq of (DependenciesKind)] +> bool
+validDependencyKinds(location, dependencies, dependenciesKind) ==
+	-- @OnFail("validDependencyKinds: dependencies do not match dependenciesKind at %s", loc2str(location))
+	( dependenciesKind <> nil =>
+		dependencies <> nil
+		and len dependenciesKind = len dependencies );
+----
+// {vdm}
+See <<modelStructure>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	ModelStructure_refs : ReferenceMap =
+	{
+		"validDependencyKinds" |->
+		[
+			"fmi-standard/docs/index.html#modelStructure"
+		]
+	};
+// {vdm}
+endif::[]

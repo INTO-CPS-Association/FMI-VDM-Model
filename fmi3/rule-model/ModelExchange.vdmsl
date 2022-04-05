@@ -34,9 +34,3 @@ types
 
 		rule("validMEModelIdentifier", validMEModelIdentifier(me))
 	]);
-
-functions
-	validMEModelIdentifier: ModelExchange +> bool
-	validMEModelIdentifier(me) ==
-		-- @OnFail("validMEModelIdentifier: %s not valid C variable name at %s", me.modelIdentifier, loc2str(me.location))
-		( validIdentifier(me.modelIdentifier) );

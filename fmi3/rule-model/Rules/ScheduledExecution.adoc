@@ -1,0 +1,35 @@
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
+functions
+// {vdm}
+endif::[]
+
+==== A.{section}.{counter:subsection} CoSimulation Rules
+===== A.{section}.{subsection}.{counter:typerule} Rule: validSEModelIdentifier
+[[validSEModelIdentifier]]
+// {vdm}
+----
+validSEModelIdentifier: ScheduledExecution +> bool
+validSEModelIdentifier(se) ==
+	-- @OnFail("validSEModelIdentifier: %s not valid C variable nase at %s", se.modelIdentifier, loc2str(se.location))
+	( validIdentifier(se.modelIdentifier) );
+----
+// {vdm}
+- See <<modelIdentifier>>.
+- See <<header-files-and-naming-of-functions>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	ScheduledExecution_refs : ReferenceMap =
+	{
+		"validSEModelIdentifier" |->
+		[
+			"fmi-standard/docs/index.html#modelIdentifier",
+			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
+		]
+	};
+// {vdm}
+endif::[]

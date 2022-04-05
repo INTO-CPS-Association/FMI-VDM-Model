@@ -1,0 +1,36 @@
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
+functions
+// {vdm}
+endif::[]
+
+==== A.{section}.{counter:subsection} LogCategories Rules
+===== A.{section}.{subsection}.{counter:typerule} Rule: validLogCategories
+[[validLogCategories]]
+// {vdm}
+----
+validLogCategories: [seq1 of Category] +> bool
+validLogCategories(lcats) ==
+	lcats <> nil =>
+		/* @OnFail("validLogCategories: LogCategory names are not unique: %s",
+			{ lcats(a).name | a, b in set inds lcats &
+				a <> b and lcats(a).name = lcats(b).name }) */
+		( card { c.name | c in seq lcats } = len lcats );
+----
+// {vdm}
+- See <<definition-of-log-categories>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	LogCategories_refs : ReferenceMap =
+	{
+		"validLogCategories" |->
+		[
+			"fmi-standard/docs/index.html#definition-of-log-categories"
+		]
+	};
+// {vdm}
+endif::[]

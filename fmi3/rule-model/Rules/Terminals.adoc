@@ -1,0 +1,121 @@
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
+functions
+// {vdm}
+endif::[]
+
+==== A.{section}.{counter:subsection} Terminals Rules
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCoordinateSystem
+[[validCoordinateSystem]]
+// {vdm}
+----
+validCoordinateSystem: CoordinateSystem +> bool
+validCoordinateSystem(cs) ==
+	-- @OnFail("validCoordinateSystem: Area is not bottom left to top right at %s", loc2str(cs.location))
+	( isTLtoBR(cs.x1, cs.x2, cs.y1, cs.y2) );
+----
+// {vdm}
+- See <<_coordinatesystem>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validIcon
+[[validIcon]]
+// {vdm}
+----
+validIcon: Icon +> bool
+validIcon(icon) ==
+	-- @OnFail("validIcon: Area is not bottom left to top right at %s", loc2str(icon.location))
+	( isTLtoBR(icon.x1, icon.x2, icon.y1, icon.y2) );
+----
+// {vdm}
+- See <<_icon>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalMemberVariables
+[[validTerminalMemberVariables]]
+// {vdm}
+----
+validTerminalMemberVariables: Terminal +> bool
+validTerminalMemberVariables(terminal) ==
+	let tmvs = terminal.terminalMemberVariable in
+	tmvs <> nil =>
+		-- @OnFail("validTerminalMemberVariables: Terminal member variables not unique at %s", loc2str(terminal.location))
+		( card { v.variableName | v in seq tmvs } = len tmvs );
+----
+// {vdm}
+- See <<section-terminalvars>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalStreamMemberVariables
+[[validTerminalStreamMemberVariables]]
+// {vdm}
+----
+validTerminalStreamMemberVariables: Terminal +> bool
+validTerminalStreamMemberVariables(terminal) ==
+	let tsmvs = terminal.terminalStreamMemberVariable in
+	tsmvs <> nil =>
+		true;	-- rules here?
+----
+// {vdm}
+- See <<_terminal_stream_member_variable>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalGraphicalRepresentation
+[[validTerminalGraphicalRepresentation]]
+// {vdm}
+----
+validTerminalGraphicalRepresentation: Terminal +> bool
+validTerminalGraphicalRepresentation(terminal) ==
+	let tgr = terminal.terminalGraphicalRepresentation in
+	tgr <> nil => allOf
+	([
+		-- @OnFail("validTerminalGraphicalRepresentation: Terminal area is not bottom left to top right at %s", loc2str(tgr.location))
+		( tgr.x1 < tgr.x2 and tgr.y1 < tgr.y2 ),
+
+		-- @OnFail("validTerminalGraphicalRepresentation: Colour attributes must be octets (<=255) at %s", loc2str(tgr.location))
+		( tgr.defaultConnectionColor <> nil =>
+			forall c in seq tgr.defaultConnectionColor & c <= 255 ),
+
+		-- @OnFail("validTerminalGraphicalRepresentation: defaultConnectionStrokeSize must be >0 at %s", loc2str(tgr.location))
+		( tgr.defaultConnectionStrokeSize <> nil =>
+			tgr.defaultConnectionStrokeSize > 0 )
+	]);
+----
+// {vdm}
+- See <<_terminal_graphical_representation>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	Terminals_refs : ReferenceMap =
+	{
+		"validCoordinateSystem" |->
+		[
+			"fmi-standard/docs/index.html#_coordinatesystem"
+		],
+
+		"validIcon" |->
+		[
+			"fmi-standard/docs/index.html#_icon"
+		],
+
+		"validTerminalMemberVariables" |->
+		[
+			"fmi-standard/docs/index.html#section-terminalvars"
+		],
+
+		"validTerminalGraphicalRepresentation" |->
+		[
+			"fmi-standard/docs/index.html#_terminal_graphical_representation"
+		],
+
+		"validTerminalStreamMemberVariables" |->
+		[
+			"fmi-standard/docs/index.html#_terminal_stream_member_variable"
+		]
+	};
+// {vdm}
+endif::[]
+
+
+
+
+

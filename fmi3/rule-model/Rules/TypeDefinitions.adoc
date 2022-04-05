@@ -1,0 +1,130 @@
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
+functions
+// {vdm}
+endif::[]
+
+==== A.{section}.{counter:subsection} TypeDefinitions Rules
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeDefinitionNames
+[[validTypeDefinitionNames]]
+// {vdm}
+----
+validTypeDefinitionNames: [TypeDefinitions] +> bool
+validTypeDefinitionNames(tdefs) ==
+	-- @OnFail("validTypeDefinitionNames: TypeDefinition names must be unique")
+	( tdefs <> nil =>
+		let names = [ td.name | td in seq tdefs ] in
+			len names = card elems names );
+----
+// {vdm}
+See <<definition-of-types>>.
+See <<table-type-details>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeMinMax
+[[validTypeMinMax]]
+// {vdm}
+----
+validTypeMinMax: fmi3TypeDefinition * Kind +> bool
+validTypeMinMax(tdef, kind) ==
+	-- @OnFail("validTypeMinMax: Type %s has min/max errors at %s", tdef.name, loc2str(tdef.location))
+	( validMinMax(tdef.min, tdef.max, kind));
+----
+// {vdm}
+See <<table-type-details>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeDisplayUnit
+[[validTypeDisplayUnit]]
+// {vdm}
+----
+validTypeDisplayUnit: fmi3TypeDefinition +> bool
+validTypeDisplayUnit(tdef) ==
+	-- @OnFail("validTypeDisplayUnit: Type %s, unit must be defined for displayUnit %s", tdef.name, tdef.displayUnit)
+	( tdef.displayUnit <> nil => tdef.unit <> nil );
+----
+// {vdm}
+See <<table-type-details>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validEnumerationTypeBijection
+[[validEnumerationTypeBijection]]
+// {vdm}
+----
+validEnumerationTypeBijection: EnumerationType +> bool
+validEnumerationTypeBijection(tdef) ==
+	-- @OnFail("validEnumerationTypeBijection: Type %s, Enumeration item name/values do not form a bijection", tdef.name)
+	(
+		card { i.name | i in seq tdef.item } = len tdef.item
+		and	card { i.value | i in seq tdef.item } = len tdef.item
+	);
+----
+// {vdm}
+See <<figure-schema-EnumerationType>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCSModelIdentifier
+[[validCSModelIdentifier]]
+// {vdm}
+----
+validClockType: ClockType +> bool
+validClockType(tdef) ==
+	let periodic = clockIsPeriodic(tdef.intervalVariability) in allOf
+	([
+		--@OnFail("validClockType: resolution can only be used with periodic clocks")
+		( tdef.resolution <> nil => periodic ),
+
+		--@OnFail("validClockType: Periodic clock with supportsFraction and intervalCounter must define resolution")
+		( periodic and tdef.supportsFraction = true and tdef.intervalCounter <> nil => tdef.resolution <> nil  ),
+
+		--@OnFail("validClockType: intervalCounter must be >0")
+		( tdef.intervalCounter <> nil => tdef.intervalCounter > 0 ),
+
+		--@OnFail("validClockType: Cannot use intervalCounter unless periodic and supportsFraction")
+		( tdef.intervalCounter <> nil => tdef.supportsFraction = true and periodic ),
+
+		--@OnFail("validClockType: shiftCounter requires an intervalCounter")
+		( tdef.shiftCounter <> nil => tdef.intervalCounter <> nil )
+	]);
+----
+// {vdm}
+See <<figure-schema-ClockType>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	TypeDefinitions_refs : ReferenceMap =
+	{
+		"validTypeDefinitionNames" |->
+		[
+			"fmi-standard/docs/index.html#definition-of-types",
+			"fmi-standard/docs/index.html#table-type-details"
+		],
+
+		"validTypeMinMax" |->
+		[
+			"fmi-standard/docs/index.html#table-type-details"
+		],
+
+		"validTypeDisplayUnit" |->
+		[
+			"fmi-standard/docs/index.html#table-type-details"
+		],
+
+		"validEnumerationTypeBijection" |->
+		[
+			"fmi-standard/docs/index.html#figure-schema-EnumerationType"
+		],
+
+		"validClockType" |->
+		[
+			"fmi-standard/docs/index.html#figure-schema-ClockType"
+		]
+	};
+// {vdm}
+endif::[]
+
+
+
+
+
+
+

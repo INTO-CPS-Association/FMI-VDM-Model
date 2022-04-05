@@ -32,6 +32,7 @@ types
 	([
 		apply[Category](inv_Category', lcats),
 
+		-- Rule defined in LogCategories.adoc
 		rule("validLogCategories", validLogCategories(lcats))
 	]);
 
@@ -39,13 +40,4 @@ types
 	inv cat == allOf
 	([
 		inv_Annotations'(cat.annotations)
-	])
-
-functions
-	validLogCategories: [seq1 of Category] +> bool
-	validLogCategories(lcats) ==
-		lcats <> nil =>
-			/* @OnFail("validLogCategories: LogCategory names are not unique: %s",
-				{ lcats(a).name | a, b in set inds lcats &
-					a <> b and lcats(a).name = lcats(b).name }) */
-			( card { c.name | c in seq lcats } = len lcats );
+	]);

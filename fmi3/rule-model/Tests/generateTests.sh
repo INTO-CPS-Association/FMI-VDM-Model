@@ -1,6 +1,6 @@
 # Generate all XML tests
 
-for xml in *.xml
+for xml in TestXML/*.xml
 do
     echo "------------ $xml"
     name=$(basename $xml .xml)
