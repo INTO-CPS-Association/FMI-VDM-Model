@@ -1,12 +1,12 @@
 /**
- * VDM value created from co_simulation_early_return.xml
+ * VDM value created from TestXML/co_simulation_early_return.xml
  */
 values
     co_simulation_early_return =
     mk_FmiModelDescription
     (
         mk_Location("co_simulation_early_return.xml", 9),
-        "3.0-beta.5",  -- fmiVersion
+        "3.0-rc.1",  -- fmiVersion
         "MyLibrary.SpringMassDamper_Early_Return_example",  -- modelName
         "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",  -- instantiationToken
         "Rotational Spring Mass Damper System",  -- description
@@ -15,12 +15,12 @@ values
         nil,  -- copyright
         nil,  -- license
         nil,  -- generationTool
-        "2011-09-23T16:57:33Z",  -- generationDateAndTime
+        "2022-05-01T16:57:33Z",  -- generationDateAndTime
         <structured>,  -- variableNamingConvention
         nil,  -- modelExchange
         mk_CoSimulation
         (
-            mk_Location("co_simulation_early_return.xml", 14),
+            mk_Location("co_simulation_early_return.xml", 15),
             "MyLibrary_SpringMassDamper",  -- modelIdentifier
             nil,  -- needsExecutionTool
             nil,  -- canBeInstantiatedOnlyOncePerProcess
@@ -34,7 +34,7 @@ values
             nil,  -- fixedInternalStepSize
             nil,  -- maxOutputDerivativeOrder
             nil,  -- recommendedIntermediateInputSmoothness
-            nil,  -- providesIntermediateUpdate
+            true,  -- providesIntermediateUpdate
             nil,  -- mightReturnEarlyFromDoStep
             true,  -- canReturnEarlyAfterIntermediateUpdate
             true,  -- hasEventMode
@@ -45,11 +45,11 @@ values
         [
             mk_Unit
             (
-                mk_Location("co_simulation_early_return.xml", 16),
+                mk_Location("co_simulation_early_return.xml", 17),
                 "rad",  -- name
                 mk_BaseUnit
                 (
-                    mk_Location("co_simulation_early_return.xml", 17),
+                    mk_Location("co_simulation_early_return.xml", 18),
                     nil,  -- kg
                     nil,  -- m
                     nil,  -- s
@@ -65,7 +65,7 @@ values
                 [
                     mk_DisplayUnit
                     (
-                        mk_Location("co_simulation_early_return.xml", 18),
+                        mk_Location("co_simulation_early_return.xml", 19),
                         "deg",  -- name
                         57.2957795130823,  -- factor
                         nil,  -- offset
@@ -77,11 +77,11 @@ values
             ),
             mk_Unit
             (
-                mk_Location("co_simulation_early_return.xml", 20),
+                mk_Location("co_simulation_early_return.xml", 21),
                 "rad/s",  -- name
                 mk_BaseUnit
                 (
-                    mk_Location("co_simulation_early_return.xml", 21),
+                    mk_Location("co_simulation_early_return.xml", 22),
                     nil,  -- kg
                     nil,  -- m
                     -1,  -- s
@@ -98,11 +98,11 @@ values
             ),
             mk_Unit
             (
-                mk_Location("co_simulation_early_return.xml", 23),
+                mk_Location("co_simulation_early_return.xml", 24),
                 "kg.m2",  -- name
                 mk_BaseUnit
                 (
-                    mk_Location("co_simulation_early_return.xml", 24),
+                    mk_Location("co_simulation_early_return.xml", 25),
                     1,  -- kg
                     2,  -- m
                     nil,  -- s
@@ -119,11 +119,11 @@ values
             ),
             mk_Unit
             (
-                mk_Location("co_simulation_early_return.xml", 26),
+                mk_Location("co_simulation_early_return.xml", 27),
                 "N.m",  -- name
                 mk_BaseUnit
                 (
-                    mk_Location("co_simulation_early_return.xml", 27),
+                    mk_Location("co_simulation_early_return.xml", 28),
                     1,  -- kg
                     2,  -- m
                     -2,  -- s
@@ -142,7 +142,7 @@ values
         [
             mk_Float64Type
             (
-                mk_Location("co_simulation_early_return.xml", 31),
+                mk_Location("co_simulation_early_return.xml", 32),
                 "Modelica.Units.SI.Inertia",  -- name
                 nil,  -- description
                 "MomentOfInertia",  -- quantity
@@ -157,7 +157,7 @@ values
             ),
             mk_Float64Type
             (
-                mk_Location("co_simulation_early_return.xml", 32),
+                mk_Location("co_simulation_early_return.xml", 33),
                 "Modelica.Units.SI.Torque",  -- name
                 nil,  -- description
                 "Torque",  -- quantity
@@ -172,7 +172,7 @@ values
             ),
             mk_Float64Type
             (
-                mk_Location("co_simulation_early_return.xml", 33),
+                mk_Location("co_simulation_early_return.xml", 34),
                 "Modelica.Units.SI.AngularVelocity",  -- name
                 nil,  -- description
                 "AngularVelocity",  -- quantity
@@ -187,7 +187,7 @@ values
             ),
             mk_Float64Type
             (
-                mk_Location("co_simulation_early_return.xml", 34),
+                mk_Location("co_simulation_early_return.xml", 35),
                 "Modelica.Units.SI.Angle",  -- name
                 nil,  -- description
                 "Angle",  -- quantity
@@ -204,7 +204,7 @@ values
         nil,  -- logCategories
         mk_DefaultExperiment
         (
-            mk_Location("co_simulation_early_return.xml", 36),
+            mk_Location("co_simulation_early_return.xml", 37),
             0.0,  -- startTime
             3.0,  -- stopTime
             0.0001,  -- tolerance
@@ -214,7 +214,7 @@ values
         [
             mk_Float64
             (
-                mk_Location("co_simulation_early_return.xml", 40),
+                mk_Location("co_simulation_early_return.xml", 41),
                 "inertia1.J",  -- name
                 1073741824,  -- valueReference
                 "Moment of load inertia",  -- description
@@ -246,7 +246,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("co_simulation_early_return.xml", 43),
+                mk_Location("co_simulation_early_return.xml", 44),
                 "torque.tau",  -- name
                 536870912,  -- valueReference
                 "Accelerating torque acting at flange (= -flange.tau)",  -- description
@@ -278,7 +278,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("co_simulation_early_return.xml", 46),
+                mk_Location("co_simulation_early_return.xml", 47),
                 "inertia1.phi",  -- name
                 805306368,  -- valueReference
                 "Absolute rotation angle of component",  -- description
@@ -307,7 +307,7 @@ values
             ),
             mk_Float64
             (
-                mk_Location("co_simulation_early_return.xml", 49),
+                mk_Location("co_simulation_early_return.xml", 50),
                 "inertia1.w",  -- name
                 805306369,  -- valueReference
                 "Absolute angular velocity of component (= der(phi))",  -- description
@@ -337,12 +337,12 @@ values
         ],
         mk_ModelStructure
         (
-            mk_Location("co_simulation_early_return.xml", 51),
+            mk_Location("co_simulation_early_return.xml", 52),
             -- output
             [
                 mk_Output
                 (
-                    mk_Location("co_simulation_early_return.xml", 52),
+                    mk_Location("co_simulation_early_return.xml", 53),
                     805306368,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
@@ -350,7 +350,7 @@ values
                 ),
                 mk_Output
                 (
-                    mk_Location("co_simulation_early_return.xml", 53),
+                    mk_Location("co_simulation_early_return.xml", 54),
                     805306369,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
@@ -363,7 +363,7 @@ values
             [
                 mk_InitialUnknown
                 (
-                    mk_Location("co_simulation_early_return.xml", 54),
+                    mk_Location("co_simulation_early_return.xml", 55),
                     805306368,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
@@ -371,7 +371,7 @@ values
                 ),
                 mk_InitialUnknown
                 (
-                    mk_Location("co_simulation_early_return.xml", 55),
+                    mk_Location("co_simulation_early_return.xml", 56),
                     805306369,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind

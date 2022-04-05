@@ -1,12 +1,12 @@
 /**
- * VDM value created from co_simulation.xml
+ * VDM value created from TestXML/co_simulation.xml
  */
 values
     co_simulation =
     mk_FmiModelDescription
     (
         mk_Location("co_simulation.xml", 9),
-        "3.0-beta.5",  -- fmiVersion
+        "3.0-rc.1",  -- fmiVersion
         "MyLibrary.SpringMassDamper",  -- modelName
         "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",  -- instantiationToken
         "Rotational Spring Mass Damper System",  -- description
@@ -15,7 +15,7 @@ values
         nil,  -- copyright
         nil,  -- license
         nil,  -- generationTool
-        "2011-09-23T16:57:33Z",  -- generationDateAndTime
+        "2022-05-01T16:57:33Z",  -- generationDateAndTime
         <structured>,  -- variableNamingConvention
         nil,  -- modelExchange
         mk_CoSimulation

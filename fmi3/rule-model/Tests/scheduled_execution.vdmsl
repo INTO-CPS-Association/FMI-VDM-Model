@@ -1,12 +1,12 @@
 /**
- * VDM value created from scheduled_execution.xml
+ * VDM value created from TestXML/scheduled_execution.xml
  */
 values
     scheduled_execution =
     mk_FmiModelDescription
     (
         mk_Location("scheduled_execution.xml", 2),
-        "3.0-beta.5",  -- fmiVersion
+        "3.0-rc.1",  -- fmiVersion
         "ThreeInputClocks",  -- modelName
         "ThreeInputClocks",  -- instantiationToken
         nil,  -- description
@@ -334,7 +334,8 @@ values
                     -- dependencies
                     [
                         0,
-                        1
+                        1,
+                        5
                     ],
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -345,7 +346,8 @@ values
                     4,  -- valueReference
                     -- dependencies
                     [
-                        3
+                        3,
+                        6
                     ],
                     nil,  -- dependenciesKind
                     nil   -- annotations

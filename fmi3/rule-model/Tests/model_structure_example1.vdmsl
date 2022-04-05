@@ -1,12 +1,12 @@
 /**
- * VDM value created from model_structure_example1.xml
+ * VDM value created from TestXML/model_structure_example1.xml
  */
 values
     model_structure_example1 =
     mk_FmiModelDescription
     (
         mk_Location("model_structure_example1.xml", 7),
-        "3.0-beta.5",  -- fmiVersion
+        "3.0-rc.1",  -- fmiVersion
         "",  -- modelName
         "",  -- instantiationToken
         "",  -- description
@@ -15,7 +15,7 @@ values
         nil,  -- copyright
         nil,  -- license
         nil,  -- generationTool
-        "2019-04-14T13:06:01Z",  -- generationDateAndTime
+        "2022-05-01T13:06:01Z",  -- generationDateAndTime
         nil,  -- variableNamingConvention
         nil,  -- modelExchange
         mk_CoSimulation

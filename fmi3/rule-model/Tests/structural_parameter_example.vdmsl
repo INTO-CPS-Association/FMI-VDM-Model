@@ -1,12 +1,12 @@
 /**
- * VDM value created from structural_parameter_example.xml
+ * VDM value created from TestXML/structural_parameter_example.xml
  */
 values
     structural_parameter_example =
     mk_FmiModelDescription
     (
         mk_Location("structural_parameter_example.xml", 7),
-        "3.0-beta.5",  -- fmiVersion
+        "3.0-rc.1",  -- fmiVersion
         "",  -- modelName
         "",  -- instantiationToken
         "",  -- description
@@ -15,7 +15,7 @@ values
         nil,  -- copyright
         nil,  -- license
         nil,  -- generationTool
-        "2020-05-01T20:00:00Z",  -- generationDateAndTime
+        "2022-05-01T20:00:00Z",  -- generationDateAndTime
         nil,  -- variableNamingConvention
         nil,  -- modelExchange
         mk_CoSimulation

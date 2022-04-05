@@ -1,12 +1,12 @@
 /**
- * VDM value created from alias_example.xml
+ * VDM value created from TestXML/alias_example.xml
  */
 values
     alias_example =
     mk_FmiModelDescription
     (
         mk_Location("alias_example.xml", 7),
-        "3.0-beta.5",  -- fmiVersion
+        "3.0-rc.1",  -- fmiVersion
         "",  -- modelName
         "",  -- instantiationToken
         "",  -- description
@@ -15,7 +15,7 @@ values
         nil,  -- copyright
         nil,  -- license
         nil,  -- generationTool
-        "2019-04-14T13:06:01Z",  -- generationDateAndTime
+        "2022-05-01T13:06:01Z",  -- generationDateAndTime
         nil,  -- variableNamingConvention
         nil,  -- modelExchange
         mk_CoSimulation
@@ -36,7 +36,7 @@ values
             nil,  -- recommendedIntermediateInputSmoothness
             nil,  -- providesIntermediateUpdate
             nil,  -- mightReturnEarlyFromDoStep
-            true,  -- canReturnEarlyAfterIntermediateUpdate
+            nil,  -- canReturnEarlyAfterIntermediateUpdate
             nil,  -- hasEventMode
             nil,  -- providesEvaluateDiscreteStates
             nil   -- annotations
