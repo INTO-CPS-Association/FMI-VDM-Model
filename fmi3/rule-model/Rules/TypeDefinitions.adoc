@@ -61,8 +61,8 @@ validEnumerationTypeBijection(tdef) ==
 // {vdm}
 See <<figure-schema-EnumerationType>>.
 
-===== A.{section}.{subsection}.{counter:typerule} Rule: validCSModelIdentifier
-[[validCSModelIdentifier]]
+===== A.{section}.{subsection}.{counter:typerule} Rule: validClockType
+[[validClockType]]
 // {vdm}
 ----
 validClockType: ClockType +> bool

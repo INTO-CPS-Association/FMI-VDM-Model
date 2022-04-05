@@ -17,7 +17,7 @@ validCoordinateSystem(cs) ==
 	( isTLtoBR(cs.x1, cs.x2, cs.y1, cs.y2) );
 ----
 // {vdm}
-- See <<_coordinatesystem>>.
+See <<_coordinatesystem>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validIcon
 [[validIcon]]
@@ -29,7 +29,7 @@ validIcon(icon) ==
 	( isTLtoBR(icon.x1, icon.x2, icon.y1, icon.y2) );
 ----
 // {vdm}
-- See <<_icon>>.
+See <<_icon>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalMemberVariables
 [[validTerminalMemberVariables]]
@@ -43,7 +43,7 @@ validTerminalMemberVariables(terminal) ==
 		( card { v.variableName | v in seq tmvs } = len tmvs );
 ----
 // {vdm}
-- See <<section-terminalvars>>.
+See <<section-terminalvars>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalStreamMemberVariables
 [[validTerminalStreamMemberVariables]]
@@ -56,7 +56,7 @@ validTerminalStreamMemberVariables(terminal) ==
 		true;	-- rules here?
 ----
 // {vdm}
-- See <<_terminal_stream_member_variable>>.
+See <<_terminal_stream_member_variable>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalGraphicalRepresentation
 [[validTerminalGraphicalRepresentation]]
@@ -80,7 +80,7 @@ validTerminalGraphicalRepresentation(terminal) ==
 	]);
 ----
 // {vdm}
-- See <<_terminal_graphical_representation>>.
+See <<_terminal_graphical_representation>>.
 
 // This adds the docrefs for VDM only
 ifdef::hidden[]
