@@ -1,6 +1,6 @@
-== Formal Static Semantics of FMI3
+== Appendix A: Formal Static Semantics of FMI3
 
-=== Introduction
+=== A.{counter:section} Introduction
 
 The FMI Standard document contains a complete description of the semantics of the FMI API, and the structure of an FMU and its configuration files.
 
@@ -8,13 +8,13 @@ This document contains formally specified rules that clarify the textual descrip
 
 The rules currently only cover the _static_ semantics of the Standard. That is, they describe the rules for correctly configured XML files. The dynamic semantics, defining the behaviour of the API, may be formally specified subsequently.
 
-=== VDM-SL Specifications
+=== A.{counter:section} VDM-SL Specifications
 
-The rules are given in VDM-SL, the specification language of the https://en.wikipedia.org/wiki/Vienna_Development_Method>[Vienna Development Method].  The language has a formal semantics, enabling proof of the properties of models to a high level of assurance. It also has an executable subset, so that real world data can be processed.
+The rules are defined in VDM-SL, the specification language of the https://en.wikipedia.org/wiki/Vienna_Development_Method[Vienna Development Method].  The language has a formal semantics, enabling proof of the properties of models to a high level of assurance. It also has an executable subset, so that real world data can be processed.
 
-Free, open source tools are available to process these rules.
+Free, https://github.com/jonaskrask/vdm-vscode[open source tools] are available to process these rules.
 
-=== Structure of the Rules
+=== A.{counter:section} Structure of the Rules
 
 Each formal rule has a unique name and is associated with one XML type in the FMI Schema.
 
@@ -23,42 +23,84 @@ Rules are associated with the lowest level XML type that encapsulates all of the
 All rules are functions that return a boolean result. They are passed the record(s) that contain the data to check. For example:
 
 ----
-validDefaultExperiment: DefaultExperiment +> bool
-validDefaultExperiment(e) == ...
+validTolerance: DefaultExperiment +> bool
+validTolerance(e) ==
+	-- @OnFail("validTolerance: tolerance must be >= 0 at %s", loc2str(e.location))
+	( e.tolerance <> nil => e.tolerance >= 0 );
 ----
 
-This defines a rule called "validDefaultExperiment" which is passed a DefaultExperiment record to test. The record is referred to by the name "e" within the body of the rule, which follows this header.
+This defines a rule called "validTolerance" which is passed a DefaultExperiment record to test. The record is referred to by the name "e" within the body of the rule, which follows this header.
 
 Rules contain _@OnFail_ comments, which define error messages associated with clauses in the rule. The comments themselves are not part of the rules and do not affect whether the rule succeeds or fails. All records have a "location" field added which contains the filename and line number of the data in the XML. The "loc2str" function used in @OnFail comments turns locations into useful strings.
 
 Rules sometimes contain a function called _allOf_, which is passed a [...] comma-separated list of boolean values, all of which must be true for the overall rule to be met.
 
-// This prefix adds the "functions" header for VDM only
+// This adds the "functions" header for VDM only
 ifdef::hidden[]
 // {vdm}
 functions
 // {vdm}
 endif::[]
 
-==== DefaultExperiment
-
-The validity of a DefaultExperiment record is defined as follows:
-
+=== A.{counter:section} Rules
+==== A.{section}.{counter:subsection} DefaultExperiment
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTolerance
+[[validTolerance]]
 // {vdm}
 ----
-validDefaultExperiment: DefaultExperiment +> bool
-validDefaultExperiment(e) == allOf
-([
-	-- @OnFail("validDefaultExperiment: tolerance must be >= 0 at %s", loc2str(e.location))
-	( e.tolerance <> nil => e.tolerance >= 0 ),
-
-	-- @OnFail("validDefaultExperiment: stop time must be later than start time at %s", loc2str(e.location))
-	( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime ),
-
-	-- @OnFail("validDefaultExperiment: stepSize must be less than start-stop interval at %s", loc2str(e.location))
+validTolerance: DefaultExperiment +> bool
+validTolerance(e) ==
+	-- @OnFail("validTolerance: tolerance must be >= 0 at %s", loc2str(e.location))
+	( e.tolerance <> nil => e.tolerance >= 0 );
+----
+// {vdm}
+===== A.{section}.{subsection}.{counter:typerule} Rule: validStartStopTime
+[[validStartStopTime]]
+// {vdm}
+----
+validStartStopTime: DefaultExperiment +> bool
+validStartStopTime(e) ==
+	-- @OnFail("validStartStopTime: stop time must be later than start time at %s", loc2str(e.location))
+	( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime );
+----
+// {vdm}
+===== A.{section}.{subsection}.{counter:typerule} Rule: validStepSize
+[[validStepSize]]
+// {vdm}
+----
+validStepSize: DefaultExperiment +> bool
+validStepSize(e) ==
+	-- @OnFail("validStepSize: stepSize must be less than start-stop interval at %s", loc2str(e.location))
 	( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
-		e.stopTime - e.startTime > e.stepSize )
-]);
+		e.stopTime - e.startTime > e.stepSize );
 ----
 // {vdm}
+
+See <<DefaultExperiment>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	validDefaultExperiment_refs : ReferenceMap =
+	{
+		"validTolerance" |->
+		[
+			"fmi-standard/docs/index.html#DefaultExperiment"
+		],
+
+		"validStartStopTime" |->
+		[
+			"fmi-standard/docs/index.html#DefaultExperiment"
+		],
+
+		"validStepSize" |->
+		[
+			"fmi-standard/docs/index.html#DefaultExperiment"
+		]
+	};
+
+functions
+// {vdm}
+endif::[]
 

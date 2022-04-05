@@ -67,9 +67,9 @@ types
 		inv_Terminals'(t.terminal),		-- RECURSIVE!!
 		inv_Annotations'(t.annotations),
 
-		rule("validTerminalMemberVariables", validTerminalMemberVariables(t.location, t.terminalMemberVariable)),
-		rule("validTerminalGraphicalRepresentation", validTerminalGraphicalRepresentation(t.terminalGraphicalRepresentation)),
-		rule("validTerminalStreamMemberVariables", validTerminalStreamMemberVariables(t.terminalStreamMemberVariable))
+		rule("validTerminalMemberVariables", validTerminalMemberVariables(t)),
+		rule("validTerminalGraphicalRepresentation", validTerminalGraphicalRepresentation(t)),
+		rule("validTerminalStreamMemberVariables", validTerminalStreamMemberVariables(t))
 	]);
 
 functions
@@ -83,19 +83,22 @@ functions
 		-- @OnFail("validIcon: Area is not bottom left to top right at %s", loc2str(icon.location))
 		( isTLtoBR(icon.x1, icon.x2, icon.y1, icon.y2) );
 
-	validTerminalMemberVariables: Location * [seq of (TerminalMemberVariable)] +> bool
-	validTerminalMemberVariables(location, tmvs) ==
+	validTerminalMemberVariables: Terminal +> bool
+	validTerminalMemberVariables(terminal) ==
+		let tmvs = terminal.terminalMemberVariable in
 		tmvs <> nil =>
-			-- @OnFail("validTerminalMemberVariables: Terminal member variables not unique at %s", loc2str(location))
+			-- @OnFail("validTerminalMemberVariables: Terminal member variables not unique at %s", loc2str(terminal.location))
 			( card { v.variableName | v in seq tmvs } = len tmvs );
 
-	validTerminalStreamMemberVariables: [seq of (TerminalStreamMemberVariable)] +> bool
-	validTerminalStreamMemberVariables(tsmvs) ==
+	validTerminalStreamMemberVariables: Terminal +> bool
+	validTerminalStreamMemberVariables(terminal) ==
+		let tsmvs = terminal.terminalStreamMemberVariable in
 		tsmvs <> nil =>
 			true;	-- rules here?
 
-	validTerminalGraphicalRepresentation: [TerminalGraphicalRepresentation] +> bool
-	validTerminalGraphicalRepresentation(tgr) ==
+	validTerminalGraphicalRepresentation: Terminal +> bool
+	validTerminalGraphicalRepresentation(terminal) ==
+		let tgr = terminal.terminalGraphicalRepresentation in
 		tgr <> nil => allOf
 		([
 			-- @OnFail("validTerminalGraphicalRepresentation: Terminal area is not bottom left to top right at %s", loc2str(tgr.location))

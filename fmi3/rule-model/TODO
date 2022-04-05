@@ -5,5 +5,5 @@
 . Add better "explanations" to some @OnFail messages
 . Split multi-part rules into individual tests?
 . Check proof obligations for problem hints
-. Try AsciiDoc embedding/linking of rules in FMI3Rules.adoc
+. Complete embedding/linking of rules in FMI3Rules.adoc
 . Review the model with FMI group.

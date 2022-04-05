@@ -36,8 +36,11 @@ values
 	 * A map from rule names to FMI Standard document locations, given in terms of a
 	 * relative URL from "fmi-standard". Each of these locations could, in turn, have
 	 * a link back to the named rule.
+	 *
+	 * The map is comprised of the union of maps for each rule. See FMI3Rules.adoc.
 	 */
 	docReferences : ReferenceMap =
+	validDefaultExperiment_refs munion
 	{
 		"validGenerationDateAndTime" |->
 		[
@@ -123,11 +126,6 @@ values
 		"validLogCategories" |->
 		[
 			"fmi-standard/docs/index.html#definition-of-log-categories"
-		],
-
-		"validDefaultExperiment" |->
-		[
-			"fmi-standard/docs/index.html#DefaultExperiment"
 		],
 
 		"validVariableNames" |->

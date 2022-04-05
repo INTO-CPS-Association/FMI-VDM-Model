@@ -33,5 +33,7 @@ types
 		inv_Annotations'(dexp.annotations),
 
 		-- The rules are defined in FMI3Rules.adoc
-		rule("validDefaultExperiment", validDefaultExperiment(dexp))
+		rule("validTolerance", validTolerance(dexp)),
+		rule("validStartStopTime", validTolerance(dexp)),
+		rule("validStepSize", validTolerance(dexp))
 	]);
