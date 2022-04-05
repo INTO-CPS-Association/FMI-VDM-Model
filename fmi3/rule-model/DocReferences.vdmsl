@@ -39,16 +39,19 @@ values
 	 *
 	 * The map is comprised of the union of maps for each rule. See FMI3Rules.adoc.
 	 */
-	docReferences : ReferenceMap =
-		FmiModelDescription_refs munion
-		DefaultExperiment_refs munion
-		BuildConfiguration_refs munion
-		CoSimulation_refs munion
-		ModelExchange_refs munion
-		ScheduledExecution_refs munion
-		LogCategories_refs munion
-		UnitDefinitions_refs munion
-		ModelVariables_refs munion
-		ModelStructure_refs munion
-		Terminals_refs munion
-		TypeDefinitions_refs;
+	docReferences : ReferenceMap = merge
+	{
+		FmiModelDescription_refs,
+		ModelExchange_refs,
+		CoSimulation_refs,
+		ScheduledExecution_refs,
+		UnitDefinitions_refs,
+		TypeDefinitions_refs,
+		LogCategories_refs,
+		DefaultExperiment_refs,
+		ModelVariables_refs,
+		ModelStructure_refs,
+
+		BuildConfiguration_refs,
+		Terminals_refs
+	};
