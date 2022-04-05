@@ -63,8 +63,3 @@ functions
 			default[bool](cs.providesEvaluateDiscreteStates, false),
 			cs.annotations
 		);
-
-	validCSModelIdentifier: CoSimulation +> bool
-	validCSModelIdentifier(cs) ==
-		-- @OnFail("validCSModelIdentifier: %s not valid C variable name at %s", cs.modelIdentifier, loc2str(cs.location))
-		( validIdentifier(cs.modelIdentifier) );

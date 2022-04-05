@@ -43,7 +43,98 @@ functions
 endif::[]
 
 === A.{counter:section} Rules
-==== A.{section}.{counter:subsection} DefaultExperiment
+==== A.{section}.{counter:subsection} SourceFileSet Rules
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCompilerOptions
+[[validCompilerOptions]]
+// {vdm}
+----
+validCompilerOptions: SourceFileSet +> bool
+validCompilerOptions(sfs) ==
+	-- @OnFail("validCompilerOptions: Compiler options set without compiler at %s", loc2str(sfs.location))
+	( sfs.compilerOptions <> nil => sfs.compiler <> nil );
+----
+// {vdm}
+See <<table-SourceFileSet-details>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validSourceFileNames
+[[validSourceFileNames]]
+// {vdm}
+----
+validSourceFileNames: SourceFileSet +> bool
+validSourceFileNames(sfs) ==
+	let files = sfs.sourceFile in
+	let names = [ sf.name | sf in seq files ] in
+		/* @OnFail("validSourceFilesName: SourceFileSet has duplicate names: %s",
+			{ files(a) | a, b in set inds names & a <> b and files(a) = files(b) })	*/
+		( card elems names = len names );
+----
+// {vdm}
+See <<table-SourceFile-details>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validPreprocessorDefinitionNames
+[[validPreprocessorDefinitionNames]]
+// {vdm}
+----
+validPreprocessorDefinitionNames: SourceFileSet +> bool
+validPreprocessorDefinitionNames(sfs) ==
+	let defs = sfs.preprocessorDefinition in
+	defs <> nil =>
+		let names = [ d.name | d in seq defs ] in
+			/* @OnFail("validPreprocessorDefinitionNames: PreprocessorDefinitions has duplicate names: %s",
+				{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) }) */
+			( card elems names = len names );
+----
+// {vdm}
+See <<table-ProcessorDefinition-details>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validIncludeDirectoryNames
+[[validIncludeDirectoryNames]]
+// {vdm}
+----
+validIncludeDirectoryNames: SourceFileSet +> bool
+validIncludeDirectoryNames(sfs) ==
+	let incs = sfs.includeDirectory in
+	incs <> nil =>
+		let names = [ d.name | d in seq incs ] in
+			/* @OnFail("validIncludeDirectoryNames: IncludeDirectories has duplicate names: %s",
+				{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) }) */
+			( card elems names = len names );
+----
+// {vdm}
+See <<table-IncludeDirectory-details>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	BuildConfiguration_refs : ReferenceMap =
+	{
+		"validCompilerOptions" |->
+		[
+			"fmi-standard/docs/index.html#table-SourceFileSet-details"
+		],
+
+		"validSourceFileNames" |->
+		[
+			"fmi-standard/docs/index.html#table-SourceFile-details"
+		],
+
+		"validPreprocessorDefinitionNames" |->
+		[
+			"fmi-standard/docs/index.html#table-ProcessorDefinition-details"
+		],
+
+		"validIncludeDirectoryNames" |->
+		[
+			"fmi-standard/docs/index.html#table-IncludeDirectory-details"
+		]
+	};
+
+functions
+// {vdm}
+endif::[]
+
+==== A.{section}.{counter:subsection} DefaultExperiment Rules
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTolerance
 [[validTolerance]]
 // {vdm}
@@ -54,6 +145,8 @@ validTolerance(e) ==
 	( e.tolerance <> nil => e.tolerance >= 0 );
 ----
 // {vdm}
+See <<DefaultExperiment>>.
+
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validStartStopTime
 [[validStartStopTime]]
 // {vdm}
@@ -64,6 +157,8 @@ validStartStopTime(e) ==
 	( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime );
 ----
 // {vdm}
+See <<DefaultExperiment>>.
+
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validStepSize
 [[validStepSize]]
 // {vdm}
@@ -75,14 +170,13 @@ validStepSize(e) ==
 		e.stopTime - e.startTime > e.stepSize );
 ----
 // {vdm}
-
 See <<DefaultExperiment>>.
 
 // This adds the docrefs for VDM only
 ifdef::hidden[]
 // {vdm}
 values
-	validDefaultExperiment_refs : ReferenceMap =
+	DefaultExperiment_refs : ReferenceMap =
 	{
 		"validTolerance" |->
 		[
@@ -104,3 +198,60 @@ functions
 // {vdm}
 endif::[]
 
+==== A.{section}.{counter:subsection} CoSimulation Rules
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCSModelIdentifier
+[[validCSModelIdentifier]]
+// {vdm}
+----
+validCSModelIdentifier: CoSimulation +> bool
+validCSModelIdentifier(cs) ==
+	-- @OnFail("validCSModelIdentifier: %s not valid C variable name at %s", cs.modelIdentifier, loc2str(cs.location))
+	( validIdentifier(cs.modelIdentifier) );
+----
+// {vdm}
+- See <<modelIdentifier>>.
+- See <<header-files-and-naming-of-functions>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	CoSimulation_refs : ReferenceMap =
+	{
+		"validCSModelIdentifier" |->
+		[
+			"fmi-standard/docs/index.html#modelIdentifier",
+			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
+		]
+	};
+
+functions
+// {vdm}
+endif::[]
+
+
+==== A.{section}.{counter:subsection} XXX Rules
+===== A.{section}.{subsection}.{counter:typerule} Rule: YYY
+[[YYY]]
+// {vdm}
+----
+
+----
+// {vdm}
+See <<ref>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	XXX_refs : ReferenceMap =
+	{
+		"YYY" |->
+		[
+			"fmi-standard/docs/index.html#YYY"
+		]
+	};
+
+functions
+// {vdm}
+endif::[]

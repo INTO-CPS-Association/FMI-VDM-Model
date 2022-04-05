@@ -50,10 +50,11 @@ types
 		apply[IncludeDirectory](inv_IncludeDirectory', sfs.includeDirectory),
 		inv_Annotations'(sfs.annotations),
 
+		-- Rules are defined in FMI3Rules.adoc
 		rule("validCompilerOptions", validCompilerOptions(sfs)),
-		rule("validSourceFileNames", validSourceFileNames(sfs.sourceFile)),
-		rule("validPreprocessorDefinitionNames", validPreprocessorDefinitionNames(sfs.preprocessorDefinition)),
-		rule("validIncludeDirectoryNames", validIncludeDirectoryNames(sfs.includeDirectory))
+		rule("validSourceFileNames", validSourceFileNames(sfs)),
+		rule("validPreprocessorDefinitionNames", validPreprocessorDefinitionNames(sfs)),
+		rule("validIncludeDirectoryNames", validIncludeDirectoryNames(sfs))
 	]);
 
 	SourceFile' = SourceFile
@@ -79,32 +80,3 @@ types
 	([
 		inv_Annotations'(lib.annotations)
 	]);
-
-functions
-	validCompilerOptions: SourceFileSet +> bool
-	validCompilerOptions(sfs) ==
-		-- @OnFail("validCompilerOptions: Compiler options set without compiler at %s", loc2str(sfs.location))
-		( sfs.compilerOptions <> nil => sfs.compiler <> nil );
-
-	validSourceFileNames: seq1 of SourceFile +> bool
-	validSourceFileNames(files) ==
-		let names = [ sf.name | sf in seq files ] in
-			/* @OnFail("validSourceFilesName: SourceFileSet has duplicate names: %s",
-				{ files(a) | a, b in set inds names & a <> b and files(a) = files(b) })	*/
-			( card elems names = len names );
-
-	validPreprocessorDefinitionNames: [seq1 of PreprocessorDefinition] +> bool
-	validPreprocessorDefinitionNames(defs) ==
-		defs <> nil =>
-			let names = [ d.name | d in seq defs ] in
-				/* @OnFail("validPreprocessorDefinitionNames: PreprocessorDefinitions has duplicate names: %s",
-					{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) }) */
-				( card elems names = len names );
-
-	validIncludeDirectoryNames: [seq1 of IncludeDirectory] +> bool
-	validIncludeDirectoryNames(incs) ==
-		incs <> nil =>
-			let names = [ d.name | d in seq incs ] in
-				/* @OnFail("validIncludeDirectoryNames: IncludeDirectories has duplicate names: %s",
-					{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) }) */
-				( card elems names = len names );
