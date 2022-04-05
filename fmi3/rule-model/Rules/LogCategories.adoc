@@ -13,7 +13,6 @@ endif::[]
 ----
 validLogCategories: LogCategories +> bool
 validLogCategories(cats) ==
-	cats <> nil =>
 		/* @OnFail("validLogCategories: LogCategory names are not unique: %s",
 			{ cats(a).name | a, b in set inds cats &
 				a <> b and cats(a).name = cats(b).name }) */
