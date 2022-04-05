@@ -32,5 +32,6 @@ types
 	([
 		inv_Annotations'(se.annotations),
 
+		-- Rules are defined in ScheduledExecution.adoc
 		rule("validSEModelIdentifier", validSEModelIdentifier(se))
 	]);

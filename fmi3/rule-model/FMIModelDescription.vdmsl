@@ -44,6 +44,7 @@ types
 		inv_Annotations'(fmd.annotations),
 
 		-- If these rules use variables at all, they are the "raw" values
+		-- The rules are defined in FmiModelDescription.adoc
 		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
 		rule("validModelTypes",	validModelTypes(fmd)),
 		rule("validTypeUnits", validTypeUnits(fmd)),
@@ -57,6 +58,7 @@ types
 		inv_ModelVariables'(evs),
 
 		-- If these rules use variables, they use the effective values
+		-- The rules are defined in FmiModelDescription.adoc
 		rule("validMultipleSets", validMultipleSets(fmd, evs)),
 		rule("validClockPriorities", validClockPriorities(fmd, evs)),
 		rule("validOutput", validOutput(fmd, evs)),

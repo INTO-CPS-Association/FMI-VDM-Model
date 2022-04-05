@@ -32,6 +32,7 @@ types
 	([
 		apply[Unit](inv_Unit', units),
 
+		-- Rules are defined in UnitDefinitions.adoc
 		rule("validUnitNames", validUnitNames(units))
 	]);
 
@@ -42,6 +43,7 @@ types
 		inv_BaseUnit'(unit.baseUnit),
 		inv_Annotations'(unit.annotations),
 
+		-- Rules are defined in UnitDefinitions.adoc
 		rule("validDisplayUnitNames", validDisplayUnitNames(unit))
 	]);
 
@@ -61,6 +63,7 @@ types
 		[
 			inv_Annotations'(edu.annotations),
 
+			-- Rules are defined in UnitDefinitions.adoc
 			rule("validInverseAndOffset", validInverseAndOffset(edu))
 		]
 	);

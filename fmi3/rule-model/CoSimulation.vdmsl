@@ -34,6 +34,7 @@ types
 	]
 	^ let ecs = effectiveCoSimulation(cs) in
 	[
+		-- Rules a defined in CoSimulation.adoc
 		rule("validCSModelIdentifier", validCSModelIdentifier(ecs))
 	]);
 

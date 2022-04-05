@@ -13,10 +13,9 @@ endif::[]
 ----
 validDependencyKinds: Location * [seq of (nat)] * [seq of (DependenciesKind)] +> bool
 validDependencyKinds(location, dependencies, dependenciesKind) ==
-	-- @OnFail("validDependencyKinds: dependencies do not match dependenciesKind at %s", loc2str(location))
-	( dependenciesKind <> nil =>
-		dependencies <> nil
-		and len dependenciesKind = len dependencies );
+	dependenciesKind <> nil =>
+		-- @OnFail("validDependencyKinds: dependencies do not match dependenciesKind at %s", loc2str(location))
+		( dependencies <> nil and len dependenciesKind = len dependencies );
 ----
 // {vdm}
 See <<modelStructure>>.

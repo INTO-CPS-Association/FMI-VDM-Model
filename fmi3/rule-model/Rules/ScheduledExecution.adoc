@@ -5,7 +5,7 @@ functions
 // {vdm}
 endif::[]
 
-==== A.{section}.{counter:subsection} CoSimulation Rules
+==== A.{section}.{counter:subsection} ScheduledExecution Rules
 :!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validSEModelIdentifier
 [[validSEModelIdentifier]]

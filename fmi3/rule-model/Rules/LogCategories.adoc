@@ -11,13 +11,13 @@ endif::[]
 [[validLogCategories]]
 // {vdm}
 ----
-validLogCategories: [seq1 of Category] +> bool
-validLogCategories(lcats) ==
-	lcats <> nil =>
+validLogCategories: LogCategories +> bool
+validLogCategories(cats) ==
+	cats <> nil =>
 		/* @OnFail("validLogCategories: LogCategory names are not unique: %s",
-			{ lcats(a).name | a, b in set inds lcats &
-				a <> b and lcats(a).name = lcats(b).name }) */
-		( card { c.name | c in seq lcats } = len lcats );
+			{ cats(a).name | a, b in set inds cats &
+				a <> b and cats(a).name = cats(b).name }) */
+		( card { c.name | c in seq cats } = len cats );
 ----
 // {vdm}
 - See <<definition-of-log-categories>>.

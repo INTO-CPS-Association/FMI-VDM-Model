@@ -32,6 +32,7 @@ types
 	([
 		apply[fmi3Variable](inv_fmi3Variable', evs),
 
+		-- Rules are defined in ModelVariables.adoc
 		rule("validValueReferences", validValueReferences(evs)),
 		rule("validAliasNames", validAliasNames(evs)),
 		rule("validIndependentVariable", validIndependentVariable(evs)),
@@ -176,5 +177,6 @@ types
 	Dimension' = Dimension
 	inv d == allOf
 	([
+		-- Rules are defined in ModelVariables.adoc
 		rule("validStartAndVRef", validStartAndVRef(d))
 	]);

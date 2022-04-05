@@ -32,7 +32,7 @@ types
 	([
 		apply[Category](inv_Category', lcats),
 
-		-- Rule defined in LogCategories.adoc
+		-- Rules defined in LogCategories.adoc
 		rule("validLogCategories", validLogCategories(lcats))
 	]);
 

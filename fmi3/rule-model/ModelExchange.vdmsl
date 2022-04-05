@@ -32,5 +32,6 @@ types
 	([
 		inv_Annotations'(me.annotations),
 
+		-- Rules are defined in ModelExchange.adoc
 		rule("validMEModelIdentifier", validMEModelIdentifier(me))
 	]);

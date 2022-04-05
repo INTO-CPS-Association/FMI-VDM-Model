@@ -41,6 +41,7 @@ types
 	inv out == allOf
 	([
 		inv_Annotations'(out.annotations),
+		-- Rules are defined in ModelStructure.adoc
 		rule("validDependencyKinds", validDependencyKinds(out.location, out.dependencies, out.dependenciesKind))
 	]);
 
@@ -48,6 +49,7 @@ types
 	inv csd == allOf
 	([
 		inv_Annotations'(csd.annotations),
+		-- Rules are defined in ModelStructure.adoc
 		rule("validDependencyKinds", validDependencyKinds(csd.location, csd.dependencies, csd.dependenciesKind))
 	]);
 
@@ -55,6 +57,7 @@ types
 	inv cs == allOf
 	([
 		inv_Annotations'(cs.annotations),
+		-- Rules are defined in ModelStructure.adoc
 		rule("validDependencyKinds", validDependencyKinds(cs.location, cs.dependencies, cs.dependenciesKind))
 	]);
 
@@ -62,6 +65,7 @@ types
 	inv unks == allOf
 	([
 		inv_Annotations'(unks.annotations),
+		-- Rules are defined in ModelStructure.adoc
 		rule("validDependencyKinds", validDependencyKinds(unks.location, unks.dependencies, unks.dependenciesKind))
 	]);
 
@@ -69,5 +73,6 @@ types
 	inv eis == allOf
 	([
 		inv_Annotations'(eis.annotations),
+		-- Rules are defined in ModelStructure.adoc
 		rule("validDependencyKinds", validDependencyKinds(eis.location, eis.dependencies, eis.dependenciesKind))
 	]);

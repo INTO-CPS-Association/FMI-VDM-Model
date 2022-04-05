@@ -32,6 +32,7 @@ types
 	([
 		apply[fmi3TypeDefinition](inv_fmi3TypeDefinition', tdefs),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeDefinitionNames", validTypeDefinitionNames(tdefs))
 	]);
 
@@ -65,6 +66,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <Float64>)),
 		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
 	]);
@@ -74,6 +76,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <Float32>)),
 		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
 	]);
@@ -83,6 +86,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <Int64>))
 	]);
 
@@ -91,6 +95,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <Int32>))
 	]);
 
@@ -99,6 +104,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <Int16>))
 	]);
 
@@ -107,6 +113,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <Int8>))
 	]);
 
@@ -115,6 +122,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt64>))
 	]);
 
@@ -123,6 +131,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt32>))
 	]);
 
@@ -131,6 +140,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt16>))
 	]);
 
@@ -139,6 +149,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <UInt8>))
 	]);
 
@@ -165,6 +176,7 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef, <Enumeration>)),
 		rule("validEnumerationBijection", validEnumerationTypeBijection(tdef))
 	]);
@@ -174,5 +186,6 @@ types
 	([
 		inv_Annotations'(tdef.annotations),
 
+		-- Rules are defined in TypeDefinitions.adoc
 		rule("validClockType", validClockType(tdef))
 	]);
