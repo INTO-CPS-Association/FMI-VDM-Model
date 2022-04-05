@@ -12,7 +12,7 @@ The rules currently only cover the _static_ semantics of the Standard. That is, 
 
 The rules are defined in VDM-SL, the specification language of the https://en.wikipedia.org/wiki/Vienna_Development_Method[Vienna Development Method].  The language has a formal semantics, enabling proof of the properties of models to a high level of assurance. It also has an executable subset, so that real world data can be processed.
 
-Free, https://github.com/jonaskrask/vdm-vscode[open source tools] are available to process these rules.
+Free https://github.com/jonaskrask/vdm-vscode[open source tools] are available to process the VDM-SL rules.
 
 === A.{counter:section} Structure of the Rules
 
@@ -20,7 +20,7 @@ Each formal rule has a unique name and is associated with one XML type in the FM
 
 Rules are associated with the lowest level XML type that encapsulates all of the data involved. For example, the rule that Category names must be unique within LogCategories is  associated with the LogCategories type itself, since that includes all the Categories concerned. The rule that a TypeDefinition's unit names must be defined in the UnitDefinitions is associated with the top level FmiModelDescription type, since that type encompasses both TypeDefinitions and UnitDefinitions.
 
-All rules are functions that return a boolean result. They are passed the record(s) that contain the data to check. For example:
+All rules are functions that return a boolean success/fail result. They are passed the record that contain the data to check. For example:
 
 ----
 validTolerance: DefaultExperiment +> bool
@@ -31,11 +31,11 @@ validTolerance(e) ==
 
 This defines a rule called "validTolerance" which is passed a DefaultExperiment record to test. The record is referred to by the name "e" within the body of the rule, which follows this header.
 
-Rules contain _@OnFail_ comments, which define error messages associated with clauses in the rule. The comments themselves are not part of the rules and do not affect whether the rule succeeds or fails. All records have a "location" field added which contains the filename and line number of the data in the XML. The "loc2str" function used in @OnFail comments turns locations into useful strings.
+Rules contain _@OnFail_ comments, which define error messages associated with clauses in the rule. The comments themselves are not part of the rules and do not affect whether the rule succeeds or fails. All records have a "location" field added which contains the filename and line number of the data in the original XML. The _loc2str_ function turns locations into useful strings.
 
-Rules sometimes contain a function called _allOf_, which is passed a [...] comma-separated list of boolean values, all of which must be true for the overall rule to be met.
+Rules sometimes use a function called _allOf_, which is passed a comma-separated list of boolean values in square brackets, all of which must be true for the overall rule to be met.
 
-// This adds the "functions" header for VDM only
+// This adds the "functions" section header for VDM only
 ifdef::hidden[]
 // {vdm}
 functions
