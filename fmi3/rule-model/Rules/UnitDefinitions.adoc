@@ -27,10 +27,10 @@ validUnitNames(units) ==
 ----
 validDisplayUnitNames: Unit +> bool
 validDisplayUnitNames(unit) ==
-	-- @OnFail("%NAME: DisplayUnit names must be unique within %s at %s",
-	-- unit.name, loc2str(unit.location))
-	( unit.displayUnit <> nil =>
-		let names = [ u.name | u in seq unit.displayUnit ] in
+	unit.displayUnit <> nil =>
+		-- @OnFail("%NAME: DisplayUnit names must be unique within %s at %s",
+		-- unit.name, loc2str(unit.location))
+		( let names = [ u.name | u in seq unit.displayUnit ] in
 			len names = card elems names );
 ----
 // {vdm}

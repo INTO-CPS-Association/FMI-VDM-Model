@@ -13,7 +13,8 @@ endif::[]
 ----
 validSEModelIdentifier: ScheduledExecution +> bool
 validSEModelIdentifier(se) ==
-	-- @OnFail("%NAME: %s not valid C variable nase at %s", se.modelIdentifier, loc2str(se.location))
+	-- @OnFail("%NAME: %s not a valid C variable name at %s",
+	-- se.modelIdentifier, loc2str(se.location))
 	( validIdentifier(se.modelIdentifier) );
 ----
 // {vdm}

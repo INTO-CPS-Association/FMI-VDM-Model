@@ -13,9 +13,9 @@ endif::[]
 ----
 validTypeDefinitionNames: [TypeDefinitions] +> bool
 validTypeDefinitionNames(tdefs) ==
-	-- @OnFail("%NAME: TypeDefinition names must be unique")
-	( tdefs <> nil =>
-		let names = [ td.name | td in seq tdefs ] in
+	tdefs <> nil =>
+		-- @OnFail("%NAME: TypeDefinition names must be unique")
+		( let names = [ td.name | td in seq tdefs ] in
 			len names = card elems names );
 ----
 // {vdm}
