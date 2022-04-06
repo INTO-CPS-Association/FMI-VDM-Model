@@ -7,6 +7,9 @@ endif::[]
 
 ==== A.{section}.{counter:subsection} FmiModelDescription Rules
 :!typerule:
+===== A.{section}.{subsection}.{counter:typerule} Effective Model Variables
+Note that  ModelVariables are passed to some of the rules in this section, in addition to the FmiModelDescription. The ModelVariables passed are _effective ModuleVariables_, whose fields have been set to default values or inherited from the _declaredType_ of the variable. The calculation of effective ModelVariables is defined by a function called _effectiveVariables_.
+
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validModelTypes
 [[validModelTypes]]
 // {vdm}
@@ -30,7 +33,6 @@ validGenerationDateAndTime(fmd) ==
 ----
 // {vdm}
 See <<table-schema-fmiModelDescription-attributes>>.
-
 	
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeUnits
 [[validTypeUnits]]
@@ -50,7 +52,6 @@ validTypeUnits(fmd) ==
 ----
 // {vdm}
 See <<table-type-details>>.
-
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validVariableTypes
 [[validVariableTypes]]

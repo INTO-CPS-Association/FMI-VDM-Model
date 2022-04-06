@@ -28,40 +28,40 @@
  *********************************************************************************/
 types
 	ModelVariables' = ModelVariables
-	inv evs == allOf
+	inv mvs == allOf
 	([
-		apply[fmi3Variable](inv_fmi3Variable', evs),
+		apply[fmi3Variable](inv_fmi3Variable', mvs),
 
 		-- Rules are defined in ModelVariables.adoc
-		rule("validValueReferences", validValueReferences(evs)),
-		rule("validAliasNames", validAliasNames(evs)),
-		rule("validIndependentVariable", validIndependentVariable(evs)),
-		rule("validPreviousVariables", validPreviousVariables(evs)),
-		rule("validVariableDimensions", validVariableDimensions(evs)),
-		rule("validAliasDisplayUnits", validAliasDisplayUnits(evs))
+		rule("validValueReferences", validValueReferences(mvs)),
+		rule("validAliasNames", validAliasNames(mvs)),
+		rule("validIndependentVariable", validIndependentVariable(mvs)),
+		rule("validPreviousVariables", validPreviousVariables(mvs)),
+		rule("validVariableDimensions", validVariableDimensions(mvs)),
+		rule("validAliasDisplayUnits", validAliasDisplayUnits(mvs))
 	]);
 
 	fmi3Variable' = fmi3Variable	-- The union of all kinds
-	inv ev ==
-		cases kindOf(ev):
-			<Float64>	-> inv_Float64'(ev),
-			<Float32>	-> inv_Float32'(ev),
+	inv mv ==
+		cases kindOf(mv):
+			<Float64>	-> inv_Float64'(mv),
+			<Float32>	-> inv_Float32'(mv),
 
-			<Int64>		-> inv_Int64'(ev),
-			<Int32>		-> inv_Int32'(ev),
-			<Int16>		-> inv_Int16'(ev),
-			<Int8>		-> inv_Int8'(ev),
+			<Int64>		-> inv_Int64'(mv),
+			<Int32>		-> inv_Int32'(mv),
+			<Int16>		-> inv_Int16'(mv),
+			<Int8>		-> inv_Int8'(mv),
 
-			<UInt64>	-> inv_UInt64'(ev),
-			<UInt32>	-> inv_UInt32'(ev),
-			<UInt16>	-> inv_UInt16'(ev),
-			<UInt8>		-> inv_UInt8'(ev),
+			<UInt64>	-> inv_UInt64'(mv),
+			<UInt32>	-> inv_UInt32'(mv),
+			<UInt16>	-> inv_UInt16'(mv),
+			<UInt8>		-> inv_UInt8'(mv),
 
-			<Boolean>	-> inv_Boolean'(ev),
-			<String>	-> inv_String'(ev),
-			<Binary>	-> inv_Binary'(ev),
-			<Enumeration>	-> inv_Enumeration'(ev),
-			<Clock>		-> inv_Clock'(ev),
+			<Boolean>	-> inv_Boolean'(mv),
+			<String>	-> inv_String'(mv),
+			<Binary>	-> inv_Binary'(mv),
+			<Enumeration>	-> inv_Enumeration'(mv),
+			<Clock>		-> inv_Clock'(mv),
 
 			others		-> undefined
 		end;
@@ -71,107 +71,107 @@ types
 	 * derivation of their effective values.
 	 */
 	Float64' = Float64
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Float32' = Float32
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Int64' = Int64
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Int32' = Int32
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Int16' = Int16
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Int8' = Int8
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	UInt64' = UInt64
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	UInt32' = UInt32
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	UInt16' = UInt16
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	UInt8' = UInt8
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Boolean' = Boolean
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	String' = String
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Binary' = Binary
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Enumeration' = Enumeration
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations),
-		apply[Dimension](inv_Dimension', ev.dimension)
+		inv_Annotations'(mv.annotations),
+		apply[Dimension](inv_Dimension', mv.dimension)
 	]);
 
 	Clock' = Clock
-	inv ev == allOf
+	inv mv == allOf
 	([
-		inv_Annotations'(ev.annotations)
+		inv_Annotations'(mv.annotations)
 	]);
 
 	Dimension' = Dimension

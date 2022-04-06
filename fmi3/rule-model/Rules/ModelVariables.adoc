@@ -7,13 +7,16 @@ endif::[]
 
 ==== A.{section}.{counter:subsection} ModelVariables Rules
 :!typerule:
+===== A.{section}.{subsection}.{counter:typerule} Effective Model Variables
+Note that the rules in this section are checking the "raw" ModelVariable values, before any field values are defaulted or inherited from a _declaredType_. This is in contrast to the ModelVariables passed to the rules in the <<FmiModelDescription>> section.
+
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validValueReferences
 [[validValueReferences]]
 // {vdm}
 ----
 validValueReferences: ModelVariables +> bool
-validValueReferences(evs) ==
-	let refs = [ ev.valueReference | ev in seq evs ] in
+validValueReferences(mvs) ==
+	let refs = [ mv.valueReference | mv in seq mvs ] in
 		/* @OnFail("validValueReferences: ModelVariable valueReferences must be unique: %s",
 			{ vr | vr in seq refs & len [ v2 | v2 in seq refs & vr = v2 ] > 1 }) */
 		( len refs = card elems refs );	
@@ -26,9 +29,9 @@ See <<_platform_dependent_definitions>>.
 // {vdm}
 ----
 validAliasNames: ModelVariables +> bool
-validAliasNames(evs) ==
-	let aliases = conc [ [ a.name | a in seq ev.alias ] | ev in seq evs & ev.alias <> nil ],
-		names = [ ev.name | ev in seq evs ] ^ aliases
+validAliasNames(mvs) ==
+	let aliases = conc [ [ a.name | a in seq mv.alias ] | mv in seq mvs & mv.alias <> nil ],
+		names = [ mv.name | mv in seq mvs ] ^ aliases
 	in
 		-- @OnFail("validAliasNames: ModelVariable names and aliases must be unique")
 		( len names = card elems names );
@@ -41,10 +44,10 @@ See <<_alias_variables>>.
 // {vdm}
 ----
 validIndependentVariable: ModelVariables +> bool
-validIndependentVariable(evs) ==
+validIndependentVariable(mvs) ==
 		/* @OnFail("validIndependentVariable: Variables define more than one independent variable: %s",
-			{ sv.name | sv in seq evs & sv.causality = <independent> }) */
-		( card { sv | sv in seq evs & sv.causality = <independent> } <= 1 );
+			{ sv.name | sv in seq mvs & sv.causality = <independent> }) */
+		( card { sv | sv in seq mvs & sv.causality = <independent> } <= 1 );
 ----
 // {vdm}
 See <<ModelVariables>>.
@@ -54,12 +57,12 @@ See <<ModelVariables>>.
 // {vdm}
 ----
 validPreviousVariables: ModelVariables +> bool
-validPreviousVariables(evs) ==
-	let plist =  [ sv.previous | sv in seq evs & not is_Clock(sv) and sv.previous <> nil ]
+validPreviousVariables(mvs) ==
+	let plist =  [ sv.previous | sv in seq mvs & not is_Clock(sv) and sv.previous <> nil ]
 	in
 		/* @OnFail("validPreviousVariables: Variable previous fields are not unique: %s",
-			{ evs(a).name | a, b in set inds evs & not is_Clock(a) and not is_Clock(b) and
-				a <> b and evs(a).previous <> nil and evs(a).previous = evs(b).previous } ) */
+			{ mvs(a).name | a, b in set inds mvs & not is_Clock(a) and not is_Clock(b) and
+				a <> b and mvs(a).previous <> nil and mvs(a).previous = mvs(b).previous } ) */
 		( card elems plist = len plist );
 ----
 // {vdm}
@@ -70,32 +73,32 @@ See <<ModelVariables>>.
 // {vdm}
 ----
 validVariableDimensions: ModelVariables +> bool
-validVariableDimensions(evs) ==
+validVariableDimensions(mvs) ==
 	allOf(conc
 	[
 		[
-			-- @OnFail("validVariableDimensions: Dimension of %s cannot reference itself", ev.name)
-			( ev.dimension <> nil =>
-				forall dim in seq ev.dimension &
+			-- @OnFail("validVariableDimensions: Dimension of %s cannot reference itself", mv.name)
+			( mv.dimension <> nil =>
+				forall dim in seq mv.dimension &
 					dim.valueReference <> nil =>
-						dim.valueReference <> ev.valueReference ),
+						dim.valueReference <> mv.valueReference ),
 
-			-- @OnFail("validVariableDimensions: Dimension of %s, valueReference is not Integer, constant or structuralParameter, with start", ev.name)
-			( ev.dimension <> nil =>
-				forall dim in seq ev.dimension &
+			-- @OnFail("validVariableDimensions: Dimension of %s, valueReference is not Integer, constant or structuralParameter, with start", mv.name)
+			( mv.dimension <> nil =>
+				forall dim in seq mv.dimension &
 					dim.valueReference <> nil =>
-						exists r in seq evs &
+						exists r in seq mvs &
 							r.valueReference = dim.valueReference
 							and is_IntegerKind(kindOf(r))
 							and ( r.causality = <structuralParameter> or r.variability = <constant> )
 							and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
 
-			-- @OnFail("validVariableDimensions: Structural parameter %s cannot have Dimension", ev.name)
-			( ev.dimension <> nil =>
-				ev.causality <> <structuralParameter> )
+			-- @OnFail("validVariableDimensions: Structural parameter %s cannot have Dimension", mv.name)
+			( mv.dimension <> nil =>
+				mv.causality <> <structuralParameter> )
 		]
 
-		| ev in seq evs & not is_Clock(ev)	-- Clocks have no dimensions
+		| mv in seq mvs & not is_Clock(mv)	-- Clocks have no dimensions
 	]);
 ----
 // {vdm}
@@ -118,17 +121,17 @@ See <<ModelVariables>>.
 // {vdm}
 ----
 validAliasDisplayUnits: ModelVariables +> bool
-validAliasDisplayUnits(evs) ==
+validAliasDisplayUnits(mvs) ==
 	allOf(conc
 	[
 		[
 			-- @OnFail("validAliasDisplayUnits: Alias displayUnit requires Float unit definition at %s", loc2str(a.location))
-			( a.displayUnit <> nil => isFloat(ev) and ev.unit <> nil )
+			( a.displayUnit <> nil => isFloat(mv) and mv.unit <> nil )
 			
-			| a in seq ev.alias
+			| a in seq mv.alias
 		]
 
-		| ev in seq evs & ev.alias <> nil	
+		| mv in seq mvs & mv.alias <> nil	
 	]);
 ----
 // {vdm}
