@@ -20,7 +20,7 @@ Each formal rule has a unique name and is associated with one XML type in the FM
 
 Rules are associated with the most nested XML type that encapsulates all of the data involved. For example, the rule that Category names must be unique within LogCategories is associated with the LogCategories type itself, since that includes all the Categories concerned. The rule that a TypeDefinition's unit names must be defined in the UnitDefinitions is associated with the top level FmiModelDescription type, since that type encompasses both TypeDefinitions and UnitDefinitions.
 
-All rules are functions that return a boolean success/fail result. They are passed the record that contain the data to check. For example:
+All rules are functions that return a boolean success/fail result. They are passed the record that contains the data to check. For example:
 
 ----
 validTolerance: DefaultExperiment +> bool
