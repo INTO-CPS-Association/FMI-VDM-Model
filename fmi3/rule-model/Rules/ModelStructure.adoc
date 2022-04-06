@@ -8,14 +8,17 @@ endif::[]
 ==== A.{section}.{counter:subsection} ModelStructure Rules
 :!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validDependencyKinds
+This rule is used to check Output, ContinuousStateDerivative, ClockedState, InitialUnknown and EventIndicator records, which all share the same structure.
+
 [[validDependencyKinds]]
 // {vdm}
 ----
-validDependencyKinds: Location * [seq of (nat)] * [seq of (DependenciesKind)] +> bool
-validDependencyKinds(location, dependencies, dependenciesKind) ==
-	dependenciesKind <> nil =>
-		-- @OnFail("%NAME: dependencies do not match dependenciesKind at %s", loc2str(location))
-		( dependencies <> nil and len dependenciesKind = len dependencies );
+validDependencyKinds: Output | ContinuousStateDerivative | ClockedState |
+                      InitialUnknown | EventIndicator +> bool
+validDependencyKinds(entry) ==
+	entry.dependenciesKind <> nil =>
+		-- @OnFail("%NAME: dependencies do not match dependenciesKind at %s", loc2str(entry.location))
+		( entry.dependencies <> nil and len entry.dependenciesKind = len entry.dependencies );
 ----
 // {vdm}
 See <<modelStructure>>.

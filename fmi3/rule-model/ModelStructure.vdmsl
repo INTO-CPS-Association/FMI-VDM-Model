@@ -42,7 +42,7 @@ types
 	([
 		inv_Annotations'(out.annotations),
 		-- Rules are defined in ModelStructure.adoc
-		rule("validDependencyKinds", validDependencyKinds(out.location, out.dependencies, out.dependenciesKind))
+		rule("validDependencyKinds", validDependencyKinds(out))
 	]);
 
     ContinuousStateDerivative' = ContinuousStateDerivative
@@ -50,7 +50,7 @@ types
 	([
 		inv_Annotations'(csd.annotations),
 		-- Rules are defined in ModelStructure.adoc
-		rule("validDependencyKinds", validDependencyKinds(csd.location, csd.dependencies, csd.dependenciesKind))
+		rule("validDependencyKinds", validDependencyKinds(csd))
 	]);
 
     ClockedState' = ClockedState
@@ -58,7 +58,7 @@ types
 	([
 		inv_Annotations'(cs.annotations),
 		-- Rules are defined in ModelStructure.adoc
-		rule("validDependencyKinds", validDependencyKinds(cs.location, cs.dependencies, cs.dependenciesKind))
+		rule("validDependencyKinds", validDependencyKinds(cs))
 	]);
 
     InitialUnknown' = InitialUnknown
@@ -66,7 +66,7 @@ types
 	([
 		inv_Annotations'(unks.annotations),
 		-- Rules are defined in ModelStructure.adoc
-		rule("validDependencyKinds", validDependencyKinds(unks.location, unks.dependencies, unks.dependenciesKind))
+		rule("validDependencyKinds", validDependencyKinds(unks))
 	]);
 
     EventIndicator' = EventIndicator
@@ -74,5 +74,5 @@ types
 	([
 		inv_Annotations'(eis.annotations),
 		-- Rules are defined in ModelStructure.adoc
-		rule("validDependencyKinds", validDependencyKinds(eis.location, eis.dependencies, eis.dependenciesKind))
+		rule("validDependencyKinds", validDependencyKinds(eis))
 	]);

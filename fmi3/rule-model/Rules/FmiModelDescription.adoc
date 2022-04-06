@@ -62,7 +62,8 @@ See <<table-type-details>>.
 validVariableTypes: FmiModelDescription +> bool
 validVariableTypes(fmd) == allOf
 	([
-		mv.declaredType <> nil => let tdef = lookupType(mv.declaredType, fmd.typeDefinitions) in
+		mv.declaredType <> nil =>
+		let tdef = lookupType(mv.declaredType, fmd.typeDefinitions) in
 			-- @OnFail("%NAME: %s type %s not found at %s",
 			-- mv.name, mv.declaredType, loc2str(mv.location))
 			( tdef <> nil )
