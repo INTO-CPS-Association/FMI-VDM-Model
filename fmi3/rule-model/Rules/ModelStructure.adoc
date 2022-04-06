@@ -14,7 +14,7 @@ endif::[]
 validDependencyKinds: Location * [seq of (nat)] * [seq of (DependenciesKind)] +> bool
 validDependencyKinds(location, dependencies, dependenciesKind) ==
 	dependenciesKind <> nil =>
-		-- @OnFail("validDependencyKinds: dependencies do not match dependenciesKind at %s", loc2str(location))
+		-- @OnFail("%NAME: dependencies do not match dependenciesKind at %s", loc2str(location))
 		( dependencies <> nil and len dependenciesKind = len dependencies );
 ----
 // {vdm}

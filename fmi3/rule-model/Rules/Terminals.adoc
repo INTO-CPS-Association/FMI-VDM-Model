@@ -13,7 +13,7 @@ endif::[]
 ----
 validCoordinateSystem: CoordinateSystem +> bool
 validCoordinateSystem(cs) ==
-	-- @OnFail("validCoordinateSystem: Area is not bottom left to top right at %s", loc2str(cs.location))
+	-- @OnFail("%NAME: Area is not bottom left to top right at %s", loc2str(cs.location))
 	( isTLtoBR(cs.x1, cs.x2, cs.y1, cs.y2) );
 ----
 // {vdm}
@@ -25,7 +25,7 @@ See <<_coordinatesystem>>.
 ----
 validIcon: Icon +> bool
 validIcon(icon) ==
-	-- @OnFail("validIcon: Area is not bottom left to top right at %s", loc2str(icon.location))
+	-- @OnFail("%NAME: Area is not bottom left to top right at %s", loc2str(icon.location))
 	( isTLtoBR(icon.x1, icon.x2, icon.y1, icon.y2) );
 ----
 // {vdm}
@@ -39,7 +39,8 @@ validTerminalMemberVariables: Terminal +> bool
 validTerminalMemberVariables(terminal) ==
 	let tmvs = terminal.terminalMemberVariable in
 	tmvs <> nil =>
-		-- @OnFail("validTerminalMemberVariables: Terminal member variables not unique at %s", loc2str(terminal.location))
+		-- @OnFail("%NAME: Terminal member variables not unique at %s",
+		-- loc2str(terminal.location))
 		( card { v.variableName | v in seq tmvs } = len tmvs );
 ----
 // {vdm}
@@ -67,14 +68,17 @@ validTerminalGraphicalRepresentation(terminal) ==
 	let tgr = terminal.terminalGraphicalRepresentation in
 	tgr <> nil => allOf
 	([
-		-- @OnFail("validTerminalGraphicalRepresentation: Terminal area is not bottom left to top right at %s", loc2str(tgr.location))
+		-- @OnFail("%NAME: Terminal area is not bottom left to top right at %s",
+		-- loc2str(tgr.location))
 		( tgr.x1 < tgr.x2 and tgr.y1 < tgr.y2 ),
 
-		-- @OnFail("validTerminalGraphicalRepresentation: Colour attributes must be octets (<=255) at %s", loc2str(tgr.location))
+		-- @OnFail("%NAME: Colour attributes must be octets (<=255) at %s",
+		-- loc2str(tgr.location))
 		( tgr.defaultConnectionColor <> nil =>
 			forall c in seq tgr.defaultConnectionColor & c <= 255 ),
 
-		-- @OnFail("validTerminalGraphicalRepresentation: defaultConnectionStrokeSize must be >0 at %s", loc2str(tgr.location))
+		-- @OnFail("%NAME: defaultConnectionStrokeSize must be >0 at %s",
+		-- loc2str(tgr.location))
 		( tgr.defaultConnectionStrokeSize <> nil =>
 			tgr.defaultConnectionStrokeSize > 0 )
 	]);

@@ -12,9 +12,9 @@ endif::[]
 // {vdm}
 ----
 validTolerance: DefaultExperiment +> bool
-validTolerance(e) ==
-	-- @OnFail("validTolerance: tolerance must be >= 0 at %s", loc2str(e.location))
-	( e.tolerance <> nil => e.tolerance >= 0 );
+validTolerance(de) ==
+	-- @OnFail("%NAME: tolerance must be >= 0 at %s", loc2str(de.location))
+	( de.tolerance <> nil => de.tolerance >= 0 );
 ----
 // {vdm}
 See <<DefaultExperiment>>.
@@ -25,7 +25,7 @@ See <<DefaultExperiment>>.
 ----
 validStartStopTime: DefaultExperiment +> bool
 validStartStopTime(e) ==
-	-- @OnFail("validStartStopTime: stop time must be later than start time at %s", loc2str(e.location))
+	-- @OnFail("%NAME: stop time must be later than start time at %s", loc2str(e.location))
 	( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime );
 ----
 // {vdm}
@@ -37,7 +37,7 @@ See <<DefaultExperiment>>.
 ----
 validStepSize: DefaultExperiment +> bool
 validStepSize(e) ==
-	-- @OnFail("validStepSize: stepSize must be less than start-stop interval at %s", loc2str(e.location))
+	-- @OnFail("%NAME: stepSize must be less than start-stop interval at %s", loc2str(e.location))
 	( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
 		e.stopTime - e.startTime > e.stepSize );
 ----

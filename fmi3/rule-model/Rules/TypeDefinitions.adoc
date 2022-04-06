@@ -13,7 +13,7 @@ endif::[]
 ----
 validTypeDefinitionNames: [TypeDefinitions] +> bool
 validTypeDefinitionNames(tdefs) ==
-	-- @OnFail("validTypeDefinitionNames: TypeDefinition names must be unique")
+	-- @OnFail("%NAME: TypeDefinition names must be unique")
 	( tdefs <> nil =>
 		let names = [ td.name | td in seq tdefs ] in
 			len names = card elems names );
@@ -28,7 +28,7 @@ See <<table-type-details>>.
 ----
 validTypeMinMax: fmi3TypeDefinition * Kind +> bool
 validTypeMinMax(tdef, kind) ==
-	-- @OnFail("validTypeMinMax: Type %s has min/max errors at %s", tdef.name, loc2str(tdef.location))
+	-- @OnFail("%NAME: Type %s has min/max errors at %s", tdef.name, loc2str(tdef.location))
 	( validMinMax(tdef.min, tdef.max, kind));
 ----
 // {vdm}
@@ -40,7 +40,7 @@ See <<table-type-details>>.
 ----
 validTypeDisplayUnit: fmi3TypeDefinition +> bool
 validTypeDisplayUnit(tdef) ==
-	-- @OnFail("validTypeDisplayUnit: Type %s, unit must be defined for displayUnit %s", tdef.name, tdef.displayUnit)
+	-- @OnFail("%NAME: Type %s, unit must be defined for displayUnit %s", tdef.name, tdef.displayUnit)
 	( tdef.displayUnit <> nil => tdef.unit <> nil );
 ----
 // {vdm}
@@ -52,7 +52,7 @@ See <<table-type-details>>.
 ----
 validEnumerationTypeBijection: EnumerationType +> bool
 validEnumerationTypeBijection(tdef) ==
-	-- @OnFail("validEnumerationTypeBijection: Type %s, Enumeration item name/values do not form a bijection", tdef.name)
+	-- @OnFail("%NAME: Type %s, Enumeration item name/values do not form a bijection", tdef.name)
 	(
 		card { i.name | i in seq tdef.item } = len tdef.item
 		and	card { i.value | i in seq tdef.item } = len tdef.item
@@ -69,19 +69,20 @@ validClockType: ClockType +> bool
 validClockType(tdef) ==
 	let periodic = clockIsPeriodic(tdef.intervalVariability) in allOf
 	([
-		--@OnFail("validClockType: resolution can only be used with periodic clocks")
+		--@OnFail("%NAME: resolution can only be used with periodic clocks")
 		( tdef.resolution <> nil => periodic ),
 
-		--@OnFail("validClockType: Periodic clock with supportsFraction and intervalCounter must define resolution")
-		( periodic and tdef.supportsFraction = true and tdef.intervalCounter <> nil => tdef.resolution <> nil  ),
+		--@OnFail("%NAME: Periodic supportsFraction and intervalCounter must define resolution")
+		( periodic and tdef.supportsFraction = true and tdef.intervalCounter <> nil =>
+			tdef.resolution <> nil  ),
 
-		--@OnFail("validClockType: intervalCounter must be >0")
+		--@OnFail("%NAME: intervalCounter must be >0")
 		( tdef.intervalCounter <> nil => tdef.intervalCounter > 0 ),
 
-		--@OnFail("validClockType: Cannot use intervalCounter unless periodic and supportsFraction")
+		--@OnFail("%NAME: Cannot use intervalCounter unless periodic and supportsFraction")
 		( tdef.intervalCounter <> nil => tdef.supportsFraction = true and periodic ),
 
-		--@OnFail("validClockType: shiftCounter requires an intervalCounter")
+		--@OnFail("%NAME: shiftCounter requires an intervalCounter")
 		( tdef.shiftCounter <> nil => tdef.intervalCounter <> nil )
 	]);
 ----

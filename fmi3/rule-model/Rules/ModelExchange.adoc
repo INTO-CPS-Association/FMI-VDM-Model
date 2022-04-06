@@ -13,7 +13,7 @@ endif::[]
 ----
 validMEModelIdentifier: ModelExchange +> bool
 validMEModelIdentifier(me) ==
-	-- @OnFail("validMEModelIdentifier: %s not valid C variable name at %s", me.modelIdentifier, loc2str(me.location))
+	-- @OnFail("%NAME: %s not valid C variable name at %s", me.modelIdentifier, loc2str(me.location))
 	( validIdentifier(me.modelIdentifier) );
 ----
 // {vdm}

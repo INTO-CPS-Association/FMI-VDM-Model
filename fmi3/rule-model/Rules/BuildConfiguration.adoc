@@ -13,7 +13,7 @@ endif::[]
 ----
 validCompilerOptions: SourceFileSet +> bool
 validCompilerOptions(sfs) ==
-	-- @OnFail("validCompilerOptions: Compiler options set without compiler at %s", loc2str(sfs.location))
+	-- @OnFail("%NAME: Compiler options set without compiler at %s", loc2str(sfs.location))
 	( sfs.compilerOptions <> nil => sfs.compiler <> nil );
 ----
 // {vdm}
@@ -27,8 +27,8 @@ validSourceFileNames: SourceFileSet +> bool
 validSourceFileNames(sfs) ==
 	let files = sfs.sourceFile in
 	let names = [ sf.name | sf in seq files ] in
-		/* @OnFail("validSourceFilesName: SourceFileSet has duplicate names: %s",
-			{ files(a) | a, b in set inds names & a <> b and files(a) = files(b) })	*/
+		-- @OnFail("%NAME: SourceFileSet has duplicate names: %s",
+		--	{ files(a) | a, b in set inds names & a <> b and files(a) = files(b) })
 		( card elems names = len names );
 ----
 // {vdm}
@@ -43,8 +43,8 @@ validPreprocessorDefinitionNames(sfs) ==
 	let defs = sfs.preprocessorDefinition in
 	defs <> nil =>
 		let names = [ d.name | d in seq defs ] in
-			/* @OnFail("validPreprocessorDefinitionNames: PreprocessorDefinitions has duplicate names: %s",
-				{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) }) */
+			-- @OnFail("%NAME: PreprocessorDefinitions has duplicate names: %s",
+			--	{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
 			( card elems names = len names );
 ----
 // {vdm}
@@ -59,8 +59,8 @@ validIncludeDirectoryNames(sfs) ==
 	let incs = sfs.includeDirectory in
 	incs <> nil =>
 		let names = [ d.name | d in seq incs ] in
-			/* @OnFail("validIncludeDirectoryNames: IncludeDirectories has duplicate names: %s",
-				{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) }) */
+			-- @OnFail("%NAME: IncludeDirectories has duplicate names: %s",
+			--	{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
 			( card elems names = len names );
 ----
 // {vdm}
