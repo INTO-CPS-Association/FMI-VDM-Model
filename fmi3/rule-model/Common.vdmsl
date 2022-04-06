@@ -37,11 +37,15 @@ types
 functions
 	/**
 	 * An identifier is a valid "C" variable name. Currently defined as any non-empty string that
-	 * does not start with a digit.
+	 * does not start with a digit and consists of alphanumerics plus underscore. We do not check
+	 * for the absence of C keywords.
 	 */
 	validIdentifier: NormalizedString +> bool
 	validIdentifier(s) ==
-		s <> "" and s(1) not in set elems DIGITS;
+		s <> "" and
+		let digits = elems DIGITS, alphanums = elems NONDIGITS union digits in
+			hd s not in set digits
+			and forall c in set elems tl s & c in set alphanums;
 
 	/**
 	 * Check whether a date/time string is "YYYY-MM-DDThh:mm:ssZ" format.

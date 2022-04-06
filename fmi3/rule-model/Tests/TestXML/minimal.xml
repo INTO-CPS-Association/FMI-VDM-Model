@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <fmiModelDescription fmiVersion="3.0-rc.1"
 	modelName="Test FMU" instantiationToken="{111-222-333-444}">
-	<CoSimulation modelIdentifier="Test FMU" />
+	<CoSimulation modelIdentifier="Test_FMU" />
 	<UnitDefinitions>
 		<Unit name="rad">
 		<BaseUnit rad="1"/>

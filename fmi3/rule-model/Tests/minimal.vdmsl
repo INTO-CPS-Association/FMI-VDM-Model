@@ -21,7 +21,7 @@ values
         mk_CoSimulation
         (
             mk_Location("minimal.xml", 4),
-            "Test FMU",  -- modelIdentifier
+            "Test_FMU",  -- modelIdentifier
             nil,  -- needsExecutionTool
             nil,  -- canBeInstantiatedOnlyOncePerProcess
             nil,  -- canGetAndSetFMUState
