@@ -54,10 +54,10 @@ public class DigitsFacet extends Facet
 		switch (kind)
 		{
 			case "xs:totalDigits":
-				return result + "xsdTotalDigits(" + var + ") <= " + value;
+				return result + "XSD`xsdTotalDigits(" + var + ") <= " + value;
 				
 			case "xs:fractionDigits":
-				return result + "xsdFractionDigits(" + var + ") <= " + value;
+				return result + "XSD`xsdFractionDigits(" + var + ") <= " + value;
 				
 			default:
 				return "?";

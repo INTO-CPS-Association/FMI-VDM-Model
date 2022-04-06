@@ -36,7 +36,7 @@ public class WhitespaceFacet extends Facet
 	@Override
 	public String toVDM(String var, Type fieldtype)
 	{
-		return "xsdWhiteSpace(" + var + ", \"" + value + "\")";
+		return "XSD`xsdWhiteSpace(" + var + ", \"" + value + "\")";
 	}
 	
 	@Override

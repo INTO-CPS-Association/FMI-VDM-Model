@@ -36,7 +36,7 @@ public class TimezoneFacet extends Facet
 	@Override
 	public String toVDM(String var, Type fieldtype)
 	{
-		return "xsdExplicitTimezone(" + var + ", \"" + value + "\")";
+		return "XSD`xsdExplicitTimezone(" + var + ", \"" + value + "\")";
 	}
 	
 	@Override

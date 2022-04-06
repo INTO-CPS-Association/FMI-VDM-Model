@@ -36,7 +36,7 @@ public class AssertionFacet extends Facet
 	@Override
 	public String toVDM(String var, Type fieldtype)
 	{
-		return "xsdAssertion(" + var + ", \"" + value + "\")";
+		return "XSD`xsdAssertion(" + var + ", \"" + value + "\")";
 	}
 	
 	@Override
