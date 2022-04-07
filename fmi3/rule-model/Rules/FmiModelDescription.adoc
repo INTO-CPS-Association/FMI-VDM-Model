@@ -106,7 +106,7 @@ validVariableNames(fmd) ==
 	[
 		[
 			-- @OnFail("%NAME: Structured name %s invalid at %s", mv.name, loc2str(mv.location))
-			( isValidStructuredName(mv.name) ),
+			( validStructuredName(mv.name) ),
 
 			-- @OnFail("%NAME: Name %s is not Float at %s", mv.name, loc2str(mv.location))
 			( mv.name(1, ..., 4) = "der(" => isFloat(mv) )

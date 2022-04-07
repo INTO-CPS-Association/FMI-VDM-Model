@@ -106,15 +106,15 @@ functions
 		let mk_(kmin, kmax) = minMaxKind(kind) in allOf
 		([
 			max <> nil =>
-				-- @OnFail("validMinMax: max %s is not a valid value of this type", max)
+				-- @OnFail("%NAME: max %s is not a valid value of this type", max)
 				( max <= kmax and max >= kmin ),
 
 			min <> nil =>
-				-- @OnFail("validMinMax: min %s is not a valid value of this type", min)
+				-- @OnFail("%NAME: min %s is not a valid value of this type", min)
 				( min <= kmax and min >= kmin ),
 
 			max <> nil and min <> nil =>
-				-- @OnFail("validMinMax: max %s not >= min %s", max, min)
+				-- @OnFail("%NAME: max %s not >= min %s", max, min)
 				( max >= min )
 		]);
 
@@ -146,7 +146,7 @@ functions
 	 */
 	isFloat: fmi3Variable | fmi3TypeDefinition +> bool
 	isFloat(v) ==
-		kindOf(v) in set { <Float64>, <Float32> };
+		is_FloatKind(kindOf(v));
 
 	/**
 	 * Lookup a type by name from the list of TypeDefinitions passed.
