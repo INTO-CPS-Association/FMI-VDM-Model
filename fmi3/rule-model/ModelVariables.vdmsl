@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 types
-	ModelVariables' = ModelVariables
+	ModelVariables' = ModelVariables	-- raw model variables, not effective values
 	inv mvs == allOf
 	([
 		apply[fmi3Variable](inv_fmi3Variable', mvs),

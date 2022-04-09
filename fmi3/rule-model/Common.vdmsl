@@ -79,24 +79,21 @@ functions
 	 */
 	minMaxKind: Kind -> real * real
 	minMaxKind(kind) ==
-	{
-		<Float32> 		|-> mk_(-3.402823466385288598e+38, 3.402823466385288598e+38),
-		<Float64>		|-> mk_(-1.797693134862315708e+308, 1.797693134862315708e+308),
-		<Int8>			|->	mk_(-128, 127),
-		<UInt8>			|->	mk_(0, 255),
-		<Int16>			|->	mk_(-32768, 32767),
-		<UInt16>		|->	mk_(0, 65535),
-		<Int32>			|->	mk_(-2147483648, 2147483647),
-		<UInt32>		|->	mk_(0, 4294967295),
-		<Int64>			|->	mk_(-9.223372036854775808e+18, 9.223372036854775807e+18),
-		<UInt64>		|->	mk_(0, 1.8446744073709551615e+19),
-		<Enumeration>	|->	mk_(-9.223372036854775808e+18, 9.223372036854775807e+18), -- xs:long = Int64
-		<Clock>			|-> undefined,
-		<Boolean>		|-> undefined,
-		<String>		|-> undefined,
-		<Binary>		|-> undefined
-	}
-	(kind);
+		cases kind:
+			<Float32> 		-> mk_(-3.402823466385288598e+38, 3.402823466385288598e+38),
+			<Float64>		-> mk_(-1.797693134862315708e+308, 1.797693134862315708e+308),
+			<Int8>			-> mk_(-128, 127),
+			<UInt8>			-> mk_(0, 255),
+			<Int16>			-> mk_(-32768, 32767),
+			<UInt16>		-> mk_(0, 65535),
+			<Int32>			-> mk_(-2147483648, 2147483647),
+			<UInt32>		-> mk_(0, 4294967295),
+			<Int64>			-> mk_(-9.223372036854775808e+18, 9.223372036854775807e+18),
+			<UInt64>		-> mk_(0, 1.8446744073709551615e+19),
+			<Enumeration>	-> mk_(-9.223372036854775808e+18, 9.223372036854775807e+18), -- xs:long = Int64
+
+			others			-> undefined
+		end;
 
 	/**
 	 * Test whether min/max are within the limits for a Kind.
@@ -150,6 +147,7 @@ functions
 
 	/**
 	 * Lookup a type by name from the list of TypeDefinitions passed.
+	 * Return nil if not found.
 	 */
 	lookupType: [NormalizedString] * [TypeDefinitions] +> [fmi3TypeDefinition]
 	lookupType(name, tdefs) ==
@@ -161,6 +159,7 @@ functions
 
 	/**
 	 * Lookup a variable by valueReference in the list passed.
+	 * Return nil if not found.
 	 */
 	lookupVariable: nat * ModelVariables +> [fmi3Variable]
 	lookupVariable(vref, evs) ==
