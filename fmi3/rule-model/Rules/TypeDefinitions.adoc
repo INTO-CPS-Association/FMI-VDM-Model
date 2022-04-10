@@ -26,10 +26,19 @@ See <<table-type-details>>.
 [[validTypeMinMax]]
 // {vdm}
 ----
-validTypeMinMax: fmi3TypeDefinition * Kind +> bool
-validTypeMinMax(tdef, kind) ==
-	-- @OnFail("%NAME: Type %s has min/max errors at %s", tdef.name, loc2str(tdef.location))
-	( validMinMax(tdef.min, tdef.max, kind));
+validTypeMinMax: fmi3TypeDefinition +> bool
+validTypeMinMax(tdef) ==
+	let mk_(kmin, kmax) = minMaxKind(kindOf(tdef)) in allOf
+	([
+		-- @OnFail("%NAME: max %s is not a valid value of this type", tdef.max)
+		( tdef.max <> nil => tdef.max <= kmax and tdef.max >= kmin ),
+
+		-- @OnFail("%NAME: min %s is not a valid value of this type", tdef.min)
+		( tdef.min <> nil => tdef.min <= kmax and tdef.min >= kmin ),
+
+		-- @OnFail("%NAME: max %s not >= min %s", tdef.max, tdef.min)
+		( tdef.min <> nil and tdef.max <> nil => tdef.max >= tdef.min )
+	]);
 ----
 // {vdm}
 See <<table-type-details>>.

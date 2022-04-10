@@ -58,7 +58,8 @@ types
 	[
 		-- If these rules use variables, they use the effective values
 		-- The rules are defined in FmiModelDescription.adoc
-		rule("validMinMaxStart", validMinMaxStart(fmd, evs)),
+		rule("validMinMax", validMinMax(fmd, evs)),
+		rule("validStart", validStart(fmd, evs)),
 		rule("validMultipleSets", validMultipleSets(fmd, evs)),
 		rule("validClockPriorities", validClockPriorities(fmd, evs)),
 		rule("validOutput", validOutput(fmd, evs)),
