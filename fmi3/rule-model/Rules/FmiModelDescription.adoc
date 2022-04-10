@@ -143,7 +143,7 @@ See <<table-type-attributes>>.
 validMinMax: FmiModelDescription * ModelVariables +> bool
 validMinMax(-, evs) == allOf
 	([
-		let mk_(kmin, kmax) = minMaxKind(kindOf(ev)) in allOf
+		let mk_(kmin, kmax) = minMaxOfKind(kindOf(ev)) in allOf
 		([
 			-- @OnFail("%NAME: max %s is not a valid value of this type", ev.max)
 			( ev.max <= kmax and ev.max >= kmin ),

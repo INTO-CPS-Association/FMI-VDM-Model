@@ -59,7 +59,7 @@ functions
 	effectiveTypedVariable(mv, decltype, kind) ==
 		cases kind:
 			<Float64> -> 
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Float64
 					(
 						mv.location,
@@ -91,7 +91,7 @@ functions
 					),
 
 			<Float32> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Float32
 					(
 						mv.location,
@@ -123,7 +123,7 @@ functions
 					),
 
 			<Int64> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Int64
 					(
 						mv.location,
@@ -148,7 +148,7 @@ functions
 					),
 
 			<Int32> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Int32
 					(
 						mv.location,
@@ -173,7 +173,7 @@ functions
 					),
 
 			<Int16> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Int16
 					(
 						mv.location,
@@ -198,7 +198,7 @@ functions
 					),
 
 			<Int8> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Int8
 					(
 						mv.location,
@@ -223,7 +223,7 @@ functions
 					),
 
 			<UInt64> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_UInt64
 					(
 						mv.location,
@@ -248,7 +248,7 @@ functions
 					),
 
 			<UInt32> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_UInt32
 					(
 						mv.location,
@@ -273,7 +273,7 @@ functions
 					),
 
 			<UInt16> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_UInt16
 					(
 						mv.location,
@@ -298,7 +298,7 @@ functions
 					),
 
 			<UInt8> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_UInt8
 					(
 						mv.location,
@@ -390,7 +390,7 @@ functions
 				),
 
 			<Enumeration> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Enumeration
 					(
 						mv.location,
@@ -446,7 +446,7 @@ functions
 	effectiveSimpleVariable(mv, kind) ==
 		cases kind:
 			<Float64> -> 
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Float64
 					(
 						mv.location,
@@ -478,7 +478,7 @@ functions
 					),
 
 			<Float32> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Float32
 					(
 						mv.location,
@@ -510,7 +510,7 @@ functions
 					),
 
 			<Int64> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Int64
 					(
 						mv.location,
@@ -535,7 +535,7 @@ functions
 					),
 
 			<Int32> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Int32
 					(
 						mv.location,
@@ -560,7 +560,7 @@ functions
 					),
 
 			<Int16> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Int16
 					(
 						mv.location,
@@ -585,7 +585,7 @@ functions
 					),
 
 			<Int8> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Int8
 					(
 						mv.location,
@@ -610,7 +610,7 @@ functions
 					),
 
 			<UInt64> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_UInt64
 					(
 						mv.location,
@@ -635,7 +635,7 @@ functions
 					),
 
 			<UInt32> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_UInt32
 					(
 						mv.location,
@@ -660,7 +660,7 @@ functions
 					),
 
 			<UInt16> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_UInt16
 					(
 						mv.location,
@@ -685,7 +685,7 @@ functions
 					),
 
 			<UInt8> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_UInt8
 					(
 						mv.location,
@@ -775,7 +775,7 @@ functions
 				),
 
 			<Enumeration> ->
-				let mk_(kmin, kmax) = minMaxKind(kind) in
+				let mk_(kmin, kmax) = minMaxOfKind(kind) in
 					mk_Enumeration
 					(
 						mv.location,

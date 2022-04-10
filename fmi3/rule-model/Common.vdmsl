@@ -46,7 +46,7 @@ functions
 		s <> "" and
 		let digits = elems DIGITS, alphanums = elems NONDIGITS union digits in
 			hd s not in set digits
-			and forall c in set elems tl s & c in set alphanums;
+			and forall c in seq tl s & c in set alphanums;
 
 	/**
 	 * Check whether a date/time string is "YYYY-MM-DDThh:mm:ssZ" format.
@@ -71,15 +71,15 @@ functions
 	/**
 	 * The definition of a periodic clock.
 	 */
-	clockIsPeriodic: IntervalVariability +> bool
-	clockIsPeriodic(v) ==
-		v in set {<constant>, <fixed>, <tunable>};
+	clockIsPeriodic: ClockType +> bool
+	clockIsPeriodic(tdef) ==
+		tdef.intervalVariability in set {<constant>, <fixed>, <tunable>};
 
 	/**
 	 * The min/max limits (inclusive) for each numeric type.
 	 */
-	minMaxKind: Kind -> real * real
-	minMaxKind(kind) ==
+	minMaxOfKind: Kind -> real * real
+	minMaxOfKind(kind) ==
 		cases kind:
 			<Float32> 		-> mk_(-3.402823466385288598e+38, 3.402823466385288598e+38),
 			<Float64>		-> mk_(-1.797693134862315708e+308, 1.797693134862315708e+308),
@@ -103,19 +103,19 @@ functions
 	kindOf(v) ==
 		if     is_(v, Float32) or is_(v, Float32Type) then <Float32>
 		elseif is_(v, Float64) or is_(v, Float64Type) then <Float64>
-		elseif is_(v, Int8) or is_(v, Int8Type) then <Int8>
-		elseif is_(v, UInt8) or is_(v, UInt8Type) then  <UInt8>
-		elseif is_(v, Int16) or is_(v, Int16Type) then<Int16>
-		elseif is_(v, UInt16) or is_(v, UInt16Type) then <UInt16>
-		elseif is_(v, Int32) or is_(v, Int32Type) then <Int32>
-		elseif is_(v, UInt32) or is_(v, UInt32Type) then <UInt32>
-		elseif is_(v, Int64) or is_(v, Int64Type) then <Int64>
-		elseif is_(v, UInt64) or is_(v, UInt64Type) then <UInt64>
+		elseif is_(v, Int8)    or is_(v, Int8Type)    then <Int8>
+		elseif is_(v, UInt8)   or is_(v, UInt8Type)   then <UInt8>
+		elseif is_(v, Int16)   or is_(v, Int16Type)   then <Int16>
+		elseif is_(v, UInt16)  or is_(v, UInt16Type)  then <UInt16>
+		elseif is_(v, Int32)   or is_(v, Int32Type)   then <Int32>
+		elseif is_(v, UInt32)  or is_(v, UInt32Type)  then <UInt32>
+		elseif is_(v, Int64)   or is_(v, Int64Type)   then <Int64>
+		elseif is_(v, UInt64)  or is_(v, UInt64Type)  then <UInt64>
 		elseif is_(v, Boolean) or is_(v, BooleanType) then <Boolean>
-		elseif is_(v, String) or is_(v, StringType) then <String>
-		elseif is_(v, Binary) or is_(v, BinaryType) then <Binary>
+		elseif is_(v, String)  or is_(v, StringType)  then <String>
+		elseif is_(v, Binary)  or is_(v, BinaryType)  then <Binary>
 		elseif is_(v, Enumeration) or is_(v, EnumerationType) then <Enumeration>
-		elseif is_(v, Clock) or is_(v, ClockType) then <Clock>
+		elseif is_(v, Clock)   or is_(v, ClockType)   then <Clock>
 
 		else undefined;
 

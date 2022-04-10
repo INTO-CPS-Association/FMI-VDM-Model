@@ -28,7 +28,7 @@ See <<table-type-details>>.
 ----
 validTypeMinMax: fmi3TypeDefinition +> bool
 validTypeMinMax(tdef) ==
-	let mk_(kmin, kmax) = minMaxKind(kindOf(tdef)) in allOf
+	let mk_(kmin, kmax) = minMaxOfKind(kindOf(tdef)) in allOf
 	([
 		-- @OnFail("%NAME: max %s is not a valid value of this type", tdef.max)
 		( tdef.max <> nil => tdef.max <= kmax and tdef.max >= kmin ),
@@ -76,7 +76,7 @@ See <<figure-schema-EnumerationType>>.
 ----
 validClockType: ClockType +> bool
 validClockType(tdef) ==
-	let periodic = clockIsPeriodic(tdef.intervalVariability) in allOf
+	let periodic = clockIsPeriodic(tdef) in allOf
 	([
 		--@OnFail("%NAME: resolution can only be used with periodic clocks")
 		( tdef.resolution <> nil => periodic ),
