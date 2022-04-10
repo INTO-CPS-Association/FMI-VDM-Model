@@ -118,6 +118,42 @@ validVariableNames(fmd) ==
 // {vdm}
 See <<ModelVariables>>.
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validMinMaxStart
+[[validMinMaxStart]]
+// {vdm}
+----
+validMinMaxStart: FmiModelDescription * ModelVariables +> bool
+validMinMaxStart(-, evs) == allOf
+	([
+		validMinMax(ev.min, ev.max, kindOf(ev)) =>
+			ev.start <> nil =>
+				-- @OnFail("%NAME: all start values must be between %s and %s at %s",
+				-- ev.min, ev.max, ev.location)
+				( forall sv in seq ev.start & ev.min <= sv and ev.max >= sv )
+
+		| ev in seq evs & is_NumericKind(ev)
+	]);
+
+validMinMax: [real] * [real] * Kind +> bool
+validMinMax(min, max, kind) ==
+	let mk_(kmin, kmax) = minMaxKind(kind) in allOf
+	([
+		max <> nil =>
+			-- @OnFail("%NAME: max %s is not a valid value of this type", max)
+			( max <= kmax and max >= kmin ),
+
+		min <> nil =>
+			-- @OnFail("%NAME: min %s is not a valid value of this type", min)
+			( min <= kmax and min >= kmin ),
+
+		max <> nil and min <> nil =>
+			-- @OnFail("%NAME: max %s not >= min %s", max, min)
+			( max >= min )
+	]);
+----
+// {vdm}
+See <<table-type-attributes>>.
+
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validMultipleSets
 [[validMultipleSets]]
 // {vdm}
@@ -397,6 +433,11 @@ values
 		"validVariableNames" |->
 		[
 			"fmi-standard/docs/index.html#ModelVariables"
+		],
+
+		"validMinMaxStart" |->
+		[
+			"fmi-standard/docs/index.html#table-type-attributes"
 		],
 
 		"validMultipleSets" |->
