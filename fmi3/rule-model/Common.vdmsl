@@ -171,15 +171,15 @@ functions
 	 * variables which are the derivative of some other variable.
 	 */
 	stateDerivatives: seq of fmi3Variable -> set of fmi3Variable
-	stateDerivatives(svs) ==
-		{ sv | sv in seq svs & isStateDerivative(sv) };
+	stateDerivatives(mvs) ==
+		{ mv | mv in seq mvs & isStateDerivative(mv) };
 
 	/**
 	 * Test whether a variable is a state derivative.
 	 */
 	isStateDerivative: fmi3Variable +> bool
-	isStateDerivative(sv) ==
-		isFloat(sv) and sv.derivative <> nil;
+	isStateDerivative(mv) ==
+		isFloat(mv) and mv.derivative <> nil;
 
 	/**
 	 * Test coordinate/icon/terminal are top left to bottom right

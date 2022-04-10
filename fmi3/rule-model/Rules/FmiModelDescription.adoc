@@ -196,7 +196,7 @@ See <<ModelVariables>>.
 ----
 validOutput: FmiModelDescription * ModelVariables +> bool
 validOutput(fmd, evs) ==
-	let outputRefs = { sv.valueReference | sv in seq evs & sv.causality = <output> },
+	let outputRefs = { ev.valueReference | ev in seq evs & ev.causality = <output> },
 		structRefs = { u.valueReference | u in seq
 						default[seq of Output](fmd.modelStructure.output, []) }
 	in
@@ -254,19 +254,19 @@ validInitialUnknowns: FmiModelDescription * ModelVariables +> bool
 validInitialUnknowns(fmd, evs) ==
 	let ctVars = continuousTimeStates(evs),
 		sdVars = stateDerivatives(evs),
-		required = { sv.valueReference | sv in seq evs &
-			(sv.clocks = nil and sv.causality = <output>
-				and not is_Clock(sv) and sv.initial in set { <approx>, <calculated> })
+		required = { ev.valueReference | ev in seq evs &
+			(ev.clocks = nil and ev.causality = <output>
+				and not is_Clock(ev) and ev.initial in set { <approx>, <calculated> })
 
-			or (sv.causality = <calculatedParameter>)
+			or (ev.causality = <calculatedParameter>)
 
-			or (sv in set ctVars
-				and sv.initial in set { <approx>, <calculated> })
+			or (ev in set ctVars
+				and ev.initial in set { <approx>, <calculated> })
 
-			or (sv in set sdVars
-				and sv.initial in set { <approx>, <calculated> }) },
+			or (ev in set sdVars
+				and ev.initial in set { <approx>, <calculated> }) },
 
-		optional = { sv.valueReference | sv in seq evs & sv.clocks <> nil },
+		optional = { ev.valueReference | ev in seq evs & ev.clocks <> nil },
 		IUs      = default[seq of InitialUnknown](fmd.modelStructure.initialUnknown, []),
 		allIUs   = { iu.valueReference | iu in seq IUs },
 		allEIs   = { ei.valueReference | ei in seq
@@ -312,7 +312,7 @@ validEventIndicators(fmd, evs) ==
 	([
 		-- @OnFail("%NAME: EventIndicator valueReference %s invalid at %s",
 		-- ei.valueReference, loc2str(ei.location))
-		( exists sv in seq evs & sv.valueReference = ei.valueReference )
+		( exists ev in seq evs & ev.valueReference = ei.valueReference )
 
 		| ei in seq fmd.modelStructure.eventIndicator
 	]);
@@ -330,8 +330,8 @@ validOutputReferences(fmd, evs) ==
 	([
 		-- @OnFail("%NAME: Output valueReference %s is not an output at %s",
 		--  ei.valueReference, loc2str(ei.location))
-		( exists sv in seq evs &
-			sv.valueReference = ei.valueReference and sv.causality = <output> )
+		( exists ev in seq evs &
+			ev.valueReference = ei.valueReference and ev.causality = <output> )
 
 		| ei in seq fmd.modelStructure.output
 	]);
@@ -358,7 +358,7 @@ validUnknownDependencies(fmd, evs) ==
 			unk.dependencies <> nil and unk.dependencies <> [] => allOf
 			([
 				-- @OnFail("%NAME: Unknown dependency %s invalid at %s", vr, loc2str(unk.location))
-				( exists sv in seq evs & sv.valueReference = vr )
+				( exists ev in seq evs & ev.valueReference = vr )
 
 				| vr in seq unk.dependencies
 			])

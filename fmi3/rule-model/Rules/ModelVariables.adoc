@@ -46,8 +46,8 @@ See <<_alias_variables>>.
 validIndependentVariable: ModelVariables +> bool
 validIndependentVariable(mvs) ==
 	-- @OnFail("%NAME: Variables define more than one independent variable: %s",
-	-- { sv.name | sv in seq mvs & sv.causality = <independent> })
-	( card { sv | sv in seq mvs & sv.causality = <independent> } <= 1 );
+	-- { mv.name | mv in seq mvs & mv.causality = <independent> })
+	( card { mv | mv in seq mvs & mv.causality = <independent> } <= 1 );
 ----
 // {vdm}
 See <<ModelVariables>>.
@@ -58,7 +58,7 @@ See <<ModelVariables>>.
 ----
 validPreviousVariables: ModelVariables +> bool
 validPreviousVariables(mvs) ==
-	let plist =  [ sv.previous | sv in seq mvs & not is_Clock(sv) and sv.previous <> nil ]
+	let plist =  [ mv.previous | mv in seq mvs & not is_Clock(mv) and mv.previous <> nil ]
 	in
 		-- @OnFail("%NAME: Variable previous fields are not unique: %s",
 		-- { mvs(a).name | a, b in set inds mvs & not is_Clock(a) and not is_Clock(b) and
