@@ -39,14 +39,13 @@ functions
 	/**
 	 * An identifier is a valid "C" variable name. Currently defined as any non-empty string that
 	 * does not start with a digit and consists of alphanumerics plus underscore. We do not check
-	 * for the absence of C keywords.
+	 * for the absence of C keywords, or non-ASCII encodings.
 	 */
 	validIdentifier: NormalizedString +> bool
 	validIdentifier(s) ==
-		s <> "" and
-		let digits = elems DIGITS, alphanums = elems NONDIGITS union digits in
-			hd s not in set digits
-			and forall c in seq tl s & c in set alphanums;
+		s <> ""
+		and hd s in set elems NONDIGITS
+		and forall c in seq tl s & c in set elems (NONDIGITS ^ DIGITS);
 
 	/**
 	 * Check whether a date/time string is "YYYY-MM-DDThh:mm:ssZ" format.
@@ -156,13 +155,13 @@ functions
 		{ mv | mv in seq mvs & isContinuousTimeState(mv, mvs) };
 
 	/**
-	 * Test whether variable as a continuous time state, defined to be
+	 * Test whether a raw variable is a continuous time state, defined to be
 	 * continuous Floats that have other Floats that are their derivative.
 	 */
 	isContinuousTimeState: fmi3Variable * seq of fmi3Variable +> bool
 	isContinuousTimeState(mv, mvs) ==
 		isFloat(mv)
-		and mv.variability = <continuous> 
+		and ( mv.variability = <continuous> or mv.variability = nil )
 		and exists dv in seq mvs &
 			isFloat(dv) and dv.derivative = mv.valueReference;
 
@@ -175,7 +174,8 @@ functions
 		{ mv | mv in seq mvs & isStateDerivative(mv) };
 
 	/**
-	 * Test whether a variable is a state derivative.
+	 * Test whether a variable is a state derivative, defined to be a
+	 * float that is a derivative of another variable.
 	 */
 	isStateDerivative: fmi3Variable +> bool
 	isStateDerivative(mv) ==
