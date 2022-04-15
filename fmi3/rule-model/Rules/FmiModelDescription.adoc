@@ -125,10 +125,19 @@ See <<ModelVariables>>.
 validStart: FmiModelDescription * ModelVariables +> bool
 validStart(-, evs) == allOf
 	([
-		ev.start <> nil =>
-			-- @OnFail("%NAME: all start values must be between %s and %s at %s",
-			-- ev.min, ev.max, ev.location)
-			( forall sv in seq ev.start & ev.min <= sv and ev.max >= sv )
+		allOf
+		([
+			ev.start <> nil =>
+				-- @OnFail("%NAME: all start values must be between %s and %s at %s",
+				-- ev.min, ev.max, ev.location)
+				( forall sv in seq ev.start & ev.min <= sv and ev.max >= sv ),
+
+			ev.start = nil and ev.initial <> <calculated> =>
+				-- @OnFail("%NAME: Warning: implicit start of 0 not within min/max at %s",
+				-- ev.location)
+				( (ev.min <> nil => ev.min <= 0) and
+				  (ev.max <> nil => ev.max >= 0) ) or true	-- NOTE warning
+		])
 
 		| ev in seq evs & is_NumericKind(ev)
 	]);

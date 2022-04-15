@@ -133,7 +133,7 @@ functions
 				( (min <> nil => forall s in seq start & min <= s) and
 				  (max <> nil => forall s in seq start & max >= s) ),
 
-			start = nil and initial not in set {<calculated>, <independent>} =>
+			start = nil and initial <> <calculated> =>
 				--@OnFail(1455, "2.4.7 Warning: implicit start of 0 is not within min %s/max %s", min, max)
 				( (min <> nil => min <= 0) and
 				  (max <> nil => max >= 0) ) or true	-- NOTE warning
