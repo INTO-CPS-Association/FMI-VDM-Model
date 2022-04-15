@@ -21,6 +21,11 @@
 			<version>1.1.2-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>org.into-cps.vdmcheck.fmi3</groupId>
+			<artifactId>rule-model</artifactId>
+			<version>1.1.2-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>org.into-cps.vdmcheck</groupId>
 			<artifactId>xsd2vdm</artifactId>
 			<version>1.1.2-SNAPSHOT</version>
@@ -62,18 +67,32 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>src/assembly/assembly.xml</descriptor>
-					</descriptors>
-					<finalName>FMI3-vdmcheck-${project.version}-${maven.build.timestamp}</finalName>
-				</configuration>
 				<executions>
 					<execution>
+						<id>static</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assembly/assembly.xml</descriptor>
+							</descriptors>
+							<finalName>FMI3-vdmcheck-${project.version}-${maven.build.timestamp}</finalName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>rules</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assembly/assembly2.xml</descriptor>
+							</descriptors>
+							<finalName>FMI3-vdmcheck-${project.version}-rules-${maven.build.timestamp}</finalName>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
