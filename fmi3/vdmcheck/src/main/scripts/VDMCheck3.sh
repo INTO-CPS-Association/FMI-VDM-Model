@@ -172,10 +172,15 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 		# Fix VDM filenames in location constants
 		BASE=$(basename $1)
 		sed -i -e "s+$BASE+$2+g" "$VDM"
+		
+		if [ -d model/Rules ]
+		then MODEL="model model/Rules"
+		else MODEL="model"
+		fi
 
 		java -Xmx1g -cp vdmcheck3.jar:vdmj.jar:annotations.jar com.fujitsu.vdmj.VDMJ \
 			-vdmsl -q -annotations -e "isValidFMIConfiguration($VAR)" \
-			model $VDM |
+			$MODEL $VDM |
 			awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'
 	)
 	

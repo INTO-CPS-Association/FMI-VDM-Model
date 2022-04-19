@@ -31,8 +31,8 @@ functions
 	 * Top level function to validate a given top level XML record. This just
 	 * calls the invariant function for the corresponding "prime" checked type.
 	 */
-	validate: FmiModelDescription | FmiBuildDescription | FmiTerminalsAndIcons +> bool
-	validate(data) ==
+	isValidFMIConfiguration: FmiModelDescription | FmiBuildDescription | FmiTerminalsAndIcons +> bool
+	isValidFMIConfiguration(data) ==
 		if is_FmiModelDescription(data)
 		then inv_FmiModelDescription'(data)
 		

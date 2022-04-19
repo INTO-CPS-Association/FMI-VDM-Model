@@ -33,12 +33,12 @@
 		<dependency>
 			<groupId>com.fujitsu</groupId>
 			<artifactId>vdmj</artifactId>
-			<version>4.4.3-P</version>
+			<version>4.4.5-P-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fujitsu</groupId>
 			<artifactId>annotations</artifactId>
-			<version>4.4.3-P</version>
+			<version>4.4.5-P-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -91,7 +91,7 @@
 							<descriptors>
 								<descriptor>src/assembly/assembly2.xml</descriptor>
 							</descriptors>
-							<finalName>FMI3-vdmcheck-${project.version}-rules-${maven.build.timestamp}</finalName>
+							<finalName>FMI3-vdmcheck-rules-${project.version}-${maven.build.timestamp}</finalName>
 						</configuration>
 					</execution>
 				</executions>
