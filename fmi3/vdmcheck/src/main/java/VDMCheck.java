@@ -287,11 +287,34 @@ public class VDMCheck
 			}
 				
 			String[] dependencies = {"vdmj.jar", "annotations.jar"};
-	
-			runCommand(jarLocation, tempOUT,
-					"java", "-Xmx1g", "-cp", String.join(File.pathSeparator, dependencies), 
-					"com.fujitsu.vdmj.VDMJ", "-vdmsl", "-q", "-annotations",
-					"-e", "isValidFMIConfiguration(" + varName + ")", "model", tempVDM.getCanonicalPath());
+			
+			File rules = new File(jarLocation.getAbsolutePath() + File.separator + "model/Rules");
+			List<String> args = new Vector<String>();
+			
+			args.add("java");
+			args.add("-Xmx1g");
+			args.add("-Dvdmj.parser.merge_comments=true");
+			args.add("-cp");
+			args.add(String.join(File.pathSeparator, dependencies)); 
+			args.add("com.fujitsu.vdmj.VDMJ");
+			args.add("-vdmsl");
+			args.add("-q");
+			args.add("-annotations");
+			args.add("-e");
+			args.add("isValidFMIConfiguration(" + varName + ")");
+			args.add("model");
+			
+			if (rules.exists())
+			{
+				for (String adoc: rules.list())
+				{
+					args.add("model" + File.separator + "Rules" + File.separator + adoc);
+				}
+			}
+
+			args.add(tempVDM.getCanonicalPath());
+			String[] sargs = new String[args.size()];
+			runCommand(jarLocation, tempOUT, args.toArray(sargs));
 	
 			sed(tempOUT, System.out,
 					"^true$", "No errors found.",
