@@ -39,7 +39,7 @@ functions
 	/**
 	 * An identifier is a valid "C" variable name. Currently defined as any non-empty string that
 	 * does not start with a digit and consists of alphanumerics plus underscore. We do not check
-	 * for the absence of C keywords, or non-ASCII encodings.
+	 * for the absence of C keywords, or non-ASCII encodings, for simplicity.
 	 */
 	validIdentifier: NormalizedString +> bool
 	validIdentifier(s) ==
@@ -49,6 +49,7 @@ functions
 
 	/**
 	 * Check whether a date/time string is "YYYY-MM-DDThh:mm:ssZ" format.
+	 * The individual field values are not validated, for simplicity.
 	 */
 	iso8601: NormalizedString +> bool
 	iso8601(dt) ==
@@ -152,7 +153,8 @@ functions
 	 */
 	continuousTimeStates: seq of fmi3Variable -> set of fmi3Variable
 	continuousTimeStates(mvs) ==
-		{ mv | mv in seq mvs & isContinuousTimeState(mv, mvs) };
+		{ mv | mv in seq mvs & isContinuousTimeState(mv, mvs) }
+	post RESULT subset elems mvs;
 
 	/**
 	 * Test whether a raw variable is a continuous time state, defined to be
@@ -171,7 +173,8 @@ functions
 	 */
 	stateDerivatives: seq of fmi3Variable -> set of fmi3Variable
 	stateDerivatives(mvs) ==
-		{ mv | mv in seq mvs & isStateDerivative(mv) };
+		{ mv | mv in seq mvs & isStateDerivative(mv) }
+	post RESULT subset elems mvs;
 
 	/**
 	 * Test whether a variable is a state derivative, defined to be a
