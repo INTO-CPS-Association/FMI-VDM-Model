@@ -41,7 +41,7 @@ validTerminalMemberVariables(terminal) ==
 	tmvs <> nil =>
 		-- @OnFail("%NAME: Terminal member variables not unique at %s",
 		-- loc2str(terminal.location))
-		( card { v.variableName | v in seq tmvs } = len tmvs );
+		( card elems tmvs = len tmvs );
 ----
 // {vdm}
 See <<section-terminalvars>>.
