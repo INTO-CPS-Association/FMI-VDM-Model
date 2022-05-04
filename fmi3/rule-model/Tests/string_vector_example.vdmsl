@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("string_vector_example.xml", 7),
-        "3.0-rc.1",  -- fmiVersion
+        "3.0-rc.2",  -- fmiVersion
         "",  -- modelName
         "",  -- instantiationToken
         "",  -- description

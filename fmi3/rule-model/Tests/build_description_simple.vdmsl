@@ -6,7 +6,7 @@ values
     mk_FmiBuildDescription
     (
         mk_Location("build_description_simple.xml", 2),
-        "3.0-rc.1",  -- fmiVersion
+        "3.0-rc.2",  -- fmiVersion
         -- buildConfiguration
         [
             mk_BuildConfiguration

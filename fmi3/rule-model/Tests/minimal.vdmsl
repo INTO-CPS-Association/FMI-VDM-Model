@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("minimal.xml", 3),
-        "3.0-rc.1",  -- fmiVersion
+        "3.0-rc.2",  -- fmiVersion
         "Test FMU",  -- modelName
         "{111-222-333-444}",  -- instantiationToken
         nil,  -- description
