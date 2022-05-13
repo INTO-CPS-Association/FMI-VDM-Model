@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("unit_definition.xml", 7),
-        "3.0-rc.2",  -- fmiVersion
+        "3.0",  -- fmiVersion
         "",  -- modelName
         "",  -- instantiationToken
         "",  -- description

@@ -1,5 +1,5 @@
 /**
- * VDM schema created from fmi3.xsd on Thu Apr 28 17:02:28 BST 2022
+ * VDM schema created from fmi3.xsd on Fri May 13 10:07:24 BST 2022
  * DO NOT EDIT!
  */
 types
@@ -17,7 +17,7 @@ Location ::
 
 FmiModelDescription ::
     location                  : Location
-    fmiVersion                : AnyString
+    fmiVersion                : NormalizedString
     modelName                 : AnyString
     instantiationToken        : NormalizedString
     description               : [AnyString]
@@ -39,7 +39,7 @@ FmiModelDescription ::
     modelStructure            : ModelStructure
     annotations               : [Annotations]
 inv rec ==
-    (rec.fmiVersion = "3.0-rc.2")
+    (XSD`xsdPattern(rec.fmiVersion, "3[.](0|[1-9][0-9]*)([.](0|[1-9][0-9]*))?(-.+)?"))
 ;
 
 ModelExchange ::
@@ -750,7 +750,7 @@ FmiBuildDescription ::
     buildConfiguration  : seq1 of (BuildConfiguration)
     annotations         : [Annotations]
 inv rec ==
-    (XSD`xsdPattern(rec.fmiVersion, "3[.](0-.*)"))
+    (XSD`xsdPattern(rec.fmiVersion, "3[.](0|[1-9][0-9]*)([.](0|[1-9][0-9]*))?(-.+)?"))
 ;
 
 BuildConfiguration ::
@@ -819,7 +819,7 @@ FmiTerminalsAndIcons ::
     terminals                : [Terminals]
     annotations              : [Annotations]
 inv rec ==
-    (XSD`xsdPattern(rec.fmiVersion, "3[.](0-.*)"))
+    (XSD`xsdPattern(rec.fmiVersion, "3[.](0|[1-9][0-9]*)([.](0|[1-9][0-9]*))?(-.+)?"))
 ;
 
 GraphicalRepresentation ::
