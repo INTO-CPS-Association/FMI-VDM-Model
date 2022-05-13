@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("variable_types.xml", 2),
-        "3.0-rc.2",  -- fmiVersion
+        "3.0",  -- fmiVersion
         "VariableTypes",  -- modelName
         "",  -- instantiationToken
         nil,  -- description

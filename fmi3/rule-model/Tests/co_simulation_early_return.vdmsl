@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("co_simulation_early_return.xml", 9),
-        "3.0-rc.2",  -- fmiVersion
+        "3.0",  -- fmiVersion
         "MyLibrary.SpringMassDamper_Early_Return_example",  -- modelName
         "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",  -- instantiationToken
         "Rotational Spring Mass Damper System",  -- description

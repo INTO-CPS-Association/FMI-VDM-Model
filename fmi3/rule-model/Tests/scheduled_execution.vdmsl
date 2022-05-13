@@ -6,7 +6,7 @@ values
     mk_FmiModelDescription
     (
         mk_Location("scheduled_execution.xml", 2),
-        "3.0-rc.2",  -- fmiVersion
+        "3.0",  -- fmiVersion
         "ThreeInputClocks",  -- modelName
         "ThreeInputClocks",  -- instantiationToken
         nil,  -- description
