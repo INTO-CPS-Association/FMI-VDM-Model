@@ -19,8 +19,8 @@ validTypeDefinitionNames(tdefs) ==
 			len names = card elems names );
 ----
 // {vdm}
-See <<definition-of-types>>.
-See <<table-type-details>>.
+- See <<definition-of-types>>.
+- See <<table-type-details>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeMinMax
 [[validTypeMinMax]]

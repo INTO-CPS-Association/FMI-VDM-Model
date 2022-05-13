@@ -393,22 +393,25 @@ validClockPriorities: FmiModelDescription * ModelVariables +> bool
 validClockPriorities(fmd, evs) == allOf
 	([
 		if fmd.scheduledExecution <> nil then
-			is_Clock(ev) =>
-				if ev.causality = <input>
-				then
+			cases ev.causality:
+				<input> ->
 					-- @OnFail("%NAME: Input clock %s must have a priority for SE at %s",
 					-- ev.name, loc2str(ev.location))
-					( ev.priority <> nil )
-				else
-					-- @OnFail("%NAME: Non-input clock %s must not have a priority for SE at %s",
+					( ev.priority <> nil ),
+
+				<output> ->	
+					-- @OnFail("%NAME: Output clock %s must not have a priority for SE at %s",
 					-- ev.name, loc2str(ev.location))
-					( ev.priority = nil )
+					( ev.priority = nil ),
+
+				<local> -> true
+			end
 		else
 			-- @OnFail("%NAME: Clock %s must not have a priority unless SE at %s",
 			-- ev.name, loc2str(ev.location))
-			( is_Clock(ev) => ev.priority = nil )
+			( ev.priority = nil )
 			
-		| ev in seq evs
+		| ev in seq evs & is_Clock(ev)
 	]);
 ----
 // {vdm}
