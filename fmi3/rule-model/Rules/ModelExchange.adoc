@@ -28,8 +28,8 @@ values
 	{
 		"validMEModelIdentifier" |->
 		[
-			"fmi-standard/docs/index.html#modelIdentifier",
-			"fmi-standard/docs/index.html#header-files-and-naming-of-functions"
+			"<FMI3_STANDARD>#modelIdentifier",
+			"<FMI3_STANDARD>#header-files-and-naming-of-functions"
 		]
 	};
 // {vdm}

@@ -52,17 +52,17 @@ values
 	{
 		"validTolerance" |->
 		[
-			"fmi-standard/docs/index.html#DefaultExperiment"
+			"<FMI3_STANDARD>#DefaultExperiment"
 		],
 
 		"validStartStopTime" |->
 		[
-			"fmi-standard/docs/index.html#DefaultExperiment"
+			"<FMI3_STANDARD>#DefaultExperiment"
 		],
 
 		"validStepSize" |->
 		[
-			"fmi-standard/docs/index.html#DefaultExperiment"
+			"<FMI3_STANDARD>#DefaultExperiment"
 		]
 	};
 // {vdm}

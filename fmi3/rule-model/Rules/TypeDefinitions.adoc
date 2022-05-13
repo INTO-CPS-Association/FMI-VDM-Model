@@ -106,28 +106,28 @@ values
 	{
 		"validTypeDefinitionNames" |->
 		[
-			"fmi-standard/docs/index.html#definition-of-types",
-			"fmi-standard/docs/index.html#table-type-details"
+			"<FMI3_STANDARD>#definition-of-types",
+			"<FMI3_STANDARD>#table-type-details"
 		],
 
 		"validTypeMinMax" |->
 		[
-			"fmi-standard/docs/index.html#table-type-details"
+			"<FMI3_STANDARD>#table-type-details"
 		],
 
 		"validTypeDisplayUnit" |->
 		[
-			"fmi-standard/docs/index.html#table-type-details"
+			"<FMI3_STANDARD>#table-type-details"
 		],
 
 		"validEnumerationTypeBijection" |->
 		[
-			"fmi-standard/docs/index.html#figure-schema-EnumerationType"
+			"<FMI3_STANDARD>#figure-schema-EnumerationType"
 		],
 
 		"validClockType" |->
 		[
-			"fmi-standard/docs/index.html#figure-schema-ClockType"
+			"<FMI3_STANDARD>#figure-schema-ClockType"
 		]
 	};
 // {vdm}

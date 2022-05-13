@@ -27,11 +27,14 @@
 # Process an FMI V3 FMU or XML file, and validate the XML structure using the VDM-SL model.
 #
 
-USAGE="Usage: VDMCheck3.sh [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
+USAGE="Usage: VDMCheck3.sh [-h <FMI Standard base URL>] [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
 
-while getopts ":v:x:s:" OPT
+while getopts ":h:v:x:s:" OPT
 do
     case "$OPT" in
+    	h)
+    		LINK=${OPTARG}
+    		;;
         v)
             SAVE=${OPTARG}
             ;;
@@ -50,6 +53,11 @@ shift "$((OPTIND-1))"
 if [ $# = 1 ]
 then
 	FILE=$1
+fi
+
+if [ -z "$LINK" ]
+then
+	LINK="https://fmi-standard.org/docs/3.0/"
 fi
 
 if [ "$INXML" -a "$FILE" ] || [ -z "$INXML" -a -z "$FILE" ]
@@ -182,6 +190,7 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 			-cp vdmcheck3.jar:vdmj.jar:annotations.jar com.fujitsu.vdmj.VDMJ \
 			-vdmsl -q -annotations -e "isValidFMIConfiguration($VAR)" \
 			$MODEL $VDM |
+			sed -e "s+<FMI3_STANDARD>+$LINK+" |
 			awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'
 	)
 	

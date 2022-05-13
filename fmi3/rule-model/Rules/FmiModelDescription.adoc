@@ -422,88 +422,88 @@ values
 	{
 		"validModelTypes" |->
 		[
-			"fmi-standard/docs/index.html#table-schema-fmiModelDescription"
+			"<FMI3_STANDARD>#table-schema-fmiModelDescription"
 		],
 
 		"validGenerationDateAndTime" |->
 		[
-			"fmi-standard/docs/index.html#table-schema-fmiModelDescription-attributes"
+			"<FMI3_STANDARD>#table-schema-fmiModelDescription-attributes"
 		],
 
 		"validTypeUnits" |->
 		[
-			"fmi-standard/docs/index.html#table-type-details"
+			"<FMI3_STANDARD>#table-type-details"
 		],
 
 		"validVariableTypes" |->
 		[
-			"fmi-standard/docs/index.html#ModelVariables",
-			"fmi-standard/docs/index.html#definition-of-types"
+			"<FMI3_STANDARD>#ModelVariables",
+			"<FMI3_STANDARD>#definition-of-types"
 		],
 
 		"validTypeNames" |->
 		[
-			"fmi-standard/docs/index.html#table-type-details"
+			"<FMI3_STANDARD>#table-type-details"
 		],
 
 		"validVariableNames" |->
 		[
-			"fmi-standard/docs/index.html#ModelVariables"
+			"<FMI3_STANDARD>#ModelVariables"
 		],
 
 		"validStart" |->
 		[
-			"fmi-standard/docs/index.html#table-type-attributes"
+			"<FMI3_STANDARD>#table-type-attributes"
 		],
 
 		"validMinMax" |->
 		[
-			"fmi-standard/docs/index.html#table-type-attributes"
+			"<FMI3_STANDARD>#table-type-attributes"
 		],
 
 		"validMultipleSets" |->
 		[
-			"fmi-standard/docs/index.html#table-variableBase-attributes"
+			"<FMI3_STANDARD>#table-variableBase-attributes"
 		],
 
 		"validReinits" |->
 		[
-			"fmi-standard/docs/index.html#ModelVariables"
+			"<FMI3_STANDARD>#ModelVariables"
 		],
 
 		"validOutput" |->
 		[
-			"fmi-standard/docs/index.html#ModelStructure"
+			"<FMI3_STANDARD>#ModelStructure"
 		],
 
 		"validStateDerivatives" |->
 		[
-			"fmi-standard/docs/index.html#ModelStructure"
+			"<FMI3_STANDARD>#ModelStructure"
 		],
 		
 		"validInitialUnknowns" |->
 		[
-			"fmi-standard/docs/index.html#ModelStructure"
+			"<FMI3_STANDARD>#ModelStructure"
 		],
 		
 		"validEventIndicators" |->
 		[
-			"fmi-standard/docs/index.html#ModelStructure"
+			"<FMI3_STANDARD>#ModelStructure"
 		],
 		
 		"validOutputReferences" |->
 		[
-			"fmi-standard/docs/index.html#ModelStructure"
+			"<FMI3_STANDARD>#ModelStructure"
 		],
 		
 		"validUnknownDependencies" |->
 		[
-			"fmi-standard/docs/index.html#ModelStructure"
+			"<FMI3_STANDARD>#ModelStructure"
 		],
 
 		"validClockPriorities" |->
 		[
-			"fmi-standard/docs/index.html#table-type-details"
+			"<FMI3_STANDARD>#table-type-details"
 		]
 	};
 // {vdm}

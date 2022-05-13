@@ -29,7 +29,7 @@ values
 	{
 		"validLogCategories" |->
 		[
-			"fmi-standard/docs/index.html#definition-of-log-categories"
+			"<FMI3_STANDARD>#definition-of-log-categories"
 		]
 	};
 // {vdm}

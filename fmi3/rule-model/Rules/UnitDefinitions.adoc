@@ -57,19 +57,19 @@ values
 	{
 		"validUnitNames" |->
 		[
-			"fmi-standard/docs/index.html#_physical_units",
-			"fmi-standard/docs/index.html#uniqueNameAttribute"
+			"<FMI3_STANDARD>#_physical_units",
+			"<FMI3_STANDARD>#uniqueNameAttribute"
 		],
 
 		"validDisplayUnitNames" |->
 		[
-			"fmi-standard/docs/index.html#figure-schema-DisplayUnit",
-			"fmi-standard/docs/index.html#uniqueNameAttribute"
+			"<FMI3_STANDARD>#figure-schema-DisplayUnit",
+			"<FMI3_STANDARD>#uniqueNameAttribute"
 		],
 
 		"validInverseAndOffset" |->
 		[
-			"fmi-standard/docs/index.html#figure-schema-DisplayUnit"
+			"<FMI3_STANDARD>#figure-schema-DisplayUnit"
 		]
 	};
 // {vdm}

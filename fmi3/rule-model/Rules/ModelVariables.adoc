@@ -148,37 +148,37 @@ values
 	{
 		"validValueReferences" |->
 		[
-			"fmi-standard/docs/index.html#_platform_dependent_definitions"
+			"<FMI3_STANDARD>#_platform_dependent_definitions"
 		],
 
 		"validAliasNames" |->
 		[
-			"fmi-standard/docs/index.html#_alias_variables"
+			"<FMI3_STANDARD>#_alias_variables"
 		],
 
 		"validIndependentVariable" |->
 		[
-			"fmi-standard/docs/index.html#ModelVariables"
+			"<FMI3_STANDARD>#ModelVariables"
 		],
 
 		"validPreviousVariables" |->
 		[
-			"fmi-standard/docs/index.html#ModelVariables"
+			"<FMI3_STANDARD>#ModelVariables"
 		],
 
 		"validVariableDimensions" |->
 		[
-			"fmi-standard/docs/index.html#ModelVariables"
+			"<FMI3_STANDARD>#ModelVariables"
 		],
 
 		"validStartAndVRef" |->
 		[
-			"fmi-standard/docs/index.html#ModelVariables"
+			"<FMI3_STANDARD>#ModelVariables"
 		],
 
 		"validAliasDisplayUnits" |->
 		[
-			"fmi-standard/docs/index.html#ModelVariables"
+			"<FMI3_STANDARD>#ModelVariables"
 		]
 	};
 // {vdm}

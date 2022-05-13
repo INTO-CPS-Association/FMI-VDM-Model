@@ -94,27 +94,27 @@ values
 	{
 		"validCoordinateSystem" |->
 		[
-			"fmi-standard/docs/index.html#_coordinatesystem"
+			"<FMI3_STANDARD>#_coordinatesystem"
 		],
 
 		"validIcon" |->
 		[
-			"fmi-standard/docs/index.html#_icon"
+			"<FMI3_STANDARD>#_icon"
 		],
 
 		"validTerminalMemberVariables" |->
 		[
-			"fmi-standard/docs/index.html#section-terminalvars"
+			"<FMI3_STANDARD>#section-terminalvars"
 		],
 
 		"validTerminalGraphicalRepresentation" |->
 		[
-			"fmi-standard/docs/index.html#_terminal_graphical_representation"
+			"<FMI3_STANDARD>#_terminal_graphical_representation"
 		],
 
 		"validTerminalStreamMemberVariables" |->
 		[
-			"fmi-standard/docs/index.html#_terminal_stream_member_variable"
+			"<FMI3_STANDARD>#_terminal_stream_member_variable"
 		]
 	};
 // {vdm}

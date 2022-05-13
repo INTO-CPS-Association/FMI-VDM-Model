@@ -74,22 +74,22 @@ values
 	{
 		"validCompilerOptions" |->
 		[
-			"fmi-standard/docs/index.html#table-SourceFileSet-details"
+			"<FMI3_STANDARD>#table-SourceFileSet-details"
 		],
 
 		"validSourceFileNames" |->
 		[
-			"fmi-standard/docs/index.html#table-SourceFile-details"
+			"<FMI3_STANDARD>#table-SourceFile-details"
 		],
 
 		"validPreprocessorDefinitionNames" |->
 		[
-			"fmi-standard/docs/index.html#table-ProcessorDefinition-details"
+			"<FMI3_STANDARD>#table-ProcessorDefinition-details"
 		],
 
 		"validIncludeDirectoryNames" |->
 		[
-			"fmi-standard/docs/index.html#table-IncludeDirectory-details"
+			"<FMI3_STANDARD>#table-IncludeDirectory-details"
 		]
 	};
 // {vdm}
