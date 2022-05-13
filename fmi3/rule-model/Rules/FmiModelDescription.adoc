@@ -260,7 +260,7 @@ validStateDerivatives(fmd, evs) ==
 	]);
 ----
 // {vdm}
-See <<ModelSrtucture>>.
+See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validInitialUnknowns
 [[validInitialUnknowns]]
