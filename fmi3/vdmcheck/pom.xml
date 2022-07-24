@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.into-cps.vdmcheck</groupId>
 		<artifactId>fmi3</artifactId>
-		<version>${revision}${sha1}${changelist}</version>
+		<version>1.1.2-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
@@ -31,6 +31,16 @@
 			<artifactId>xsd2vdm</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>dk.au.ece.vdmj</groupId> -->
+<!-- 			<artifactId>vdmj</artifactId> -->
+<!-- 			<version>4.4.5-P</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>dk.au.ece.vdmj</groupId> -->
+<!-- 			<artifactId>annotations</artifactId> -->
+<!-- 			<version>4.4.5-P</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.fujitsu</groupId>
 			<artifactId>vdmj</artifactId>
