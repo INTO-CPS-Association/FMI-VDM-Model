@@ -232,7 +232,7 @@ functions
 			),
 
 			-- @OnFail(1312, "2.2.7 VendorAnnotations invalid")
-			( isValidVendorAnnotations(sv.annotations) )
+			( isValidVendorAnnotations(sv.vendorAnnotations) )
 		} = {true};
 
 
@@ -433,7 +433,7 @@ functions
 				effectiveInitial(sv.initial, causality, variability),
 				sv.canHandleMultipleSetPerTimeInstant,
 				effectiveVariable(sv.fmi2ScalarVariable, typedefs),
-				sv.annotations
+				sv.vendorAnnotations
 			);
 
 	/**

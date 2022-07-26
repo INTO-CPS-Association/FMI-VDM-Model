@@ -1,0 +1,84 @@
+/**
+ * This file is part of the INTO-CPS toolchain.
+ *
+ * Copyright (c) 2017-2019, INTO-CPS Association,
+ * c/o Professor Peter Gorm Larsen, Department of Engineering
+ * Finlandsgade 22, 8200 Aarhus N.
+ *
+ * All rights reserved.
+ *
+ * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
+ * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
+ * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
+ * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
+ * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *
+ * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
+ * obtained from the INTO-CPS Association, either from the above address, from
+ * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
+ * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without
+ * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
+ * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
+ * THE INTO-CPS ASSOCIATION.
+ *
+ * See the full INTO-CPS Association Public License conditions for more details.
+ */
+
+/**
+ * 2.2.6.2 Definition of Terminals
+ */
+functions
+	isValidFMITerminalsAndIcons: FmiTerminalsAndIcons +> bool
+	isValidFMITerminalsAndIcons(tandi) ==
+	{
+		isValidGraphicalRepresentation(tandi.graphicalRepresentation),
+		isValidTerminals(tandi.terminals)
+	}
+	= {true};
+
+	isValidTerminals: [seq1 of Terminal] +> bool
+	isValidTerminals(terminals) ==
+		terminals <> nil => dunion
+		{
+			{
+				-- @OnFail(1300, "2.2.6.2 Terminal invalid at %s", loc2str(t.location))
+				( isValidTerminal(t) ),
+
+				isValidTerminals(t.terminal),
+				isValidTerminalGraphicalRepresentation(t.terminalGraphicalRepresentation)
+			}
+
+			| t in seq terminals
+		}
+		= {true}
+	measure is not yet specified;
+
+	isValidTerminal: Terminal +> bool
+	isValidTerminal(term) ==
+		term.terminalMemberVariable <> nil =>
+			-- @OnFail(1301, "2.2.6.2 Terminal member variables not unique at %s", loc2str(term.location))
+			( card { v | v in seq term.terminalMemberVariable } = len term.terminalMemberVariable );
+
+
+	isValidTerminalGraphicalRepresentation: [TerminalGraphicalRepresentation] +> bool
+	isValidTerminalGraphicalRepresentation(gt) ==
+		gt <> nil =>
+			{
+				-- @OnFail(1302, "2.2.6.2 Terminal area is not bottom left to top right at %s", loc2str(gt.location))
+				( gt.x1 < gt.x2 and gt.y1 < gt.y2 ),
+
+				-- @OnFail(1303, "2.2.6.2 Colour attributes must be octets (<=255) at %s", loc2str(gt.location))
+				( gt.defaultConnectionColor <> nil =>
+					forall c in seq gt.defaultConnectionColor & c <= 255 ),
+
+				-- @OnFail(1304, "2.2.6.2 defaultConnectionStrokeSize must be >0 at %s", loc2str(gt.location))
+				( gt.defaultConnectionStrokeSize <> nil =>
+					gt.defaultConnectionStrokeSize > 0 ),
+
+				-- @OnFail(1305, "2.2.6.2 Terminal vendor annotations invalid at %s", loc2str(gt.location))
+				( isValidVendorAnnotation(gt.annotations) )
+			}
+			= {true};
