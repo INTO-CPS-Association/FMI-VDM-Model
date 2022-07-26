@@ -30,11 +30,8 @@
 /**
  * 2.2.7 Vendor Annotations
  */
-types
-	fmi3Annotation = seq of Annotation;
-
 functions
-	isValidVendorAnnotation: [fmi3Annotation] +> bool
+	isValidVendorAnnotation: [seq1 of Annotation] +> bool
 	isValidVendorAnnotation(tools) ==
 		tools <> nil =>
 			/* @OnFail(1400, "2.2.7 VendorAnnotations tool names are not unique: %s",
