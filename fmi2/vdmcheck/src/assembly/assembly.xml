@@ -24,6 +24,10 @@
 			<destName>MIT-LICENCE</destName>
 		</file>
 		<file>
+			<source>../../LICENCE</source>
+			<destName>LICENCE</destName>
+		</file>
+		<file>
 			<source>src/main/resources/XSD.vdmsl</source>
 			<destName>model/XSD.vdmsl</destName>
 		</file>
