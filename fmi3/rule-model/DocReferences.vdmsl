@@ -1,0 +1,57 @@
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
+types
+	ReferenceURL = seq1 of char;
+	RuleName = seq1 of char;
+	ReferenceMap = map RuleName to seq1 of ReferenceURL;	-- A rule must have at least one ref
+
+values
+	/**
+	 * A map from rule names to FMI Standard document locations, given in terms of a
+	 * relative URL from "fmi-standard". Each of these locations could, in turn, have
+	 * a link back to the named rule.
+	 *
+	 * The map is comprised of the union of maps for each rule. See FMI3Rules.adoc.
+	 */
+	docReferences : ReferenceMap = merge
+	{
+		FmiModelDescription_refs,
+		ModelExchange_refs,
+		CoSimulation_refs,
+		ScheduledExecution_refs,
+		UnitDefinitions_refs,
+		TypeDefinitions_refs,
+		LogCategories_refs,
+		DefaultExperiment_refs,
+		ModelVariables_refs,
+		ModelStructure_refs,
+
+		BuildConfiguration_refs,
+		Terminals_refs
+	};

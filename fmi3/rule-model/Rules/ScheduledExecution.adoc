@@ -1,0 +1,37 @@
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
+functions
+// {vdm}
+endif::[]
+
+==== A.{section}.{counter:subsection} ScheduledExecution Rules
+:!typerule:
+===== A.{section}.{subsection}.{counter:typerule} Rule: validSEModelIdentifier
+[[validSEModelIdentifier]]
+// {vdm}
+----
+validSEModelIdentifier: ScheduledExecution +> bool
+validSEModelIdentifier(se) ==
+	-- @OnFail("%NAME: %s not a valid C variable name at %s",
+	-- se.modelIdentifier, loc2str(se.location))
+	( validIdentifier(se.modelIdentifier) );
+----
+// {vdm}
+- See <<modelIdentifier>>.
+- See <<header-files-and-naming-of-functions>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	ScheduledExecution_refs : ReferenceMap =
+	{
+		"validSEModelIdentifier" |->
+		[
+			"<FMI3_STANDARD>#modelIdentifier",
+			"<FMI3_STANDARD>#header-files-and-naming-of-functions"
+		]
+	};
+// {vdm}
+endif::[]

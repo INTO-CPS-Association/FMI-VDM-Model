@@ -28,10 +28,10 @@
 # See the full INTO-CPS Association Public License conditions for more details.
 
 #
-# Process an FMI V3 FMU or XML file, and validate the XML structure using the VDM-SL model.
+# Process an FMI V2 FMU or XML file, and validate the XML structure using the VDM-SL model.
 #
 
-USAGE="Usage: VDMCheck3.sh [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
+USAGE="Usage: VDMCheck2.sh [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
 
 while getopts ":v:x:s:" OPT
 do

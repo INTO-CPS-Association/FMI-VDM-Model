@@ -1,0 +1,121 @@
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
+
+/**
+ * 2.4.8 Definition of the Model Structure (ModelStructure)
+ */
+functions
+	/**
+	 * Validation of a ModelStructure.
+	 */
+	isValidModelStructure: ModelStructure * seq1 of Variable +> bool
+	isValidModelStructure(ms, svs) ==
+	{
+		-- @OnFail(1500, "2.4.8 ModelStructure has invalid initialUnknowns")
+		( ms.initialUnknown <> nil =>
+			forall u in seq ms.initialUnknown &
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location) ),
+
+		-- @OnFail(1501, "2.4.8 ModelStructure has invalid continuousStateDerivative")
+		( ms.continuousStateDerivative <> nil =>
+			forall u in seq ms.continuousStateDerivative &
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location) ),
+
+		-- @OnFail(1502, "2.4.8 ModelStructure has invalid clockedState")
+		( ms.clockedState <> nil =>
+			let allcvs = { v.valueReference | v in seq svs & v.clocks <> nil },
+				allpvs = { v.valueReference | v in seq svs & not is_Clock(v) and v.previous <> nil },
+				allcvpvs = allcvs inter allpvs,
+				allcs = [ u.valueReference | u in seq ms.clockedState ] in
+			{
+				-- @OnFail(1503, "2.4.8 ClockState has duplicates at %s", loc2str(ms.location))
+				( len allcs = card elems allcs ),
+
+				-- @OnFail(1504, "2.4.8 ClockState should be %s at %s", allcvpvs, loc2str(ms.location))
+				( elems allcs = allcvpvs ),
+
+				forall u in seq ms.clockedState &
+					isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location)
+					and let cv = lookup(svs, u.valueReference) in
+					{
+						-- @OnFail(1505, "2.4.8 ClockState reference %s cannot be a clock at %s", cv.valueReference, loc2str(ms.location))
+						( not is_(cv, Clock) ),
+
+						-- @OnFail(1506, "2.4.8 ClockState reference %s is not clocked var or previous at %s", cv.valueReference, loc2str(ms.location))
+						( cv.valueReference in set allcvpvs ),
+
+						-- @OnFail(1507, "2.4.8 ClockState reference %s not 'discrete' at %s", cv.valueReference, loc2str(ms.location))
+						( cv.variability = <discrete> )
+					} = {true}
+			 } = {true} ),
+
+		-- @OnFail(1508, "2.4.8 ModelStructure has invalid eventIndicator")
+		( ms.eventIndicator <> nil =>
+			forall u in seq ms.eventIndicator &
+				isValidUnknown(u.valueReference, u.dependencies, u.dependenciesKind, u.annotations, u.location) ),
+
+		-- @OnFail(1509, "2.4.8 InitialUnknowns are not of kind dependent or constant")
+		(
+			ms.initialUnknown <> nil =>
+				forall iu in seq ms.initialUnknown &
+					iu.dependenciesKind <> nil =>
+						forall dk in seq iu.dependenciesKind &
+							 dk in set { <dependent>, <constant>, nil }
+		)
+	} = {true};
+
+	/**
+	 * Validate an Unknown structure in isolation.
+	 */
+	isValidUnknown: fmi3ValueReference * [seq of fmi3ValueReference] * [seq of DependenciesKind] * [Annotations] * Location +> bool
+	isValidUnknown(valueReference, dependencies, dependenciesKind, annotations, location) ==
+	{
+		-- @OnFail(1510, "2.4.8 Unknown %s has invalid dependencies/kinds at %s", valueReference, loc2str(location))
+		(
+			if dependencies <> nil
+			then dependenciesKind <> nil =>
+				{
+					-- @OnFail(1511, "2.4.8 Dependencies list does not match dependenciesKind at %s", loc2str(location))
+					( len dependencies = len dependenciesKind ),
+
+					/* @OnFail(1512, "2.4.8 Unknown has duplicate indexes %s at %s",
+						{ dependencies(a) | a, b in set inds dependencies &
+							a <> b and dependencies(a) = dependencies(b) }, loc2str(location) ) */
+					( len dependencies = card elems dependencies),
+
+					-- @OnFail(1513, "2.4.8 Unknown cannot depend on itself at %s", loc2str(location))
+					(true) -- CHECK THIS! ( u.index not in set elems u.dependencies )
+				} = {true}
+			else
+				dependenciesKind = nil
+		),
+
+		isValidAnnotations(annotations)
+	}
+	= {true};

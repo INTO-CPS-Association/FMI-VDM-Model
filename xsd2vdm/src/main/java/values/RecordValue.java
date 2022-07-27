@@ -1,31 +1,26 @@
-/**
- * This file is part of the INTO-CPS toolchain.
+/******************************************************************************
  *
- * Copyright (c) 2017-2021, INTO-CPS Association,
- * c/o Professor Peter Gorm Larsen, Department of Engineering
- * Finlandsgade 22, 8200 Aarhus N.
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
  *
- * All rights reserved.
+ *	This file is part of the INTO-CPS toolchain.
  *
- * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
- * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
- * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
- * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *	xsd2vdm is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
- * obtained from the INTO-CPS Association, either from the above address, from
- * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
- * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *	xsd2vdm is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * This program is distributed WITHOUT ANY WARRANTY; without
- * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
- * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
- * THE INTO-CPS ASSOCIATION.
+ *	You should have received a copy of the GNU General Public License
+ *	along with xsd2vdm. If not, see <http://www.gnu.org/licenses/>.
+ *	SPDX-License-Identifier: GPL-3.0-or-later
  *
- * See the full INTO-CPS Association Public License conditions for more details.
- */
+ ******************************************************************************/
 
 package values;
 
@@ -56,7 +51,31 @@ public class RecordValue extends VDMValue
 		{
 			if (f.getElementName().equals(attrName))
 			{
-				source.put(f.getElementName(), value);
+				if (f.isSequence())
+				{
+					SeqValue seq = (SeqValue) source.get(f.getElementName());
+
+					if (seq == null)
+					{
+						seq = new SeqValue(f.getType(), null);
+						source.put(f.getElementName(), seq);
+					}
+					
+					if (value instanceof SeqValue)
+					{
+						SeqValue svalue = (SeqValue)value;
+						seq.addAll(svalue);
+					}
+					else
+					{
+						seq.add(value);
+					}
+				}
+				else
+				{
+					source.put(f.getElementName(), value);
+				}
+				
 				found = true;
 				break;
 			}
@@ -130,14 +149,20 @@ public class RecordValue extends VDMValue
 				
 				if (source.containsKey(field.getElementName()))
 				{
-					String value = source.get(field.getElementName()).toVDM(indent + "    ");
+					VDMValue vdmValue = source.get(field.getElementName());
+					String value = vdmValue.toVDM(indent + "    ");
 
-					if (value.trim().startsWith("["))	// Sequence
+					if (vdmValue instanceof SeqValue)	// Label opening "["
 					{
 						sb.append(indent + "    -- " + field.getFieldName() +  "\n");
 					}
 					
 					sb.append(value);
+					
+					if (vdmValue instanceof SimpleValue || vdmValue instanceof AnyValue)
+					{
+						comment = "  -- " + field.getFieldName() + "\n";
+					}
 				}
 				else if (field.getType().isOptional())
 				{

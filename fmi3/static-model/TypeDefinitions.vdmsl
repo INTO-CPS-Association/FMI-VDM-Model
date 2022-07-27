@@ -1,0 +1,188 @@
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
+
+/**
+ * 2.4.4 Definition of Types (TypeDefinitions)
+ */
+types
+	VariableType =
+		Float32Type | Float64Type |
+		Int64Type | Int32Type | Int16Type | Int8Type |
+		UInt64Type | UInt32Type | UInt16Type | UInt8Type |
+		BooleanType |
+		StringType |
+		BinaryType |
+		EnumerationType |
+		ClockType;
+
+functions
+	/**
+	 * Check whether a type is a "real" type.
+	 */
+	isRealType: VariableType +> bool
+	isRealType(var) ==
+		is_Float64Type(var) or is_Float32Type(var);
+
+	/**
+	 * Check whether a type is an "integer" type.
+	 */
+	isIntegerType: VariableType +> bool
+	isIntegerType(var) ==
+		is_Int64Type(var) or is_Int32Type(var) or is_Int16Type(var) or is_Int8Type(var) or
+		is_UInt64Type(var) or is_UInt32Type(var) or is_UInt16Type(var) or is_UInt8Type(var);
+
+
+	isValidType: VariableType +> bool
+	isValidType(stype) ==
+		cases stype:
+			mk_Float32Type(-, -, -, -, unit, dunit, -, -, min, max, -, -),
+			mk_Float64Type(-, -, -, -, unit, dunit, -, -, min, max, -, -) ->
+			{
+				-- @OnFail(1150, "2.4.4 Type %s, Float max %s not >= min %s", stype.name, max, min)
+				( max <> nil and min <> nil => max >= min ),
+
+				-- @OnFail(1151, "2.4.4 Type %s, Real unit must be defined for displayUnit %s", stype.name, dunit)
+				( dunit <> nil => unit <> nil ),
+
+				isValidAnnotations(stype.annotations)
+			}
+			union
+			(
+				let mk_(kmin, kmax) = minMaxKind(kindOf(stype)) in
+				{
+					max <> nil =>
+						--@OnFail(1152, "2.4.4 max %s is not a valid value of this type", max)
+						( max <= kmax and max >= kmin ),
+
+					min <> nil =>
+						--@OnFail(1153, "2.4.4 min %s is not a valid value of this type", min)
+						( min <= kmax and min >= kmin )
+				}
+			)
+			= {true},
+
+			mk_Int64Type (-, -, -, -, min, max, -),
+			mk_Int32Type (-, -, -, -, min, max, -),
+			mk_Int16Type (-, -, -, -, min, max, -),
+			mk_Int8Type  (-, -, -, -, min, max, -),
+			mk_UInt64Type(-, -, -, -, min, max, -),
+			mk_UInt32Type(-, -, -, -, min, max, -),
+			mk_UInt16Type(-, -, -, -, min, max, -),
+			mk_UInt8Type (-, -, -, -, min, max, -) ->
+			{
+				-- @OnFail(1154, "2.4.4 Type %s, Integer max %s not >= min %s", stype.name, max, min)
+				( max <> nil and min <> nil => max >= min ),
+
+				isValidAnnotations(stype.annotations)
+			}
+			union
+			(
+				let mk_(kmin, kmax) = minMaxKind(kindOf(stype)) in
+				{
+					max <> nil =>
+						--@OnFail(1155, "2.4.4 max %s is not a valid value of this type", max)
+						( max <= kmax and max >= kmin ),
+
+					min <> nil =>
+						--@OnFail(1156, "2.4.4 min %s is not a valid value of this type", min)
+						( min <= kmax and min >= kmin )
+				}
+			)
+			= {true},
+
+			-- Items of an enumeration as a sequence of "name" and "value" pairs. The
+			-- values can be any integer number, but must be unique within the same
+			-- enumeration (in order that the mapping between "name" and "value" is
+			-- bijective). An Enumeration element must have at least one Item.
+
+			mk_EnumerationType(-, -, -, -, min, max, -, items) ->
+			{
+				-- @OnFail(1157, "2.4.4 Type %s, Enumeration item name/values do not form a bijection", stype.name)
+				(
+					card { i.name | i in seq items } = len items
+					and	card { i.value | i in seq items } = len items
+				),
+
+				isValidAnnotations(stype.annotations)
+			}
+			union
+			(
+				let mk_(kmin, kmax) = minMaxKind(<Int64>) in	-- xs:long is Int64
+				{
+					max <> nil =>
+						--@OnFail(1158, "2.4.4 max %s is not a valid value for Enumerations", max)
+						( max <= kmax and max >= kmin ),
+
+					min <> nil =>
+						--@OnFail(1159, "2.4.4 min %s is not a valid value for Enumerations", min)
+						( min <= kmax and min >= kmin )
+				}
+			)
+			= {true},
+
+			mk_ClockType(-, -, -, -, -, intervalVariability, -, -,
+				supportsFraction, resolution, intervalCounter, shiftCounter, -) ->
+				let periodic = intervalVariability in set {<constant>, <fixed>, <tunable>} in
+				{
+					--@OnFail(1160, "2.4.4 resolution can only be used with periodic clocks")
+					( resolution <> nil => periodic ),
+
+					--@OnFail(1161, "2.4.4 Periodic clock with supportsFraction and intervalCounter must define resolution")
+					( periodic and supportsFraction = true and intervalCounter <> nil => resolution <> nil  ),
+
+					--@OnFail(1162, "2.4.4 intervalCounter must be >0")
+					( intervalCounter <> nil => intervalCounter > 0 ),
+
+					--@OnFail(1163, "2.4.4 Cannot use intervalCounter unless periodic and supportsFraction")
+					( intervalCounter <> nil => supportsFraction = true and periodic ),
+
+					--@OnFail(1164, "2.4.4 shiftCounter requires an intervalCounter")
+					( shiftCounter <> nil => intervalCounter <> nil )
+				}
+				= {true},
+
+			others -> true		-- String, Boolean
+		end;
+
+	isValidTypeDefinitions: [seq of VariableType] +> bool
+	isValidTypeDefinitions(defs) ==
+		defs <> nil =>
+			{
+				/* @OnFail(1165, "2.4.4 TypeDefinitions names are not unique: %s",
+					{ a.name | a, b in seq defs & a <> b and a.name = b.name }) */
+				( card { stype.name | stype in seq defs } = len defs )
+			}
+			union
+			{
+				-- @OnFail(1166, "2.4.4 TypeDefinition %s invalid at %s", stype.name, loc2str(stype.location))
+				( isValidType(stype) )
+
+				| stype in seq defs
+			} = {true};
+

@@ -1,0 +1,125 @@
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
+
+/**
+ * 2.5 Build Configuration
+ */
+functions
+	isValidFMIBuildDescription: FmiBuildDescription +> bool
+	isValidFMIBuildDescription(desc) ==
+	{
+		-- @OnFail(1050, "2.5 Invalid BuildConfiguration at %s", loc2str(bc.location))
+		( isValidBuildConfiguration(bc) ) | bc in seq desc.buildConfiguration
+	}
+	union
+	{
+		isValidAnnotations(desc.annotations)
+	} = {true};
+
+	isValidBuildConfiguration: BuildConfiguration +> bool
+	isValidBuildConfiguration(bc) ==
+	{
+		-- @OnFail(1051, "2.5 Invalid SourceFileSet at %s", loc2str(sfs.location))
+		( isValidSourceFileSet(sfs) ) | sfs in seq nilSeq[SourceFileSet](bc.sourceFileSet)
+	}
+	union
+	{
+		-- @OnFail(1052, "2.5 Invalid Library at %s", loc2str(lib.location))
+		( isValidLibrary(lib) ) | lib in seq nilSeq[Library](bc.library)
+	}
+	union
+	{
+		isValidAnnotations(bc.annotations)
+	} = {true};
+
+	isValidSourceFileSet: SourceFileSet +> bool
+	isValidSourceFileSet(sfs) ==
+	{
+		-- @OnFail(1053, "2.5 Compiler options set without compiler at %s", loc2str(sfs.location))
+		( sfs.compilerOptions <> nil => sfs.compiler <> nil ),
+		-- @OnFail(1054, "2.5 Invalid SourceFiles at %s", loc2str(sfs.location))
+		( isValidSourceFiles(sfs.sourceFile) ),
+		-- @OnFail(1055, "2.5 Invalid PreprocessorDefinitions at %s", loc2str(sfs.location))
+		( isValidPreprocessorDefinitions(sfs.preprocessorDefinition) ),
+		-- @OnFail(1056, "2.5 Invalid IncludeDirectories at %s", loc2str(sfs.location))
+		( isValidIncludeDirectories(sfs.includeDirectory) ),
+
+		isValidAnnotations(sfs.annotations)
+	} = {true};
+
+	isValidSourceFiles: seq1 of SourceFile +> bool
+	isValidSourceFiles(files) ==
+		{
+			let names = [ sf.name | sf in seq files ] in
+				/* @OnFail(1057, "2.5 SourceFileSet has duplicate names: %s",
+					{ files(a) | a, b in set inds names & a <> b and files(a) = files(b) })
+				*/
+				( card elems names = len names )
+		}
+		union
+		{
+			isValidAnnotations(sf.annotations) | sf in seq files
+		}
+		= {true};
+
+	isValidPreprocessorDefinitions: [seq1 of PreprocessorDefinition] +> bool
+	isValidPreprocessorDefinitions(defs) ==
+		defs <> nil =>
+		{
+			let names = [ d.name | d in seq defs ] in
+				/* @OnFail(1058, "2.5 PreprocessorDefinitions has duplicate names: %s",
+					{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
+				 */
+				( card elems names = len names )
+		}
+		union
+		{
+			isValidAnnotations(d.annotations) | d in seq defs
+		}
+		= {true};
+
+	isValidIncludeDirectories: [seq1 of IncludeDirectory] +> bool
+	isValidIncludeDirectories(incs) ==
+		incs <> nil =>
+		{
+			let names = [ d.name | d in seq incs ] in
+				/* @OnFail(1059, "2.5 IncludeDirectories has duplicate names: %s",
+					{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
+				 */
+				( card elems names = len names )
+		}
+		union
+		{
+			isValidAnnotations(inc.annotations) | inc in seq incs
+		}
+		= {true};
+
+	isValidLibrary: Library +> bool
+	isValidLibrary(lib) ==
+		isValidAnnotations(lib.annotations);

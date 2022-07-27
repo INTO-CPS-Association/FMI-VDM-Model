@@ -6,39 +6,40 @@ values
     mk_FmiModelDescription
     (
         mk_Location("ModelExchangeFMU.xml", 9),
-        "3.0-beta.2",
-        "MyLibrary.SpringMassDamper",
-        "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",
-        "Rotational Spring Mass Damper System",
+        "3.0-beta.4",  -- fmiVersion
+        "MyLibrary.SpringMassDamper",  -- modelName
+        "{8c4e810f-3df3-4a00-8276-176fa3c9f9e0}",  -- instantiationToken
+        "Rotational Spring Mass Damper System",  -- description
         nil,  -- author
-        "1.0",
+        "1.0",  -- version
         nil,  -- copyright
         nil,  -- license
         nil,  -- generationTool
-        "2011-09-23T16:57:33Z",
-        <structured>,
+        "2011-09-23T16:57:33Z",  -- generationDateAndTime
+        <structured>,  -- variableNamingConvention
         mk_ModelExchange
         (
             mk_Location("ModelExchangeFMU.xml", 12),
-            "MyLibrary_SpringMassDamper",
+            "MyLibrary_SpringMassDamper",  -- modelIdentifier
             nil,  -- needsExecutionTool
             nil,  -- canBeInstantiatedOnlyOncePerProcess
-            true,
+            true,  -- canGetAndSetFMUState
             nil,  -- canSerializeFMUState
             nil,  -- providesDirectionalDerivatives
             nil,  -- providesAdjointDerivatives
-            true,
-            nil,  -- completedIntegratorStepNotNeeded
+            true,  -- providesPerElementDependencies
+            nil,  -- any
+            nil,  -- needsCompletedIntegratorStep
+            nil,  -- providesEvaluateDiscreteStates
             nil   -- annotations
         ),
         nil,  -- coSimulation
         nil,  -- scheduledExecution
-        -- unitDefinitions
         [
             mk_Unit
             (
                 mk_Location("ModelExchangeFMU.xml", 14),
-                "rad",
+                "rad",  -- name
                 mk_BaseUnit
                 (
                     mk_Location("ModelExchangeFMU.xml", 15),
@@ -49,7 +50,7 @@ values
                     nil,  -- k
                     nil,  -- mol
                     nil,  -- cd
-                    1,
+                    1,  -- rad
                     nil,  -- factor
                     nil   -- offset
                 ),
@@ -58,8 +59,8 @@ values
                     mk_DisplayUnit
                     (
                         mk_Location("ModelExchangeFMU.xml", 16),
-                        "deg",
-                        57.2957795130823,
+                        "deg",  -- name
+                        57.2957795130823,  -- factor
                         nil,  -- offset
                         nil,  -- inverse
                         nil   -- annotations
@@ -70,18 +71,18 @@ values
             mk_Unit
             (
                 mk_Location("ModelExchangeFMU.xml", 18),
-                "rad/s",
+                "rad/s",  -- name
                 mk_BaseUnit
                 (
                     mk_Location("ModelExchangeFMU.xml", 19),
                     nil,  -- kg
                     nil,  -- m
-                    -1,
+                    -1,  -- s
                     nil,  -- a
                     nil,  -- k
                     nil,  -- mol
                     nil,  -- cd
-                    1,
+                    1,  -- rad
                     nil,  -- factor
                     nil   -- offset
                 ),
@@ -91,12 +92,12 @@ values
             mk_Unit
             (
                 mk_Location("ModelExchangeFMU.xml", 21),
-                "kg.m2",
+                "kg.m2",  -- name
                 mk_BaseUnit
                 (
                     mk_Location("ModelExchangeFMU.xml", 22),
-                    1,
-                    2,
+                    1,  -- kg
+                    2,  -- m
                     nil,  -- s
                     nil,  -- a
                     nil,  -- k
@@ -112,13 +113,13 @@ values
             mk_Unit
             (
                 mk_Location("ModelExchangeFMU.xml", 24),
-                "N.m",
+                "N.m",  -- name
                 mk_BaseUnit
                 (
                     mk_Location("ModelExchangeFMU.xml", 25),
-                    1,
-                    2,
-                    -2,
+                    1,  -- kg
+                    2,  -- m
+                    -2,  -- s
                     nil,  -- a
                     nil,  -- k
                     nil,  -- mol
@@ -131,19 +132,18 @@ values
                 nil   -- annotations
             )
         ],
-        -- typeDefinitions
         [
             mk_Float64Type
             (
                 mk_Location("ModelExchangeFMU.xml", 29),
-                "Modelica.Units.SI.Inertia",
+                "Modelica.Units.SI.Inertia",  -- name
                 nil,  -- description
-                "MomentOfInertia",
-                "kg.m2",
+                "MomentOfInertia",  -- quantity
+                "kg.m2",  -- unit
                 nil,  -- displayUnit
                 nil,  -- relativeQuantity
                 nil,  -- unbounded
-                0.0,
+                0.0,  -- min
                 nil,  -- max
                 nil,  -- nominal
                 nil   -- annotations
@@ -151,10 +151,10 @@ values
             mk_Float64Type
             (
                 mk_Location("ModelExchangeFMU.xml", 30),
-                "Modelica.Units.SI.Torque",
+                "Modelica.Units.SI.Torque",  -- name
                 nil,  -- description
-                "Torque",
-                "N.m",
+                "Torque",  -- quantity
+                "N.m",  -- unit
                 nil,  -- displayUnit
                 nil,  -- relativeQuantity
                 nil,  -- unbounded
@@ -166,10 +166,10 @@ values
             mk_Float64Type
             (
                 mk_Location("ModelExchangeFMU.xml", 31),
-                "Modelica.Units.SI.AngularVelocity",
+                "Modelica.Units.SI.AngularVelocity",  -- name
                 nil,  -- description
-                "AngularVelocity",
-                "rad/s",
+                "AngularVelocity",  -- quantity
+                "rad/s",  -- unit
                 nil,  -- displayUnit
                 nil,  -- relativeQuantity
                 nil,  -- unbounded
@@ -181,10 +181,10 @@ values
             mk_Float64Type
             (
                 mk_Location("ModelExchangeFMU.xml", 32),
-                "Modelica.Units.SI.Angle",
+                "Modelica.Units.SI.Angle",  -- name
                 nil,  -- description
-                "Angle",
-                "rad",
+                "Angle",  -- quantity
+                "rad",  -- unit
                 nil,  -- displayUnit
                 nil,  -- relativeQuantity
                 nil,  -- unbounded
@@ -194,47 +194,45 @@ values
                 nil   -- annotations
             )
         ],
-        -- logCategories
         [
             mk_Category
             (
                 mk_Location("ModelExchangeFMU.xml", 35),
-                "Full",
-                "Full error messages",
+                "Full",  -- name
+                "Full error messages",  -- description
                 nil   -- annotations
             ),
             mk_Category
             (
                 mk_Location("ModelExchangeFMU.xml", 36),
-                "Terse",
-                "Terse error messages",
+                "Terse",  -- name
+                "Terse error messages",  -- description
                 nil   -- annotations
             )
         ],
         mk_DefaultExperiment
         (
             mk_Location("ModelExchangeFMU.xml", 38),
-            0.0,
-            3.0,
-            0.0001,
+            0.0,  -- startTime
+            3.0,  -- stopTime
+            0.0001,  -- tolerance
             nil,  -- stepSize
             nil   -- annotations
         ),
-        -- modelVariables
         [
             mk_Float64
             (
                 mk_Location("ModelExchangeFMU.xml", 42),
-                "inertia1.J",
-                1073741824,
-                "Moment of load inertia",
-                <structuralParameter>,
-                <fixed>,
+                "inertia1.J",  -- name
+                1073741824,  -- valueReference
+                "Moment of load inertia",  -- description
+                <structuralParameter>,  -- causality
+                <fixed>,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
-                "Modelica.Units.SI.Inertia",
+                "Modelica.Units.SI.Inertia",  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
@@ -250,23 +248,23 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
             (
                 mk_Location("ModelExchangeFMU.xml", 45),
-                "torque.tau",
-                536870912,
-                "Accelerating torque acting at flange (= -flange.tau)",
-                <input>,
+                "torque.tau",  -- name
+                536870912,  -- valueReference
+                "Accelerating torque acting at flange (= -flange.tau)",  -- description
+                <input>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
-                "Modelica.Units.SI.Torque",
+                "Modelica.Units.SI.Torque",  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
@@ -282,23 +280,23 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
             (
                 mk_Location("ModelExchangeFMU.xml", 48),
-                "inertia1.phi",
-                805306368,
-                "Absolute rotation angle of component",
-                <output>,
+                "inertia1.phi",  -- name
+                805306368,  -- valueReference
+                "Absolute rotation angle of component",  -- description
+                <output>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
-                "Modelica.Units.SI.Angle",
+                "Modelica.Units.SI.Angle",  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
@@ -311,23 +309,23 @@ values
                 nil,  -- start
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
             (
                 mk_Location("ModelExchangeFMU.xml", 51),
-                "inertia1.w",
-                805306369,
-                "Absolute angular velocity of component (= der(phi))",
-                <output>,
+                "inertia1.w",  -- name
+                805306369,  -- valueReference
+                "Absolute angular velocity of component (= der(phi))",  -- description
+                <output>,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
-                "Modelica.Units.SI.AngularVelocity",
+                "Modelica.Units.SI.AngularVelocity",  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
@@ -340,24 +338,24 @@ values
                 nil,  -- start
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
             (
                 mk_Location("ModelExchangeFMU.xml", 52),
-                "x[1]",
-                0,
+                "x[1]",  -- name
+                0,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -372,24 +370,24 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
             (
                 mk_Location("ModelExchangeFMU.xml", 53),
-                "x[2]",
-                1,
+                "x[2]",  -- name
+                1,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -404,22 +402,22 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
             (
                 mk_Location("ModelExchangeFMU.xml", 54),
-                "der(x[1])",
-                2,
+                "der(x[1])",  -- name
+                2,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
@@ -431,24 +429,24 @@ values
                 nil,  -- max
                 nil,  -- nominal
                 nil,  -- start
-                0,
+                0,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Float64
             (
                 mk_Location("ModelExchangeFMU.xml", 55),
-                "der(x[2])",
-                3,
+                "der(x[2])",  -- name
+                3,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
                 nil,  -- initial
                 nil,  -- quantity
@@ -460,26 +458,26 @@ values
                 nil,  -- max
                 nil,  -- nominal
                 nil,  -- start
-                1,
+                1,  -- derivative
                 nil,  -- reinit
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             ),
             mk_Int64
             (
                 mk_Location("ModelExchangeFMU.xml", 56),
-                "Int64",
-                99,
+                "Int64",  -- name
+                99,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -487,8 +485,8 @@ values
                 [
                     123
                 ],
-                nil,  -- dimension
                 nil,  -- annotations
+                nil,  -- dimension
                 nil   -- alias
             )
         ],
@@ -500,7 +498,7 @@ values
                 mk_Output
                 (
                     mk_Location("ModelExchangeFMU.xml", 59),
-                    805306368,
+                    805306368,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -508,7 +506,7 @@ values
                 mk_Output
                 (
                     mk_Location("ModelExchangeFMU.xml", 60),
-                    805306369,
+                    805306369,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -519,7 +517,7 @@ values
                 mk_ContinuousStateDerivative
                 (
                     mk_Location("ModelExchangeFMU.xml", 61),
-                    2,
+                    2,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -527,7 +525,7 @@ values
                 mk_ContinuousStateDerivative
                 (
                     mk_Location("ModelExchangeFMU.xml", 62),
-                    3,
+                    3,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations
@@ -539,7 +537,7 @@ values
                 mk_InitialUnknown
                 (
                     mk_Location("ModelExchangeFMU.xml", 63),
-                    2,
+                    2,  -- valueReference
                     -- dependencies
                     [
                         0,
@@ -551,7 +549,7 @@ values
                 mk_InitialUnknown
                 (
                     mk_Location("ModelExchangeFMU.xml", 64),
-                    3,
+                    3,  -- valueReference
                     -- dependencies
                     [
                         0,
@@ -566,7 +564,7 @@ values
                 mk_EventIndicator
                 (
                     mk_Location("ModelExchangeFMU.xml", 65),
-                    0,
+                    0,  -- valueReference
                     nil,  -- dependencies
                     nil,  -- dependenciesKind
                     nil   -- annotations

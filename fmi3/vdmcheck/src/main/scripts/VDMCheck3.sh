@@ -1,41 +1,40 @@
 #!/bin/bash
+##############################################################################
 #
-# This file is part of the INTO-CPS toolchain.
+#	Copyright (c) 2017-2022, INTO-CPS Association,
+#	c/o Professor Peter Gorm Larsen, Department of Engineering
+#	Finlandsgade 22, 8200 Aarhus N.
 #
-# Copyright (c) 2017-2019, INTO-CPS Association,
-# c/o Professor Peter Gorm Larsen, Department of Engineering
-# Finlandsgade 22, 8200 Aarhus N.
+#	This file is part of the INTO-CPS toolchain.
 #
-# All rights reserved.
+#	VDMCheck is free software: you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation, either version 3 of the License, or
+#	(at your option) any later version.
 #
-# THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
-# THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
-# ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
-# RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
-# VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+#	VDMCheck is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
 #
-# The INTO-CPS toolchain  and the INTO-CPS Association Public License are
-# obtained from the INTO-CPS Association, either from the above address, from
-# the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
-# GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+#	You should have received a copy of the GNU General Public License
+#	along with VDMCheck. If not, see <http://www.gnu.org/licenses/>.
+#	SPDX-License-Identifier: GPL-3.0-or-later
 #
-# This program is distributed WITHOUT ANY WARRANTY; without
-# even the implied warranty of  MERCHANTABILITY or FITNESS FOR
-# A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
-# BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
-# THE INTO-CPS ASSOCIATION.
-#
-# See the full INTO-CPS Association Public License conditions for more details.
+##############################################################################
 
 #
 # Process an FMI V3 FMU or XML file, and validate the XML structure using the VDM-SL model.
 #
 
-USAGE="Usage: VDMCheck3.sh [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
+USAGE="Usage: VDMCheck3.sh [-h <FMI Standard base URL>] [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
 
-while getopts ":v:x:s:" OPT
+while getopts ":h:v:x:s:" OPT
 do
     case "$OPT" in
+    	h)
+    		LINK=${OPTARG}
+    		;;
         v)
             SAVE=${OPTARG}
             ;;
@@ -54,6 +53,11 @@ shift "$((OPTIND-1))"
 if [ $# = 1 ]
 then
 	FILE=$1
+fi
+
+if [ -z "$LINK" ]
+then
+	LINK="https://fmi-standard.org/docs/3.0/"
 fi
 
 if [ "$INXML" -a "$FILE" ] || [ -z "$INXML" -a -z "$FILE" ]
@@ -83,7 +87,7 @@ VDM=/tmp/vdm$$.vdmsl
 
 trap "rm -f $XML_MD $XML_BD $XML_TI $XML_XM $INXML $VDM" EXIT
 
-case $(file -b --mime-type $FILE) in
+case $(file -b --mime-type "$FILE") in
 	application/zip)
 		if ! type unzip 2>/dev/null 1>&2
 		then
@@ -99,25 +103,37 @@ case $(file -b --mime-type $FILE) in
 		
 		TMPX=/tmp/temp$$.xml
 		
-		if unzip -p "$FILE" source/buildDescription.xml >$TMPX 2>/dev/null
+		if unzip -p "$FILE" sources/buildDescription.xml >$TMPX 2>/dev/null
 		then
 			cp $TMPX $XML_BD
 		else
-			rm -f $XML_BD
+			if unzip -p "$FILE" 'sources\\buildDescription.xml' >$TMPX 2>/dev/null
+			then
+				echo "WARNING: pathname sources\\buildDescription.xml contains backslashes"
+				cp $TMPX $XML_BD
+			else
+				rm -f $XML_BD
+			fi
 		fi
 		
-		if unzip -p "$FILE" icon/terminalsAndIcons.xml >$TMPX 2>/dev/null
+		if unzip -p "$FILE" terminalsAndIcons/terminalsAndIcons.xml >$TMPX 2>/dev/null
 		then
 			cp $TMPX $XML_TI
 		else
-			rm -f $XML_TI
+			if unzip -p "$FILE" 'terminalsAndIcons\\terminalsAndIcons.xml' >$TMPX 2>/dev/null
+			then
+				echo "WARNING: pathname terminalsAndIcons\\terminalsAndIcons.xml contains backslashes"
+				cp $TMPX $XML_TI
+			else
+				rm -f $XML_TI
+			fi
 		fi
 		
 		rm -f $TMPX $XML_XM
 	;;
 		
 	application/xml|text/xml)
-		cp $FILE $XML_XM
+		cp "$FILE" $XML_XM
 		rm -f $XML_MD
 		rm -f $XML_BD
 		rm -f $XML_TI
@@ -164,10 +180,17 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 		# Fix VDM filenames in location constants
 		BASE=$(basename $1)
 		sed -i -e "s+$BASE+$2+g" "$VDM"
+		
+		if [ -d model/Rules ]
+		then MODEL="model model/Rules/*.adoc"
+		else MODEL="model"
+		fi
 
-		java -Xmx1g -cp vdmj.jar:annotations.jar com.fujitsu.vdmj.VDMJ \
+		java -Xmx1g -Dvdmj.parser.merge_comments=true \
+			-cp vdmj.jar:annotations.jar com.fujitsu.vdmj.VDMJ \
 			-vdmsl -q -annotations -e "isValidFMIConfiguration($VAR)" \
-			model $VDM |
+			$MODEL $VDM |
+			sed -e "s+<FMI3_STANDARD>+$LINK+" |
 			awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'
 	)
 	
@@ -198,11 +221,11 @@ if ! check "$XML_MD" modelDescription.xml
 then EXIT=1
 fi
 
-if ! check "$XML_BD" source/buildDescription.xml
+if ! check "$XML_BD" sources/buildDescription.xml
 then EXIT=1
 fi
 
-if ! check "$XML_TI" icon/terminalsAndIcons.xml
+if ! check "$XML_TI" terminalsAndIcons/terminalsAndIcons.xml
 then EXIT=1
 fi
 

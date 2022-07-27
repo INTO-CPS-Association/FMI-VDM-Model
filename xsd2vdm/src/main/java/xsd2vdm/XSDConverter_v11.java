@@ -1,31 +1,26 @@
-/**
- * This file is part of the INTO-CPS toolchain.
+/******************************************************************************
  *
- * Copyright (c) 2017-2021, INTO-CPS Association,
- * c/o Professor Peter Gorm Larsen, Department of Engineering
- * Finlandsgade 22, 8200 Aarhus N.
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
  *
- * All rights reserved.
+ *	This file is part of the INTO-CPS toolchain.
  *
- * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
- * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
- * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
- * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *	xsd2vdm is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
- * obtained from the INTO-CPS Association, either from the above address, from
- * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
- * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *	xsd2vdm is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * This program is distributed WITHOUT ANY WARRANTY; without
- * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
- * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
- * THE INTO-CPS ASSOCIATION.
+ *	You should have received a copy of the GNU General Public License
+ *	along with xsd2vdm. If not, see <http://www.gnu.org/licenses/>.
+ *	SPDX-License-Identifier: GPL-3.0-or-later
  *
- * See the full INTO-CPS Association Public License conditions for more details.
- */
+ ******************************************************************************/
 
 package xsd2vdm;
 
@@ -130,7 +125,7 @@ public class XSDConverter_v11 extends XSDConverter
 		assert element.isType("xs:schema");
 		stack.push(element);
 		
-		setNamespaces(element);
+		setNamespaces(element);		// Sets targetPrefix
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -518,7 +513,7 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
-		RecordType result = new RecordType(stackAttr("name"), fields);
+		RecordType result = new RecordType(element.getPrefix(), stackAttr("name"), fields);
 		stack.pop();
 		return result;
 	}
@@ -722,7 +717,7 @@ public class XSDConverter_v11 extends XSDConverter
 					
 				default:
 					dumpStack("Unexpected xs:element ref type", ref);
-					record = new RecordType("?");
+					record = new RecordType("?", "?");
 					break;
 			}
 		}
@@ -738,7 +733,7 @@ public class XSDConverter_v11 extends XSDConverter
 				if (element.hasAttr("minOccurs") || element.hasAttr("maxOccurs"))
 				{
 					// Might be different to existing
-					RecordType modified = new RecordType(elementName, existing.getFields());
+					RecordType modified = new RecordType(element.getPrefix(), elementName, existing.getFields());
 					modified.setMinOccurs(element);
 					modified.setMaxOccurs(element);
 					return modified;
@@ -749,7 +744,7 @@ public class XSDConverter_v11 extends XSDConverter
 				}
 			}
 
-			record = new RecordType(typeName(elementName));
+			record = new RecordType(element.getPrefix(), typeName(elementName));
 			converted.put(elementName, record);
 			
 			if (element.hasAttr("type"))
@@ -894,7 +889,7 @@ public class XSDConverter_v11 extends XSDConverter
 						case "xs:all":
 						case "xs:sequence":
 						{
-							RecordType record = new RecordType(stackAttr("name"));
+							RecordType record = new RecordType(element.getPrefix(), stackAttr("name"));
 							
 							for (Field field: fields)
 							{
@@ -907,7 +902,7 @@ public class XSDConverter_v11 extends XSDConverter
 						
 						case "xs:choice":
 						{
-							UnionType union = new UnionType(stackAttr("name"));
+							UnionType union = new UnionType(element.getPrefix(), stackAttr("name"));
 							
 							for (Field field: fields)
 							{
@@ -1016,7 +1011,7 @@ public class XSDConverter_v11 extends XSDConverter
 		assert element.isType("xs:choice");
 		stack.push(element);
 		String name = element.getAttr("name");
-		UnionType union = new UnionType(name);
+		UnionType union = new UnionType(element.getPrefix(), name);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -1214,7 +1209,10 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		stack.pop();
-		Field field = new Field("any", "any", new BasicType("token"));
+		Type type = new BasicType("token");
+		type.setUse("optional");
+		type.setMaxOccurs("unbounded");
+		Field field = new Field("any", "any", type);
 		field.setIsAttribute(true);
 		return field;
 	}
@@ -1644,6 +1642,8 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
+		importNamespace(element);
+		
 		stack.pop();
 		return;
 	}
@@ -2000,7 +2000,7 @@ public class XSDConverter_v11 extends XSDConverter
 		}
 		
 		List<Field> results = new Vector<>();
-
+		
 		for (XSDElement child: element.getChildren())
 		{
 			switch (child.getType())
@@ -2034,9 +2034,39 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 		}
 		
-		if (!complex)
+		if (complex)
 		{
-			result = adjustField(result, facets);
+			if (result.getType() instanceof RecordType)
+			{
+				RecordType base = (RecordType)result.getType();
+				List<Field> combined = new Vector<>();
+				
+				for (Field f: base.getFields())
+				{
+					boolean override = false;
+					
+					for (Field rest: results)
+					{
+						if (f.getFieldName().equals(rest.getFieldName()))
+						{
+							override = true;	// restrict this one's value
+							break;
+						}
+					}
+					
+					if (!override)
+					{
+						combined.add(f);
+					}
+				}
+				
+				combined.addAll(results);	// add overrides
+				results = combined;
+			}
+		}
+		else
+		{
+			result = adjustField(element.getPrefix(), result, facets);
 			results.add(result);
 		}
 		
@@ -2109,7 +2139,7 @@ public class XSDConverter_v11 extends XSDConverter
 			return toField((UnionType)converted.get(unionName));
 		}
 		
-		UnionType union = new UnionType(unionName);
+		UnionType union = new UnionType(element.getPrefix(), unionName);
 
 		for (XSDElement child: element.getChildren())
 		{
@@ -2799,7 +2829,12 @@ public class XSDConverter_v11 extends XSDConverter
 	 */
 	private String fieldName(String fname)
 	{
-		fname = fname.replace(":", "_");	// for names like "xml:lang"
+		if (fname.contains("$"))	// prefix$name in records
+		{
+			fname = fname.substring(fname.lastIndexOf('$') + 1);
+		}
+		
+		fname = fname.replaceAll("\\.", "_");
 		String name = fname.substring(0, 1).toLowerCase() + fname.substring(1);
 		return (converted.containsKey(name)) ? name : name;
 	}
@@ -2807,8 +2842,9 @@ public class XSDConverter_v11 extends XSDConverter
 	/**
 	 * Adjust a field's type to account for the optionality, aggregation and
 	 * facets that are in scope.
+	 * @param prefix 
 	 */
-	private Field adjustField(Field field, List<Facet> facets)
+	private Field adjustField(String prefix, Field field, List<Facet> facets)
 	{
 		Type type = field.getFieldType();	// ie. optional/aggregated
 		
@@ -2829,7 +2865,7 @@ public class XSDConverter_v11 extends XSDConverter
 		if (!enums.isEmpty())
 		{
 			String typename = typeName(field.getFieldName());
-			UnionType union = new UnionType(typename);
+			UnionType union = new UnionType(prefix, typename);
 			
 			for (String e: enums)
 			{

@@ -1,1 +1,22 @@
+<<<<<<< HEAD
 /*.vdmsl
+=======
+/BuildConfiguration.vdmsl
+/CoSimulation.vdmsl
+/DefaultExperiment.vdmsl
+/FMI3Schema.vdmsl
+/FMIModelDescription.vdmsl
+/GraphicalRepresentation.vdmsl
+/LogCategories.vdmsl
+/Misc.vdmsl
+/ModelExchange.vdmsl
+/ModelStructure.vdmsl
+/ModelVariables.vdmsl
+/ScheduledExecution.vdmsl
+/Terminals.vdmsl
+/TypeDefinitions.vdmsl
+/UnitDefinitions.vdmsl
+/Validation.vdmsl
+/VariableNaming.vdmsl
+/Annotations.vdmsl
+>>>>>>> refs/heads/development

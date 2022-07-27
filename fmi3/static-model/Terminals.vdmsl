@@ -1,0 +1,90 @@
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
+
+/**
+ * 2.4.9 Definition of Terminals
+ */
+functions
+	isValidFMITerminalsAndIcons: FmiTerminalsAndIcons +> bool
+	isValidFMITerminalsAndIcons(tandi) ==
+	{
+		isValidGraphicalRepresentation(tandi.graphicalRepresentation),
+		isValidTerminals(tandi.terminals),
+		isValidAnnotations(tandi.annotations)
+	}
+	= {true};
+
+	isValidTerminals: [seq1 of Terminal] +> bool
+	isValidTerminals(terminals) ==
+		terminals <> nil => dunion
+		{
+			{
+				-- @OnFail(1300, "2.4.9 Terminal invalid at %s", loc2str(t.location))
+				( isValidTerminal(t) ),
+
+				isValidTerminals(t.terminal),
+				isValidTerminalGraphicalRepresentation(t.terminalGraphicalRepresentation),
+				isValidAnnotations(t.annotations)
+			}
+
+			| t in seq terminals
+		}
+		= {true}
+	measure is not yet specified;
+
+	isValidTerminal: Terminal +> bool
+	isValidTerminal(term) ==
+		term.terminalMemberVariable <> nil =>
+		{
+			-- @OnFail(1301, "2.4.9 Terminal member variables not unique at %s", loc2str(term.location))
+			( card { v | v in seq term.terminalMemberVariable } = len term.terminalMemberVariable ),
+			
+			isValidAnnotations(term.annotations)
+		}
+		= {true};
+
+
+	isValidTerminalGraphicalRepresentation: [TerminalGraphicalRepresentation] +> bool
+	isValidTerminalGraphicalRepresentation(gt) ==
+		gt <> nil =>
+			{
+				-- @OnFail(1302, "2.4.9 Terminal area is not bottom left to top right at %s", loc2str(gt.location))
+				( gt.x1 < gt.x2 and gt.y1 < gt.y2 ),
+
+				-- @OnFail(1303, "2.4.9 Colour attributes must be octets (<=255) at %s", loc2str(gt.location))
+				( gt.defaultConnectionColor <> nil =>
+					forall c in seq gt.defaultConnectionColor & c <= 255 ),
+
+				-- @OnFail(1304, "2.4.9 defaultConnectionStrokeSize must be >0 at %s", loc2str(gt.location))
+				( gt.defaultConnectionStrokeSize <> nil =>
+					gt.defaultConnectionStrokeSize > 0 ),
+
+				isValidAnnotations(gt.annotations)
+			}
+			= {true};

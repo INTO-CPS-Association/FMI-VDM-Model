@@ -1,0 +1,36 @@
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
+functions
+// {vdm}
+endif::[]
+
+==== A.{section}.{counter:subsection} CoSimulation Rules
+:!typerule:
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCSModelIdentifier
+[[validCSModelIdentifier]]
+// {vdm}
+----
+validCSModelIdentifier: CoSimulation +> bool
+validCSModelIdentifier(cs) ==
+	-- @OnFail("%NAME: %s not valid C variable name at %s", cs.modelIdentifier, loc2str(cs.location))
+	( validIdentifier(cs.modelIdentifier) );
+----
+// {vdm}
+- See <<modelIdentifier>>.
+- See <<header-files-and-naming-of-functions>>.
+
+// This adds the docrefs for VDM only
+ifdef::hidden[]
+// {vdm}
+values
+	CoSimulation_refs : ReferenceMap =
+	{
+		"validCSModelIdentifier" |->
+		[
+			"<FMI3_STANDARD>#modelIdentifier",
+			"<FMI3_STANDARD>#header-files-and-naming-of-functions"
+		]
+	};
+// {vdm}
+endif::[]

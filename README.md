@@ -26,6 +26,10 @@ General projects:
 
 The FMI\{2,3\} static semantic models and the FMI\{2,3\} VDM conversion tools are packaged in the release to create stand-alone tools for verifying FMU files, called **VDMCheck\{2,3\}**. These can be used to check existing FMI version 2 or 3 FMU files against the standard; a pure Java version of each tool is available, which does not depend on the bash shell (eg. for use on Windows).
 
+## Licensing
+
+The VDMCheck tools are issued under a GPLv3 licence. The VDM models sources themselves are issued under an MIT licence. Licence headers and text are included with the package.
+
 ## Installation
 
 To install the VDMCheck package, unzip the distribution ZIP (the top level contains a folder called `vdmcheck-<version>`). Add the top level folder to your PATH so that the script within is available.

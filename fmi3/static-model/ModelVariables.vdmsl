@@ -1,0 +1,795 @@
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
+
+/**
+ * 2.4.7 Definition of Model Variables (ModelVariables)
+ */
+types
+	Variable =
+		Float64 | Float32 |
+		Int64 | Int32 | Int16 | Int8 |
+		UInt64 | UInt32 | UInt16 | UInt8 |
+		Boolean | String | Binary | Enumeration | Clock;
+
+	-- Possible type for a Variable
+	FloatKind = <Float64> | <Float32>;
+	IntegerKind = <Int64> | <Int32> | <Int16> | <Int8> | <UInt64> | <UInt32> | <UInt16> | <UInt8>;
+	Kind = FloatKind | IntegerKind | <Boolean> | <String> | <Binary> | <Enumeration> | <Clock>;
+
+functions
+	/**
+	 * Turn a Variable into a Kind.
+	 */
+	kindOf: Variable | VariableType +> Kind
+	kindOf(sv) ==
+		if is_(sv, Float32) then <Float32>
+		else if is_(sv, Float64) then <Float64>
+		else if is_(sv, Int8) then <Int8>
+		else if is_(sv, UInt8) then  <UInt8>
+		else if is_(sv, Int16) then<Int16>
+		else if is_(sv, UInt16) then <UInt16>
+		else if is_(sv, Int32) then <Int32>
+		else if is_(sv, UInt32) then <UInt32>
+		else if is_(sv, Int64) then <Int64>
+		else if is_(sv, UInt64) then <UInt64>
+		else if is_(sv, Boolean) then <Boolean>
+		else if is_(sv, String) then <String>
+		else if is_(sv, Binary) then <Binary>
+		else if is_(sv, Enumeration) then <Enumeration>
+		else if is_(sv, Clock) then <Clock>
+
+		else if is_(sv, Float32Type) then <Float32>
+		else if is_(sv, Float64Type) then <Float64>
+		else if is_(sv, Int8Type) then <Int8>
+		else if is_(sv, UInt8Type) then  <UInt8>
+		else if is_(sv, Int16Type) then<Int16>
+		else if is_(sv, UInt16Type) then <UInt16>
+		else if is_(sv, Int32Type) then <Int32>
+		else if is_(sv, UInt32Type) then <UInt32>
+		else if is_(sv, Int64Type) then <Int64>
+		else if is_(sv, UInt64Type) then <UInt64>
+		else if is_(sv, BooleanType) then <Boolean>
+		else if is_(sv, StringType) then <String>
+		else if is_(sv, BinaryType) then <Binary>
+		else if is_(sv, EnumerationType) then <Enumeration>
+		else if is_(sv, ClockType) then <Clock>
+
+		else undefined;
+
+	/**
+	 * Ordering for comparison of Variability values.
+	 */
+	orderOf: Variability +> fmi3ValueReference
+	orderOf(value) ==
+		cases value:
+			<constant>   -> 1,
+			<fixed>      -> 2,
+			<tunable>    -> 3,
+			<discrete>   -> 4,
+			<continuous> -> 5
+		end;
+
+	/**
+	 * Lookup a valueReference in the effective variable list.
+	 */
+	lookup: seq1 of Variable * fmi3ValueReference +> [Variable]
+	lookup(svs, vr) ==
+		let found = { v | v in seq svs & v.valueReference = vr } in
+			if found = {}
+			then nil
+			else let {v} union - = found in v;	-- Pick an alias
+
+	/**
+	 * Invariant helper for min/max/start checks on Real, Integer and Enumeration.
+	 */
+	isInRange[@T]: [@T] * [@T] * [seq1 of @T] * (Variable | VariableType) * [Initial] +> bool
+	isInRange(min, max, start, kind, initial) ==
+		let mk_(kmin, kmax) = minMaxKind(kindOf(kind)) in
+		{
+			max <> nil =>
+				--@OnFail(1450, "2.4.7 max %s is not a valid %s", max, kind)
+				( max <= kmax and max >= kmin ),
+
+			min <> nil =>
+				--@OnFail(1451, "2.4.7 min %s is not a valid %s", min, kind)
+				( min <= kmax and min >= kmin ),
+
+			start <> nil =>
+				--@OnFail(1452, "2.4.7 start %s is not a valid %s", start, kind)
+				( forall s in seq start & s <= kmax and s >= kmin ),
+
+			max <> nil and min <> nil =>
+				--@OnFail(1453, "2.4.7 min %s is not <= max %s", min, max)
+				( max >= min ),
+
+			start <> nil =>
+				--@OnFail(1454, "2.4.7 start %s is not within min %s/max %s", start, min, max)
+				( (min <> nil => forall s in seq start & min <= s) and
+				  (max <> nil => forall s in seq start & max >= s) ),
+
+			start = nil and initial <> <calculated> =>
+				--@OnFail(1455, "2.4.7 Warning: implicit start of 0 is not within min %s/max %s", min, max)
+				( (min <> nil => min <= 0) and
+				  (max <> nil => max >= 0) ) or true	-- NOTE warning
+		} = {true}
+	pre is_(min, [real]) and is_(max, [real]) and is_(start, [seq1 of real]);	-- ie. numerics
+
+	/**
+	 * Return the MININT-MAXINT values for a particular numeric type
+	 */
+	minMaxKind: Kind +> real * real
+	minMaxKind(kind) ==
+		cases kind:
+			<Float32>		-> mk_(-3.402823466385288598e+38, 3.402823466385288598e+38),
+			<Float64>		-> mk_(-1.797693134862315708e+308, 1.797693134862315708e+308),
+			<Int8>			-> mk_(-128, 127),
+			<UInt8>			-> mk_(0, 255),
+			<Int16>			-> mk_(-32768, 32767),
+			<UInt16>		-> mk_(0, 65535),
+			<Int32>			-> mk_(-2147483648, 2147483647),
+			<UInt32>		-> mk_(0, 4294967295),
+			<Int64>			-> mk_(-9.223372036854775808e+18, 9.223372036854775807e+18),
+			<UInt64>		-> mk_(0, 1.8446744073709551615e+19),
+			<Enumeration>	-> mk_(-9.223372036854775808e+18, 9.223372036854775807e+18), -- xs:long = Int64
+			others			-> undefined
+		end;
+
+	/**
+	 * Check whether a type is a "real" type.
+	 */
+	isReal: Variable +> bool
+	isReal(var) ==
+		is_Float64(var) or is_Float32(var);
+
+	/**
+	 * Check whether a type is an "integer" type.
+	 */
+	isInteger: Variable +> bool
+	isInteger(var) ==
+		is_Int64(var) or is_Int32(var) or is_Int16(var) or is_Int8(var) or
+		is_UInt64(var) or is_UInt32(var) or is_UInt16(var) or is_UInt8(var);
+
+	/**
+	 * Verify a sequence of raw (NOT effective) Variables.
+	 */
+	isValidModelVariables: seq1 of Variable +> bool
+	isValidModelVariables(svs) ==
+		{
+			/* @OnFail(1456, "2.4.7 Variables define more than one independent variable: %s",
+				{ sv.name | sv in seq svs & sv.causality = <independent> }) */
+			( card { sv | sv in seq svs & sv.causality = <independent> } <= 1 ),
+
+			/* @OnFail(1457, "2.4.7 Variable names are not unique: %s",
+				{ svs(a).name | a, b in set inds svs &
+					a <> b and svs(a).name = svs(b).name } ) */
+			( card { sv.name | sv in seq svs } = len svs ),
+
+			/* @OnFail(1458, "2.4.7 Variable previous fields are not unique: %s",
+				{ svs(a).name | a, b in set inds svs & not is_Clock(a) and not is_Clock(b) and
+					a <> b and svs(a).previous <> nil and svs(a).previous = svs(b).previous } ) */
+			( let plist =  [ sv.previous | sv in seq svs & not is_Clock(sv) and sv.previous <> nil ] in
+			  	card elems plist = len plist ),
+
+			isValidVariableDimension(svs)
+		}
+		union
+		{
+			-- @OnFail(1459, "2.4.7 Variable %s invalid at %s", sv.name, loc2str(sv.location))
+			( isValidVariableAttributes(sv) )
+
+			| sv in seq svs
+		}
+		union
+		{
+			isValidAnnotations(sv.annotations) | sv in seq svs
+		} = {true};
+
+	/**
+	 * Variable attribute rules, defined in 2.4.7.
+	 */
+	isValidVariableAttributes: Variable +> bool
+	isValidVariableAttributes(sv) ==
+		let eCausality   = effectiveCausality(sv.causality),
+			eVariability = effectiveVariability(sv),
+			eInitial     = effectiveInitial(sv, eCausality, eVariability)
+		in
+		{
+			/* @OnFail(1460, "2.4.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %s",
+				sv.name, eCausality, eVariability, eInitial, sv.start, loc2str(sv.location)) */
+			(
+				cases eCausality:
+					<structuralParameter> ->
+						eVariability in set {<fixed>, <tunable>}
+						and eInitial = <exact>,	-- (A)
+
+					<parameter> ->
+						eVariability in set {<fixed>, <tunable>}
+						and eInitial = <exact>,	-- (A)
+
+					<calculatedParameter> ->
+						eVariability in set {<fixed>, <tunable>}
+						and eInitial in set {<approx>, <calculated>},	-- (B)
+
+					<input> ->
+						(eVariability in set {<discrete>, <continuous>}
+						 -- and eInitial = nil
+						 and not is_Clock(sv) => sv.start <> nil),	-- (D)
+
+					<independent> ->
+						eVariability = <continuous>
+						and eInitial = nil		-- (D)
+						and sv.start = nil
+						-- @OnFail(1461, "2.4.7 Independent variable must be Float at %s", loc2str(sv.location))
+						and (is_Float64(sv) or is_Float32(sv)),
+
+					<output> ->
+						cases eVariability:
+							<constant> ->
+								eInitial in set {<exact>},	-- (A)
+
+							<discrete>,
+							<continuous> ->
+								eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
+
+							others -> false
+						end,
+
+					<local> ->
+						cases eVariability:
+							<constant> ->
+								eInitial = <exact>,	-- (A)
+
+							<fixed>,
+							<tunable> ->
+								eInitial in set { <calculated>, <approx> },	-- (B)
+
+							<discrete>,
+							<continuous> ->
+								eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
+
+							others -> false
+						end
+				end
+			),
+
+			/* @OnFail(1462, "2.4.7 Variable %s variability/causality %s/%s invalid at %s",
+				sv.name, eVariability, eCausality, loc2str(sv.location)) */
+			(
+				cases eVariability:
+					<constant> ->
+						eCausality in set {<output>, <local>},
+
+					<fixed>, <tunable> ->
+						eCausality in set {<structuralParameter>, <parameter>, <calculatedParameter>, <local>},
+
+					<discrete> ->
+						eCausality in set {<input>, <output>, <local>},
+
+					<continuous> ->
+						eCausality in set {<input>, <output>, <local>, <independent>}
+						-- @OnFail(1463, "2.4.7 Continuous variable must be Real at %s", loc2str(sv.location))
+						and (is_Float64(sv) or is_Float32(sv))
+				end
+			),
+
+			/* @OnFail(1464, "2.4.7 Variable %s initial/causality %s/%s invalid at %s",
+				sv.name, sv.initial, eCausality, loc2str(sv.location)) */
+			(
+				not is_Clock(sv) =>
+					sv.initial <> nil =>
+						eCausality <> <independent>
+			),
+
+			/* @OnFail(1465, "2.4.7 Variable %s initial/variability/start %s/%s/%s invalid at %s",
+				sv.name, eInitial, eVariability, sv.start, loc2str(sv.location)) */
+			(
+				cases eInitial:
+					<exact> ->
+						not is_Clock(sv) => sv.start <> nil,
+
+					<approx> ->
+						(not is_Clock(sv) => sv.start <> nil)
+						and eVariability <> <constant>,
+
+					<calculated> ->
+						(not is_Clock(sv) => sv.start = nil)
+						and eVariability <> <constant>,
+
+					nil ->		-- Note that eInitial can be nil
+						true	-- Tests on eInitial above are sufficient
+				end
+			)
+		} = {true};
+
+	/**
+	 * Check (effective) Clock attributes and references.
+	 */
+	isValidClockAttributes: Variable * seq1 of Variable +> bool
+	isValidClockAttributes(sv, svs) ==
+		{
+			sv.clocks <> nil =>
+				-- @OnFail(1466, "Clocked vars can only be discrete or tunable at %s", loc2str(sv.location))
+				( sv.variability = <discrete> or sv.variability = <tunable> ),
+
+			not is_Clock(sv) and sv.previous <> nil =>
+				let p = lookup(svs, sv.previous) in
+				{
+					-- @OnFail(1467, "Variable previous setting unknown at %s", loc2str(sv.location))
+					( p <> nil ),
+
+					-- @OnFail(1468, "Variable previous setting wrong kind at %s", loc2str(sv.location))
+					( kindOf(p) = kindOf(sv) )
+				} = {true}
+		}
+		union
+		{
+			let cvar = lookup(svs, cref) in
+				-- @OnFail(1469, "Clock reference %s not found at %s", cvar.valueReference, loc2str(sv.location))
+				( cvar <> nil )
+
+				-- @OnFail(1470, "Clock reference %s is not a Clock at %s", cvar.valueReference, loc2str(sv.location))
+				and ( is_(cvar, Clock) )
+
+			| cref in seq nilSeq[nat](sv.clocks)
+		} = {true};
+
+	/**
+	 * Check Dimension structures.
+	 */
+	isValidVariableDimension: [seq1 of Variable] +> bool
+	isValidVariableDimension(vars) ==
+		vars <> nil => dunion
+		{
+			{
+				-- @OnFail(1471, "2.4.7 Dimension of %s cannot define start and valueReference", v.name)
+				( v.dimension <> nil =>
+					forall dim in seq v.dimension &
+						dim.start = nil <=> dim.valueReference <> nil ),
+
+				-- @OnFail(1472, "2.4.7 Dimension of %s cannot reference itself", v.name)
+				( v.dimension <> nil =>
+					forall dim in seq v.dimension &
+						dim.valueReference <> nil =>
+							dim.valueReference <> v.valueReference ),
+
+				-- @OnFail(1473, "2.4.7 Dimension of %s, valueReference is not Integer, constant or structuralParameter, with start", v.name)
+				( v.dimension <> nil =>
+					forall dim in seq v.dimension &
+						dim.valueReference <> nil =>
+							exists r in seq vars &
+								isInteger(r) and
+								r.valueReference = dim.valueReference
+								and ( r.causality = <structuralParameter> or r.variability = <constant> )
+								and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
+
+				-- @OnFail(1474, "2.4.7 Structural parameter %s cannot have Dimension", v.name)
+				( v.dimension <> nil =>
+					v.causality <> <structuralParameter> )
+			}
+
+			| v in seq vars & not is_Clock(v)	-- Clocks have no dimensions
+		}
+		= {true};
+
+	/**
+	 * Vaidity checks that depend on inherited values from any declaredType - ie. passed
+	 * effective Variables.
+	 */
+	isValidEffectiveVariables: seq1 of Variable +> bool
+	isValidEffectiveVariables(svs) ==
+	{
+		-- @OnFail(1475, "2.4.7 Variable %s min/max/start/nominal or clocks invalid at %s", sv.name, loc2str(sv.location))
+		(
+			cases sv:
+				mk_Float64(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -),
+				mk_Float32(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, min, max, nominal, start, -, -, -, -, -) ->
+					isInRange[real](min, max, start, sv, sv.initial)
+					-- @OnFail(1476, "2.4.7 Real nominal must be >0.0 at %s", loc2str(sv.location))
+					and (nominal <> nil => nominal > 0.0),
+
+				mk_Int64 (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_Int32 (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_Int16 (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_Int8  (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_UInt64(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_UInt32(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_UInt16(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -),
+				mk_UInt8 (-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
+					isInRange[int](min, max, start, sv, sv.initial),
+
+				mk_Enumeration(-, -, -, -, -, -, -, -, -, -, -, -, -, min, max, start, -, -, -) ->
+					isInRange[int](min, max, start, sv, sv.initial),	-- TODO kind of enum?
+
+				mk_Binary(-, -, -, -, -, -, -, -, -, -, -, -, -, -, -, -, start, -) ->
+					-- @OnFail(1477, "2.4.7 Binary %s start is not hex-binary at %s", sv.name, loc2str(sv.location))
+					( start = nil or forall s in seq start &
+						forall c in seq s &
+							c in set elems "ABCDEFabcdef0123456789" ),
+
+				mk_Clock(-, -, -, -, -, -, -, -, -, -, -, intervalVariability, -, -,
+					supportsFraction, resolution, intervalCounter, shiftCounter, -, -) ->
+					let periodic = intervalVariability in set {<constant>, <fixed>, <tunable>} in
+					{
+						--@OnFail(1478, "2.4.4 resolution can only be used with periodic clocks")
+						( resolution <> nil => periodic ),
+
+						--@OnFail(1479, "2.4.4 Periodic clock with supportsFraction and intervalCounter must define resolution")
+						( periodic and supportsFraction = true and intervalCounter <> nil => resolution <> nil  ),
+
+						--@OnFail(1480, "2.4.4 intervalCounter must be >0")
+						( intervalCounter <> nil => intervalCounter > 0 ),
+
+						--@OnFail(1481, "2.4.4 Cannot use intervalCounter unless periodic and supportsFraction")
+						( intervalCounter <> nil => supportsFraction = true and periodic ),
+
+						--@OnFail(1482, "2.4.4 shiftCounter requires an intervalCounter")
+						( shiftCounter <> nil => intervalCounter <> nil )
+					}
+					= {true},
+
+
+				others -> true		-- String, Boolean, Clock
+			end
+		)
+
+		| sv in seq svs
+	}
+	union
+	{
+		-- @OnFail(1483, "2.4.7 Dimension of %s do not match start vector at %s", sv.name, loc2str(sv.location))
+		( not is_Clock(sv) =>
+			sv.start <> nil and len sv.start > 1 =>
+				let size = dimensionProduct(svs, sv.dimension) in
+					size > 0 => size = len sv.start )
+
+		| sv in seq svs
+	}
+	union dunion
+	{
+		{
+			{
+				-- @OnFail(1484, "2.4.7 Alias name %s duplicates variable at %s", alias.name, loc2str(alias.location))
+				( not exists v in seq svs & v.name = alias.name ),
+
+				-- @OnFail(1485, "2.4.7 Alias name %s duplicates alias at %s", alias.name, loc2str(alias.location))
+				( forall v in seq svs &
+					v.alias <> nil =>
+						not exists a in seq v.alias & a <> alias and a.name = alias.name ),
+
+				-- @OnFail(1486, "2.4.7 Alias name %s cannot have displayUnit at %s", alias.name, loc2str(alias.location))
+				( alias.displayUnit <> nil => isReal(sv) )
+			}
+			= {true}
+
+			| alias in seq sv.alias
+		}
+
+		| sv in seq svs & sv.alias <> nil
+	}
+	union
+	{
+		-- @OnFail(1487, "2.2.9 Variable %s invalid at %s", sv.name, loc2str(sv.location))
+		( isValidClockAttributes(sv, svs) )
+
+		| sv in seq svs
+	} = {true};
+
+
+	/**
+	 * Calculate the overall number of start values expected from dimension. If a variable is referenced,
+	 * and we do not know its value, we return 0.
+	 */
+	dimensionProduct: seq1 of Variable * [seq of Dimension] +> nat
+	dimensionProduct(svs, dims) ==
+		if dims = nil or dims = []
+		then 1
+		else dimensionize(svs, hd dims) * dimensionProduct(svs, tl dims)
+	measure if dims <> nil then len dims else 0;
+
+	dimensionize: seq1 of Variable * Dimension +> nat
+	dimensionize(svs, dim) ==
+		if dim.start <> nil
+		then dim.start
+		else if dim.valueReference = nil
+		then 0
+		else let s = lookup(svs, dim.valueReference) in
+			if s <> nil and s.start <> nil and len s.start > 0
+			then hd s.start
+			else 0;
+
+	/**
+	 * The default value for initial, defined by the (effective) values of causality and
+	 * variability, via the table on p48/49.
+	 */
+	effectiveInitial: Variable * Causality * Variability -> [Initial]
+	effectiveInitial(v, eCausality, eVariability) ==
+		if is_Clock(v)
+		then
+			cases eCausality:
+				<input> -> <exact>,
+				<output> -> <calculated>,
+				<local> -> <calculated>,
+				others -> nil
+			end
+		else let i = v.initial in
+			if i <> nil	then i
+		else cases eCausality:
+				<structuralParameter> ->
+					cases eVariability:
+						<fixed>, <tunable> -> <exact>,
+						others -> nil
+					end,
+
+				<parameter> ->
+					cases eVariability:
+						<fixed>, <tunable> -> <exact>,
+						others -> nil
+					end,
+
+				<calculatedParameter> ->
+					cases eVariability:
+						<fixed>, <tunable> -> <calculated>,
+						others -> nil
+					end,
+
+				<input> ->
+					cases eVariability:
+						<discrete>, <continuous> -> nil,
+						others -> nil
+					end,
+
+				<output> ->
+					cases eVariability:
+						<constant> -> <exact>,
+						<discrete>, <continuous> -> <calculated>,
+						others -> nil
+					end,
+
+				<local> ->
+					cases eVariability:
+						<constant> -> <exact>,
+						<fixed>, <tunable> -> <calculated>,
+						<discrete>, <continuous> -> <calculated>,
+						others -> nil
+					end,
+
+				<independent> ->
+					cases eVariability:
+						<continuous> -> nil,
+						others -> nil
+					end
+			end;
+
+	effectiveCausality: [Causality] -> Causality
+	effectiveCausality(c) ==
+		if c = nil
+		then <local>
+		else c;
+
+	effectiveVariability: Variable -> Variability
+	effectiveVariability(v) ==
+		if v.variability = nil
+		then if isReal(v) then <continuous> else <discrete>
+		else v.variability;
+
+	/**
+	 * Generate all of the effective Variables. Note that an effective "time"
+	 * variable is created if there are no independent variables defined.
+	 */
+	effectiveScalarVariables: FmiModelDescription +> seq1 of Variable
+	effectiveScalarVariables(model) ==
+		let evs =
+		[
+			effectiveVariable(sv, model.typeDefinitions)
+			| sv in seq model.modelVariables
+		]
+		in
+			if not exists esv in seq evs & esv.causality = <independent>
+			then evs ^
+				[
+					-- If no variable is defined as "independent", it is implicitly
+					-- present with name = "time" and unit = "s"
+
+					mk_Float64
+					(
+						mk_Location("<implicit variable>", 1),
+						"time",
+						let allvrs = { sv.valueReference | sv in seq evs } in
+							let vr in set {1, ..., len evs + 1} be st vr not in set allvrs in vr,
+						"Implicit independent time variable",
+						<independent>,
+						<continuous>,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil,
+						nil, nil,
+						nil, nil, nil, nil, nil,
+						nil, nil, nil,
+						nil
+					)
+				]
+			else evs;
+
+	/**
+	 * Generate the effective value of a Variable, accounting for fields inherited from
+	 * its declaredType.
+	 */
+	effectiveVariable: Variable * [seq of VariableType] +> Variable
+	effectiveVariable(v, typedefs) ==
+		let causality	= effectiveCausality(v.causality),
+			variability	= effectiveVariability(v),
+			initial		= effectiveInitial(v, causality, variability),
+			newv		= if is_Clock(v)
+							then
+								mu(v,
+									causality	|-> causality,
+									variability	|-> variability)
+							else
+								mu(v,
+									causality	|-> causality,
+									variability	|-> variability,
+									initial		|-> initial)
+		in
+		if v.declaredType = nil or typedefs = nil
+		then newv
+		else let dtypes = { td | td in seq typedefs & td.name = v.declaredType } in
+			cases dtypes:
+				{ dt } ->
+					cases dt:
+						mk_Float32Type(-, -, -, quantity, unit, dunit, relq, unbounded, min, max, nominal, -),
+						mk_Float64Type(-, -, -, quantity, unit, dunit, relq, unbounded, min, max, nominal, -) ->
+							if isReal(v) then
+								mu(newv,
+									quantity			|-> override[NormalizedString](v.quantity, quantity),
+									unit				|-> override[NormalizedString](v.unit, unit),
+									displayUnit			|-> override[NormalizedString](v.displayUnit, dunit),
+									relativeQuantity	|-> override[bool](v.relativeQuantity, relq),
+									unbounded			|-> override[bool](v.unbounded, unbounded),
+									min					|-> override[real](v.min, min),
+									max					|-> override[real](v.max, max),
+									nominal				|-> override[real](v.nominal, nominal)
+								)
+							else
+								newv,	-- Error reported elsewhere
+
+						mk_Int64Type(-, -, -, quantity, min, max, -),
+						mk_Int32Type(-, -, -, quantity, min, max, -),
+						mk_Int16Type(-, -, -, quantity, min, max, -),
+						mk_Int8Type(-, -, -, quantity, min, max, -),
+						mk_UInt64Type(-, -, -, quantity, min, max, -),
+						mk_UInt32Type(-, -, -, quantity, min, max, -),
+						mk_UInt16Type(-, -, -, quantity, min, max, -),
+						mk_UInt8Type(-, -, -, quantity, min, max, -) ->
+							if isInteger(v) then
+								mu(newv,
+									quantity	|-> override[NormalizedString](v.quantity, quantity),
+									min			|-> override[real](v.min, min),
+									max			|-> override[real](v.max, max)
+								)
+							else
+								newv,	-- Error reported elsewhere
+
+						mk_EnumerationType(-, -, -, quantity, min, max, -, -) ->
+							if is_Enumeration(v) then
+								mu(newv,
+									quantity	|-> override[NormalizedString](v.quantity, quantity),
+									min			|-> override[int](v.min, min),
+									max			|-> override[int](v.max, max)
+								)
+							else
+								newv,	-- Error reported elsewhere
+
+						mk_ClockType(-, -, -, canBeDeactivated,	priority, intervalVariability, intervalDecimal,
+									shiftDecimal, supportsFraction, resolution, intervalCounter,
+									shiftCounter, -) ->
+							mu(newv,
+								canBeDeactivated  	|-> override[bool](v.canBeDeactivated, canBeDeactivated),
+								priority          	|-> override[nat](v.priority, priority),
+								intervalVariability	|-> override[IntervalVariability](v.intervalVariability, intervalVariability),
+								intervalDecimal   	|-> override[real](v.intervalDecimal, intervalDecimal),
+								shiftDecimal      	|-> override[real](v.shiftDecimal, shiftDecimal),
+								supportsFraction  	|-> override[bool](v.supportsFraction, supportsFraction),
+								resolution        	|-> override[nat](v.resolution, resolution),
+								intervalCounter   	|-> override[nat](v.intervalCounter, intervalCounter),
+								shiftCounter		|-> override[nat](v.shiftCounter, shiftCounter)),
+
+						others ->
+							newv
+					end,
+
+				others -> newv		-- Duplicate or missing typedefs caught elsewhere
+			end;
+
+	/**
+	 * Helper to take an overriding non-nil value
+	 */
+	override[@T]: [@T] * [@T] +> [@T]
+	override(default, value) ==
+		if value <> nil then value else default;
+
+	/**
+	 * Test whether a Variable is settable with fmi2SetXXX.
+	 */
+	isSettable: Variable +> bool
+	isSettable(sv) ==
+		sv.variability <> <constant> and sv.initial in set { <exact>, <approx> }
+		or
+		sv.causality = <input>
+		or
+		sv.causality = <parameter> and sv.variability = <tunable>;
+
+	/**
+	 * Return the Variables from a list which are continuous-time states, defined to be
+	 * Real variables which are continuous and have a derivative.
+	 */
+	continuousTimeStates: seq of Variable -> set of Variable
+	continuousTimeStates(svs) ==
+		{ svs(i) | i in set inds svs & isContinuousTimeState(i, svs) };
+
+	/**
+	 * Test ith index variable as a continuous time state.
+	 */
+	isContinuousTimeState: nat1 * seq of Variable +> bool
+	isContinuousTimeState(i, svs) ==
+		isReal(svs(i))
+		and svs(i).variability = <continuous> 
+		and exists j in seq svs &
+			isReal(j) and j.derivative = svs(i).valueReference;
+
+	/**
+	 * Return the Variables from a list which are state derivatives, defined to be
+	 * variables which are the derivative of some other variable.
+	 */
+	stateDerivatives: seq of Variable -> set of Variable
+	stateDerivatives(svs) ==
+		{ sv | sv in seq svs & isStateDerivative(sv) };
+
+	/**
+	 * Test Variable as a state derivative.
+	 */
+	isStateDerivative: Variable +> bool
+	isStateDerivative(sv) ==
+		isReal(sv) and sv.derivative <> nil;
+
+	/**
+	 * Get derivative order of a variable.
+	 */
+	getDerivativeBase: fmi3ValueReference * seq of Variable +> nat * fmi3ValueReference
+	getDerivativeBase(vr, svs) ==
+		if not isReal(svs(vr)) or svs(vr).derivative = nil
+		then mk_(0, vr)
+		else let mk_(o, r) = getDerivativeBase(svs(vr).derivative, svs) in
+			mk_(o+1, r)
+	measure is not yet specified;

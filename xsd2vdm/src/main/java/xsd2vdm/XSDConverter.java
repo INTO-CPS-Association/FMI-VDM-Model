@@ -1,36 +1,30 @@
-/**
- * This file is part of the INTO-CPS toolchain.
+/******************************************************************************
  *
- * Copyright (c) 2017-2021, INTO-CPS Association,
- * c/o Professor Peter Gorm Larsen, Department of Engineering
- * Finlandsgade 22, 8200 Aarhus N.
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
  *
- * All rights reserved.
+ *	This file is part of the INTO-CPS toolchain.
  *
- * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
- * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
- * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
- * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *	xsd2vdm is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
- * obtained from the INTO-CPS Association, either from the above address, from
- * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
- * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *	xsd2vdm is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * This program is distributed WITHOUT ANY WARRANTY; without
- * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
- * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
- * THE INTO-CPS ASSOCIATION.
+ *	You should have received a copy of the GNU General Public License
+ *	along with xsd2vdm. If not, see <http://www.gnu.org/licenses/>.
+ *	SPDX-License-Identifier: GPL-3.0-or-later
  *
- * See the full INTO-CPS Association Public License conditions for more details.
- */
+ ******************************************************************************/
 
 package xsd2vdm;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -65,10 +59,9 @@ abstract public class XSDConverter
 	protected boolean suppressWarnings = false;
 	
 	/**
-	 * Set to the schema target namespace, if set.
+	 * Set to the schema namespaces.
 	 */
-	protected String targetNamespace = null;
-	protected Map<String, String> namespaces = new HashMap<String, String>();
+	protected Namespaces namespaces = new Namespaces();
 	protected String targetPrefix = null;
 
 	/**
@@ -104,34 +97,22 @@ abstract public class XSDConverter
 	protected void setNamespaces(XSDElement schema)
 	{
 		assert schema.getType().equals("xs:schema");
-		targetNamespace = null;
-		targetPrefix = "";
 		namespaces.clear();
-		Map<String, String> attributes = schema.getAttrs();
+		targetPrefix = namespaces.addNamespaces(schema.getAttrs());
+	}
+	
+	/**
+	 * Import new namespace data from import element.
+	 */
+	protected void importNamespace(XSDElement xsimport)
+	{
+		assert xsimport.getType().equals("xs:import");
+		Map<String, String> attributes = xsimport.getAttrs();
 		
-		for (String attr: attributes.keySet())
-		{
-			switch (attr)
-			{
-				case "targetNamespace":
-					targetNamespace = attributes.get(attr);
-					break;
-					
-				default:
-					if (attr.startsWith("xmlns:"))
-					{
-						String abbreviation = attr.substring(6);	// eg. "xs"
-						String namespace = attributes.get(attr);
-						namespaces.put(namespace, abbreviation);
-					}
-					break;	// ignore
-			}
-		}
+		String namespace = attributes.get("namespace");
+		String schemaLocation = attributes.get("schemaLocation");
 		
-		if (targetNamespace != null && namespaces.containsKey(targetNamespace))
-		{
-			targetPrefix = namespaces.get(targetNamespace);
-		}
+		namespaces.addNamespace(namespace, schemaLocation);
 	}
 	
 	/**
@@ -238,13 +219,13 @@ abstract public class XSDConverter
 	 */
 	protected XSDElement lookup(String name)
 	{
-		if (name.startsWith(targetPrefix + ":"))
-		{
-			return XSDElement.lookup(name.substring(targetPrefix.length() + 1));
-		}
-		else if (name.equals("xml:lang"))
+		if (name.equals("xml:lang"))
 		{
 			return XSDElement.XML_LANG;
+		}
+		else if (!name.contains(":") && !targetPrefix.isEmpty())
+		{
+			return XSDElement.lookup(targetPrefix + ":" + name);
 		}
 		else
 		{

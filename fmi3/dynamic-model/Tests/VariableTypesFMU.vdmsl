@@ -6,9 +6,9 @@ values
     mk_FmiModelDescription
     (
         mk_Location("VariableTypesFMU.xml", 2),
-        "3.0-beta.2",
-        "VariableTypes",
-        "",
+        "3.0-beta.4",  -- fmiVersion
+        "VariableTypes",  -- modelName
+        "",  -- instantiationToken
         nil,  -- description
         nil,  -- author
         nil,  -- version
@@ -21,7 +21,7 @@ values
         mk_CoSimulation
         (
             mk_Location("VariableTypesFMU.xml", 4),
-            "VariableTypes",
+            "VariableTypes",  -- modelIdentifier
             nil,  -- needsExecutionTool
             nil,  -- canBeInstantiatedOnlyOncePerProcess
             nil,  -- canGetAndSetFMUState
@@ -29,13 +29,16 @@ values
             nil,  -- providesDirectionalDerivatives
             nil,  -- providesAdjointDerivatives
             nil,  -- providesPerElementDependencies
+            nil,  -- any
             nil,  -- canHandleVariableCommunicationStepSize
-            nil,  -- maxOutputDerivativeOrder
-            nil,  -- providesIntermediateUpdate
-            nil,  -- recommendedIntermediateInputSmoothness
-            nil,  -- canReturnEarlyAfterIntermediateUpdate
             nil,  -- fixedInternalStepSize
+            nil,  -- maxOutputDerivativeOrder
+            nil,  -- recommendedIntermediateInputSmoothness
+            nil,  -- providesIntermediateUpdate
+            nil,  -- mightReturnEarlyFromDoStep
+            nil,  -- canReturnEarlyAfterIntermediateUpdate
             nil,  -- hasEventMode
+            nil,  -- providesEvaluateDiscreteStates
             nil   -- annotations
         ),
         nil,  -- scheduledExecution
@@ -43,22 +46,21 @@ values
         nil,  -- typeDefinitions
         nil,  -- logCategories
         nil,  -- defaultExperiment
-        -- modelVariables
         [
             mk_Float32
             (
                 mk_Location("VariableTypesFMU.xml", 7),
-                "Float32",
-                1,
+                "Float32",  -- name
+                1,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -79,32 +81,32 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 8),
-                        7,
+                        7,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_Float64
             (
                 mk_Location("VariableTypesFMU.xml", 10),
-                "Float64",
-                2,
+                "Float64",  -- name
+                2,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- unit
                 nil,  -- displayUnit
@@ -125,32 +127,32 @@ values
                 ],
                 nil,  -- derivative
                 nil,  -- reinit
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 11),
-                        7,
+                        7,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_Int8
             (
                 mk_Location("VariableTypesFMU.xml", 13),
-                "Int8",
-                3,
+                "Int8",  -- name
+                3,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -159,32 +161,32 @@ values
                     -128,
                     127
                 ],
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 14),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_UInt8
             (
                 mk_Location("VariableTypesFMU.xml", 16),
-                "UInt8",
-                4,
+                "UInt8",  -- name
+                4,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -193,32 +195,32 @@ values
                     0,
                     255
                 ],
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 17),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_Int16
             (
                 mk_Location("VariableTypesFMU.xml", 19),
-                "Int16",
-                5,
+                "Int16",  -- name
+                5,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -227,32 +229,32 @@ values
                     -32768,
                     32767
                 ],
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 20),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_UInt16
             (
                 mk_Location("VariableTypesFMU.xml", 22),
-                "UInt16",
-                6,
+                "UInt16",  -- name
+                6,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -261,32 +263,32 @@ values
                     0,
                     65535
                 ],
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 23),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_Int32
             (
                 mk_Location("VariableTypesFMU.xml", 25),
-                "Int32",
-                7,
+                "Int32",  -- name
+                7,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -295,32 +297,32 @@ values
                     -2147483648,
                     2147483647
                 ],
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 26),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_UInt32
             (
                 mk_Location("VariableTypesFMU.xml", 28),
-                "UInt32",
-                8,
+                "UInt32",  -- name
+                8,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -329,32 +331,32 @@ values
                     0,
                     4294967295
                 ],
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 29),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_Int64
             (
                 mk_Location("VariableTypesFMU.xml", 31),
-                "Int64",
-                9,
+                "Int64",  -- name
+                9,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -363,32 +365,32 @@ values
                     -9223372036854775808,
                     9223372036854775807
                 ],
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 32),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_UInt64
             (
                 mk_Location("VariableTypesFMU.xml", 34),
-                "UInt64",
-                10,
+                "UInt64",  -- name
+                10,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- quantity
                 nil,  -- min
                 nil,  -- max
@@ -397,32 +399,32 @@ values
                     0,
                     18446744073709551615
                 ],
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 35),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_Boolean
             (
                 mk_Location("VariableTypesFMU.xml", 37),
-                "Boolean",
-                11,
+                "Boolean",  -- name
+                11,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 -- start
                 [
                     true,
@@ -430,48 +432,48 @@ values
                     true,
                     false
                 ],
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 38),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     ),
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 39),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 nil   -- alias
             ),
             mk_String
             (
                 mk_Location("VariableTypesFMU.xml", 41),
-                "String",
-                12,
+                "String",  -- name
+                12,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 42),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
                 -- start
                 [
                     "foo",
@@ -482,40 +484,40 @@ values
             mk_Binary
             (
                 mk_Location("VariableTypesFMU.xml", 46),
-                "Binary",
-                13,
+                "Binary",  -- name
+                13,  -- valueReference
                 nil,  -- description
                 nil,  -- causality
                 nil,  -- variability
                 nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
                 nil,  -- intermediateUpdate
                 nil,  -- previous
-                nil,  -- clocks
                 nil,  -- declaredType
-                <exact>,
+                <exact>,  -- initial
                 nil,  -- mimeType
-                28,
-                -- start
-                [
-                    "3c3f",
-                    "686572"
-                ],
+                28,  -- maxSize
+                nil,  -- annotations
                 -- dimension
                 [
                     mk_Dimension
                     (
                         mk_Location("VariableTypesFMU.xml", 47),
-                        2,
+                        2,  -- start
                         nil   -- valueReference
                     )
                 ],
-                nil,  -- annotations
+                -- start
+                [
+                    "3c3f",
+                    "686572"
+                ],
                 nil   -- alias
             )
         ],
         mk_ModelStructure
         (
-            mk_Location("VariableTypesFMU.xml", 51),
+            mk_Location("VariableTypesFMU.xml", 53),
             nil,  -- output
             nil,  -- continuousStateDerivative
             nil,  -- clockedState

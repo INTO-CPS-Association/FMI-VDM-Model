@@ -1,31 +1,26 @@
-/**
- * This file is part of the INTO-CPS toolchain.
+/******************************************************************************
  *
- * Copyright (c) 2017-2019, INTO-CPS Association,
- * c/o Professor Peter Gorm Larsen, Department of Engineering
- * Finlandsgade 22, 8200 Aarhus N.
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
  *
- * All rights reserved.
+ *	This file is part of the INTO-CPS toolchain.
  *
- * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
- * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
- * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
- * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *	VDMCheck is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
- * obtained from the INTO-CPS Association, either from the above address, from
- * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
- * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *	VDMCheck is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * This program is distributed WITHOUT ANY WARRANTY; without
- * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
- * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
- * THE INTO-CPS ASSOCIATION.
+ *	You should have received a copy of the GNU General Public License
+ *	along with VDMCheck. If not, see <http://www.gnu.org/licenses/>.
+ *	SPDX-License-Identifier: GPL-3.0-or-later
  *
- * See the full INTO-CPS Association Public License conditions for more details.
- */
+ ******************************************************************************/
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -171,32 +166,52 @@ public class VDMCheck
 					copy(zip.getInputStream(entry), tempXML);
 					results.add(new XMLFile("modelDescription.xml", tempXML));
 					
-					entry = zip.getEntry("icon/terminalsAndIcons.xml");
+					entry = zip.getEntry("terminalsAndIcons/terminalsAndIcons.xml");
+					
+					if (entry == null)
+					{
+						entry = zip.getEntry("terminalsAndIcons\\terminalsAndIcons.xml");
+						
+						if (entry != null)
+						{
+							System.out.println("WARNING: pathname terminalsAndIcons\\terminalsAndIcons.xml contains backslashes");
+						}
+					}
 					
 					if (entry != null)
 					{
 						File tempXML2 = File.createTempFile("terminalsAndIcons", "tmp");
 						tempXML2.deleteOnExit();
 						copy(zip.getInputStream(entry), tempXML2);
-						results.add(new XMLFile("icon/terminalsAndIcons.xml", tempXML2));
+						results.add(new XMLFile("terminalsAndIcons/terminalsAndIcons.xml", tempXML2));
 					}
 					else
 					{
-						System.out.println("FMU has no icon/terminalsAndIcons.xml");
+						// System.out.println("FMU has no terminalsAndIcons/terminalsAndIcons.xml");
 					}
 					
-					entry = zip.getEntry("source/buildDescription.xml");
+					entry = zip.getEntry("sources/buildDescription.xml");
+
+					if (entry == null)
+					{
+						entry = zip.getEntry("sources\\buildDescription.xml");
+						
+						if (entry != null)
+						{
+							System.out.println("WARNING: pathname sources\\buildDescription.xml contains backslashes");
+						}
+					}
 					
 					if (entry != null)
 					{
 						File tempXML3 = File.createTempFile("buildDescription", "tmp");
 						tempXML3.deleteOnExit();
 						copy(zip.getInputStream(entry), tempXML3);
-						results.add(new XMLFile("source/buildDescription.xml", tempXML3));
+						results.add(new XMLFile("sources/buildDescription.xml", tempXML3));
 					}
 					else
 					{
-						System.out.println("FMU has no source/buildDescription.xml");
+						// System.out.println("FMU has no sources/buildDescription.xml");
 					}
 				}
 				catch (ZipException e)	// Not a zip file, assume raw XML
@@ -257,7 +272,7 @@ public class VDMCheck
 			
 			File schema = new File(jarLocation.getAbsolutePath() + File.separator + "schema/fmi3.xsd");
 			
-			runCommand(jarLocation, tempOUT,
+			int exit = runCommand(jarLocation, tempOUT,
 					"java", "-jar", "xsd2vdm.jar", 
 					"-xsd", schema.getCanonicalPath(),
 					"-xml", tempXML.file.getCanonicalPath(),
@@ -265,18 +280,47 @@ public class VDMCheck
 					"-name", varName,
 					"-nowarn");
 			
+			if (exit != 0)
+			{
+				System.out.printf("Problem converting %s to VDM-SL?\n", tempXML.name);
+				return false;
+			}
+				
 			String[] dependencies = {"vdmj.jar", "annotations.jar"};
-	
-			runCommand(jarLocation, tempOUT,
-					"java", "-Xmx1g", "-cp", String.join(File.pathSeparator, dependencies), 
-					"com.fujitsu.vdmj.VDMJ", "-vdmsl", "-q", "-annotations",
-					"-e", "isValidFMIConfiguration(" + varName + ")", "model", tempVDM.getCanonicalPath());
+			
+			File rules = new File(jarLocation.getAbsolutePath() + File.separator + "model/Rules");
+			List<String> args = new Vector<String>();
+			
+			args.add("java");
+			args.add("-Xmx1g");
+			args.add("-Dvdmj.parser.merge_comments=true");
+			args.add("-cp");
+			args.add(String.join(File.pathSeparator, dependencies)); 
+			args.add("com.fujitsu.vdmj.VDMJ");
+			args.add("-vdmsl");
+			args.add("-q");
+			args.add("-annotations");
+			args.add("-e");
+			args.add("isValidFMIConfiguration(" + varName + ")");
+			args.add("model");
+			
+			if (rules.exists())
+			{
+				for (String adoc: rules.list())
+				{
+					args.add("model" + File.separator + "Rules" + File.separator + adoc);
+				}
+			}
+
+			args.add(tempVDM.getCanonicalPath());
+			String[] sargs = new String[args.size()];
+			runCommand(jarLocation, tempOUT, args.toArray(sargs));
 	
 			sed(tempOUT, System.out,
 					"^true$", "No errors found.",
 					"^false$", "Errors found.");
 			
-			int exit = grep("^true$", tempOUT) ? 0 : 1;
+			exit = grep("^true$", tempOUT) ? 0 : 1;
 	
 			if (vdmOUT != null)
 			{

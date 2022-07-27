@@ -3,7 +3,8 @@
 	<parent>
 		<groupId>org.into-cps.vdmcheck</groupId>
 		<artifactId>fmi3</artifactId>
-		<version>1.1.1</version>
+		<version>1.1.2-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.into-cps.vdmcheck.fmi3</groupId>
@@ -18,22 +19,37 @@
 		<dependency>
 			<groupId>org.into-cps.vdmcheck.fmi3</groupId>
 			<artifactId>static-model</artifactId>
-			<version>1.1.1</version>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.into-cps.vdmcheck.fmi3</groupId>
+			<artifactId>rule-model</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.into-cps.vdmcheck</groupId>
 			<artifactId>xsd2vdm</artifactId>
-			<version>1.1.1</version>
+			<version>${project.version}</version>
 		</dependency>
+<!-- 		<dependency> -->
+<!-- 			<groupId>dk.au.ece.vdmj</groupId> -->
+<!-- 			<artifactId>vdmj</artifactId> -->
+<!-- 			<version>4.4.5-P</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>dk.au.ece.vdmj</groupId> -->
+<!-- 			<artifactId>annotations</artifactId> -->
+<!-- 			<version>4.4.5-P</version> -->
+<!-- 		</dependency> -->
 		<dependency>
 			<groupId>com.fujitsu</groupId>
 			<artifactId>vdmj</artifactId>
-			<version>4.4.3-P</version>
+			<version>4.4.4-P</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fujitsu</groupId>
 			<artifactId>annotations</artifactId>
-			<version>4.4.3-P</version>
+			<version>4.4.4-P</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -62,18 +78,32 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptors>
-						<descriptor>src/assembly/assembly.xml</descriptor>
-					</descriptors>
-					<finalName>FMI3-vdmcheck-${project.version}-${maven.build.timestamp}</finalName>
-				</configuration>
 				<executions>
 					<execution>
+						<id>static</id>
 						<phase>package</phase>
 						<goals>
 							<goal>single</goal>
 						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assembly/assembly.xml</descriptor>
+							</descriptors>
+							<finalName>FMI3-vdmcheck-${project.version}-${maven.build.timestamp}</finalName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>rules</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assembly/assembly2.xml</descriptor>
+							</descriptors>
+							<finalName>FMI3-vdmcheck-rules-${project.version}-${maven.build.timestamp}</finalName>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

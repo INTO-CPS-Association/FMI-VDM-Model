@@ -1,0 +1,324 @@
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
+functions
+    -- All connections are synchronized meaning the input and output value is identical
+    variablesSynchronized: Machine * set of PortType -> bool
+    variablesSynchronized(M, variableTypes) ==
+		let outputs : set of FMURef = filterOutputs([fmu | fmu in set rng M.fmus], variableTypes) in
+        forall srcPort in set outputs &
+            let trgPort : FMURef = M.connections(srcPort) in
+            (M.fmus(srcPort.name)).env(srcPort.ref) = (M.fmus(trgPort.name)).env(trgPort.ref);
+
+
+	-- This can probably be done inline
+	filterOutputs : seq of FMU * set of PortType -> set of FMURef
+	filterOutputs(fmus, variableTypes) ==
+	if fmus = [] then {}
+	else
+	let fmu : FMU = hd fmus in
+	{mk_FMURef(fmu.name, output.ref) | output in set fmu.outputs & output.type in set variableTypes} union filterOutputs(tl fmus, variableTypes)
+	measure len fmus;
+
+	/*
+	 * Is an Action activated?
+	 * It is if the Importer think that its precondition is satisfied
+	 */
+	isActionEnabled : Importer * Action -> bool
+	isActionEnabled(I, action) ==
+		cases action:
+		mk_Action(<get>, fmu, port) -> preGetI(I, I.scenario.fmus(fmu), port),
+		mk_Action(<set>, fmu, port) -> preSetI(I, I.scenario.fmus(fmu), port),
+		mk_Action(<step>, fmu, -) -> preStepI(I, I.scenario.fmus(fmu)),
+		mk_Action(<setC>, fmu, clock) -> preSetCI(I, I.scenario.fmus(fmu), clock),
+		mk_Action(<getC>, fmu, clock) -> preGetCI(I, I.scenario.fmus(fmu), clock),
+		others -> false --default Match
+	end;
+
+	/*
+		The preconditions of the actions from the Importer's perspective
+        The Importer can look at the global state of the simulation to ensure synchronization between the FMUs
+        But it does also ensure that the precondition of the action is satisfied
+	*/
+	preSetI: Importer * FMU * Ref -> bool
+	preSetI(I, fmu, port)==
+		let input : Variable = derefInput(fmu, port),
+			fmuRef : FMURef = mk_FMURef(fmu.name, port) in
+		(fmu.mode = <EVENT> <=> fmuRef in set (I.activeEquations \ I.calculatedEquations) and input.type = <discrete>)
+		and fmuRef in set dom I.valueMap
+		and	let val : Value = I.valueMap(fmuRef) in 
+		 (fmu.mode = <STEP> => (input.type = <continous> and (input.contract = <reactive> => val.time > fmu.time) 
+		 												 and (input.contract = <delayed> => val.time = fmu.time))
+		)
+		and preSet(fmu, port);
+ 
+	preGetI: Importer * FMU * Ref -> bool
+	preGetI(I, fmu, port)==
+		let output : Variable = derefOutput(fmu, port),
+			fmuRef : FMURef = mk_FMURef(fmu.name, port),
+			connectedInput : FMURef = I.scenario.connections(fmuRef) in
+			let input : Variable = derefInput(I.scenario.fmus(connectedInput.name), connectedInput.ref) in
+		(fmu.mode = <EVENT> <=> fmuRef in set (I.activeEquations \ I.calculatedEquations) and output.type = <discrete>)
+		and (fmu.mode = <STEP> => (output.type = <continous> and (input.contract = <delayed> => fmu.stepped)))
+		and preGet(fmu, port)
+		and connectedInput not in set dom I.valueMap;
+
+	preStepI: Importer * FMU -> bool
+	preStepI(I, fmu) ==
+		not exists m in set rng I.scenario.fmus 
+								& m.name <> fmu.name and m.time < fmu.time
+		and
+			preStepT(fmu, I.stepSize);
+
+	preGetCI: Importer * FMU * Ref -> bool
+	preGetCI(I, fmu, clock) ==
+		let output : FMURef = mk_FMURef(fmu.name, clock) in
+			output in set I.relevantOutputClocks
+				and preGetC(fmu, clock);
+	
+	preSetCI: Importer * FMU * Ref -> bool
+	preSetCI(I, fmu, clock) ==
+		let input : FMURef = mk_FMURef(fmu.name, clock) in
+			input in set dom I.valueMap inter I.relevantInputClocks and
+		let val : Value = I.valueMap(input) in
+			preSetC(fmu, clock, val.value)
+			and 
+			(val.value <=> (input in set I.inactiveClocks inter I.readyClocks));
+
+
+	/*
+		The preconditions of the actions from the paper - notice that the actions are only valid when the FMUs are not in the done state
+	*/
+	preSet: FMU * Ref -> bool
+	preSet(fmu, input)==
+		exists v in set fmu.inputs & v.ref = input and v.causality = <input>
+			and fmu.mode <> <DONE>
+			and (fmu.mode = <STEP> => v.type = <continous>)
+			and (fmu.mode = <EVENT> => v.type = <discrete>);
+	
+	/*
+		
+	 */
+	preGet: FMU * Ref -> bool
+	preGet(fmu, ref)==
+		let output : Variable = derefOutput(fmu, ref) in
+		(exists1 v in set fmu.outputs & v.ref = ref and v.causality = <output>)
+			and fmu.mode <> <DONE>
+			and feedthroughSatisfied(fmu, output);
+
+	preStepT: FMU * real -> bool
+	preStepT(fmu, stepSize)==
+		let continousInputs : set of Variable = {i | i in set fmu.inputs & i.type = <continous>} in
+		(forall i in set continousInputs &
+			 		(i.contract = <reactive> => fmu.env(i.ref).time.r = fmu.time.r + stepSize)
+					and (i.contract = <delayed> => fmu.env(i.ref).time = fmu.time))
+			and stepSize >= 0.0 and fmu.mode = <STEP>;
+
+
+	postStepT : FMU * real * bool * FMU * real -> bool
+	postStepT(fmu, stepTaken, eventTriggered, oldFMU, stepAsked) ==
+		stepTaken <= stepAsked -- We cannot take a step larger than what the Importer requested
+        and stepTaken <= oldFMU.maxStep -- We cannot take a step larger than what the FMU is capable of
+		and eventTriggered <=> (oldFMU.maxStep <= stepTaken)
+		and fmu.time.r = oldFMU.time.r + stepTaken
+		and fmu.time.i = oldFMU.time.i;
+
+	preStepE: FMU -> bool
+	preStepE(fmu)==
+		fmu.mode = <EVENT>;
+
+	postStepE: FMU * FMU * bool -> bool
+	postStepE(fmu, oldFMU, -)==
+		fmu.mode = <EVENT> 		-- FMU remains in event mode - it always does the Importer should bring it out
+        and fmu.time.i = oldFMU.time.i + 1 -- The Integer component of the FMU should be increased
+		and fmu.time.r = oldFMU.time.r
+		and fmu.activeClocks = {} ; -- All clocks get disabled when we step the FMU
+
+	preSetC: FMU * Ref * bool -> bool
+	preSetC(fmu, clock, val)==
+	 	(exists v in set fmu.clocks & v.ref = clock and v.type = <input>)
+			and val <=> not clock in set fmu.activeClocks -- We can only activate a clock that 
+            and fmu.mode = <EVENT>;
+
+	preGetC: FMU * Ref -> bool
+	preGetC(fmu, clock)==
+	 	(exists v in set fmu.clocks & v.ref = clock and v.type = <output>)
+		 and fmu.mode = <EVENT>; -- We can only get an output clock
+
+
+	preEventMode : Importer * set of FMURef  -> bool
+	preEventMode(I, clocks) ==
+		preCoSimulationStep(I.scenario, I.time)
+			and (I.fmusWithEvent <> {} or clocks <> {}); -- An event is active
+
+	postEventMode : Importer -> bool 
+	postEventMode(I) ==
+		preCoSimulationStep(I.scenario, I.time)
+			and I.fmusWithEvent = {};
+
+	feedthroughSatisfied : FMU * Variable -> bool
+	feedthroughSatisfied(fmu, output)==
+		let inputs : set of Variable = {input | input in set fmu.inputs & input.ref in set output.dependsOn} in
+		(forall i in set inputs &
+				i.ref in set dom fmu.env
+				and (i.contract = <reactive> => fmu.env(i.ref).time >= fmu.time)
+				and (i.contract = <delayed> => fmu.env(i.ref).time = fmu.time));
+
+	fmusSynchronized: set1 of FMU -> bool
+	fmusSynchronized(fmus) ==
+		 card { fmu.time | fmu in set fmus } = 1;
+
+	fmusSynchronizedAtTime: set1 of FMU * Time -> bool
+	fmusSynchronizedAtTime(fmus, t) ==
+		 fmusSynchronized(fmus)
+		 	and forall fmu in set fmus & fmu.time = t;
+
+    eventSolved : Importer * set1 of FMU * set1 of FMU -> bool
+    eventSolved(I, newFmus, oldFmus) ==
+            assertFMUMode(newFmus, {<EVENT>})
+            and timeAdvanced(newFmus, oldFmus, true)
+            and I.activeEquations \ I.calculatedEquations = {} -- Event solved
+            and I.relevantInputClocks union I.relevantOutputClocks = {} -- no more clocks to activate
+        pre sameSetOfFMUs(newFmus, oldFmus);
+
+    /*
+        Asserts that all FMUs are in the same state/mode
+     */
+    assertFMUMode : set of FMU * set of FMUMode -> bool
+    assertFMUMode(fmus, modes) ==
+        exists1 mode in set modes &
+            (forall fmu in set fmus & fmu.mode = mode);
+
+
+    timeAdvanced: set1 of FMU * set1 of FMU * bool -> bool
+    timeAdvanced(newFMUs, oldFMUs, discreteTime) ==
+        (forall m' in set newFMUs &
+            (exists1 m in set oldFMUs & m.name = m'.name 
+            and m.time <= m'.time -- The FMU is advanced in time
+            and (discreteTime => (m.time.i + 1 = m'.time.i and m.time.r = m'.time.r))
+            and (not discreteTime => (m.time.i = m'.time.i and m.time.r <= m'.time.r))))
+        pre sameSetOfFMUs(newFMUs, oldFMUs);
+
+	/*
+		The precondition of the Co-simulation Step procedure
+	*/
+    preCoSimulationStep: Machine * Time -> bool
+    preCoSimulationStep(scenario, time) ==
+        let fmus : set1 of FMU = rng scenario.fmus in
+                assertFMUMode(fmus, {<STEP>})
+                and variablesSynchronized(scenario, {<continous>}) 
+                and fmusSynchronizedAtTime(fmus, time);
+
+	
+	postCosimulationStep: Machine * set1 of FMU -> bool
+    postCosimulationStep(scenario, oldFMUs) ==
+		let fmus : set1 of FMU = rng scenario.fmus in
+			assertFMUMode(fmus, {<STEP>}) 
+                and variablesSynchronized(scenario, {<continous>}) 
+                and fmusSynchronized(fmus)
+                and timeAdvanced(fmus, oldFMUs, false);
+
+
+	postStepMode : Importer * Importer * set1 of Name -> bool
+	postStepMode(I, oldImporter, fmus) ==
+		ImporterNotAffected(oldImporter, I) and
+		let relevantFMUs : set of FMU = rng (fmus <: I.scenario.fmus) in
+		fmusNotAffected(rng (fmus <-: I.scenario.fmus), rng (fmus <-: oldImporter.scenario.fmus))
+		and assertFMUMode(relevantFMUs, {<STEP>})
+		and preCoSimulationStep(I.scenario, I.time);
+
+
+	fmusNotAffected : set of FMU * set of FMU -> bool
+	fmusNotAffected(oldFMUs, newFMUs) == oldFMUs = newFMUs
+	pre sameSetOfFMUs(oldFMUs, newFMUs);
+
+	preInitialization : Importer -> bool
+	preInitialization(I) ==
+	let fmus : set1 of FMU = rng I.scenario.fmus in
+		assertFMUMode(fmus, {<INIT>})
+		and I.time = mk_Time(0,0)
+		and fmusSynchronizedAtTime(fmus, I.time);
+		
+
+	postInitialization : Importer -> bool
+	postInitialization(I) ==
+	let fmus : set1 of FMU = rng I.scenario.fmus in
+		assertFMUMode(fmus, {<INIT>})
+		and fmusSynchronizedAtTime(fmus, I.time)
+		and I.time = mk_Time(0,0)
+		and variablesSynchronized(I.scenario, {<continous>, <discrete>});
+	
+	preTermination : Importer -> bool
+	preTermination(I) ==
+		preCoSimulationStep(I.scenario, I.endtime)
+		and I.time.r = I.endtime.r
+		and I.fmusWithEvent = {};
+
+
+	postTermination : Importer * Importer -> bool
+	postTermination(I, oldI) ==
+	assertFMUMode(rng I.scenario.fmus, {<DONE>})
+		and fmusSynchronized(rng I.scenario.fmus)
+		and ImporterNotAffected(oldI, I);
+
+
+	postVaraibleCalculation : FMURef * Importer * Importer -> bool
+	postVaraibleCalculation(equation, I, NewI) ==
+		equation in set NewI.calculatedEquations
+		and I.relevantInputClocks = NewI.relevantInputClocks
+		and I.relevantOutputClocks subset NewI.relevantOutputClocks
+		and I.calculatedEquations subset  NewI.calculatedEquations
+		and let fmu = NewI.scenario.fmus(equation.name) in
+			fmusNotAffected(rng ({fmu.name} <-: I.scenario.fmus), rng ({fmu.name} <-: NewI.scenario.fmus))
+			and fmu.mode =  <EVENT>;
+
+	ImporterNotAffected : Importer * Importer -> bool
+	ImporterNotAffected(oldImporter, newImporter) == 
+		--oldImporter.schedule = newImporter.schedule
+		oldImporter.activeClocks = newImporter.activeClocks
+		and oldImporter.readyClocks = newImporter.readyClocks
+		and oldImporter.inactiveClocks = newImporter.inactiveClocks
+		and oldImporter.relevantOutputClocks = newImporter.relevantOutputClocks
+		and oldImporter.relevantInputClocks = newImporter.relevantInputClocks
+		and oldImporter.activeEquations = newImporter.activeEquations
+		and oldImporter.calculatedEquations = newImporter.calculatedEquations
+		and oldImporter.readyEquations = newImporter.readyEquations
+		--and oldImporter.time = newImporter.time
+		and oldImporter.endtime = newImporter.endtime
+		--and oldImporter.stepSize = newImporter.stepSize
+		and oldImporter.valueMap = newImporter.valueMap;
+
+	
+    /*
+        This function ensures that the two sets contain the same FMUs
+     */
+    sameSetOfFMUs : set of FMU * set of FMU -> bool
+    sameSetOfFMUs(fmus1, fmus2)==
+    -- The old and new FMUs should contain the same set of FMUs
+            card fmus1 = card fmus2
+                and {m.name | m in set fmus1} = {m.name | m in set fmus2};

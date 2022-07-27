@@ -1,0 +1,122 @@
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
+functions
+    createFMU : nat * Name * set of Clock * set of Variable * set of Variable -> FMU
+    createFMU(id, name, clocks, inputs, outputs) ==
+            mk_FMU(
+            id,
+            name,
+            clocks,
+            inputs,
+            outputs,
+            <INIT>,
+            mk_Time(0,0),
+            false,
+            5.0,
+            -- I have added a default value
+            { 10 |-> mk_Value(1,mk_Time(0,0))},
+            {},
+            {}
+        );
+
+    createVariable : Name * Ref * Causality * PortType * set of Ref * set of Ref * Contract-> Variable
+    createVariable(name, ref, causality, type, clocks, dependsOn, contract) ==
+        mk_Variable(name, ref, mk_Time(0,0), causality, type, clocks, dependsOn, contract);
+
+
+    createClock : Name * Ref * Causality * Interval * set of Ref * set of Ref -> Clock
+    createClock(name,ref, causality, interval, dependsOn, equations) ==
+    	mk_Clock(name, ref, causality, interval, dependsOn, equations);
+
+    createTimeBased : Name * real * real * Interval * FMURef -> TimeBasedClock 
+    createTimeBased(name, shift, period, interval, master)==
+        mk_TimeBasedClock(name, shift, period, interval, master);
+
+
+    createScenario : () -> Machine
+    createScenario() ==
+        let ctrlInputs = {createVariable("a_s", 0, <input>, <discrete>, {}, {}, <delayed>),  createVariable("x_r",1, <input>, <discrete>, {}, {}, <delayed>)},
+            ctrlOutputs = {createVariable("u_r", 10, <output>, <discrete>, {}, {}, <none>)},
+            ctrlClocks = {createClock("s" ,20, <input>, <triggered>, {}, {0}), createClock("r", 21, <input>, <fixed>, {}, {1,10})} 
+            in
+        let ctrlFMU = createFMU(1, "ctrl", ctrlClocks, ctrlInputs, ctrlOutputs) in
+
+        let actuationInputs = {createVariable("u_r", 0, <input>, <discrete>, {}, {}, <delayed>)},
+            actuationOutputs = {createVariable("u", 10, <output>, <continous>, {}, {}, <none>)},
+            actuationClocks = {createClock("r", 20, <input>, <fixed>, {}, {0})} 
+            in
+        let actuationFMU = createFMU(2, "actuation", actuationClocks, actuationInputs, actuationOutputs) in
+
+        let plantInputs = {createVariable("u", 0, <input>, <continous>, {}, {}, <delayed>)},
+            plantOutputs = {createVariable("x", 10, <output>, <continous>, {}, {}, <none>)},
+            plantClocks = {} 
+            in
+        let plantFMU : FMU = createFMU(3, "plant", plantClocks, plantInputs, plantOutputs) in
+        
+        let sensorInputs = {createVariable("x", 0, <input>, <continous>, {}, {}, <delayed>)},
+            sensorOutputs = {createVariable("x_r",10, <output>, <discrete>, {}, {}, <none>)},
+            sensorClocks = {createClock("r", 20, <input>, <fixed>, {}, {10})} 
+            in
+        let sensorFMU = createFMU(4, "sensor", sensorClocks, sensorInputs, sensorOutputs) in
+
+
+        let supervisorInputs = {},--{createVariable("x", 0, <input>, <continous>, {}, {}, <delayed>)},
+            supervisorOutputs = {createVariable("a_s", 10, <output>, <discrete>, {}, {}, <none>)},
+            supervisorClocks = {createClock("s",20, <output>, <triggered>, {}, {10})}
+            in        
+        let supervisorFMU = createFMU(5, "supervisor", supervisorClocks, supervisorInputs, supervisorOutputs) in 
+
+        let fmus = {fmu.name |-> fmu | fmu in set {sensorFMU, ctrlFMU, supervisorFMU, plantFMU, actuationFMU}} in
+
+        let timeBasedClock_R = createTimeBased("r", 2, 2, <fixed>, mk_FMURef(ctrlFMU.name, 21)) in
+        let timeBasedClocks = {timeBasedClock_R} in
+
+        let connections = { mk_FMURef(supervisorFMU.name, 10) |-> mk_FMURef(ctrlFMU.name, 0),
+                            mk_FMURef(ctrlFMU.name, 10) |-> mk_FMURef(actuationFMU.name, 0),
+                            mk_FMURef(actuationFMU.name, 10) |-> mk_FMURef(plantFMU.name, 0),
+                            mk_FMURef(plantFMU.name, 10) |-> mk_FMURef(sensorFMU.name, 0),
+                            mk_FMURef(sensorFMU.name, 10) |-> mk_FMURef(ctrlFMU.name, 1)
+                            },
+            clockConnections = { mk_FMURef(supervisorFMU.name, 20) |-> mk_FMURef(ctrlFMU.name, 20)} 
+        in
+        let timeBasedClockConnections = {
+            timeBasedClock_R.name |-> {mk_FMURef(sensorFMU.name, 20), mk_FMURef(actuationFMU.name, 20), mk_FMURef(ctrlFMU.name, 21)}
+        } in
+
+        mk_Machine(
+            fmus, 
+            timeBasedClocks, 
+            connections, 
+            clockConnections, 
+            timeBasedClockConnections
+        );
+
+        
+
+

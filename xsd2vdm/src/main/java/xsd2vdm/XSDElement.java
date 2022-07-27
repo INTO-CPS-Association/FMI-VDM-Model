@@ -1,31 +1,26 @@
-/**
- * This file is part of the INTO-CPS toolchain.
+/******************************************************************************
  *
- * Copyright (c) 2017-2021, INTO-CPS Association,
- * c/o Professor Peter Gorm Larsen, Department of Engineering
- * Finlandsgade 22, 8200 Aarhus N.
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
  *
- * All rights reserved.
+ *	This file is part of the INTO-CPS toolchain.
  *
- * THIS PROGRAM IS PROVIDED UNDER THE TERMS OF GPL VERSION 3 LICENSE OR
- * THIS INTO-CPS ASSOCIATION PUBLIC LICENSE VERSION 1.0.
- * ANY USE, REPRODUCTION OR DISTRIBUTION OF THIS PROGRAM CONSTITUTES
- * RECIPIENT'S ACCEPTANCE OF THE OSMC PUBLIC LICENSE OR THE GPL 
- * VERSION 3, ACCORDING TO RECIPIENTS CHOICE.
+ *	xsd2vdm is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
  *
- * The INTO-CPS toolchain  and the INTO-CPS Association Public License are
- * obtained from the INTO-CPS Association, either from the above address, from
- * the URLs: http://www.into-cps.org, and in the INTO-CPS toolchain distribution.
- * GNU version 3 is obtained from: http://www.gnu.org/copyleft/gpl.html.
+ *	xsd2vdm is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
  *
- * This program is distributed WITHOUT ANY WARRANTY; without
- * even the implied warranty of  MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE, EXCEPT AS EXPRESSLY SET FORTH IN THE
- * BY RECIPIENT SELECTED SUBSIDIARY LICENSE CONDITIONS OF
- * THE INTO-CPS ASSOCIATION.
+ *	You should have received a copy of the GNU General Public License
+ *	along with xsd2vdm. If not, see <http://www.gnu.org/licenses/>.
+ *	SPDX-License-Identifier: GPL-3.0-or-later
  *
- * See the full INTO-CPS Association Public License conditions for more details.
- */
+ ******************************************************************************/
 
 package xsd2vdm;
 
@@ -45,7 +40,9 @@ public class XSDElement
 {
 	private final int line;
 	private final File file;
+	private final String prefix;
 	private final String type;
+
 	private final Map<String, String> attributes = new HashMap<String, String>();;
 	private final List<XSDElement> children = new Vector<XSDElement>();
 	private final static Map<String, XSDElement> referenceMap = new HashMap<String, XSDElement>();
@@ -57,10 +54,11 @@ public class XSDElement
 	 */
 	public final static XSDElement XML_LANG = new XSDElement("xml:lang", "xs:string");
 	
-	public XSDElement(String qName, Attributes attributes, Locator locator)
+	public XSDElement(String prefix, String qName, Attributes attributes, Locator locator)
 	{
 		this.line = locator.getLineNumber();
 		this.file = getFile(locator);
+		this.prefix = prefix;
 		this.type = qName;
 		
 		for (int i=0; i<attributes.getLength(); i++)
@@ -74,7 +72,14 @@ public class XSDElement
 			
 			if (name != null)
 			{
-				referenceMap.put(name, this);
+				if (!prefix.isEmpty())
+				{
+					referenceMap.put(prefix + ":" + name, this);
+				}
+				else
+				{
+					referenceMap.put(name, this);
+				}
 			}
 		}
 	}
@@ -83,6 +88,7 @@ public class XSDElement
 	{
 		this.line = locator.getLineNumber();
 		this.file = getFile(locator);
+		this.prefix = "";
 		this.type = null;	// eg. a Content string
 	}
 	
@@ -90,6 +96,7 @@ public class XSDElement
 	{
 		this.file = new File("xml");
 		this.line = 0;
+		this.prefix = "";
 		this.type = "xs:attribute";
 		
 		attributes.put("name", xmlName);
@@ -106,6 +113,11 @@ public class XSDElement
 		{
 			return new File("?");
 		}
+	}
+	
+	public String getPrefix()
+	{
+		return prefix;
 	}
 
 	public String getType()
