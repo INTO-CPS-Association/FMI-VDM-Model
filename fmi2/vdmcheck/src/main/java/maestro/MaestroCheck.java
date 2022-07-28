@@ -109,9 +109,14 @@ public class MaestroCheck
 			"/schema/fmi2Type.xsd",
 			"/schema/fmi2Unit.xsd",
 			"/schema/fmi2VariableDependency.xsd",
+			"/schema/fmi2.xsd",
+			"/schema/fmi3Annotation.xsd",
+			"/schema/fmi3BuildDescription.xsd",
+			"/schema/fmi3TerminalsAndIcons.xsd",
+			"/schema/fmi3Terminal.xsd",
 			"/schema/xsd2vdm.properties");
 		
-		File xsdFile = new File(schema, "fmi2ModelDescription.xsd");
+		File xsdFile = new File(schema, "fmi2.xsd");
 		OnFailError validation = validate(modelDescriptionFile, xsdFile);
 		
 		if (validation != null)
@@ -147,7 +152,15 @@ public class MaestroCheck
 					"/TypeDefinitions_2.2.3.vdmsl",
 					"/UnitDefinitions_2.2.2.vdmsl",
 					"/VariableNaming_2.2.9.vdmsl",
-					"/VendorAnnotations_2.2.6.vdmsl");
+					"/VendorAnnotations_2.2.6.vdmsl",
+					
+					"/BuildConfiguration_2.3.vdmsl",
+					"/GraphicalRepresentation_2.3.vdmsl",
+					"/Terminals_2.3.vdmsl",
+					"/VendorAnnotations_2.3.vdmsl",
+					"/Validation.vdmsl",
+					"/XSD.vdmsl"
+				);
 				
 				Properties.init();
 				Settings.annotations = true;
@@ -190,7 +203,7 @@ public class MaestroCheck
 					Interpreter interpreter = new ModuleInterpreter(in, tc);
 					interpreter.init();
 					INOnFailAnnotation.setErrorList(errors);
-					Value result = interpreter.execute("isValidFMIModelDescription(model)");
+					Value result = interpreter.execute("isValidFMIConfiguration(model)");
 					
 					if (!result.boolValue(null))
 					{
