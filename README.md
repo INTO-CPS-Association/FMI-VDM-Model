@@ -16,6 +16,7 @@ For FMI3
 * **fmi3.static-model** - a VDM-SL model of the static semantics of FMI 3.0 modelDescription XML files
 * **fmi3.dynamic-model** - a VDM-SL model of the dynamic semantics of the FMI 3.0 API
 * **fmi3.dynamic-matrix** - a spreadsheet of the mode/state callability of the FMI3 API functions
+* **fmi3.rules-model** - a new VDM-SL model of static semantics, suitable for integration with the FMI Standard
 * **fmi3.vdmcheck** - a Java tool to convert FMI 3.0 modeDescription XML files to VDM-SL and check them
 
 General projects:
@@ -57,7 +58,8 @@ If the FMU or XML has no errors, the tool will report `No errors found` and have
 Otherwise errors are listed on standard output. They consist of a unique error number, followed by a section number in the FMI Standard that is relevant to the error, followed by an error message:
 
 ```
-VDMCheck2.sh invalidOutputs2.xml 
+VDMCheck2.sh invalidOutputs2.xml
+Checking XML
 1306: 2.2.7 Variable "v1" causality/variability/initial/start <input>/<continuous>/nil/nil invalid at line 6
 1305: 2.2.7 ScalarVariable "v1" invalid at line 6
 1009: 2.2.1 ScalarVariables invalid
