@@ -41,6 +41,7 @@ import maestro.OnFailError;
 
 public class INOnFailAnnotation extends INAnnotation
 {
+	private static final long serialVersionUID = 1L;
 	private static List<OnFailError> errorList = new Vector<>();
 
 	public INOnFailAnnotation(TCIdentifierToken name, INExpressionList args)
