@@ -22,13 +22,13 @@
     </properties>
 
     <!-- add repository for dependencies -->
-    <repositories>
-        <repository>
-            <id>artifactory-overture.au.dk</id>
-            <name>overture.au.dk-releases</name>
-            <url>https://overture.au.dk/artifactory/vdmj</url>
-        </repository>
-    </repositories>
+<!--     <repositories> -->
+<!--         <repository> -->
+<!--             <id>artifactory-overture.au.dk</id> -->
+<!--             <name>overture.au.dk-releases</name> -->
+<!--             <url>https://overture.au.dk/artifactory/vdmj</url> -->
+<!--         </repository> -->
+<!--     </repositories> -->
 
     <!-- sub modules -->
     <modules>
