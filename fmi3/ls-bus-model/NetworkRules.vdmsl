@@ -5,10 +5,30 @@ types
 	NetworkRules = FmiTerminalsAndIcons
 	inv nr == allOf
 	([
-		apply[Terminal](rule_2_2_2_a, nr.terminals)
+		apply[Terminal](rule_2_2_2_a, nr.terminals),
+		rule("rule_2_2_1_a", rule_2_2_1_a(nr.terminals))
 	]);
 
 functions
+	rule_2_2_1_a: Terminals +> bool
+	rule_2_2_1_a(terminals) ==
+		forall bus in seq terminals &
+			bus.terminalKind = "bus" and bus.terminal <> nil =>
+			let busName = bus.name in
+				forall frame in seq bus.terminal &
+					frame.terminalKind = "frame" and frame.terminal <> nil =>
+					let frameName = busName ^ "::" ^ frame.name in
+						forall pdu in seq frame.terminal &
+							pdu.terminalKind = "pdu" and pdu.terminalMemberVariable <> nil =>
+							let pduName = frameName ^ "::" ^ pdu.name ^ "::" in
+								forall tmv in seq pdu.terminalMemberVariable &
+									-- @OnFail("PDU member variable must be 'signal' at %s",
+									-- loc2str(tmv.location))
+									( tmv.variableKind = "signal" )
+									-- @OnFail("PDU member variable must start with '%s' at %s",
+									-- pduName, loc2str(tmv.location))
+									and ( tmv.variableName(1, ..., len pduName) = pduName );
+
 	/**
 	 * Both frame variables must be listed as <<Terminal Member Variable>> of its corresponding
 	 * <<BUSTerminal>>. Generally, frame variables are optional, but they must either both be
@@ -30,5 +50,6 @@ functions
 values
 	docReferences : ReferenceMap =
 	{
+		"rule_2_2_1_a" |-> [ "<LS_BUS_STANDARD>#apply_2.2.1a_1" ],
 		"rule_2_2_2_a" |-> [ "<LS_BUS_STANDARD>#apply_2.2.2a_1", "<LS_BUS_STANDARD>#apply_2.2.2a_2" ]
 	}
