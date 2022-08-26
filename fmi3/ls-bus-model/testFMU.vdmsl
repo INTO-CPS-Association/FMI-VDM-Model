@@ -764,7 +764,7 @@ values
                     mk_TerminalMemberVariable
                     (
                         mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 7),
-                        "ZZZPowertrain::FRAMES_in_CLOCK",  -- variableName
+                        "Powertrain::FRAMES_in_CLOCK",  -- variableName
                         nil,  -- memberName
                         "signal",  -- variableKind
                         nil   -- annotations

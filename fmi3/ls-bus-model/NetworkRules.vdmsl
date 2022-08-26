@@ -5,24 +5,23 @@ types
 	NetworkRules = FmiTerminalsAndIcons
 	inv nr == allOf
 	([
-		rule("rule_2_2_2_a", rule_2_2_2_a(nr.terminals))
+		apply[Terminal](rule_2_2_2_a, nr.terminals)
 	]);
 
 functions
-/**
-	* Both frame variables must be listed as <<Terminal Member Variable>> of its corresponding
-	* <<BUSTerminal>>. Generally, frame variables are optional, but they must either both be
-	* missing or present to clearly indicate support for the frame abstraction layer.
-	*/
-rule_2_2_2_a: Terminals +> bool
-rule_2_2_2_a(terminals) ==
-	forall terminal in seq terminals &
+	/**
+	 * Both frame variables must be listed as <<Terminal Member Variable>> of its corresponding
+	 * <<BUSTerminal>>. Generally, frame variables are optional, but they must either both be
+	 * missing or present to clearly indicate support for the frame abstraction layer.
+	 */
+	rule_2_2_2_a: Terminal +> bool
+	rule_2_2_2_a(terminal)==
 		terminal.terminalKind = "bus" =>
 			terminal.terminalMemberVariable = nil or	-- None defined
 			let busName = terminal.name,
-				frameVariables = { tvm | tvm in seq terminal.terminalMemberVariable &
-					tvm.variableKind = "signal"
-					and tvm.variableName(1, ..., len busName + 2) = busName ^ "::" }
+				frameVariables = { tmv | tmv in seq terminal.terminalMemberVariable &
+					tmv.variableKind = "signal"
+					and tmv.variableName(1, ..., len busName + 2) = busName ^ "::" }
 			in
 				-- @OnFail("%NAME: Bus must define all frame variables, or none at %s",
 				-- loc2str(terminal.location))
