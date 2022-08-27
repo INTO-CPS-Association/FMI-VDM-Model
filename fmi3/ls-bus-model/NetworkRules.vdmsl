@@ -1,55 +1,116 @@
-/**
- * Workspace for developing rules that are pasted into the NetworkRules.adoc.
- */
+/*********************************************************************************
+ *
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	c/o Professor Peter Gorm Larsen, Department of Engineering
+ *	Finlandsgade 22, 8200 Aarhus N.
+ *
+ *	MIT Licence:
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy of
+ *	this software and associated documentation files (the "Software"), to deal in
+ *	the Software without restriction, including without limitation the rights to use,
+ *	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+ *	Software, and to permit persons to whom the Software is furnished to do so,
+ *	subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ *	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+ *	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ *	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ *	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *	SPDX-License-Identifier: MIT
+ *
+ *********************************************************************************/
 types
-	NetworkRules = FmiTerminalsAndIcons
-	inv nr == allOf
+	NetworkRules = NetworkDescription * FmiTerminalsAndIcons * FmiModelDescription
+	inv mk_(nd, ti, md) == allOf
 	([
-		apply[Terminal](rule_2_2_2_a, nr.terminals),
-		rule("rule_2_2_1_a", rule_2_2_1_a(nr.terminals))
+		rule("rule_1", rule_1(nd, ti)),
+		rule("applyRule_2", applyRule_2(nd, ti)),
+		rule("applyRule_3", applyRule_3(nd, ti, md))
 	]);
 
 functions
-	rule_2_2_1_a: Terminals +> bool
-	rule_2_2_1_a(terminals) ==
-		forall bus in seq terminals &
-			bus.terminalKind = "bus" and bus.terminal <> nil =>
-			let busName = bus.name in
-				forall frame in seq bus.terminal &
-					frame.terminalKind = "frame" and frame.terminal <> nil =>
-					let frameName = busName ^ "::" ^ frame.name in
-						forall pdu in seq frame.terminal &
-							pdu.terminalKind = "pdu" and pdu.terminalMemberVariable <> nil =>
-							let pduName = frameName ^ "::" ^ pdu.name ^ "::" in
-								forall tmv in seq pdu.terminalMemberVariable &
-									-- @OnFail("PDU member variable must be 'signal' at %s",
-									-- loc2str(tmv.location))
-									( tmv.variableKind = "signal" )
-									-- @OnFail("PDU member variable must start with '%s' at %s",
-									-- pduName, loc2str(tmv.location))
-									and ( tmv.variableName(1, ..., len pduName) = pduName );
+	rule_1: NetworkDescription * FmiTerminalsAndIcons +> bool
+	rule_1(nd, ti) == allOf
+	([
+		-- @OnFail("Missing 'bus' Terminal for %s", bus.name)
+		( exists terminal in seq ti.terminals & terminal.name = bus.name )
 
-	/**
-	 * Both frame variables must be listed as <<Terminal Member Variable>> of its corresponding
-	 * <<BUSTerminal>>. Generally, frame variables are optional, but they must either both be
-	 * missing or present to clearly indicate support for the frame abstraction layer.
-	 */
-	rule_2_2_2_a: Terminal +> bool
-	rule_2_2_2_a(terminal)==
-		terminal.terminalKind = "bus" =>
-			terminal.terminalMemberVariable = nil or	-- None defined
-			let busName = terminal.name,
-				frameVariables = { tmv | tmv in seq terminal.terminalMemberVariable &
-					tmv.variableKind = "signal"
-					and tmv.variableName(1, ..., len busName + 2) = busName ^ "::" }
-			in
-				-- @OnFail("%NAME: Bus must define all frame variables, or none at %s",
-				-- loc2str(terminal.location))
-				( card frameVariables in set {0, 4} );
+		| bus in seq nd
+	]);
+
+	applyRule_2: NetworkDescription * FmiTerminalsAndIcons +> bool
+	applyRule_2(nd, ti) ==
+		allOf
+		([
+			let terminals = { bt | bt in seq ti.terminals & bt.name = bus.name } in
+				terminals <> {} =>
+					let terminal in set terminals in rule_2(bus, terminal)
+
+			| bus in seq nd
+		]);
+
+	rule_2: Bus * Terminal +> bool
+	rule_2(busDescription, busTerminal) == allOf
+	([
+		-- @OnFail("Bus terminal must be terminalKind 'bus' at %s",
+		-- loc2str(busTerminal.location))
+		( busTerminal.terminalKind = "bus" ),
+
+		-- @OnFail("Bus temrinal must have matchingRule 'bus' at %s")
+		-- loc2str(busTerminal.location))
+		( busTerminal.matchingRule = "bus" ),
+
+		-- @OnFail("Bus %s does not match network description name %s at %s",
+		-- busTerminal.name, busDescription.name, loc2str(busTerminal.location))
+		( busTerminal.name = busDescription.name ),
+
+		-- @OnFail("Bus has wrong number of frames at %s",
+		-- loc2str(busTerminal.location))
+		( busTerminal.terminal <> nil
+		  and len busTerminal.terminal = card busDescription.frames )
+	]);
+
+	applyRule_3: NetworkDescription * FmiTerminalsAndIcons * FmiModelDescription +> bool
+	applyRule_3(nd, ti, md) ==
+		allOf
+		([
+			let terminals = { bt | bt in seq ti.terminals & bt.name = bus.name } in
+				terminals <> {} =>
+					let terminal in set terminals in rule_3(bus, md, terminal)
+
+			| bus in seq nd
+		]);
+
+	rule_3: Bus * FmiModelDescription * Terminal +> bool
+	rule_3(busDescription, modelDescription, busTerminal) == allOf
+	([
+		let variableName = busDescription.name ^ "::" ^ varName in
+			-- @OnFail("Missing TerminalMemberVariable for %s", variableName)
+			( lookup(modelDescription, variableName) <> nil =>
+				exists tmv in seq busTerminal.terminalMemberVariable &
+					tmv.variableName = variableName )
+
+		| varName in seq
+			[ "FRAMES_in", "FRAMES_out", "FRAMES_in_CLOCK", "FRAMES_out_CLOCK" ]
+	]
+	^
+	[
+		-- @OnFail("TerminalStreamMemberVariables must be empty at %s",
+		-- loc2str(busTerminal.location))
+		( busTerminal.terminalStreamMemberVariable = nil )
+	]);
 
 values
 	docReferences : ReferenceMap =
 	{
-		"rule_2_2_1_a" |-> [ "<LS_BUS_STANDARD>#apply_2.2.1a_1" ],
-		"rule_2_2_2_a" |-> [ "<LS_BUS_STANDARD>#apply_2.2.2a_1", "<LS_BUS_STANDARD>#apply_2.2.2a_2" ]
+		"rule_1" |-> [ "<LS_BUS_STANDARD>#apply_rule_1" ],
+		"applyRule_2" |-> [ "<LS_BUS_STANDARD>#apply_rule_2" ],
+		"applyRule_3" |-> [ "<LS_BUS_STANDARD>#apply_rule_3" ]
 	}
