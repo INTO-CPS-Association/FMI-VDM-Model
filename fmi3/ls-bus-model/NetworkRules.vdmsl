@@ -27,37 +27,24 @@
  *
  *********************************************************************************/
 types
-	NetworkRules = NetworkDescription * FmiTerminalsAndIcons * FmiModelDescription
-	inv mk_(nd, ti, md) == allOf
+	NetworkRules = NetworkDescription * FmiModelDescription * FmiTerminalsAndIcons
+	inv mk_(networkDesc, modelDesc, terminalsAndIcons) == allOf
 	([
-		rule("rule_1", rule_1(nd, ti)),
-		rule("applyRule_2", applyRule_2(nd, ti)),
-		rule("applyRule_3", applyRule_3(nd, ti, md))
+		rule("networkValidation", networkValidation(networkDesc, modelDesc, terminalsAndIcons))
 	]);
 
 functions
-	rule_1: NetworkDescription * FmiTerminalsAndIcons +> bool
-	rule_1(nd, ti) == allOf
+	rule_231a: NetworkDescription * FmiTerminalsAndIcons +> bool
+	rule_231a(networkDesc, terminalsAndIcons) == allOf
 	([
 		-- @OnFail("Missing 'bus' Terminal for %s", bus.name)
-		( exists terminal in seq ti.terminals & terminal.name = bus.name )
+		( exists b in seq terminalsAndIcons.terminals & b.name = bus.name )
 
-		| bus in seq nd
+		| bus in seq networkDesc
 	]);
 
-	applyRule_2: NetworkDescription * FmiTerminalsAndIcons +> bool
-	applyRule_2(nd, ti) ==
-		allOf
-		([
-			let terminals = { bt | bt in seq ti.terminals & bt.name = bus.name } in
-				terminals <> {} =>
-					let terminal in set terminals in rule_2(bus, terminal)
-
-			| bus in seq nd
-		]);
-
-	rule_2: Bus * Terminal +> bool
-	rule_2(busDescription, busTerminal) == allOf
+	rule_231b: Bus * Terminal +> bool
+	rule_231b(busDesc, busTerminal) == allOf
 	([
 		-- @OnFail("Bus terminal must be terminalKind 'bus' at %s",
 		-- loc2str(busTerminal.location))
@@ -68,32 +55,21 @@ functions
 		( busTerminal.matchingRule = "bus" ),
 
 		-- @OnFail("Bus %s does not match network description name %s at %s",
-		-- busTerminal.name, busDescription.name, loc2str(busTerminal.location))
-		( busTerminal.name = busDescription.name ),
+		-- busTerminal.name, busDesc.name, loc2str(busTerminal.location))
+		( busTerminal.name = busDesc.name ),
 
 		-- @OnFail("Bus has wrong number of frames at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.terminal <> nil
-		  and len busTerminal.terminal = card busDescription.frames )
+		  and len busTerminal.terminal = len busDesc.frames )
 	]);
 
-	applyRule_3: NetworkDescription * FmiTerminalsAndIcons * FmiModelDescription +> bool
-	applyRule_3(nd, ti, md) ==
-		allOf
-		([
-			let terminals = { bt | bt in seq ti.terminals & bt.name = bus.name } in
-				terminals <> {} =>
-					let terminal in set terminals in rule_3(bus, md, terminal)
-
-			| bus in seq nd
-		]);
-
-	rule_3: Bus * FmiModelDescription * Terminal +> bool
-	rule_3(busDescription, modelDescription, busTerminal) == allOf
+	rule_231c: Bus * FmiModelDescription * Terminal +> bool
+	rule_231c(busDesc, modelDesc, busTerminal) == allOf
 	([
-		let variableName = busDescription.name ^ "::" ^ varName in
+		let variableName = busDesc.name ^ "::" ^ varName in
 			-- @OnFail("Missing TerminalMemberVariable for %s", variableName)
-			( lookup(modelDescription, variableName) <> nil =>
+			( lookup(modelDesc, variableName) <> nil =>
 				exists tmv in seq busTerminal.terminalMemberVariable &
 					tmv.variableName = variableName )
 
@@ -107,10 +83,101 @@ functions
 		( busTerminal.terminalStreamMemberVariable = nil )
 	]);
 
+	networkValidation: NetworkDescription * FmiModelDescription * FmiTerminalsAndIcons +> bool
+	networkValidation(networkDesc, modelDesc, terminalsAndIcons) == allOf
+	([
+		rule_231a(networkDesc, terminalsAndIcons)
+	]
+	^
+	[
+		let matching = {b | b in seq terminalsAndIcons.terminals &
+			b.name = busDesc.name }
+		in
+			-- @OnFail("Missing or duplicate bus terminal for %s", busDesc.name)
+			( card matching = 1 )
+				=> let {busTerminal} = matching in
+					busValidation(busDesc, modelDesc, busTerminal)
+
+		| busDesc in seq networkDesc
+	]);
+
+	busValidation: Bus * FmiModelDescription * Terminal +> bool
+	busValidation(busDesc, modelDesc, busTerminal) == allOf
+	([
+		rule_231b(busDesc, busTerminal),
+		rule_231c(busDesc, modelDesc, busTerminal)
+	]
+	^
+	[
+		let matching = {f | f in seq busTerminal.terminal & f.name = frameDesc.name } in
+			-- @OnFail("Missing or duplicate frame for %s", frameDesc.name)
+			( card matching = 1 )
+				=> let {frameTerminal} = matching in
+					frameValidation(busDesc, frameDesc, modelDesc, frameTerminal)
+			
+		| frameDesc in seq busDesc.frames
+	]);
+
+	frameValidation: Bus * Frame * FmiModelDescription * Terminal +> bool
+	frameValidation(busDesc, frameDesc, modelDesc, frameTerminal) == allOf
+	([
+		-- @OnFail("Missing frame clock TerminalMemberVariable at %s", loc2str(frameTerminal.location))
+		( frameTerminal.terminalMemberVariable <> nil
+			and exists1 tmv in seq frameTerminal.terminalMemberVariable &
+				tmv.variableName = busDesc.name ^ "::" ^ frameDesc.name ^ "_CLOCK" ),
+
+		let clockName = busDesc.name ^ "::" ^ frameDesc.name ^ "_CLOCK",
+			var = lookup(modelDesc, clockName) in
+			-- @OnFail("Frame clock variable %s is not defined" at %s",
+			-- clockName, loc2str(frameTerminal.location))
+			(var <> nil)
+
+			-- @OnFail("Variable is not of type Clock: %s", clockName)
+			and (is_Clock(var))		
+	]
+	^
+	[
+		let matching = {p | p in seq frameTerminal.terminal & p.name = pduDesc.name } in
+			-- @OnFail("Missing or duplicate PDU for %s", pduDesc.name)
+			( card matching = 1 )
+				=> let {pduTerminal} = matching in
+					pduValidation(busDesc, frameDesc, pduDesc, modelDesc, pduTerminal)
+			
+		| pduDesc in seq frameDesc.pdus
+	]);
+
+	pduValidation: Bus * Frame * PDU * FmiModelDescription * Terminal +> bool
+	pduValidation(busDesc, frameDesc, pduDesc, modelDesc, pduTerminal) == allOf
+	([
+		let matching = {s | s in seq pduTerminal.terminalMemberVariable &
+			s.variableName = busDesc.name ^ "::" ^ frameDesc.name ^ "::" ^ pduDesc.name ^ "::" ^ signalDesc.name}
+		in
+			-- @OnFail("Missing or duplicate TerminalMemberVariable for %s", signalDesc.name)
+			( card matching = 1 )
+				=> let {signalVariable} = matching in
+					signalValidation(signalDesc, modelDesc, signalVariable)
+			
+		| signalDesc in seq pduDesc.signals
+	]);
+
+	signalValidation: Signal * FmiModelDescription * TerminalMemberVariable +> bool
+	signalValidation(signalDesc, modelDesc, signalVariable) == allOf
+	([
+		-- @OnFail("Signal must be variableKind 'signal' at %s", loc2str(signalVariable.location))
+		( signalVariable.variableKind = "signal" ),
+
+		-- @OnFail("Signal memberName should be '%s' at %s", signalDesc.name, loc2str(signalVariable.location))
+		( signalVariable.memberName = signalDesc.name ),
+
+		let var = lookup(modelDesc, signalVariable.variableName) in
+			-- @OnFail("Signal variable %s is not defined", signalVariable.variableName)
+			(var <> nil)
+	]);
+
 values
 	docReferences : ReferenceMap =
 	{
-		"rule_1" |-> [ "<LS_BUS_STANDARD>#apply_rule_1" ],
-		"applyRule_2" |-> [ "<LS_BUS_STANDARD>#apply_rule_2" ],
-		"applyRule_3" |-> [ "<LS_BUS_STANDARD>#apply_rule_3" ]
+		"rule_231a" |-> [ "<LS_BUS_STANDARD>#apply_231a" ],
+		"rule_231b" |-> [ "<LS_BUS_STANDARD>#apply_231b" ],
+		"rule_231c" |-> [ "<LS_BUS_STANDARD>#apply_231c" ]
 	}

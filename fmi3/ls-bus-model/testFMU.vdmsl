@@ -1012,52 +1012,52 @@ values
 		mk_Bus
 		(
 			"Powertrain",
-			{
+			[
 				mk_Frame
 				(
 					"tcuSensors",
-					{
+					[
 						mk_PDU
 						(
 							"tcuSensors",
-							{
+							[
 								mk_Signal("vCar", nil),
 								mk_Signal("oilTemp", nil)
-							}
+							]
 						)
-					}
+					]
 				),
 				mk_Frame
 				(
 					"tcuState",
-					{
+					[
 						mk_PDU
 						(
 							"tcuState",
-							{
+							[
 								mk_Signal("state", nil),
 								mk_Signal("gear", nil),
 								mk_Signal("targetGear", nil)
-							}
+							]
 						)
-					}
+					]
 				),
 				mk_Frame
 				(
 					"ecuState",
-					{
+					[
 						mk_PDU
 						(
 							"ecuState",
-							{
+							[
 								mk_Signal("accelPedal", nil),
 								mk_Signal("k15", nil),
 								mk_Signal("oilTemp", nil),
 								mk_Signal("radiatorTemp", nil)
-							}
+							]
 						)
-					}
+					]
 				)
-			}
+			]
 		)
 	];
