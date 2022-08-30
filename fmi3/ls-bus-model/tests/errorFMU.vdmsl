@@ -1,0 +1,262 @@
+/**
+ * VDM value created from /tmp/terminalsAndIcons/terminalsAndIcons.xml
+ */
+values
+    errorTerminalsAndIcons =
+    mk_FmiTerminalsAndIcons
+    (
+        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 2),
+        "3.0-alpha6",  -- fmiVersion
+        nil,  -- graphicalRepresentation
+        [
+            mk_Terminal
+            (
+                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 5),
+                "Powertrain",  -- name
+                "NOTBUS",  -- matchingRule
+                "NOTBUS",  -- terminalKind
+                "Powertrain CAN bus defined with dbc file",  -- description
+                -- terminalMemberVariable
+                [
+                    mk_TerminalMemberVariable
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 7),
+                        "Powertrain::FRAMES_in_CLOCK",  -- variableName
+                        nil,  -- memberName
+                        "NOTSIGNAL",  -- variableKind
+                        nil   -- annotations
+                    ),
+                    mk_TerminalMemberVariable
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 9),
+                        "Powertrain::FRAMES_in",  -- variableName
+                        nil,  -- memberName
+                        "signal",  -- variableKind
+                        nil   -- annotations
+                    ),
+                    mk_TerminalMemberVariable
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 11),
+                        "Powertrain::FRAMES_out_CLOCK",  -- variableName
+                        nil,  -- memberName
+                        "signal",  -- variableKind
+                        nil   -- annotations
+                    ),
+                    mk_TerminalMemberVariable
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 13),
+                        "Powertrain::FRAMES_out",  -- variableName
+                        nil,  -- memberName
+                        "signal",  -- variableKind
+                        nil   -- annotations
+                    )
+                ],
+                nil,  -- terminalStreamMemberVariable
+                -- terminal
+                [
+                    mk_Terminal
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 14),
+                        "tcuSensors",  -- name
+                        "bus",  -- matchingRule
+                        "frame",  -- terminalKind
+                        nil,  -- description
+                        -- terminalMemberVariable
+                        [
+                            mk_TerminalMemberVariable
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 16),
+                                "Powertrain::tcuSensors_CLOCK",  -- variableName
+                                nil,  -- memberName
+                                "signal",  -- variableKind
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalStreamMemberVariable
+                        -- terminal
+                        [
+                            mk_Terminal
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 17),
+                                "tcuSensors",  -- name
+                                "bus",  -- matchingRule
+                                "pdu",  -- terminalKind
+                                nil,  -- description
+                                -- terminalMemberVariable
+                                [
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 19),
+                                        "Powertrain::tcuSensors::tcuSensors::vCar",  -- variableName
+                                        "vCar",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 21),
+                                        "Powertrain::tcuSensors::tcuSensors::oilTemp",  -- variableName
+                                        "oilTemp",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    )
+                                ],
+                                nil,  -- terminalStreamMemberVariable
+                                nil,  -- terminal
+                                nil,  -- terminalGraphicalRepresentation
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalGraphicalRepresentation
+                        nil   -- annotations
+                    ),
+                    mk_Terminal
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 24),
+                        "tcuState",  -- name
+                        "bus",  -- matchingRule
+                        "frame",  -- terminalKind
+                        nil,  -- description
+                        -- terminalMemberVariable
+                        [
+                            mk_TerminalMemberVariable
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 26),
+                                "Powertrain::tcuState_CLOCK",  -- variableName
+                                nil,  -- memberName
+                                "signal",  -- variableKind
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalStreamMemberVariable
+                        -- terminal
+                        [
+                            mk_Terminal
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 27),
+                                "tcuState",  -- name
+                                "bus",  -- matchingRule
+                                "pdu",  -- terminalKind
+                                nil,  -- description
+                                -- terminalMemberVariable
+                                [
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 29),
+                                        "Powertrain::tcuState::tcuState::state",  -- variableName
+                                        "state",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 31),
+                                        "Powertrain::tcuState::tcuState::gear",  -- variableName
+                                        "gear",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 33),
+                                        "Powertrain::tcuState::tcuState::targetGear",  -- variableName
+                                        "targetGear",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    )
+                                ],
+                                nil,  -- terminalStreamMemberVariable
+                                nil,  -- terminal
+                                nil,  -- terminalGraphicalRepresentation
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalGraphicalRepresentation
+                        nil   -- annotations
+                    ),
+                    mk_Terminal
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 36),
+                        "ecuState",  -- name
+                        "bus",  -- matchingRule
+                        "frame",  -- terminalKind
+                        nil,  -- description
+                        -- terminalMemberVariable
+                        [
+                            mk_TerminalMemberVariable
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 38),
+                                "Powertrain::ecuState_CLOCK",  -- variableName
+                                nil,  -- memberName
+                                "signal",  -- variableKind
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalStreamMemberVariable
+                        -- terminal
+                        [
+                            mk_Terminal
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 39),
+                                "ecuState",  -- name
+                                "bus",  -- matchingRule
+                                "pdu",  -- terminalKind
+                                nil,  -- description
+                                -- terminalMemberVariable
+                                [
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 41),
+                                        "Powertrain::ecuState::ecuState::accelPedal",  -- variableName
+                                        "accelPedal",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 43),
+                                        "Powertrain::ecuState::ecuState::k15",  -- variableName
+                                        "k15",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 45),
+                                        "Powertrain::ecuState::ecuState::oilTemp",  -- variableName
+                                        "oilTemp",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 47),
+                                        "Powertrain::ecuState::ecuState::radiatorTemp",  -- variableName
+                                        "radiatorTemp",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    )
+                                ],
+                                nil,  -- terminalStreamMemberVariable
+                                nil,  -- terminal
+                                nil,  -- terminalGraphicalRepresentation
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalGraphicalRepresentation
+                        nil   -- annotations
+                    )
+                ],
+                nil,  -- terminalGraphicalRepresentation
+                [
+                    mk_Annotation
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 51),
+                        "ECU",  -- type
+                        nil   -- any
+                    )
+                ] 
+            )
+        ],
+        nil   -- annotations
+    );

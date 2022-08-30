@@ -50,7 +50,7 @@ functions
 		-- loc2str(busTerminal.location))
 		( busTerminal.terminalKind = "bus" ),
 
-		-- @OnFail("Bus temrinal must have matchingRule 'bus' at %s")
+		-- @OnFail("Bus temrinal must have matchingRule 'bus' at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.matchingRule = "bus" ),
 
@@ -93,6 +93,11 @@ functions
 	]
 	^
 	[
+		-- @OnFail("TerminalMemberVariables of %s must all be variableKind 'signal'",
+		-- busTerminal.name)
+		( forall tmv in seq busTerminal.terminalMemberVariable &
+				tmv.variableKind = "signal" ),
+
 		-- @OnFail("TerminalStreamMemberVariables must be empty at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.terminalStreamMemberVariable = nil ),
@@ -121,8 +126,8 @@ functions
 		-- loc2str(frameTerminal.location))
 		( frameTerminal.terminalKind = "frame" ),
 
-		-- @OnFail("Frame temrinal must have matchingRule 'bus' at %s")
-		-- loc2str(busTerminal.location))
+		-- @OnFail("Frame temrinal must have matchingRule 'bus' at %s",
+		-- loc2str(frameTerminal.location))
 		( frameTerminal.matchingRule = "bus" ),
 
 		-- @OnFail("Frame %s does not match network description name %s at %s",
@@ -176,7 +181,7 @@ functions
 		-- loc2str(pduTerminal.location))
 		( pduTerminal.terminalKind = "pdu" ),
 
-		-- @OnFail("PDU temrinal must have matchingRule 'bus' at %s")
+		-- @OnFail("PDU temrinal must have matchingRule 'bus' at %s",
 		-- loc2str(pduTerminal.location))
 		( pduTerminal.matchingRule = "bus" ),
 
