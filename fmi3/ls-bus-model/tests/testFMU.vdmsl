@@ -1007,7 +1007,7 @@ values
 /**
  * Test NetworkDescription to match the FMU configuration above.
  */
-	testNetworkDescription : seq of Bus =
+	testNetworkDescription : NetworkDescription =
 	[
 		mk_Bus
 		(

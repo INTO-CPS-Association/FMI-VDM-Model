@@ -1,0 +1,1065 @@
+/**
+ * VDM value created from /tmp/modelDescription.xml
+ */
+values
+    testModelDescription =
+    mk_FmiModelDescription
+    (
+        mk_Location("modelDescription.xml", 3),
+        "3.0-alpha.7",  -- fmiVersion
+        "Network4FMI",  -- modelName
+        "Network4FMI",  -- instantiationToken
+        nil,  -- description
+        nil,  -- author
+        nil,  -- version
+        nil,  -- copyright
+        nil,  -- license
+        nil,  -- generationTool
+        nil,  -- generationDateAndTime
+        nil,  -- variableNamingConvention
+        nil,  -- modelExchange
+        nil,  -- coSimulation
+        nil,  -- scheduledExecution
+        nil,  -- unitDefinitions
+        nil,  -- typeDefinitions
+        nil,  -- logCategories
+        nil,  -- defaultExperiment
+        [
+            mk_Clock
+            (
+                mk_Location("modelDescription.xml", 6),
+                "Powertrain::FRAMES_in_CLOCK",  -- name
+                1002,  -- valueReference
+                nil,  -- description
+                <input>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- canBeDeactivated
+                nil,  -- priority
+                <triggered>,  -- intervalVariability
+                nil,  -- intervalDecimal
+                nil,  -- shiftDecimal
+                nil,  -- supportsFraction
+                nil,  -- resolution
+                nil,  -- intervalCounter
+                nil,  -- shiftCounter
+                nil,  -- annotations
+                nil   -- alias
+            ),
+            mk_Binary
+            (
+                mk_Location("modelDescription.xml", 8),
+                "Powertrain::FRAMES_in",  -- name
+                1001,  -- valueReference
+                nil,  -- description
+                <input>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1002
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- mimeType
+                nil,  -- maxSize
+                nil,  -- annotations
+                nil,  -- dimension
+                nil,  -- start
+                nil   -- alias
+            ),
+            mk_Clock
+            (
+                mk_Location("modelDescription.xml", 10),
+                "Powertrain::FRAMES_out_CLOCK",  -- name
+                1004,  -- valueReference
+                nil,  -- description
+                <output>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- canBeDeactivated
+                nil,  -- priority
+                <triggered>,  -- intervalVariability
+                nil,  -- intervalDecimal
+                nil,  -- shiftDecimal
+                nil,  -- supportsFraction
+                nil,  -- resolution
+                nil,  -- intervalCounter
+                nil,  -- shiftCounter
+                nil,  -- annotations
+                nil   -- alias
+            ),
+            mk_Binary
+            (
+                mk_Location("modelDescription.xml", 12),
+                "Powertrain::FRAMES_out",  -- name
+                1003,  -- valueReference
+                nil,  -- description
+                <output>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1004
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- mimeType
+                nil,  -- maxSize
+                nil,  -- annotations
+                nil,  -- dimension
+                nil,  -- start
+                nil   -- alias
+            ),
+            mk_Clock
+            (
+                mk_Location("modelDescription.xml", 15),
+                "Powertrain::tcuSensors_CLOCK",  -- name
+                1007,  -- valueReference
+                nil,  -- description
+                <input>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- canBeDeactivated
+                nil,  -- priority
+                <triggered>,  -- intervalVariability
+                nil,  -- intervalDecimal
+                nil,  -- shiftDecimal
+                nil,  -- supportsFraction
+                nil,  -- resolution
+                nil,  -- intervalCounter
+                nil,  -- shiftCounter
+                nil,  -- annotations
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 17),
+                "Powertrain::tcuSensors::tcuSensors::vCar",  -- name
+                1005,  -- valueReference
+                nil,  -- description
+                <input>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1007
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 19),
+                "Powertrain::tcuSensors::tcuSensors::oilTemp",  -- name
+                1006,  -- valueReference
+                nil,  -- description
+                <input>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1007
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    20
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            ),
+            mk_Clock
+            (
+                mk_Location("modelDescription.xml", 22),
+                "Powertrain::tcuState_CLOCK",  -- name
+                1011,  -- valueReference
+                nil,  -- description
+                <input>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- canBeDeactivated
+                nil,  -- priority
+                <triggered>,  -- intervalVariability
+                nil,  -- intervalDecimal
+                nil,  -- shiftDecimal
+                nil,  -- supportsFraction
+                nil,  -- resolution
+                nil,  -- intervalCounter
+                nil,  -- shiftCounter
+                nil,  -- annotations
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 24),
+                "Powertrain::tcuState::tcuState::state",  -- name
+                1008,  -- valueReference
+                nil,  -- description
+                <input>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1011
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 26),
+                "Powertrain::tcuState::tcuState::gear",  -- name
+                1009,  -- valueReference
+                nil,  -- description
+                <input>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1011
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 28),
+                "Powertrain::tcuState::tcuState::targetGear",  -- name
+                1010,  -- valueReference
+                nil,  -- description
+                <input>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1011
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            ),
+            mk_Clock
+            (
+                mk_Location("modelDescription.xml", 31),
+                "Powertrain::ecuState_CLOCK",  -- name
+                1016,  -- valueReference
+                nil,  -- description
+                <output>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                nil,  -- clocks
+                nil,  -- declaredType
+                nil,  -- canBeDeactivated
+                nil,  -- priority
+                <triggered>,  -- intervalVariability
+                nil,  -- intervalDecimal
+                nil,  -- shiftDecimal
+                nil,  -- supportsFraction
+                nil,  -- resolution
+                nil,  -- intervalCounter
+                nil,  -- shiftCounter
+                nil,  -- annotations
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 33),
+                "Powertrain::ecuState::ecuState::accelPedal",  -- name
+                1012,  -- valueReference
+                nil,  -- description
+                <output>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1016
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 35),
+                "Powertrain::ecuState::ecuState::k15",  -- name
+                1013,  -- valueReference
+                nil,  -- description
+                <output>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1016
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 37),
+                "Powertrain::ecuState::ecuState::oilTemp",  -- name
+                1014,  -- valueReference
+                nil,  -- description
+                <output>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1016
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            ),
+            mk_Float64
+            (
+                mk_Location("modelDescription.xml", 39),
+                "Powertrain::ecuState::ecuState::radiatorTemp",  -- name
+                1015,  -- valueReference
+                nil,  -- description
+                <output>,  -- causality
+                <discrete>,  -- variability
+                nil,  -- canHandleMultipleSetPerTimeInstant
+                -- clocks
+                [
+                    1016
+                ],
+                nil,  -- intermediateUpdate
+                nil,  -- previous
+                nil,  -- declaredType
+                nil,  -- initial
+                nil,  -- quantity
+                nil,  -- unit
+                nil,  -- displayUnit
+                nil,  -- relativeQuantity
+                nil,  -- unbounded
+                nil,  -- min
+                nil,  -- max
+                nil,  -- nominal
+                -- start
+                [
+                    0
+                ],
+                nil,  -- derivative
+                nil,  -- reinit
+                nil,  -- annotations
+                nil,  -- dimension
+                nil   -- alias
+            )
+        ],
+        mk_ModelStructure
+        (
+            mk_Location("modelDescription.xml", 41),
+            nil,  -- output
+            nil,  -- continuousStateDerivative
+            nil,  -- clockedState
+            nil,  -- initialUnknown
+            nil   -- eventIndicator
+        ),
+        nil   -- annotations
+    );
+
+/**
+ * VDM value created from /tmp/sources/buildDescription.xml
+ */
+values
+    testBuildDescription =
+    mk_FmiBuildDescription
+    (
+        mk_Location("sources/buildDescription.xml", 2),
+        "3.0-beta",  -- fmiVersion
+        -- buildConfiguration
+        [
+            mk_BuildConfiguration
+            (
+                mk_Location("sources/buildDescription.xml", 4),
+                "PlantModel",  -- modelIdentifier
+                nil,  -- platform
+                "Build configuration for desktop platforms",  -- description
+                -- sourceFileSet
+                [
+                    mk_SourceFileSet
+                    (
+                        mk_Location("sources/buildDescription.xml", 5),
+                        nil,  -- name
+                        "C99",  -- language
+                        nil,  -- compiler
+                        nil,  -- compilerOptions
+                        -- sourceFile
+                        [
+                            mk_SourceFile
+                            (
+                                mk_Location("sources/buildDescription.xml", 6),
+                                "fmi3Functions.c",  -- name
+                                nil   -- annotations
+                            ),
+                            mk_SourceFile
+                            (
+                                mk_Location("sources/buildDescription.xml", 7),
+                                "solver.c",  -- name
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- preprocessorDefinition
+                        nil,  -- includeDirectory
+                        nil   -- annotations
+                    ),
+                    mk_SourceFileSet
+                    (
+                        mk_Location("sources/buildDescription.xml", 9),
+                        nil,  -- name
+                        "C++11",  -- language
+                        nil,  -- compiler
+                        nil,  -- compilerOptions
+                        -- sourceFile
+                        [
+                            mk_SourceFile
+                            (
+                                mk_Location("sources/buildDescription.xml", 10),
+                                "model.c",  -- name
+                                nil   -- annotations
+                            ),
+                            mk_SourceFile
+                            (
+                                mk_Location("sources/buildDescription.xml", 11),
+                                "logging/src/logger.c",  -- name
+                                nil   -- annotations
+                            )
+                        ],
+                        -- preprocessorDefinition
+                        [
+                            mk_PreprocessorDefinition
+                            (
+                                mk_Location("sources/buildDescription.xml", 12),
+                                "FMI_VERSION",  -- name
+                                nil,  -- optional
+                                "3",  -- value
+                                nil,  -- description
+                                nil,  -- option
+                                nil   -- annotations
+                            ),
+                            mk_PreprocessorDefinition
+                            (
+                                mk_Location("sources/buildDescription.xml", 13),
+                                "LOG_TO_FILE",  -- name
+                                true,  -- optional
+                                nil,  -- value
+                                nil,  -- description
+                                nil,  -- option
+                                nil   -- annotations
+                            ),
+                            mk_PreprocessorDefinition
+                            (
+                                mk_Location("sources/buildDescription.xml", 14),
+                                "LOG_LEVEL",  -- name
+                                true,  -- optional
+                                "0",  -- value
+                                nil,  -- description
+                                -- option
+                                [
+                                    mk_Option
+                                    (
+                                        mk_Location("sources/buildDescription.xml", 15),
+                                        "0",  -- value
+                                        "Log infos, warnings and errors"   -- description
+                                    ),
+                                    mk_Option
+                                    (
+                                        mk_Location("sources/buildDescription.xml", 16),
+                                        "1",  -- value
+                                        "Log warnings and errors"   -- description
+                                    ),
+                                    mk_Option
+                                    (
+                                        mk_Location("sources/buildDescription.xml", 17),
+                                        "2",  -- value
+                                        "Log only errors"   -- description
+                                    )
+                                ],
+                                nil   -- annotations
+                            )
+                        ],
+                        -- includeDirectory
+                        [
+                            mk_IncludeDirectory
+                            (
+                                mk_Location("sources/buildDescription.xml", 19),
+                                "logging/include",  -- name
+                                nil   -- annotations
+                            )
+                        ],
+                        nil   -- annotations
+                    )
+                ],
+                -- library
+                [
+                    mk_Library
+                    (
+                        mk_Location("sources/buildDescription.xml", 21),
+                        "hdf5",  -- name
+                        ">=1.8,!=1.8.17,<1.10",  -- version
+                        true,  -- external
+                        "HDF5",  -- description
+                        nil   -- annotations
+                    )
+                ],
+                nil   -- annotations
+            ),
+            mk_BuildConfiguration
+            (
+                mk_Location("sources/buildDescription.xml", 24),
+                "PlantModel",  -- modelIdentifier
+                "aarch64-linux",  -- platform
+                nil,  -- description
+                -- sourceFileSet
+                [
+                    mk_SourceFileSet
+                    (
+                        mk_Location("sources/buildDescription.xml", 25),
+                        nil,  -- name
+                        "C99",  -- language
+                        nil,  -- compiler
+                        nil,  -- compilerOptions
+                        -- sourceFile
+                        [
+                            mk_SourceFile
+                            (
+                                mk_Location("sources/buildDescription.xml", 26),
+                                "fmi3Functions.c",  -- name
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- preprocessorDefinition
+                        nil,  -- includeDirectory
+                        nil   -- annotations
+                    ),
+                    mk_SourceFileSet
+                    (
+                        mk_Location("sources/buildDescription.xml", 28),
+                        nil,  -- name
+                        "C++11",  -- language
+                        "clang++",  -- compiler
+                        "-fno-rtti",  -- compilerOptions
+                        -- sourceFile
+                        [
+                            mk_SourceFile
+                            (
+                                mk_Location("sources/buildDescription.xml", 29),
+                                "model.c",  -- name
+                                nil   -- annotations
+                            )
+                        ],
+                        -- preprocessorDefinition
+                        [
+                            mk_PreprocessorDefinition
+                            (
+                                mk_Location("sources/buildDescription.xml", 30),
+                                "NO_FILE_SYSTEM",  -- name
+                                nil,  -- optional
+                                nil,  -- value
+                                nil,  -- description
+                                nil,  -- option
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- includeDirectory
+                        nil   -- annotations
+                    )
+                ],
+                -- library
+                [
+                    mk_Library
+                    (
+                        mk_Location("sources/buildDescription.xml", 32),
+                        "libm.a",  -- name
+                        nil,  -- version
+                        nil,  -- external
+                        "OpenLibm math library",  -- description
+                        nil   -- annotations
+                    )
+                ],
+                nil   -- annotations
+            )
+        ],
+        nil   -- annotations
+    );
+
+/**
+ * VDM value created from /tmp/terminalsAndIcons/terminalsAndIcons.xml
+ */
+values
+    testTerminalsAndIcons =
+    mk_FmiTerminalsAndIcons
+    (
+        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 2),
+        "3.0-alpha6",  -- fmiVersion
+        nil,  -- graphicalRepresentation
+        [
+            mk_Terminal
+            (
+                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 5),
+                "Powertrain",  -- name
+                "bus",  -- matchingRule
+                "bus",  -- terminalKind
+                "Powertrain CAN bus defined with dbc file",  -- description
+                -- terminalMemberVariable
+                [
+                    mk_TerminalMemberVariable
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 7),
+                        "Powertrain::FRAMES_in_CLOCK",  -- variableName
+                        nil,  -- memberName
+                        "signal",  -- variableKind
+                        nil   -- annotations
+                    ),
+                    mk_TerminalMemberVariable
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 9),
+                        "Powertrain::FRAMES_in",  -- variableName
+                        nil,  -- memberName
+                        "signal",  -- variableKind
+                        nil   -- annotations
+                    ),
+                    mk_TerminalMemberVariable
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 11),
+                        "Powertrain::FRAMES_out_CLOCK",  -- variableName
+                        nil,  -- memberName
+                        "signal",  -- variableKind
+                        nil   -- annotations
+                    ),
+                    mk_TerminalMemberVariable
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 13),
+                        "Powertrain::FRAMES_out",  -- variableName
+                        nil,  -- memberName
+                        "signal",  -- variableKind
+                        nil   -- annotations
+                    )
+                ],
+                nil,  -- terminalStreamMemberVariable
+                -- terminal
+                [
+                    mk_Terminal
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 14),
+                        "tcuSensors",  -- name
+                        "bus",  -- matchingRule
+                        "frame",  -- terminalKind
+                        nil,  -- description
+                        -- terminalMemberVariable
+                        [
+                            mk_TerminalMemberVariable
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 16),
+                                "Powertrain::tcuSensors_CLOCK",  -- variableName
+                                nil,  -- memberName
+                                "signal",  -- variableKind
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalStreamMemberVariable
+                        -- terminal
+                        [
+                            mk_Terminal
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 17),
+                                "tcuSensors",  -- name
+                                "bus",  -- matchingRule
+                                "pdu",  -- terminalKind
+                                nil,  -- description
+                                -- terminalMemberVariable
+                                [
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 19),
+                                        "Powertrain::tcuSensors::tcuSensors::vCar",  -- variableName
+                                        "vCar",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 21),
+                                        "Powertrain::tcuSensors::tcuSensors::oilTemp",  -- variableName
+                                        "oilTemp",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    )
+                                ],
+                                nil,  -- terminalStreamMemberVariable
+                                nil,  -- terminal
+                                nil,  -- terminalGraphicalRepresentation
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalGraphicalRepresentation
+                        nil   -- annotations
+                    ),
+                    mk_Terminal
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 24),
+                        "tcuState",  -- name
+                        "bus",  -- matchingRule
+                        "frame",  -- terminalKind
+                        nil,  -- description
+                        -- terminalMemberVariable
+                        [
+                            mk_TerminalMemberVariable
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 26),
+                                "Powertrain::tcuState_CLOCK",  -- variableName
+                                nil,  -- memberName
+                                "signal",  -- variableKind
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalStreamMemberVariable
+                        -- terminal
+                        [
+                            mk_Terminal
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 27),
+                                "tcuState",  -- name
+                                "bus",  -- matchingRule
+                                "pdu",  -- terminalKind
+                                nil,  -- description
+                                -- terminalMemberVariable
+                                [
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 29),
+                                        "Powertrain::tcuState::tcuState::state",  -- variableName
+                                        "state",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 31),
+                                        "Powertrain::tcuState::tcuState::gear",  -- variableName
+                                        "gear",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 33),
+                                        "Powertrain::tcuState::tcuState::targetGear",  -- variableName
+                                        "targetGear",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    )
+                                ],
+                                nil,  -- terminalStreamMemberVariable
+                                nil,  -- terminal
+                                nil,  -- terminalGraphicalRepresentation
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalGraphicalRepresentation
+                        nil   -- annotations
+                    ),
+                    mk_Terminal
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 36),
+                        "ecuState",  -- name
+                        "bus",  -- matchingRule
+                        "frame",  -- terminalKind
+                        nil,  -- description
+                        -- terminalMemberVariable
+                        [
+                            mk_TerminalMemberVariable
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 38),
+                                "Powertrain::ecuState_CLOCK",  -- variableName
+                                nil,  -- memberName
+                                "signal",  -- variableKind
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalStreamMemberVariable
+                        -- terminal
+                        [
+                            mk_Terminal
+                            (
+                                mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 39),
+                                "ecuState",  -- name
+                                "bus",  -- matchingRule
+                                "pdu",  -- terminalKind
+                                nil,  -- description
+                                -- terminalMemberVariable
+                                [
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 41),
+                                        "Powertrain::ecuState::ecuState::accelPedal",  -- variableName
+                                        "accelPedal",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 43),
+                                        "Powertrain::ecuState::ecuState::k15",  -- variableName
+                                        "k15",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 45),
+                                        "Powertrain::ecuState::ecuState::oilTemp",  -- variableName
+                                        "oilTemp",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    ),
+                                    mk_TerminalMemberVariable
+                                    (
+                                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 47),
+                                        "Powertrain::ecuState::ecuState::radiatorTemp",  -- variableName
+                                        "radiatorTemp",  -- memberName
+                                        "signal",  -- variableKind
+                                        nil   -- annotations
+                                    )
+                                ],
+                                nil,  -- terminalStreamMemberVariable
+                                nil,  -- terminal
+                                nil,  -- terminalGraphicalRepresentation
+                                nil   -- annotations
+                            )
+                        ],
+                        nil,  -- terminalGraphicalRepresentation
+                        nil   -- annotations
+                    )
+                ],
+                nil,  -- terminalGraphicalRepresentation
+                [
+                    mk_Annotation
+                    (
+                        mk_Location("terminalsAndIcons/terminalsAndIcons.xml", 51),
+                        "ECU",  -- type
+                        nil   -- any
+                    )
+                ] 
+            )
+        ],
+        nil   -- annotations
+    );
+
+/**
+ * Test NetworkDescription to match the FMU configuration above.
+ */
+	errorNetworkDescription : NetworkDescription =
+	[
+		mk_Bus
+		(
+			"Powertrain",
+			[
+				mk_Frame
+				(
+					"tcuSensors",
+					[
+						mk_PDU
+						(
+							"tcuSensors",
+							[
+								mk_Signal("vCar", nil),
+								mk_Signal("oilTemp", nil)
+							]
+						)
+					]
+				),
+				mk_Frame
+				(
+					"tcuState",
+					[
+						mk_PDU
+						(
+							"tcuState",
+							[
+								mk_Signal("state", nil),
+								mk_Signal("gear", nil),
+								mk_Signal("targetGear", nil)
+							]
+						)
+					]
+				),
+				mk_Frame
+				(
+					"ecuState",
+					[
+						mk_PDU
+						(
+							"ecuState",
+							[
+								mk_Signal("accelPedal", nil),
+								mk_Signal("k15", nil),
+								mk_Signal("oilTemp", nil),
+								mk_Signal("radiatorTemp", nil)
+							]
+						)
+					]
+				)
+			],
+
+			"ECU"
+		)
+	];
