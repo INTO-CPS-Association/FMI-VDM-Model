@@ -50,7 +50,7 @@ functions
 		-- loc2str(busTerminal.location))
 		( busTerminal.terminalKind = "bus" ),
 
-		-- @OnFail("Bus temrinal must have matchingRule 'bus' at %s",
+		-- @OnFail("Bus terminal must have matchingRule 'bus' at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.matchingRule = "bus" ),
 
