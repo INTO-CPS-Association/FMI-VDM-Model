@@ -37,7 +37,7 @@ functions
 	rule_231a: NetworkDescription * FmiTerminalsAndIcons +> bool
 	rule_231a(networkDesc, terminalsAndIcons) == allOf
 	([
-		-- @OnFail("Missing 'bus' Terminal for %s", bus.name)
+		-- @OnFail("%NAME: %NAME: Missing 'bus' Terminal for %s", bus.name)
 		( exists b in seq terminalsAndIcons.terminals & b.name = bus.name )
 
 		| bus in seq networkDesc
@@ -46,19 +46,19 @@ functions
 	rule_231b: Bus * Terminal +> bool
 	rule_231b(busDesc, busTerminal) == allOf
 	([
-		-- @OnFail("Bus terminal must be terminalKind 'bus' at %s",
+		-- @OnFail("%NAME: %NAME: Bus terminal must be terminalKind 'bus' at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.terminalKind = "bus" ),
 
-		-- @OnFail("Bus terminal must have matchingRule 'bus' at %s",
+		-- @OnFail("%NAME: %NAME: Bus terminal must have matchingRule 'bus' at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.matchingRule = "bus" ),
 
-		-- @OnFail("Bus %s does not match network description name %s at %s",
+		-- @OnFail("%NAME: %NAME: Bus %s does not match network description name %s at %s",
 		-- busTerminal.name, busDesc.name, loc2str(busTerminal.location))
 		( busTerminal.name = busDesc.name ),
 
-		-- @OnFail("Bus has wrong number of frames at %s",
+		-- @OnFail("%NAME: %NAME: Bus has wrong number of frames at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.terminal <> nil
 		  and len busTerminal.terminal = len busDesc.frames )
@@ -74,18 +74,18 @@ functions
 		in
 			allOf
 			([
-				-- @OnFail("Missing TerminalMemberVariable for %s", variableName)
+				-- @OnFail("%NAME: %NAME: Missing TerminalMemberVariable for %s", variableName)
 				( exists tmv in seq busTerminal.terminalMemberVariable &
 						tmv.variableName = variableName ),
 
-				-- @OnFail("Missing TerminalMemberVariable for %s", clockName)
+				-- @OnFail("%NAME: %NAME: Missing TerminalMemberVariable for %s", clockName)
 				( exists tmv in seq busTerminal.terminalMemberVariable &
 						tmv.variableName = clockName ),
 
-				-- @OnFail("Frame variable must be fmi3Binary for %s", variableName)
+				-- @OnFail("%NAME: Frame variable must be fmi3Binary for %s", variableName)
 				( is_Binary(variable) ),
 
-				-- @OnFail("Frame variable must be triggered Clock for %s", clockName)
+				-- @OnFail("%NAME: Frame variable must be triggered Clock for %s", clockName)
 				( is_Clock(clockvar) and clockvar.intervalVariability = <triggered> )
 			])
 
@@ -93,19 +93,19 @@ functions
 	]
 	^
 	[
-		-- @OnFail("TerminalMemberVariables of %s must all be variableKind 'signal'",
+		-- @OnFail("%NAME: TerminalMemberVariables of %s must all be variableKind 'signal'",
 		-- busTerminal.name)
 		( forall tmv in seq busTerminal.terminalMemberVariable &
 				tmv.variableKind = "signal" ),
 
-		-- @OnFail("TerminalStreamMemberVariables must be empty at %s",
+		-- @OnFail("%NAME: TerminalStreamMemberVariables must be empty at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.terminalStreamMemberVariable = nil ),
 
-		-- @OnFail("Missing annotation for bus %s", busDesc.name)
+		-- @OnFail("%NAME: Missing annotation for bus %s", busDesc.name)
 		( busTerminal.annotations <> nil )
 
-		-- @OnFail("Bus %s annotation does not match network at %s",
+		-- @OnFail("%NAME: Bus %s annotation does not match network at %s",
 		-- busDesc.name, loc2str(busTerminal.location))
 		and ( busTerminal.annotations(1).type = busDesc.nodes )
 	]);
@@ -113,7 +113,7 @@ functions
 	rule_232a: Bus * Terminal +> bool
 	rule_232a(busDesc, busTerminal) == allOf
 	([
-		-- @OnFail("Missing 'frame' Terminal for %s", frame.name)
+		-- @OnFail("%NAME: Missing 'frame' Terminal for %s", frame.name)
 		( exists f in seq busTerminal.terminal & f.name = frame.name )
 
 		| frame in seq busDesc.frames
@@ -122,15 +122,15 @@ functions
 	rule_232b: Frame * Terminal +> bool
 	rule_232b(frameDesc, frameTerminal) == allOf
 	([
-		-- @OnFail("Frame terminal must be terminalKind 'frame' at %s",
+		-- @OnFail("%NAME: Frame terminal must be terminalKind 'frame' at %s",
 		-- loc2str(frameTerminal.location))
 		( frameTerminal.terminalKind = "frame" ),
 
-		-- @OnFail("Frame temrinal must have matchingRule 'bus' at %s",
+		-- @OnFail("%NAME: Frame temrinal must have matchingRule 'bus' at %s",
 		-- loc2str(frameTerminal.location))
 		( frameTerminal.matchingRule = "bus" ),
 
-		-- @OnFail("Frame %s does not match network description name %s at %s",
+		-- @OnFail("%NAME: Frame %s does not match network description name %s at %s",
 		-- frameTerminal.name, frameDesc.name, loc2str(frameTerminal.location))
 		( frameTerminal.name = frameDesc.name )
 	]);
@@ -141,25 +141,25 @@ functions
 		let clockName = busDesc.name ^ "::" ^ frameDesc.name ^ "_CLOCK" in allOf
 		([
 			let var = lookup(modelDesc, clockName) in
-				-- @OnFail("Missing ModelVariable for %s", clockName)
+				-- @OnFail("%NAME: Missing ModelVariable for %s", clockName)
 				( var <> nil )
 
-				-- @OnFail("Variable is not of type Clock: %s", clockName)
+				-- @OnFail("%NAME: Variable is not of type Clock: %s", clockName)
 				and ( is_Clock(var) )	-- Causality checked in rule_234a
 
-				-- @OnFail("Clock %s must be <triggered>", clockName)
+				-- @OnFail("%NAME: Clock %s must be <triggered>", clockName)
 				and ( var.intervalVariability = <triggered> ),
 
-			-- @OnFail("Missing TerminalMemberVariable for %s", clockName)
+			-- @OnFail("%NAME: Missing TerminalMemberVariable for %s", clockName)
 			( exists tmv in seq frameTerminal.terminalMemberVariable &
 					tmv.variableName = clockName )
 		]),
 
-		-- @OnFail("TerminalStreamMemberVariables must be empty at %s",
+		-- @OnFail("%NAME: TerminalStreamMemberVariables must be empty at %s",
 		-- loc2str(frameTerminal.location))
 		( frameTerminal.terminalStreamMemberVariable = nil ),
 
-		-- @OnFail("Frame has wrong number of PDUs at %s",
+		-- @OnFail("%NAME: Frame has wrong number of PDUs at %s",
 		-- loc2str(frameTerminal.location))
 		( frameTerminal.terminal <> nil
 		  and len frameTerminal.terminal = len frameDesc.pdus )
@@ -168,7 +168,7 @@ functions
 	rule_233a: Frame * Terminal +> bool
 	rule_233a(frameDesc, frameTerminal) == allOf
 	([
-		-- @OnFail("Missing 'pdu' Terminal for %s", pdu.name)
+		-- @OnFail("%NAME: Missing 'pdu' Terminal for %s", pdu.name)
 		( exists p in seq frameTerminal.terminal & p.name = pdu.name )
 
 		| pdu in seq frameDesc.pdus
@@ -177,15 +177,15 @@ functions
 	rule_233b: PDU * Terminal +> bool
 	rule_233b(pduDesc, pduTerminal) == allOf
 	([
-		-- @OnFail("PDU terminal must be terminalKind 'frame' at %s",
+		-- @OnFail("%NAME: PDU terminal must be terminalKind 'frame' at %s",
 		-- loc2str(pduTerminal.location))
 		( pduTerminal.terminalKind = "pdu" ),
 
-		-- @OnFail("PDU temrinal must have matchingRule 'bus' at %s",
+		-- @OnFail("%NAME: PDU temrinal must have matchingRule 'bus' at %s",
 		-- loc2str(pduTerminal.location))
 		( pduTerminal.matchingRule = "bus" ),
 
-		-- @OnFail("PDU %s does not match network description name %s at %s",
+		-- @OnFail("%NAME: PDU %s does not match network description name %s at %s",
 		-- pduTerminal.name, pduDesc.name, loc2str(pduTerminal.location))
 		( pduTerminal.name = pduDesc.name )
 	]);
@@ -193,18 +193,18 @@ functions
 	rule_233c: Terminal +> bool
 	rule_233c(pduTerminal) == allOf
 	([
-		-- @OnFail("TerminalStreamMemberVariables must be empty at %s",
+		-- @OnFail("%NAME: TerminalStreamMemberVariables must be empty at %s",
 		-- loc2str(pduTerminal.location))
 		( pduTerminal.terminalStreamMemberVariable = nil ),
 
-		-- @OnFail("PDU can have no Terminals at %s", loc2str(pduTerminal.location))
+		-- @OnFail("%NAME: PDU can have no Terminals at %s", loc2str(pduTerminal.location))
 		( pduTerminal.terminal = nil )
 	]);
 
 	rule_234a: Bus * Frame * PDU * FmiModelDescription * Terminal +> bool
 	rule_234a(busDesc, frameDesc, pduDesc, modelDesc, pduTerminal) == allOf
 	([
-		-- @OnFail("PDU has wrong number of signals at %s",
+		-- @OnFail("%NAME: PDU has wrong number of signals at %s",
 		-- loc2str(pduTerminal.location))
 		( pduTerminal.terminalMemberVariable <> nil
 		  and len pduTerminal.terminalMemberVariable = len pduDesc.signals ),
@@ -220,7 +220,7 @@ functions
 					else <local>  -- default causality
 				in allOf
 				([
-					-- @OnFail("Clock causality must be input or output at %s",
+					-- @OnFail("%NAME: Clock causality must be input or output at %s",
 					-- loc2str(frameClock.location))
 					( clockCausality in set {<input>, <output>} )
 				]
@@ -233,11 +233,11 @@ functions
 								then signalVariable.causality
 								else <local>
 					in
-						-- @OnFail("Signal causality should be %s at %s",
+						-- @OnFail("%NAME: Signal causality should be %s at %s",
 						-- clockCausality, loc2str(signalTerminal.location))
 						( signalCausality = clockCausality )
 
-						-- @OnFail("Signal causality must be input or output at %s",
+						-- @OnFail("%NAME: Signal causality must be input or output at %s",
 						-- loc2str(signalVariable.location))
 						and ( signalCausality in set {<input>, <output>} )
 
@@ -248,24 +248,24 @@ functions
 	rule_234b: Signal * FmiModelDescription * TerminalMemberVariable +> bool
 	rule_234b(signalDesc, modelDesc, signalVariable) == allOf
 	([
-		-- @OnFail("Signal must be variableKind 'signal' at %s",
+		-- @OnFail("%NAME: Signal must be variableKind 'signal' at %s",
 		-- loc2str(signalVariable.location))
 		( signalVariable.variableKind = "signal" ),
 
-		-- @OnFail("Signal memberName should be '%s' at %s",
+		-- @OnFail("%NAME: Signal memberName should be '%s' at %s",
 		-- signalDesc.name, loc2str(signalVariable.location))
 		( signalVariable.memberName = signalDesc.name ),
 
 		let var = lookup(modelDesc, signalVariable.variableName) in allOf
 		([
-			-- @OnFail("Signal variable %s is not defined", signalVariable.variableName)
+			-- @OnFail("%NAME: Signal variable %s is not defined", signalVariable.variableName)
 			(var <> nil),
 
-			-- @OnFail("Signal unit must be %s at %s",
+			-- @OnFail("%NAME: Signal unit must be %s at %s",
 			-- signalDesc.unit, loc2str(signalVariable.location))
 			( var <> nil => signalDesc.unit <> nil => var.unit = signalDesc.unit ),
 
-			-- @OnFail("Variable is not clocked at %s", loc2str(signalVariable.location))
+			-- @OnFail("%NAME: Variable is not clocked at %s", loc2str(signalVariable.location))
 			( var.clocks <> nil )
 		])
 	]);
@@ -281,7 +281,7 @@ functions
 		let matching = {b | b in seq terminalsAndIcons.terminals &
 			b.name = busDesc.name }
 		in
-			-- @OnFail("Missing or duplicate bus terminal for %s", busDesc.name)
+			-- @OnFail("%NAME: Missing or duplicate bus terminal for %s", busDesc.name)
 			( card matching = 1 )
 				=> let {busTerminal} = matching in
 					busValidation(busDesc, modelDesc, busTerminal)
@@ -299,7 +299,7 @@ functions
 	^
 	[
 		let matching = {f | f in seq busTerminal.terminal & f.name = frameDesc.name } in
-			-- @OnFail("Missing or duplicate frame for %s", frameDesc.name)
+			-- @OnFail("%NAME: Missing or duplicate frame for %s", frameDesc.name)
 			( card matching = 1 )
 				=> let {frameTerminal} = matching in
 					frameValidation(busDesc, frameDesc, modelDesc, frameTerminal)
@@ -317,7 +317,7 @@ functions
 	^
 	[
 		let matching = {p | p in seq frameTerminal.terminal & p.name = pduDesc.name } in
-			-- @OnFail("Missing or duplicate PDU for %s", pduDesc.name)
+			-- @OnFail("%NAME: Missing or duplicate PDU for %s", pduDesc.name)
 			( card matching = 1 )
 				=> let {pduTerminal} = matching in
 					pduValidation(busDesc, frameDesc, pduDesc, modelDesc, pduTerminal)
@@ -341,7 +341,7 @@ functions
 				pduDesc.name ^ "::" ^
 				signalDesc.name}
 		in
-			-- @OnFail("Missing or duplicate TerminalMemberVariable for %s", signalDesc.name)
+			-- @OnFail("%NAME: Missing or duplicate TerminalMemberVariable for %s", signalDesc.name)
 			( card matching = 1 )
 				=> let {signalVariable} = matching in
 					signalValidation(signalDesc, modelDesc, signalVariable)
