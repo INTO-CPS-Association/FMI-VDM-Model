@@ -278,10 +278,11 @@ functions
 	]
 	^
 	[
-		let matching = {b | b in seq terminalsAndIcons.terminals & b.name = busDesc.name } in
-			matching <> {} =>
-				let busTerminal in set matching in
-					busValidation(busDesc, modelDesc, busTerminal)
+		allOf
+		([
+			busValidation(busDesc, modelDesc, busTerminal)
+			| busTerminal in seq terminalsAndIcons.terminals & busTerminal.name = busDesc.name
+		])
 
 		| busDesc in seq networkDesc
 	]);
@@ -295,10 +296,11 @@ functions
 	]
 	^
 	[
-		let matching = {f | f in seq busTerminal.terminal & f.name = frameDesc.name } in
-			matching <> {} =>
-				let {frameTerminal} = matching in
-					frameValidation(busDesc, frameDesc, modelDesc, frameTerminal)
+		allOf
+		([
+			frameValidation(busDesc, frameDesc, modelDesc, frameTerminal)
+			| frameTerminal in seq busTerminal.terminal & frameTerminal.name = frameDesc.name
+		])
 			
 		| frameDesc in seq busDesc.frames
 	]);
@@ -312,11 +314,12 @@ functions
 	]
 	^
 	[
-		let matching = {p | p in seq frameTerminal.terminal & p.name = pduDesc.name } in
-			matching <> {} =>
-				let {pduTerminal} = matching in
-					pduValidation(busDesc, frameDesc, pduDesc, modelDesc, pduTerminal)
-			
+		allOf
+		([
+			pduValidation(busDesc, frameDesc, pduDesc, modelDesc, pduTerminal)
+			| pduTerminal in seq frameTerminal.terminal & pduTerminal.name = pduDesc.name
+		])
+
 		| pduDesc in seq frameDesc.pdus
 	]);
 
@@ -329,16 +332,17 @@ functions
 	]
 	^
 	[
-		let matching = {s | s in seq pduTerminal.terminalMemberVariable &
-			s.variableName =
-				busDesc.name ^ "::" ^
-				frameDesc.name ^ "::" ^
-				pduDesc.name ^ "::" ^
-				signalDesc.name}
-		in
-			matching <> {} =>
-				let {signalVariable} = matching in
-					signalValidation(signalDesc, modelDesc, signalVariable)
+		allOf
+		([
+			signalValidation(signalDesc, modelDesc, signalVariable)
+
+ 			| signalVariable in seq pduTerminal.terminalMemberVariable &
+				signalVariable.variableName =
+					busDesc.name ^ "::" ^
+					frameDesc.name ^ "::" ^
+					pduDesc.name ^ "::" ^
+					signalDesc.name
+		])
 			
 		| signalDesc in seq pduDesc.signals
 	]);
