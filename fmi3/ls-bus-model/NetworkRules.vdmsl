@@ -37,8 +37,8 @@ functions
 	rule_231a: NetworkDescription * FmiTerminalsAndIcons +> bool
 	rule_231a(networkDesc, terminalsAndIcons) == allOf
 	([
-		-- @OnFail("%NAME: %NAME: Missing 'bus' Terminal for %s", bus.name)
-		( exists b in seq terminalsAndIcons.terminals & b.name = bus.name )
+		-- @OnFail("%NAME: Missing unique 'bus' Terminal for %s", bus.name)
+		( exists1 b in seq terminalsAndIcons.terminals & b.name = bus.name )
 
 		| bus in seq networkDesc
 	]);
@@ -46,19 +46,19 @@ functions
 	rule_231b: Bus * Terminal +> bool
 	rule_231b(busDesc, busTerminal) == allOf
 	([
-		-- @OnFail("%NAME: %NAME: Bus terminal must be terminalKind 'bus' at %s",
+		-- @OnFail("%NAME: Bus terminal must be terminalKind 'bus' at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.terminalKind = "bus" ),
 
-		-- @OnFail("%NAME: %NAME: Bus terminal must have matchingRule 'bus' at %s",
+		-- @OnFail("%NAME: Bus terminal must have matchingRule 'bus' at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.matchingRule = "bus" ),
 
-		-- @OnFail("%NAME: %NAME: Bus %s does not match network description name %s at %s",
+		-- @OnFail("%NAME: Bus %s does not match network description name %s at %s",
 		-- busTerminal.name, busDesc.name, loc2str(busTerminal.location))
 		( busTerminal.name = busDesc.name ),
 
-		-- @OnFail("%NAME: %NAME: Bus has wrong number of frames at %s",
+		-- @OnFail("%NAME: Bus has wrong number of frames at %s",
 		-- loc2str(busTerminal.location))
 		( busTerminal.terminal <> nil
 		  and len busTerminal.terminal = len busDesc.frames )
@@ -74,11 +74,11 @@ functions
 		in
 			allOf
 			([
-				-- @OnFail("%NAME: %NAME: Missing TerminalMemberVariable for %s", variableName)
+				-- @OnFail("%NAME: Missing TerminalMemberVariable for %s", variableName)
 				( exists tmv in seq busTerminal.terminalMemberVariable &
 						tmv.variableName = variableName ),
 
-				-- @OnFail("%NAME: %NAME: Missing TerminalMemberVariable for %s", clockName)
+				-- @OnFail("%NAME: Missing TerminalMemberVariable for %s", clockName)
 				( exists tmv in seq busTerminal.terminalMemberVariable &
 						tmv.variableName = clockName ),
 
@@ -113,8 +113,8 @@ functions
 	rule_232a: Bus * Terminal +> bool
 	rule_232a(busDesc, busTerminal) == allOf
 	([
-		-- @OnFail("%NAME: Missing 'frame' Terminal for %s", frame.name)
-		( exists f in seq busTerminal.terminal & f.name = frame.name )
+		-- @OnFail("%NAME: Missing unique 'frame' Terminal for %s", frame.name)
+		( exists1 f in seq busTerminal.terminal & f.name = frame.name )
 
 		| frame in seq busDesc.frames
 	]);
@@ -168,8 +168,8 @@ functions
 	rule_233a: Frame * Terminal +> bool
 	rule_233a(frameDesc, frameTerminal) == allOf
 	([
-		-- @OnFail("%NAME: Missing 'pdu' Terminal for %s", pdu.name)
-		( exists p in seq frameTerminal.terminal & p.name = pdu.name )
+		-- @OnFail("%NAME: Missing unique 'pdu' Terminal for %s", pdu.name)
+		( exists1 p in seq frameTerminal.terminal & p.name = pdu.name )
 
 		| pdu in seq frameDesc.pdus
 	]);
@@ -278,12 +278,9 @@ functions
 	]
 	^
 	[
-		let matching = {b | b in seq terminalsAndIcons.terminals &
-			b.name = busDesc.name }
-		in
-			-- @OnFail("%NAME: Missing or duplicate bus terminal for %s", busDesc.name)
-			( card matching = 1 )
-				=> let {busTerminal} = matching in
+		let matching = {b | b in seq terminalsAndIcons.terminals & b.name = busDesc.name } in
+			matching <> {} =>
+				let busTerminal in set matching in
 					busValidation(busDesc, modelDesc, busTerminal)
 
 		| busDesc in seq networkDesc
@@ -299,9 +296,8 @@ functions
 	^
 	[
 		let matching = {f | f in seq busTerminal.terminal & f.name = frameDesc.name } in
-			-- @OnFail("%NAME: Missing or duplicate frame for %s", frameDesc.name)
-			( card matching = 1 )
-				=> let {frameTerminal} = matching in
+			matching <> {} =>
+				let {frameTerminal} = matching in
 					frameValidation(busDesc, frameDesc, modelDesc, frameTerminal)
 			
 		| frameDesc in seq busDesc.frames
@@ -317,9 +313,8 @@ functions
 	^
 	[
 		let matching = {p | p in seq frameTerminal.terminal & p.name = pduDesc.name } in
-			-- @OnFail("%NAME: Missing or duplicate PDU for %s", pduDesc.name)
-			( card matching = 1 )
-				=> let {pduTerminal} = matching in
+			matching <> {} =>
+				let {pduTerminal} = matching in
 					pduValidation(busDesc, frameDesc, pduDesc, modelDesc, pduTerminal)
 			
 		| pduDesc in seq frameDesc.pdus
@@ -341,9 +336,8 @@ functions
 				pduDesc.name ^ "::" ^
 				signalDesc.name}
 		in
-			-- @OnFail("%NAME: Missing or duplicate TerminalMemberVariable for %s", signalDesc.name)
-			( card matching = 1 )
-				=> let {signalVariable} = matching in
+			matching <> {} =>
+				let {signalVariable} = matching in
 					signalValidation(signalDesc, modelDesc, signalVariable)
 			
 		| signalDesc in seq pduDesc.signals
