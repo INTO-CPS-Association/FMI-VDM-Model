@@ -17,6 +17,7 @@ For FMI3
 * **fmi3.dynamic-model** - a VDM-SL model of the dynamic semantics of the FMI 3.0 API
 * **fmi3.dynamic-matrix** - a spreadsheet of the mode/state callability of the FMI3 API functions
 * **fmi3.rules-model** - a new VDM-SL model of static semantics, suitable for integration with the FMI Standard
+* **fmi3.ls-bus-model** - a VDM-SL model of the FMI3 Network Communication Layered Standard
 * **fmi3.vdmcheck** - a Java tool to convert FMI 3.0 modeDescription XML files to VDM-SL and check them
 
 General projects:
