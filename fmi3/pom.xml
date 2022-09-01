@@ -20,6 +20,7 @@
 	<modules>
 		<module>static-model</module>
 		<module>rule-model</module>
+		<module>ls-bus-model</module>
 		<module>vdmcheck</module>
 	</modules>
 
