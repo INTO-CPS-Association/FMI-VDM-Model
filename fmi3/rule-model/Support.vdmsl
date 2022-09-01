@@ -26,6 +26,12 @@
  *	SPDX-License-Identifier: MIT
  *
  *********************************************************************************/
+types
+	/**
+	 * A type passed to allOf, allowing arbitrary nested lists of lists of bools.
+	 */
+	NestedBools = seq of (bool | NestedBools);
+
 functions
 	/**
 	 * Provide a simple field default if the value is nil. Used in effective functions.
@@ -57,12 +63,17 @@ functions
 				else { test(item) | item in set data };
 
 	/**
-	 * Test whether a list of booleans contains only true. Note that the nil list is
-	 * considered to be true.
+	 * Test whether a list of booleans contains only true. Note that nil and empty lists
+	 * are considered to be true and lists can contain lists (see NestedBools type).
 	 */
-	allOf: [seq of bool] +> bool
+	allOf: [NestedBools] +> bool
 	allOf(s) ==
-		s <> nil and s <> [] => elems s = {true};
+		s <> nil and s <> [] =>
+			forall e in seq s &
+				if is_NestedBools(e)
+				then allOf(e)
+				else e
+	measure is not yet specified;
 
 	/**
 	 * Format the references of a rule name, one per line.

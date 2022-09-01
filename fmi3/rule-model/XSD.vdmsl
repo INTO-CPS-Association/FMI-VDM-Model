@@ -35,9 +35,16 @@ module XSD
 exports all
 definitions
 values
+
+#ifdef HIGH_PRECISION
 	NEGATIVE_INFINITY = 0xfff0000000000000;
 	NOT_A_NUMBER      = 0x7ff8000000000000;
 	POSITIVE_INFINITY = 0x7ff0000000000000;
+#else
+	NEGATIVE_INFINITY = 0xfff00000;
+	NOT_A_NUMBER      = 0x7ff80000;
+	POSITIVE_INFINITY = 0x7ff00000;
+#endif
 
 functions
 	xsdTotalDigits: real +> bool

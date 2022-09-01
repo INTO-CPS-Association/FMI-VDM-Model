@@ -52,20 +52,21 @@ types
 		rule("validVariableTypes", validVariableTypes(fmd)),
 		rule("validVariableNames", validVariableNames(fmd)),
 		rule("validTypeNames", validTypeNames(fmd)),
-		rule("validReinits", validReinits(fmd))
-	]
-	^ let evs = effectiveVariables(fmd.modelVariables, fmd.typeDefinitions) in
-	[
-		-- If these rules use variables, they use the effective values
-		-- The rules are defined in FmiModelDescription.adoc
-		rule("validMinMax", validMinMax(fmd, evs)),
-		rule("validStart", validStart(fmd, evs)),
-		rule("validMultipleSets", validMultipleSets(fmd, evs)),
-		rule("validClockPriorities", validClockPriorities(fmd, evs)),
-		rule("validOutput", validOutput(fmd, evs)),
-		rule("validStateDerivatives", validStateDerivatives(fmd, evs)),
-		rule("validInitialUnknowns", validInitialUnknowns(fmd, evs)),
-		rule("validEventIndicators", validEventIndicators(fmd, evs)),
-		rule("validOutputReferences", validOutputReferences(fmd, evs)),
-		rule("validUnknownDependencies", validUnknownDependencies(fmd, evs))
+		rule("validReinits", validReinits(fmd)),
+		
+		let evs = effectiveVariables(fmd.modelVariables, fmd.typeDefinitions) in
+		[
+			-- If these rules use variables, they use the effective values
+			-- The rules are defined in FmiModelDescription.adoc
+			rule("validMinMax", validMinMax(fmd, evs)),
+			rule("validStart", validStart(fmd, evs)),
+			rule("validMultipleSets", validMultipleSets(fmd, evs)),
+			rule("validClockPriorities", validClockPriorities(fmd, evs)),
+			rule("validOutput", validOutput(fmd, evs)),
+			rule("validStateDerivatives", validStateDerivatives(fmd, evs)),
+			rule("validInitialUnknowns", validInitialUnknowns(fmd, evs)),
+			rule("validEventIndicators", validEventIndicators(fmd, evs)),
+			rule("validOutputReferences", validOutputReferences(fmd, evs)),
+			rule("validUnknownDependencies", validUnknownDependencies(fmd, evs))
+		]
 	]);

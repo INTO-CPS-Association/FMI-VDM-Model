@@ -123,8 +123,8 @@ See <<ModelVariables>>.
 ----
 validAliasDisplayUnits: ModelVariables +> bool
 validAliasDisplayUnits(mvs) ==
-	allOf(conc
-	[
+	allOf
+	([
 		[
 			-- @OnFail("%NAME: Alias displayUnit requires Float unit definition at %s",
 			-- loc2str(a.location))
