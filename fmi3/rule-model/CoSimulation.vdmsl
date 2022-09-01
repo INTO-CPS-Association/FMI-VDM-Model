@@ -30,12 +30,13 @@ types
 	CoSimulation' = [CoSimulation]
 	inv cs == cs <> nil => allOf
 	([
-		inv_Annotations'(cs.annotations)
-	]
-	^ let ecs = effectiveCoSimulation(cs) in
-	[
-		-- Rules a defined in CoSimulation.adoc
-		rule("validCSModelIdentifier", validCSModelIdentifier(ecs))
+		inv_Annotations'(cs.annotations),
+	
+		let ecs = effectiveCoSimulation(cs) in
+		[
+			-- Rules a defined in CoSimulation.adoc
+			rule("validCSModelIdentifier", validCSModelIdentifier(ecs))
+		]
 	]);
 
 functions
