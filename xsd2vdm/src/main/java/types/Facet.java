@@ -32,10 +32,17 @@ abstract public class Facet
 	public final String kind;
 	public final String value;
 	
+	protected static String module = "XSD`";
+	
 	public Facet(String kind, String value)
 	{
 		this.kind = kind;
 		this.value = value;
+	}
+	
+	public static void setModule(String module)
+	{
+		Facet.module = module;
 	}
 	
 	@Override

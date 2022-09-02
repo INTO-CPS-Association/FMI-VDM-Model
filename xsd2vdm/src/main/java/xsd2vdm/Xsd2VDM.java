@@ -228,6 +228,20 @@ public class Xsd2VDM
 	 */
 	public Map<String, Type> createVDMSchema(File xsdFile, File vdmFile, boolean writeVDM, boolean noWarn) throws Exception
 	{
+		PrintStream output = (!writeVDM) ? null :
+				(vdmFile != null) ?
+					new PrintStream(new FileOutputStream(vdmFile)) :
+					System.out;
+					
+		Map<String, Type> schema = createVDMSchema(xsdFile, output, noWarn);
+
+		if (vdmFile != null) output.close();
+		
+		return schema;
+	}
+	
+	public Map<String, Type> createVDMSchema(File xsdFile, PrintStream output, boolean noWarn) throws Exception
+	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		// factory.setNamespaceAware(true);
 		SAXParser saxParser = factory.newSAXParser();
@@ -259,26 +273,12 @@ public class Xsd2VDM
 		
 		Map<String, Type> vdmSchema = converter.convertSchemas(roots);
 
-		if (vdmSchema != null && writeVDM)
+		if (vdmSchema != null && output != null)
 		{
-			PrintStream output = (vdmFile != null) ?
-				new PrintStream(new FileOutputStream(vdmFile)) :
-				System.out;
-
 			output.println("/**");
 			output.println(" * VDM schema created from " + xsdFile + " on " + new Date());
 			output.println(" * DO NOT EDIT!");
 			output.println(" */");
-			
-//			if (!converter.getFunctions().isEmpty())
-//			{
-//				output.println("functions");
-//
-//				for (String function: converter.getFunctions())
-//				{
-//					xsdStandardFunction(output, function);
-//				}
-//			}
 			
 			xsdStandardTypes(output);
 			
@@ -286,8 +286,6 @@ public class Xsd2VDM
 			{
 				output.println(vdmSchema.get(def));
 			}
-			
-			if (vdmFile != null) output.close();
 		}
 		else if (vdmSchema == null)
 		{
@@ -329,7 +327,7 @@ public class Xsd2VDM
 		output.println("    " + name + " =\n" + handler.getVDMValue().toVDM("    ") + ";\n");
 	}
 
-	private void xsdStandardTypes(PrintStream output)
+	public void xsdStandardTypes(PrintStream output)
 	{
 		output.println("types\n");
 
@@ -345,49 +343,64 @@ public class Xsd2VDM
 		output.println(";\n");
 	}
 
-	@SuppressWarnings("unused")
-	private void xsdStandardDefinitions(PrintStream output)
+	public void xsdStandardDefinitions(PrintStream output)
 	{
 		output.println("values");
-		output.println(INDENT + "POSITIVE_INFINITY : real = 9218868437227405312;  -- 0x7ff0000000000000");
-		output.println(INDENT + "NEGATIVE_INFINITY : real = -4503599627370496;    -- 0xfff0000000000000");
-		output.println(INDENT + "NOT_A_NUMBER : real      = 9221120237041090560;  -- 0x7ff8000000000000");
+		output.println("#ifdef HIGH_PRECISION");
+		output.println(INDENT + "NEGATIVE_INFINITY = 0xfff0000000000000;");
+		output.println(INDENT + "NOT_A_NUMBER      = 0x7ff8000000000000;");
+		output.println(INDENT + "POSITIVE_INFINITY = 0x7ff0000000000000;");
+		output.println("#else");
+		output.println(INDENT + "NEGATIVE_INFINITY = 0xfff00000;");
+		output.println(INDENT + "NOT_A_NUMBER      = 0x7ff80000;");
+		output.println(INDENT + "POSITIVE_INFINITY = 0x7ff00000;");
+		output.println("#endif");
 		output.println();
 	}
 
-	@SuppressWarnings("unused")
-	private void xsdStandardFunction(PrintStream output, String function)
+	public void xsdStandardFunctions(PrintStream output)
+	{
+		output.println("functions");
+		xsdStandardFunction(output, "xsdTotalDigits");
+		xsdStandardFunction(output, "xsdFractionDigits");
+		xsdStandardFunction(output, "xsdAssertion");
+		xsdStandardFunction(output, "xsdPattern");
+		xsdStandardFunction(output, "xsdExplicitTimezone");
+		xsdStandardFunction(output, "xsdWhitespace");
+	}
+
+	public void xsdStandardFunction(PrintStream output, String function)
 	{
 		switch (function)
 		{
 			case "xsdTotalDigits":
 				output.println(INDENT + "xsdTotalDigits: real +> bool");
-				output.println(INDENT + "xsdTotalDigits(value) == is not yet specified;");
+				output.println(INDENT + "xsdTotalDigits(value) == true;");
 				break;
 
 			case "xsdFractionDigits":
 				output.println(INDENT + "xsdFractionDigits: real +> bool");
-				output.println(INDENT + "xsdFractionDigits(value) == is not yet specified;");
+				output.println(INDENT + "xsdFractionDigits(value) == true;");
 				break;
 
 			case "xsdAssertion":
 				output.println(INDENT + "xsdAssertion: ? * seq of char +> bool");
-				output.println(INDENT + "xsdAssertion(value, test) == is not yet specified;");
+				output.println(INDENT + "xsdAssertion(value, test) == true;");
 				break;
 
 			case "xsdPattern":
 				output.println(INDENT + "xsdPattern: ? * seq of char +> bool");
-				output.println(INDENT + "xsdPattern(value, pattern) == is not yet specified;");
+				output.println(INDENT + "xsdPattern(value, pattern) == true;");
 				break;
 
 			case "xsdExplicitTimezone":
 				output.println(INDENT + "xsdExplicitTimezone: seq1 of char * seq of char +> bool");
-				output.println(INDENT + "xsdExplicitTimezone(date, setting) == is not yet specified;");
+				output.println(INDENT + "xsdExplicitTimezone(date, setting) == true;");
 				break;
 
 			case "xsdWhitespace":
 				output.println(INDENT + "xsdWhitespace: seq of char * seq of char +> bool");
-				output.println(INDENT + "xsdWhitespace(string, setting) == is not yet specified;");
+				output.println(INDENT + "xsdWhitespace(string, setting) == true;");
 				break;
 
 			default:

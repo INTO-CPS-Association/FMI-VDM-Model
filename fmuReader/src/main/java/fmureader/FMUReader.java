@@ -44,6 +44,7 @@ import org.xml.sax.InputSource;
 
 import com.fujitsu.vdmj.lex.ExternalFormatReader;
 
+import types.Facet;
 import types.Type;
 import xsd2vdm.Xsd2VDM;
 
@@ -65,12 +66,14 @@ public class FMUReader implements ExternalFormatReader
 			Xsd2VDM converter = new Xsd2VDM();
 			File xsd = new File(System.getProperty("fmureader.xsd", "fmi3.xsd"));
 			Xsd2VDM.loadProperties(xsd);
-			Map<String, Type> schema = converter.createVDMSchema(xsd, null, false, true);
-			
 			ByteArrayOutputStream result = new ByteArrayOutputStream();
 			PrintStream output = new PrintStream(result);
-			InputSource input = new InputSource(new StringReader(modelDescription));
+
+			Facet.setModule("");
+			Map<String, Type> schema = converter.createVDMSchema(xsd, output, true);
+			converter.xsdStandardFunctions(output);
 			
+			InputSource input = new InputSource(new StringReader(modelDescription));
 			converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "modelDescription");
 			
 			if (buildDescription != null)
