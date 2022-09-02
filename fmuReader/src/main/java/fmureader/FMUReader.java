@@ -29,15 +29,22 @@
 
 package fmureader;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.StringReader;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.xml.sax.InputSource;
+
 import com.fujitsu.vdmj.lex.ExternalFormatReader;
 
+import types.Type;
 import xsd2vdm.Xsd2VDM;
 
 public class FMUReader implements ExternalFormatReader
@@ -53,15 +60,37 @@ public class FMUReader implements ExternalFormatReader
 		String buildDescription = readFile("sources/buildDescription.xml");
 		String terminalsAndIcons = readFile("terminalsAndIcons/terminalsAndIcons.xml");
 		
-		System.out.println(modelDescription);
-		System.out.println(buildDescription);
-		System.out.println(terminalsAndIcons);
-		
-//		Xsd2VDM converter = new Xsd2VDM();
-//		converter.createVDMSchema(xsdFile, vdmFile, writeVDM, noWarn);
-//		converter.createVDMValue(schema, vdmFile, xmlFile, varName);
-		
-		return null;
+		try
+		{
+			Xsd2VDM converter = new Xsd2VDM();
+			File xsd = new File(System.getProperty("fmureader.xsd", "fmi3.xsd"));
+			Xsd2VDM.loadProperties(xsd);
+			Map<String, Type> schema = converter.createVDMSchema(xsd, null, false, true);
+			
+			ByteArrayOutputStream result = new ByteArrayOutputStream();
+			PrintStream output = new PrintStream(result);
+			InputSource input = new InputSource(new StringReader(modelDescription));
+			
+			converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "modelDescription");
+			
+			if (buildDescription != null)
+			{
+				input = new InputSource(new StringReader(buildDescription));
+				converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "buildDescription");
+			}
+			
+			if (terminalsAndIcons != null)
+			{
+				input = new InputSource(new StringReader(terminalsAndIcons));
+				converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "terminalsAndIcons");		
+			}
+			
+			return result.toString("utf8").toCharArray();
+		}
+		catch (Exception e)
+		{
+			throw new IOException(e);
+		}
 	}
 	
 	private String readFile(String xmlName) throws IOException

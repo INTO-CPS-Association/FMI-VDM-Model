@@ -47,6 +47,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import types.Type;
@@ -299,27 +300,33 @@ public class Xsd2VDM
 	
 	public void createVDMValue(Map<String, Type> schema, File vdmFile, File xmlFile, String varName) throws Exception
 	{
+		PrintStream output = (vdmFile != null) ?
+				new PrintStream(new FileOutputStream(vdmFile)) :
+				System.out;
+				
+		InputSource input = new InputSource(new FileInputStream(xmlFile));
+		createVDMValue(schema, output, input, xmlFile.getAbsolutePath(), varName);
+				
+		if (vdmFile != null) output.close();
+	}
+	
+	public void createVDMValue(Map<String, Type> schema, PrintStream output, InputSource xmlFile, String sourceName, String varName) throws Exception
+	{
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
 		XMLSaxHandler handler = new XMLSaxHandler(schema);
 		saxParser.parse(xmlFile, handler);
 		
-		PrintStream output = (vdmFile != null) ?
-				new PrintStream(new FileOutputStream(vdmFile)) :
-				System.out;
-
 		String name = (varName == null) ? "modelDescription" : varName;
 		
 		output.println("/**");
-		output.println(" * VDM value created from " + xmlFile);
+		output.println(" * VDM value created from " + sourceName);
 		output.println(" */");
 		
 		// xsdStandardDefinitions(output);
 		
 		output.println("values");
 		output.println("    " + name + " =\n" + handler.getVDMValue().toVDM("    ") + ";\n");
-
-		if (vdmFile != null) output.close();
 	}
 
 	private void xsdStandardTypes(PrintStream output)
