@@ -235,7 +235,7 @@ public class Xsd2VDM
 					
 		Map<String, Type> schema = createVDMSchema(xsdFile, output, noWarn);
 
-		if (vdmFile != null) output.close();
+		if (writeVDM && vdmFile != null) output.close();
 		
 		return schema;
 	}
@@ -302,7 +302,7 @@ public class Xsd2VDM
 				new PrintStream(new FileOutputStream(vdmFile)) :
 				System.out;
 				
-		InputSource input = new InputSource(new FileInputStream(xmlFile));
+		InputSource input = new InputSource(xmlFile.toURI().toASCIIString());
 		createVDMValue(schema, output, input, xmlFile.getAbsolutePath(), varName);
 				
 		if (vdmFile != null) output.close();
