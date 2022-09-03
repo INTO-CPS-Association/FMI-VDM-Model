@@ -74,17 +74,20 @@ public class FMUReader implements ExternalFormatReader
 			converter.xsdStandardFunctions(output);
 			
 			InputSource input = new InputSource(new StringReader(modelDescription));
+			input.setSystemId(new File("modelDescription").toURI().toASCIIString());
 			converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "modelDescription");
 			
 			if (buildDescription != null)
 			{
 				input = new InputSource(new StringReader(buildDescription));
+				input.setSystemId(new File("sources/buildDescription").toURI().toASCIIString());
 				converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "buildDescription");
 			}
 			
 			if (terminalsAndIcons != null)
 			{
 				input = new InputSource(new StringReader(terminalsAndIcons));
+				input.setSystemId(new File("icons/terminalsAndIcons").toURI().toASCIIString());
 				converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "terminalsAndIcons");		
 			}
 			
