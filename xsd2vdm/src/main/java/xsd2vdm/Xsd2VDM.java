@@ -122,28 +122,10 @@ public class Xsd2VDM
 			usage();
 		}
 		
-		Xsd2VDM xsd2vdm = new Xsd2VDM();
-		xsd2vdm.convert(xsdFile, vdmFile, xmlFile, varName, noWarn);
-	}
-	
-	/**
-	 * Method for internal conversions, for example via the VDMCheck tools.
-	 * If vdmFile is null, the VDM is written to standard output. If the
-	 * xmlFile is null, the schema is written, else the XML value mapping.
-	 * Note that the XML is always validated.
-	 */
-	public void convert(File xsdFile, File vdmFile, File xmlFile, String varName, boolean noWarn)
-	{
 		try
 		{
-			loadProperties(xsdFile);
-			Map<String, Type> schema = createVDMSchema(xsdFile, vdmFile, (xmlFile == null), noWarn);
-			
-			if (xmlFile != null)
-			{
-				validate(xmlFile, xsdFile);
-				createVDMValue(schema, vdmFile, xmlFile, varName);
-			}
+			Xsd2VDM xsd2vdm = new Xsd2VDM();
+			xsd2vdm.convert(xsdFile, vdmFile, xmlFile, varName, noWarn);
 		}
 		catch (Exception e)
 		{
@@ -153,10 +135,29 @@ public class Xsd2VDM
 			}
 			else
 			{
-				e.printStackTrace();
+				System.err.println(e.toString());
 			}
 			
 			System.exit(1);
+		}
+	}
+	
+	/**
+	 * Method for internal conversions, for example via the VDMCheck tools.
+	 * If vdmFile is null, the VDM is written to standard output. If the
+	 * xmlFile is null, the schema is written, else the XML value mapping.
+	 * Note that the XML is always validated.
+	 * @throws Exception 
+	 */
+	private void convert(File xsdFile, File vdmFile, File xmlFile, String varName, boolean noWarn) throws Exception
+	{
+		loadProperties(xsdFile);
+		Map<String, Type> schema = createVDMSchema(xsdFile, vdmFile, (xmlFile == null), noWarn);
+		
+		if (xmlFile != null)
+		{
+			validate(xmlFile, xsdFile);
+			createVDMValue(schema, vdmFile, xmlFile, varName);
 		}
 	}
 
@@ -194,7 +195,7 @@ public class Xsd2VDM
 		return System.getProperty(name);
 	}
 
-	private void validate(File xml, File xsd)
+	private void validate(File xml, File xsd) throws Exception
 	{
 		try
 		{
@@ -212,13 +213,11 @@ public class Xsd2VDM
 		}
 		catch (SAXException e)
 		{
-			System.err.println("XML validation: " + e);		// Raw exception gives file/line/col
-			System.exit(1);
+			throw new Exception("XML validation: " + e);		// Raw exception gives file/line/col
 		}
 		catch (Exception e)
 		{
-			System.err.println("XML validation: " + e.getMessage());
-			System.exit(1);
+			throw new Exception("XML validation: " + e.getMessage());
 		}
 	}
 
@@ -289,8 +288,7 @@ public class Xsd2VDM
 		}
 		else if (vdmSchema == null)
 		{
-			System.err.println("Errors found.");
-			System.exit(1);
+			throw new Exception("Schema errors found.");
 		}
 		
 		return vdmSchema;
