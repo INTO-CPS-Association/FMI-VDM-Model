@@ -373,32 +373,32 @@ public class Xsd2VDM
 		{
 			case "xsdTotalDigits":
 				output.println(INDENT + "xsdTotalDigits: real +> bool");
-				output.println(INDENT + "xsdTotalDigits(value) == true;");
+				output.println(INDENT + "xsdTotalDigits(-) == true;");
 				break;
 
 			case "xsdFractionDigits":
 				output.println(INDENT + "xsdFractionDigits: real +> bool");
-				output.println(INDENT + "xsdFractionDigits(value) == true;");
+				output.println(INDENT + "xsdFractionDigits(-) == true;");
 				break;
 
 			case "xsdAssertion":
 				output.println(INDENT + "xsdAssertion: ? * seq of char +> bool");
-				output.println(INDENT + "xsdAssertion(value, test) == true;");
+				output.println(INDENT + "xsdAssertion(-, -) == true;");
 				break;
 
 			case "xsdPattern":
 				output.println(INDENT + "xsdPattern: ? * seq of char +> bool");
-				output.println(INDENT + "xsdPattern(value, pattern) == true;");
+				output.println(INDENT + "xsdPattern(-, -) == true;");
 				break;
 
 			case "xsdExplicitTimezone":
 				output.println(INDENT + "xsdExplicitTimezone: seq1 of char * seq of char +> bool");
-				output.println(INDENT + "xsdExplicitTimezone(date, setting) == true;");
+				output.println(INDENT + "xsdExplicitTimezone(-, -) == true;");
 				break;
 
 			case "xsdWhitespace":
 				output.println(INDENT + "xsdWhitespace: seq of char * seq of char +> bool");
-				output.println(INDENT + "xsdWhitespace(string, setting) == true;");
+				output.println(INDENT + "xsdWhitespace(-, -) == true;");
 				break;
 
 			default:
