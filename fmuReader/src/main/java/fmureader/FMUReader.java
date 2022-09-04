@@ -50,6 +50,10 @@ import xsd2vdm.Xsd2VDM;
 
 public class FMUReader implements ExternalFormatReader
 {
+	private static final String MODEL_DESCRIPTION = "modelDescription.xml";
+	private static final String BUILD_DESCRIPTION = "sources/buildDescription.xml";
+	private static final String TERMINALS_AND_ICONS = "terminalsAndIcons/terminalsAndIcons.xml";
+
 	private File fmuFile;
 	
 	@Override
@@ -57,9 +61,9 @@ public class FMUReader implements ExternalFormatReader
 	{
 		this.fmuFile = fmuFile;
 		
-		String modelDescription = readFile("modelDescription.xml");
-		String buildDescription = readFile("sources/buildDescription.xml");
-		String terminalsAndIcons = readFile("terminalsAndIcons/terminalsAndIcons.xml");
+		String modelDescription = readFile(MODEL_DESCRIPTION);
+		String buildDescription = readFile(BUILD_DESCRIPTION);
+		String terminalsAndIcons = readFile(TERMINALS_AND_ICONS);
 		
 		try
 		{
@@ -72,22 +76,23 @@ public class FMUReader implements ExternalFormatReader
 			Facet.setModule("");
 			Map<String, Type> schema = converter.createVDMSchema(xsd, output, true);
 			converter.xsdStandardFunctions(output);
+			converter.xsdStandardDefinitions(output);
 			
 			InputSource input = new InputSource(new StringReader(modelDescription));
-			input.setSystemId(new File("modelDescription").toURI().toASCIIString());
+			input.setSystemId(new File(MODEL_DESCRIPTION).toURI().toASCIIString());
 			converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "modelDescription");
 			
 			if (buildDescription != null)
 			{
 				input = new InputSource(new StringReader(buildDescription));
-				input.setSystemId(new File("sources/buildDescription").toURI().toASCIIString());
+				input.setSystemId(new File(BUILD_DESCRIPTION).toURI().toASCIIString());
 				converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "buildDescription");
 			}
 			
 			if (terminalsAndIcons != null)
 			{
 				input = new InputSource(new StringReader(terminalsAndIcons));
-				input.setSystemId(new File("icons/terminalsAndIcons").toURI().toASCIIString());
+				input.setSystemId(new File(TERMINALS_AND_ICONS).toURI().toASCIIString());
 				converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "terminalsAndIcons");		
 			}
 			
@@ -106,9 +111,11 @@ public class FMUReader implements ExternalFormatReader
 		StringBuilder sb = new StringBuilder();
 		InputStreamReader utf = new InputStreamReader(zip, "utf8");
 		
+		String backslashed = xmlName.replaceAll("/", "\\\\");
+		
 		while (ze != null)
 		{
-			if (ze.getName().equals(xmlName))
+			if (ze.getName().equals(xmlName) || ze.getName().equals(backslashed))
 			{
 				int c = utf.read();
 				
@@ -117,6 +124,8 @@ public class FMUReader implements ExternalFormatReader
 					sb.append((char)c);
 					c = utf.read();
 				}
+				
+				break;
 			}
 			
 			ze = zip.getNextEntry();
