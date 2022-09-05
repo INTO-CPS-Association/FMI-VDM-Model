@@ -11,7 +11,7 @@
 
 	<files>
 		<file>
-			<source>src/main/scripts/VDMCheck3.sh</source>
+			<source>src/main/scripts/VDMCheck3+.sh</source>
 			<destName>VDMCheck3.sh</destName>
 			<filtered>true</filtered>
 		</file>
@@ -26,10 +26,6 @@
 		<file>
 			<source>../../LICENCE</source>
 			<destName>LICENCE</destName>
-		</file>
-		<file>
-			<source>src/main/resources/XSD.vdmsl</source>
-			<destName>model/XSD.vdmsl</destName>
 		</file>
 	</files>
 
@@ -57,6 +53,7 @@
 		<dependencySet>
 			<includes>
 				<include>org.into-cps.vdmcheck:xsd2vdm</include>
+				<include>org.into-cps.vdmcheck:fmuReader</include>
 				<include>org.into-cps.vdmcheck.fmi3:vdmcheck3</include>
 				<include>dk.au.ece.vdmj:vdmj</include>
 				<include>dk.au.ece.vdmj:annotations</include>

@@ -39,9 +39,19 @@
 				<version>4.4.6</version>
 			</dependency>
 			<dependency>
+				<groupId>dk.au.ece.vdmj</groupId>
+				<artifactId>annotations</artifactId>
+				<version>4.4.6</version>
+			</dependency>
+			<dependency>
 				<groupId>org.into-cps.vdmcheck</groupId>
 				<artifactId>xsd2vdm</artifactId>
-				<version>1.1.3-SNAPSHOT</version>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.into-cps.vdmcheck</groupId>
+				<artifactId>fmuReader</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
