@@ -54,8 +54,6 @@ public class FMUReader implements ExternalFormatReader
 	private static final String BUILD_DESCRIPTION = "sources/buildDescription.xml";
 	private static final String TERMINALS_AND_ICONS = "terminalsAndIcons/terminalsAndIcons.xml";
 
-	private File fmuFile;
-	
 	public static void main(String[] args) throws IOException
 	{
 		if (args.length != 1)
@@ -76,27 +74,80 @@ public class FMUReader implements ExternalFormatReader
 	}
 	
 	@Override
-	public char[] getText(File fmuFile, String charset) throws IOException
+	public char[] getText(File file, String charset) throws IOException
 	{
-		this.fmuFile = fmuFile;
-		
-		String modelDescription = readFile(MODEL_DESCRIPTION);
-		String buildDescription = readFile(BUILD_DESCRIPTION);
-		String terminalsAndIcons = readFile(TERMINALS_AND_ICONS);
+		if (file.getName().toLowerCase().endsWith(".xml"))
+		{
+			return processXML(file);
+		}
+		else if (file.getName().toLowerCase().endsWith(".fmu"))
+		{
+			return processFMU(file);
+		}
+		else
+		{
+			throw new IOException("Expecting FMU or XML file");
+		}
+	}
+	
+	private char[] processXML(File xmlFile) throws IOException
+	{
+		String xmlContent = readFile(xmlFile);
 		
 		try
 		{
-			Xsd2VDM converter = new Xsd2VDM();
-			File xsd = new File(System.getProperty("fmureader.xsd", "fmi3.xsd"));
-			Xsd2VDM.loadProperties(xsd);
 			ByteArrayOutputStream result = new ByteArrayOutputStream();
 			PrintStream output = new PrintStream(result);
 
-			Facet.setModule("");
-			Map<String, Type> schema = converter.createVDMSchema(xsd, output, true);
-			converter.xsdStandardFunctions(output);
-			converter.xsdStandardDefinitions(output);
+			Map<String, Type> schema = writeSchema(output);
+			String varName = "";
 			
+			if (xmlContent.contains("<fmiModelDescription"))
+			{
+				varName = "modelDescription";
+			}
+			else if (xmlContent.contains("<fmiBuildDescription"))
+			{
+				varName = "buildDescription";
+			}
+			else if (xmlContent.contains("<fmiTerminalsAndIcons"))
+			{
+				varName = "terminalsAndIcons";
+			}
+			else
+			{
+				throw new IOException("Unknown XML content");
+			}
+			
+			Xsd2VDM converter = new Xsd2VDM();
+
+			InputSource input = new InputSource(new StringReader(xmlContent));
+			input.setSystemId(new File(varName).toURI().toASCIIString());
+			converter.createVDMValue(schema, output, input, xmlFile.getAbsolutePath(), varName);
+			
+			return result.toString("utf8").toCharArray();
+		}
+		catch (Exception e)
+		{
+			throw new IOException(e);
+		}
+	}
+
+	private char[] processFMU(File fmuFile) throws IOException
+	{
+		String modelDescription = extractZipPart(fmuFile, MODEL_DESCRIPTION);
+		String buildDescription = extractZipPart(fmuFile, BUILD_DESCRIPTION);
+		String terminalsAndIcons = extractZipPart(fmuFile, TERMINALS_AND_ICONS);
+		
+		try
+		{
+			ByteArrayOutputStream result = new ByteArrayOutputStream();
+			PrintStream output = new PrintStream(result);
+
+			Map<String, Type> schema = writeSchema(output);
+			
+			Xsd2VDM converter = new Xsd2VDM();
+
 			InputSource input = new InputSource(new StringReader(modelDescription));
 			input.setSystemId(new File(MODEL_DESCRIPTION).toURI().toASCIIString());
 			converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "modelDescription");
@@ -107,12 +158,20 @@ public class FMUReader implements ExternalFormatReader
 				input.setSystemId(new File(BUILD_DESCRIPTION).toURI().toASCIIString());
 				converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "buildDescription");
 			}
+			else
+			{
+				missingVariable("buildDescription", output);
+			}
 			
 			if (terminalsAndIcons != null)
 			{
 				input = new InputSource(new StringReader(terminalsAndIcons));
 				input.setSystemId(new File(TERMINALS_AND_ICONS).toURI().toASCIIString());
 				converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "terminalsAndIcons");		
+			}
+			else
+			{
+				missingVariable("terminalsAndIcons", output);
 			}
 			
 			return result.toString("utf8").toCharArray();
@@ -122,8 +181,33 @@ public class FMUReader implements ExternalFormatReader
 			throw new IOException(e);
 		}
 	}
+
+	private void missingVariable(String varName, PrintStream output)
+	{
+		output.println("/**");
+		output.println(" * VDM value missing");
+		output.println(" */");
+		
+		output.println("values");
+		output.println("    " + varName + " = nil;\n");
+		output.println("\n");
+	}
+
+	private Map<String, Type> writeSchema(PrintStream output) throws Exception
+	{
+		Xsd2VDM converter = new Xsd2VDM();
+		File xsd = new File(System.getProperty("fmureader.xsd", "schema/fmi3.xsd"));
+		Xsd2VDM.loadProperties(xsd);
+
+		Facet.setModule("");
+		Map<String, Type> schema = converter.createVDMSchema(xsd, output, true);
+		converter.xsdStandardFunctions(output);
+		converter.xsdStandardDefinitions(output);
+		
+		return schema;
+	}
 	
-	private String readFile(String xmlName) throws IOException
+	private String extractZipPart(File fmuFile, String xmlName) throws IOException
 	{
 		ZipInputStream zip = new ZipInputStream(new FileInputStream(fmuFile));
 		ZipEntry ze = zip.getNextEntry();
@@ -153,5 +237,15 @@ public class FMUReader implements ExternalFormatReader
 		utf.close();	// closes zip
 		
 		return sb.length() == 0 ? null : sb.toString();
+	}
+	
+	private String readFile(File source) throws IOException
+	{
+		char[] data = new char[(int) source.length()];
+		InputStreamReader isr = new InputStreamReader(new FileInputStream(source), "utf8");
+		isr.read(data);
+		isr.close();
+		
+		return new String(data);
 	}
 }

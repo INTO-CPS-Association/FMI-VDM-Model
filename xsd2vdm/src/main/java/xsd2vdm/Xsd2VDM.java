@@ -319,8 +319,6 @@ public class Xsd2VDM
 		output.println(" * VDM value created from " + sourceName);
 		output.println(" */");
 		
-		// xsdStandardDefinitions(output);
-		
 		output.println("values");
 		output.println("    " + name + " =\n" + handler.getVDMValue().toVDM("    ") + ";\n");
 	}
@@ -358,6 +356,9 @@ public class Xsd2VDM
 
 	public void xsdStandardFunctions(PrintStream output)
 	{
+		output.println("/**");
+		output.println(" * Schema facet support functions");
+		output.println(" */");
 		output.println("functions");
 		xsdStandardFunction(output, "xsdTotalDigits");
 		xsdStandardFunction(output, "xsdFractionDigits");
