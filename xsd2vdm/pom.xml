@@ -13,6 +13,9 @@
 	<artifactId>xsd2vdm</artifactId>
 	<packaging>jar</packaging>
 	
+	<name>XSD to VDM</name>
+	<description>A converter for XSD schemas to VDM-SL schemas</description>
+	
 	<properties>
 		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>
 	</properties>
