@@ -26,6 +26,10 @@
  *	SPDX-License-Identifier: MIT
  *
  *********************************************************************************/
+
+-- Set this property, as many @OnFails depend on it.
+#define vdmj.parser.merge_comments true
+
 types
 	NetworkRules = NetworkDescription * FmiModelDescription * FmiTerminalsAndIcons
 	inv mk_(networkDesc, modelDesc, terminalsAndIcons) == allOf
