@@ -30,18 +30,18 @@ functions
 	tests: () +> seq of bool
 	tests() ==
 	[
-		isValidFMIConfiguration(alias_example),
-		isValidFMIConfiguration(build_description_complex),
-		isValidFMIConfiguration(build_description_simple),
-		isValidFMIConfiguration(co_simulation_early_return),
-		isValidFMIConfiguration(co_simulation),
-		isValidFMIConfiguration(minimal),
-		isValidFMIConfiguration(model_exchange),
-		isValidFMIConfiguration(scheduled_execution),
-		isValidFMIConfiguration(string_vector_example),
-		isValidFMIConfiguration(structural_parameter_example),
-		isValidFMIConfiguration(terminals_and_icons),
-		isValidFMIConfiguration(unit_definition),
-		isValidFMIConfiguration(variable_types)
+		inv_FmiModelDescription'(alias_example),
+		inv_FmiBuildDescription'(build_description_complex),
+		inv_FmiBuildDescription'(build_description_simple),
+		inv_FmiModelDescription'(co_simulation_early_return),
+		inv_FmiModelDescription'(co_simulation),
+		inv_FmiModelDescription'(minimal),
+		inv_FmiModelDescription'(model_exchange),
+		inv_FmiModelDescription'(scheduled_execution),
+		inv_FmiModelDescription'(string_vector_example),
+		inv_FmiModelDescription'(structural_parameter_example),
+		inv_FmiTerminalsAndIcons'(terminals_and_icons),
+		inv_FmiModelDescription'(unit_definition),
+		inv_FmiModelDescription'(variable_types)
 	]
 	-- post elems RESULT = {true};

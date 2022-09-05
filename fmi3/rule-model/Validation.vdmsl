@@ -28,18 +28,14 @@
  *********************************************************************************/
 functions
 	/**
-	 * Top level function to validate a given top level XML record. This just
+	 * Top level function to validate the top level records. This just
 	 * calls the invariant function for the corresponding "prime" checked type.
 	 */
-	isValidFMIConfiguration: FmiModelDescription | FmiBuildDescription | FmiTerminalsAndIcons +> bool
-	isValidFMIConfiguration(data) ==
-		if is_FmiModelDescription(data)
-		then inv_FmiModelDescription'(data)
-		
-		elseif is_FmiBuildDescription(data)
-		then inv_FmiBuildDescription'(data)
+	isValidFMIConfiguration: [FmiModelDescription] * [FmiBuildDescription] * [FmiTerminalsAndIcons] +> bool
+	isValidFMIConfiguration(model, build, terminals) == allOf
+	([
+		model <> nil => inv_FmiModelDescription'(model),
+		build <> nil => inv_FmiBuildDescription'(build),
+		terminals <> nil => inv_FmiTerminalsAndIcons'(terminals)
+	]);
 
-		elseif is_FmiTerminalsAndIcons(data)
-		then inv_FmiTerminalsAndIcons'(data)
-		
-		else undefined;
