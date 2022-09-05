@@ -105,14 +105,20 @@ public class FMUReader implements ExternalFormatReader
 			if (xmlContent.contains("<fmiModelDescription"))
 			{
 				varName = "modelDescription";
+				missingVariable("buildDescription", output);
+				missingVariable("terminalsAndIcons", output);
 			}
 			else if (xmlContent.contains("<fmiBuildDescription"))
 			{
 				varName = "buildDescription";
+				missingVariable("terminalsAndIcons", output);
+				missingVariable("modelDescription", output);
 			}
 			else if (xmlContent.contains("<fmiTerminalsAndIcons"))
 			{
 				varName = "terminalsAndIcons";
+				missingVariable("modelDescription", output);
+				missingVariable("buildDescription", output);
 			}
 			else
 			{
@@ -195,6 +201,11 @@ public class FMUReader implements ExternalFormatReader
 
 	private Map<String, Type> writeSchema(PrintStream output) throws Exception
 	{
+		if (Boolean.getBoolean("fmureader.noschema"))
+		{
+			output = new PrintStream(new ByteArrayOutputStream());
+		}
+		
 		Xsd2VDM converter = new Xsd2VDM();
 		File xsd = new File(System.getProperty("fmureader.xsd", "schema/fmi3.xsd"));
 		Xsd2VDM.loadProperties(xsd);
