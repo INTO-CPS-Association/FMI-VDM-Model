@@ -10,11 +10,6 @@
 	<groupId>org.into-cps.vdmcheck.fmi3</groupId>
 	<artifactId>vdmcheck3</artifactId>
 
-	<properties>
-		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>
-	</properties>
-
-
 	<dependencies>
 		<dependency>
 			<groupId>org.into-cps.vdmcheck.fmi3</groupId>
@@ -50,7 +45,6 @@
 	</dependencies>
 	<build>
 		<plugins>
-
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<configuration>
