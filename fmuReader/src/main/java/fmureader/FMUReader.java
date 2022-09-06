@@ -32,8 +32,10 @@ package fmureader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.util.Map;
@@ -131,6 +133,8 @@ public class FMUReader implements ExternalFormatReader
 			input.setSystemId(new File(varName).toURI().toASCIIString());
 			converter.createVDMValue(schema, output, input, xmlFile.getAbsolutePath(), varName);
 			
+			writeVDM(result);
+			
 			return result.toString("utf8").toCharArray();
 		}
 		catch (Exception e)
@@ -179,7 +183,9 @@ public class FMUReader implements ExternalFormatReader
 			{
 				missingVariable("terminalsAndIcons", output);
 			}
-			
+
+			writeVDM(result);
+
 			return result.toString("utf8").toCharArray();
 		}
 		catch (Exception e)
@@ -258,5 +264,17 @@ public class FMUReader implements ExternalFormatReader
 		isr.close();
 		
 		return new String(data);
+	}
+	
+	private void writeVDM(ByteArrayOutputStream output) throws IOException
+	{
+		String vdmFile = System.getProperty("fmureader.vdmfile");
+		
+		if (vdmFile != null && !vdmFile.isEmpty())
+		{
+			OutputStream vdm = new FileOutputStream(vdmFile);
+			vdm.write(output.toByteArray());
+			vdm.close();
+		}
 	}
 }
