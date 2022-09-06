@@ -22,6 +22,14 @@
 		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>
 	</properties>
 
+    <!-- add repository for dependencies until Maven Central oss has snapshots? -->
+    <repositories>
+        <repository>
+            <id>artifactory-overture.au.dk</id>
+            <name>overture.au.dk-releases</name>
+            <url>https://overture.au.dk/artifactory/vdmj</url>
+        </repository>
+    </repositories>
 
     <!-- sub modules -->
     <modules>
