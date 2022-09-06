@@ -36,7 +36,7 @@ do
     		LINK=${OPTARG}
     		;;
         v)
-            SAVE=${OPTARG}
+            SAVE=$(realpath ${OPTARG})
             ;;
         *)
 			echo "$USAGE"
@@ -49,7 +49,7 @@ shift "$((OPTIND-1))"
 
 if [ $# = 1 ]
 then
-	FILE=$1
+	FILE=$(realpath $1)
 fi
 
 if [ -z "$LINK" ]
@@ -63,13 +63,12 @@ then
 	exit 1
 fi
 
-if [ ! -z "$FILE" -a ! -e "$FILE" ]
+if [ ! -e "$FILE" ]
 then
 	echo "File not found: $FILE"
 	exit 1
 fi
 
-FILE=$(realpath $FILE)
 SCRIPT=$0
 
 # Subshell cd, so we can set the classpath
@@ -85,12 +84,20 @@ SCRIPT=$0
 		-Dvdmj.parser.merge_comments=true \
 		-Dvdmj.parser.external_readers=.fmu=fmureader.FMUReader,.xml=fmureader.FMUReader \
 		-Dfmureader.noschema=true \
+		-Dfmureader.vdmfile="$SAVE" \
 		-cp vdmj.jar:annotations.jar:xsd2vdm.jar:fmuReader.jar com.fujitsu.vdmj.VDMJ \
 		-vdmsl -q -annotations -e "isValidFMIConfiguration(modelDescription, buildDescription, terminalsAndIcons)" \
 		$MODEL $FILE |
 		sed -e "s+<FMI3_STANDARD>+$LINK+" |
 		awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'
 )
+
+EXIT=$?		# From subshell above
+
+if [ "$SAVE" ]
+then
+	echo "VDM output written to $SAVE"
+fi
 	
-exit $?		# From subshell above
+exit $EXIT
 
