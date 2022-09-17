@@ -37,13 +37,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.fujitsu.vdmj.lex.ExternalFormatReader;
 
@@ -93,8 +102,37 @@ public class FMUReader implements ExternalFormatReader
 		}
 	}
 	
+	private void validate(File filename, Reader xml) throws IOException
+	{
+		try
+		{
+			File xsd = new File(System.getProperty("fmureader.xsd", "schema/fmi3.xsd"));
+
+			// Note that we pass a stream to allow the validator to determine the
+			// encoding, rather than passing a File, which seems to use default encoding.
+			Source xmlFile = new StreamSource(xml);
+			xmlFile.setSystemId(filename.toURI().toASCIIString());
+			Source xsdFile = new StreamSource(new FileInputStream(xsd));
+			xsdFile.setSystemId(xsd.toURI().toASCIIString());
+			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			
+			Schema schema = schemaFactory.newSchema(xsdFile);
+			Validator validator = schema.newValidator();
+			validator.validate(xmlFile);
+		}
+		catch (SAXException e)
+		{
+			throw new IOException("XML validation: " + e);		// Raw exception gives file/line/col
+		}
+		catch (Exception e)
+		{
+			throw new IOException("XML validation: " + e.getMessage());
+		}
+	}
+
 	private char[] processXML(File xmlFile) throws IOException
 	{
+		validate(xmlFile, new InputStreamReader(new FileInputStream(xmlFile), "utf8"));
 		String xmlContent = readFile(xmlFile);
 		
 		try
@@ -159,12 +197,14 @@ public class FMUReader implements ExternalFormatReader
 			
 			Xsd2VDM converter = new Xsd2VDM();
 
+			validate(new File(MODEL_DESCRIPTION), new StringReader(modelDescription));
 			InputSource input = new InputSource(new StringReader(modelDescription));
 			input.setSystemId(new File(MODEL_DESCRIPTION).toURI().toASCIIString());
 			converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "modelDescription");
 			
 			if (buildDescription != null)
 			{
+				validate(new File(BUILD_DESCRIPTION), new StringReader(buildDescription));
 				input = new InputSource(new StringReader(buildDescription));
 				input.setSystemId(new File(BUILD_DESCRIPTION).toURI().toASCIIString());
 				converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "buildDescription");
@@ -176,6 +216,7 @@ public class FMUReader implements ExternalFormatReader
 			
 			if (terminalsAndIcons != null)
 			{
+				validate(new File(TERMINALS_AND_ICONS), new StringReader(terminalsAndIcons));
 				input = new InputSource(new StringReader(terminalsAndIcons));
 				input.setSystemId(new File(TERMINALS_AND_ICONS).toURI().toASCIIString());
 				converter.createVDMValue(schema, output, input, fmuFile.getAbsolutePath(), "terminalsAndIcons");		
