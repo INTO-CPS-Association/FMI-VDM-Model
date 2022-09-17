@@ -38,6 +38,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -71,12 +72,12 @@ public class FMUReader implements ExternalFormatReader
 		}
 		
 		FMUReader reader = new FMUReader();
-		char[] vdm = reader.getText(new File(args[0]), "utf8");
+		char[] vdm = reader.getText(new File(args[0]), Charset.forName("utf8"));
 		System.out.println(new String(vdm));
 	}
 	
 	@Override
-	public char[] getText(File file, String charset) throws IOException
+	public char[] getText(File file, Charset charset) throws IOException
 	{
 		if (file.getName().toLowerCase().endsWith(".xml"))
 		{

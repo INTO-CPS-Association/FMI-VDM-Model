@@ -31,13 +31,14 @@ package fmureader;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 public class TestReader
 {
 	public static void main(String[] args) throws IOException
 	{
 		FMUReader reader = new FMUReader();
-		char[] vdm = reader.getText(new File(args[0]), "utf8");
+		char[] vdm = reader.getText(new File(args[0]), Charset.forName("utf8"));
 		System.out.println(new String(vdm));
 	}
 }

@@ -12,7 +12,7 @@
 	<files>
 		<file>
 			<source>src/main/scripts/VDMCheck3+.sh</source>
-			<destName>VDMCheck3.sh</destName>
+			<destName>VDMCheck3+.sh</destName>
 			<filtered>true</filtered>
 		</file>
 		<file>
