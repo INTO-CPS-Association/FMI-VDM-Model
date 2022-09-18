@@ -35,10 +35,10 @@ See <<_icon>>.
 [[validTerminalMemberVariables]]
 // {vdm}
 ----
-validTerminalMemberVariables: Terminal * FmiModelDescription +> bool
+validTerminalMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalMemberVariables(terminal, fmd) ==
 	let tmvs = terminal.terminalMemberVariable in
-	tmvs <> nil => allOf
+	tmvs <> nil and fmd <> nil => allOf
 	([
 		let var = lookupVariableName(tmv.variableName, fmd.modelVariables) in
 			-- @OnFail("%NAME: Terminal member variable %s not declared at %s",
@@ -55,10 +55,10 @@ See <<section-terminalvars>>.
 [[validTerminalStreamMemberVariables]]
 // {vdm}
 ----
-validTerminalStreamMemberVariables: Terminal * FmiModelDescription +> bool
+validTerminalStreamMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalStreamMemberVariables(terminal, fmd) ==
 	let tsmvs = terminal.terminalStreamMemberVariable in
-	tsmvs <> nil =>allOf
+	tsmvs <> nil and fmd <> nil =>allOf
 	([
 		let ivar = lookupVariableName(tsmv.inStreamVariableName, fmd.modelVariables),
 			ovar = lookupVariableName(tsmv.outStreamVariableName, fmd.modelVariables)

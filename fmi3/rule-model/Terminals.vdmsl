@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 types
-	FmiTerminalsAndIcons' = FmiTerminalsAndIcons * FmiModelDescription
+	FmiTerminalsAndIcons' = FmiTerminalsAndIcons * [FmiModelDescription]
 	inv mk_(fti, fmd) == allOf
 	([
 		inv_GraphicalRepresentation'(fti.graphicalRepresentation),
@@ -56,14 +56,14 @@ types
 		rule("validIcon", validIcon(icon))
 	]);
 
-	Terminals' = [Terminals] * FmiModelDescription
+	Terminals' = [Terminals] * [FmiModelDescription]
 	inv mk_(ts, fmd) == ts <> nil => allOf
 	([
-		apply[Terminal * FmiModelDescription](inv_Terminal',
+		apply[Terminal * [FmiModelDescription]](inv_Terminal',
 			[mk_(t, fmd) | t in seq ts])
 	]);
 
-	Terminal' = Terminal * FmiModelDescription
+	Terminal' = Terminal * [FmiModelDescription]
 	inv mk_(t, fmd) == allOf
 	([
 		inv_Terminals'(mk_(t.terminal, fmd)),		-- RECURSIVE!!
