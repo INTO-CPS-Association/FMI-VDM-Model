@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 types
-	FmiTerminalsAndIcons' = FmiTerminalsAndIcons
-	inv fti == allOf
+	FmiTerminalsAndIcons' = FmiTerminalsAndIcons * FmiModelDescription
+	inv mk_(fti, fmd) == allOf
 	([
 		inv_GraphicalRepresentation'(fti.graphicalRepresentation),
-		inv_Terminals'(fti.terminals),
+		inv_Terminals'(mk_(fti.terminals, fmd)),
 		inv_Annotations'(fti.annotations)
 	]);
 
@@ -56,21 +56,22 @@ types
 		rule("validIcon", validIcon(icon))
 	]);
 
-	Terminals' = [Terminals]
-	inv ts == ts <> nil => allOf
+	Terminals' = [Terminals] * FmiModelDescription
+	inv mk_(ts, fmd) == ts <> nil => allOf
 	([
-		apply[Terminal](inv_Terminal', ts)
+		apply[Terminal * FmiModelDescription](inv_Terminal',
+			[mk_(t, fmd) | t in seq ts])
 	]);
 
-	Terminal' = Terminal
-	inv t == allOf
+	Terminal' = Terminal * FmiModelDescription
+	inv mk_(t, fmd) == allOf
 	([
-		inv_Terminals'(t.terminal),		-- RECURSIVE!!
+		inv_Terminals'(mk_(t.terminal, fmd)),		-- RECURSIVE!!
 		inv_Annotations'(t.annotations),
 
 		-- Rules are defined in Terminals.adoc
-		rule("validTerminalMemberVariables", validTerminalMemberVariables(t)),
+		rule("validTerminalMemberVariables", validTerminalMemberVariables(t, fmd)),
 		rule("validTerminalGraphicalRepresentation", validTerminalGraphicalRepresentation(t)),
-		rule("validTerminalStreamMemberVariables", validTerminalStreamMemberVariables(t))
+		rule("validTerminalStreamMemberVariables", validTerminalStreamMemberVariables(t, fmd))
 	]);
 

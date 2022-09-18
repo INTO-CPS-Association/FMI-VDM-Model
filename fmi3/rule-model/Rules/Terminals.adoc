@@ -35,13 +35,18 @@ See <<_icon>>.
 [[validTerminalMemberVariables]]
 // {vdm}
 ----
-validTerminalMemberVariables: Terminal +> bool
-validTerminalMemberVariables(terminal) ==
+validTerminalMemberVariables: Terminal * FmiModelDescription +> bool
+validTerminalMemberVariables(terminal, fmd) ==
 	let tmvs = terminal.terminalMemberVariable in
-	tmvs <> nil =>
-		-- @OnFail("%NAME: Terminal member variables not unique at %s",
-		-- loc2str(terminal.location))
-		( card elems tmvs = len tmvs );
+	tmvs <> nil => allOf
+	([
+		let var = lookupVariableName(tmv.variableName, fmd.modelVariables) in
+			-- @OnFail("%NAME: Terminal member variable %s not declared at %s",
+			-- tmv.variableName, loc2str(tmv.location))
+			( var <> nil )
+
+		| tmv in seq tmvs
+	]);
 ----
 // {vdm}
 See <<section-terminalvars>>.
@@ -50,11 +55,26 @@ See <<section-terminalvars>>.
 [[validTerminalStreamMemberVariables]]
 // {vdm}
 ----
-validTerminalStreamMemberVariables: Terminal +> bool
-validTerminalStreamMemberVariables(terminal) ==
+validTerminalStreamMemberVariables: Terminal * FmiModelDescription +> bool
+validTerminalStreamMemberVariables(terminal, fmd) ==
 	let tsmvs = terminal.terminalStreamMemberVariable in
-	tsmvs <> nil =>
-		true;	-- rules here?
+	tsmvs <> nil =>allOf
+	([
+		let ivar = lookupVariableName(tsmv.inStreamVariableName, fmd.modelVariables),
+			ovar = lookupVariableName(tsmv.outStreamVariableName, fmd.modelVariables)
+		in
+		[
+			-- @OnFail("%NAME: Terminal inStreamVariableName %s not declared at %s",
+			-- tsmv.inStreamVariableName, loc2str(tsmv.location))
+			( ivar <> nil ),
+
+			-- @OnFail("%NAME: Terminal outStreamVariableName %s not declared at %s",
+			-- tsmv.outStreamVariableName, loc2str(tsmv.location))
+			( ovar <> nil )
+		]
+
+		| tsmv in seq tsmvs
+	]);
 ----
 // {vdm}
 See <<_terminal_stream_member_variable>>.

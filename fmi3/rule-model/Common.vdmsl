@@ -151,6 +151,17 @@ functions
 	post RESULT <> nil => RESULT.valueReference = vref;
 
 	/**
+	 * Lookup a variable by variable name in the list passed.
+	 * Return nil if not found.
+	 */
+	lookupVariableName: NormalizedString * ModelVariables +> [fmi3Variable]
+	lookupVariableName(name, evs) ==
+		if exists ev in seq evs & ev.name = name
+		then let ev in seq evs be st ev.name = name in ev
+		else nil
+	post RESULT <> nil => RESULT.name = name;
+
+	/**
 	 * Return a set of continuous time states from the list passed.
 	 */
 	continuousTimeStates: seq of fmi3Variable -> set of fmi3Variable

@@ -36,6 +36,6 @@ functions
 	([
 		model <> nil => inv_FmiModelDescription'(model),
 		build <> nil => inv_FmiBuildDescription'(build),
-		terminals <> nil => inv_FmiTerminalsAndIcons'(terminals)
+		terminals <> nil => inv_FmiTerminalsAndIcons'(mk_(terminals, model))
 	]);
 

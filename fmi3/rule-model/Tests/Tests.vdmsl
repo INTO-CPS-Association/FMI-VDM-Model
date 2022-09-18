@@ -40,7 +40,7 @@ functions
 		inv_FmiModelDescription'(scheduled_execution),
 		inv_FmiModelDescription'(string_vector_example),
 		inv_FmiModelDescription'(structural_parameter_example),
-		inv_FmiTerminalsAndIcons'(terminals_and_icons),
+		inv_FmiTerminalsAndIcons'(mk_(terminals_and_icons, tandi_variables)),
 		inv_FmiModelDescription'(unit_definition),
 		inv_FmiModelDescription'(variable_types)
 	]
