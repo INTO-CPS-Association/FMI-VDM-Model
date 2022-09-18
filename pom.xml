@@ -22,12 +22,12 @@
 		<maven.build.timestamp.format>yyMMdd</maven.build.timestamp.format>
 	</properties>
 
-    <!-- add repository for dependencies until Maven Central oss has snapshots? -->
+    <!-- add repository for dependencies to force Maven Central to use s01 -->
     <repositories>
         <repository>
-            <id>artifactory-overture.au.dk</id>
-            <name>overture.au.dk-releases</name>
-            <url>https://overture.au.dk/artifactory/vdmj</url>
+            <name>Maven Central Snapshots</name>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
     </repositories>
 
