@@ -138,7 +138,7 @@ validStart(-, evs) == allOf
 				  (ev.max <> nil => ev.max >= 0) ) or true	-- NOTE warning
 		]
 
-		| ev in seq evs & is_NumericKind(ev)
+		| ev in seq evs & is_NumericKind(kindOf(ev))
 	]);
 ----
 // {vdm}
@@ -163,7 +163,7 @@ validMinMax(-, evs) == allOf
 			( ev.max >= ev.min )
 		]
 
-		| ev in seq evs & is_NumericKind(ev)
+		| ev in seq evs & is_NumericKind(kindOf(ev))
 	]);
 ----
 // {vdm}
