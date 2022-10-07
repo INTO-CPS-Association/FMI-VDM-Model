@@ -49,7 +49,7 @@ shift "$((OPTIND-1))"
 
 if [ $# = 1 ]
 then
-	FILE=$(realpath $1)
+	FILE=$(realpath "$1")
 fi
 
 if [ -z "$LINK" ]
