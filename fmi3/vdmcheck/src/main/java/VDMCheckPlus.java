@@ -25,6 +25,7 @@
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
@@ -113,9 +114,21 @@ public class VDMCheckPlus
 			args.add("model");
 			args.add(filename.getAbsolutePath());
 			
-			for (String adoc: rules.list())
+			if (rules.exists())
 			{
-				args.add("model" + File.separator + "Rules" + File.separator + adoc);
+				FilenameFilter filter = new FilenameFilter()
+				{
+					@Override
+					public boolean accept(File dir, String name)
+					{
+						return name.endsWith(".adoc");
+					}
+				};
+				
+				for (String adoc: rules.list(filter))
+				{
+					args.add("model" + File.separator + "Rules" + File.separator + adoc);
+				}
 			}
 
 			String[] sargs = new String[args.size()];
@@ -138,6 +151,7 @@ public class VDMCheckPlus
 		catch (Exception e)
 		{
 			System.err.printf("Error: %s\n", e.getMessage());
+			e.printStackTrace();
 			return false;
 		}
 	}
