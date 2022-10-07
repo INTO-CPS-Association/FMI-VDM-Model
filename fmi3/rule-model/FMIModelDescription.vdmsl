@@ -34,7 +34,7 @@ types
 	inv fmd == allOf
 	([
 		inv_ModelExchange'(fmd.modelExchange),
-		inv_CoSimulation'(mk_(fmd.coSimulation, fmd)),
+		inv_CoSimulation'(fmd.coSimulation),
 		inv_ScheduledExecution'(fmd.scheduledExecution),
 		inv_UnitDefinitions'(fmd.unitDefinitions),
 		inv_TypeDefinitions'(fmd.typeDefinitions),
@@ -53,6 +53,7 @@ types
 		rule("validVariableNames", validVariableNames(fmd)),
 		rule("validTypeNames", validTypeNames(fmd)),
 		rule("validReinits", validReinits(fmd)),
+		rule("validCSEventMode", validCSEventMode(fmd)),
 		
 		let evs = effectiveVariables(fmd.modelVariables, fmd.typeDefinitions) in
 		[

@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 types
-	CoSimulation' = [CoSimulation] * FmiModelDescription
-	inv mk_(cs, fmd) == cs <> nil => allOf
+	CoSimulation' = [CoSimulation]
+	inv cs == cs <> nil => allOf
 	([
 		inv_Annotations'(cs.annotations),
 	
@@ -36,8 +36,7 @@ types
 		[
 			-- Rules a defined in CoSimulation.adoc
 			rule("validCSModelIdentifier", validCSModelIdentifier(ecs)),
-			rule("validCSIntermediateUpdate", validCSIntermediateUpdate(ecs)),
-			rule("validCSEventMode", validCSEventMode(ecs, fmd))
+			rule("validCSIntermediateUpdate", validCSIntermediateUpdate(ecs))
 		]
 	]);
 

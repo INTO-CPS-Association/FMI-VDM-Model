@@ -205,6 +205,22 @@ validReinits(fmd) == allOf
 // {vdm}
 See <<ModelVariables>>.
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCSEventMode
+[[validCSEventMode]]
+// {vdm}
+----
+validCSEventMode: FmiModelDescription +> bool
+validCSEventMode(fmd) ==
+	fmd.coSimulation <> nil =>
+		-- @OnFail("%NAME: hasEventMode must be true since FMU has clocks at %s",
+		-- loc2str(fmd.coSimulation.location))
+		( let hasClocks = exists mv in seq fmd.modelVariables & is_Clock(mv) in
+			hasClocks => fmd.coSimulation.hasEventMode );
+----
+// {vdm}
+- See <<table-CoSimulation-details>>.
+
+
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validOutput
 [[validOutput]]
 // {vdm}
@@ -471,6 +487,11 @@ values
 		"validReinits" |->
 		[
 			"<FMI3_STANDARD>#ModelVariables"
+		],
+
+		"validCSEventMode" |->
+		[
+			"<FMI3_STANDARD>#table-CoSimulation-details"
 		],
 
 		"validOutput" |->
