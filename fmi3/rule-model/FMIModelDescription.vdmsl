@@ -34,7 +34,7 @@ types
 	inv fmd == allOf
 	([
 		inv_ModelExchange'(fmd.modelExchange),
-		inv_CoSimulation'(fmd.coSimulation),
+		inv_CoSimulation'(mk_(fmd.coSimulation, fmd)),
 		inv_ScheduledExecution'(fmd.scheduledExecution),
 		inv_UnitDefinitions'(fmd.unitDefinitions),
 		inv_TypeDefinitions'(fmd.typeDefinitions),

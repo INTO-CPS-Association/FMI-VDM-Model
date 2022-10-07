@@ -29,10 +29,25 @@ validCSIntermediateUpdate: CoSimulation +> bool
 validCSIntermediateUpdate(cs) ==
 	-- @OnFail("%NAME: canReturnEarlyAfterIntermediateUpdate requires providesIntermediateUpdate at %s",
 	-- loc2str(cs.location))
-	( cs.canReturnEarlyAfterIntermediateUpdate = true => cs.providesIntermediateUpdate = true )
+	( cs.canReturnEarlyAfterIntermediateUpdate = true => cs.providesIntermediateUpdate = true );
 ----
 // {vdm}
 - See <<table-CoSimulation-details>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCSEventMode
+[[validCSEventMode]]
+// {vdm}
+----
+validCSEventMode: CoSimulation * FmiModelDescription +> bool
+validCSEventMode(cs, fmd) == 
+	-- @OnFail("%NAME: hasEventMode must be true since FMU has clocks at %s",
+	-- loc2str(cs.location))
+	( let hasClocks = exists mv in seq fmd.modelVariables & is_Clock(mv) in
+		hasClocks => cs.hasEventMode );
+----
+// {vdm}
+- See <<table-CoSimulation-details>>.
+
 // This adds the docrefs for VDM only
 ifdef::hidden[]
 // {vdm}
@@ -46,6 +61,11 @@ values
 		],
 
 		"validCSIntermediateUpdate" |->
+		[
+			"<FMI3_STANDARD>#table-CoSimulation-details"
+		],
+
+		"validCSEventMode" |->
 		[
 			"<FMI3_STANDARD>#table-CoSimulation-details"
 		]
