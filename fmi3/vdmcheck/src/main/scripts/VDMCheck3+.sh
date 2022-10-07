@@ -87,7 +87,7 @@ SCRIPT=$0
 		-Dfmureader.vdmfile="$SAVE" \
 		-cp vdmj.jar:annotations.jar:xsd2vdm.jar:fmuReader.jar com.fujitsu.vdmj.VDMJ \
 		-vdmsl -q -annotations -e "isValidFMIConfiguration(modelDescription, buildDescription, terminalsAndIcons)" \
-		$MODEL $FILE |
+		$MODEL "$FILE" |
 		sed -e "s+<FMI3_STANDARD>+$LINK+" |
 		awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'
 )
