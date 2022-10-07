@@ -13,13 +13,26 @@ endif::[]
 ----
 validCSModelIdentifier: CoSimulation +> bool
 validCSModelIdentifier(cs) ==
-	-- @OnFail("%NAME: %s not valid C variable name at %s", cs.modelIdentifier, loc2str(cs.location))
+	-- @OnFail("%NAME: %s not valid C variable name at %s",
+	-- cs.modelIdentifier, loc2str(cs.location))
 	( validIdentifier(cs.modelIdentifier) );
 ----
 // {vdm}
 - See <<modelIdentifier>>.
 - See <<header-files-and-naming-of-functions>>.
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCSIntermediateUpdate
+[[validCSIntermediateUpdate]]
+// {vdm}
+----
+validCSIntermediateUpdate: CoSimulation +> bool
+validCSIntermediateUpdate(cs) ==
+	-- @OnFail("%NAME: canReturnEarlyAfterIntermediateUpdate requires providesIntermediateUpdate at %s",
+	-- loc2str(cs.location))
+	( cs.canReturnEarlyAfterIntermediateUpdate = true => cs.providesIntermediateUpdate = true )
+----
+// {vdm}
+- See <<table-CoSimulation-details>>.
 // This adds the docrefs for VDM only
 ifdef::hidden[]
 // {vdm}
@@ -30,6 +43,11 @@ values
 		[
 			"<FMI3_STANDARD>#modelIdentifier",
 			"<FMI3_STANDARD>#header-files-and-naming-of-functions"
+		],
+
+		"validCSIntermediateUpdate" |->
+		[
+			"<FMI3_STANDARD>#table-CoSimulation-details"
 		]
 	};
 // {vdm}
