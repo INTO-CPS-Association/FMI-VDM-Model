@@ -12,10 +12,10 @@ endif::[]
 // {vdm}
 ----
 validCSModelIdentifier: CoSimulation +> bool
-validCSModelIdentifier(cs) ==
+validCSModelIdentifier(ecs) ==
 	-- @OnFail("%NAME: %s not valid C variable name at %s",
-	-- cs.modelIdentifier, loc2str(cs.location))
-	( validIdentifier(cs.modelIdentifier) );
+	-- ecs.modelIdentifier, loc2str(ecs.location))
+	( validIdentifier(ecs.modelIdentifier) );
 ----
 // {vdm}
 - See <<modelIdentifier>>.
@@ -26,10 +26,10 @@ validCSModelIdentifier(cs) ==
 // {vdm}
 ----
 validCSIntermediateUpdate: CoSimulation +> bool
-validCSIntermediateUpdate(cs) ==
+validCSIntermediateUpdate(ecs) ==
 	-- @OnFail("%NAME: canReturnEarlyAfterIntermediateUpdate requires providesIntermediateUpdate at %s",
-	-- loc2str(cs.location))
-	( cs.canReturnEarlyAfterIntermediateUpdate = true => cs.providesIntermediateUpdate = true );
+	-- loc2str(ecs.location))
+	( ecs.canReturnEarlyAfterIntermediateUpdate => ecs.providesIntermediateUpdate );
 ----
 // {vdm}
 - See <<table-CoSimulation-details>>.
