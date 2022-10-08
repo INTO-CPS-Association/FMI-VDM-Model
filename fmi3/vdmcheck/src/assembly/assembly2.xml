@@ -47,6 +47,7 @@
 				<excludes>
 					<exclude>Tests/**</exclude>
 					<exclude>META-INF/**</exclude>
+					<exclude>Rules/*.adoc.vdmsl</exclude>
 				</excludes>
 			</unpackOptions>
 		</dependencySet>
