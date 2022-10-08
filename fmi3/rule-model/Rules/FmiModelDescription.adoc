@@ -215,7 +215,7 @@ validCSEventMode(fmd) ==
 		-- @OnFail("%NAME: hasEventMode must be true since FMU has clocks at %s",
 		-- loc2str(fmd.coSimulation.location))
 		( let hasClocks = exists mv in seq fmd.modelVariables & is_Clock(mv) in
-			hasClocks => fmd.coSimulation.hasEventMode );
+			hasClocks => fmd.coSimulation.hasEventMode = true );
 ----
 // {vdm}
 - See <<table-CoSimulation-details>>.
