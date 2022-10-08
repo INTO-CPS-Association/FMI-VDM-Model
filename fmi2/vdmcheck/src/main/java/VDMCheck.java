@@ -166,32 +166,32 @@ public class VDMCheck
 					copy(zip.getInputStream(entry), tempXML);
 					results.add(new XMLFile("modelDescription.xml", tempXML));
 					
-					entry = zip.getEntry("icon/terminalsAndIcons.xml");
+					entry = zip.getEntry("terminalsAndIcons/terminalsAndIcons.xml");
 					
 					if (entry != null)
 					{
 						File tempXML2 = File.createTempFile("terminalsAndIcons", "tmp");
 						tempXML2.deleteOnExit();
 						copy(zip.getInputStream(entry), tempXML2);
-						results.add(new XMLFile("icon/terminalsAndIcons.xml", tempXML2));
+						results.add(new XMLFile("terminalsAndIcons/terminalsAndIcons.xml", tempXML2));
 					}
 					else
 					{
-						System.out.println("FMU has no icon/terminalsAndIcons.xml");
+						System.out.println("FMU has no terminalsAndIcons/terminalsAndIcons.xml");
 					}
 					
-					entry = zip.getEntry("source/buildDescription.xml");
+					entry = zip.getEntry("sources/buildDescription.xml");
 					
 					if (entry != null)
 					{
 						File tempXML3 = File.createTempFile("buildDescription", "tmp");
 						tempXML3.deleteOnExit();
 						copy(zip.getInputStream(entry), tempXML3);
-						results.add(new XMLFile("source/buildDescription.xml", tempXML3));
+						results.add(new XMLFile("sources/buildDescription.xml", tempXML3));
 					}
 					else
 					{
-						System.out.println("FMU has no source/buildDescription.xml");
+						System.out.println("FMU has no sources/buildDescription.xml");
 					}
 				}
 				catch (ZipException e)	// Not a zip file, assume raw XML

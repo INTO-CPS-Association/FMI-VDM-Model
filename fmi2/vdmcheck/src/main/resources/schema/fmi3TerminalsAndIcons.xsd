@@ -5,7 +5,7 @@
     <xs:annotation>
         <xs:documentation>
 Copyright(c) 2008-2011 MODELISAR consortium,
-             2012-2021 Modelica Association Project "FMI".
+             2012-2022 Modelica Association Project "FMI".
              All rights reserved.
 
 This file is licensed by the copyright holders under the 2-Clause BSD License
@@ -75,7 +75,7 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             <xs:attribute name="fmiVersion" use="required">
                 <xs:simpleType>
                     <xs:restriction base="xs:normalizedString">
-                        <xs:pattern value="3[.](0-.*)"/>
+                        <xs:pattern value="3[.](0|[1-9][0-9]*)([.](0|[1-9][0-9]*))?(-.+)?"/>
                     </xs:restriction>
                 </xs:simpleType>
             </xs:attribute>
