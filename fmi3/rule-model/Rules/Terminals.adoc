@@ -14,7 +14,7 @@ endif::[]
 validCoordinateSystem: CoordinateSystem +> bool
 validCoordinateSystem(cs) ==
 	-- @OnFail("%NAME: Area is not bottom left to top right at %s", loc2str(cs.location))
-	( isTLtoBR(cs.x1, cs.x2, cs.y1, cs.y2) );
+	( isTLtoBR(cs.x1, cs.y1, cs.x2, cs.y2) );
 ----
 // {vdm}
 See <<_coordinatesystem>>.
@@ -26,7 +26,7 @@ See <<_coordinatesystem>>.
 validIcon: Icon +> bool
 validIcon(icon) ==
 	-- @OnFail("%NAME: Area is not bottom left to top right at %s", loc2str(icon.location))
-	( isTLtoBR(icon.x1, icon.x2, icon.y1, icon.y2) );
+	( isTLtoBR(icon.x1, icon.y1, icon.x2, icon.y2) );
 ----
 // {vdm}
 See <<_icon>>.
@@ -90,7 +90,7 @@ validTerminalGraphicalRepresentation(terminal) ==
 	([
 		-- @OnFail("%NAME: Terminal area is not bottom left to top right at %s",
 		-- loc2str(tgr.location))
-		( tgr.x1 < tgr.x2 and tgr.y1 < tgr.y2 ),
+		( isTLtoBR(tgr.x1, tgr.y1, tgr.x2, tgr.y2) ),
 
 		-- @OnFail("%NAME: Colour attributes must be octets (<=255) at %s",
 		-- loc2str(tgr.location))
