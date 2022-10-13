@@ -30,7 +30,8 @@
 /**
  * A collection of functions to clarify the application of a type invariant to
  * a set or sequence of values. Types that want to verify a collection of types
- * call these functions, rather than calling 	apply directly, which isn't as clear.
+ * call these functions, rather than calling apply directly, which isn't as
+ * easy to read.
  */
 functions
 	invs_BuildConfiguration': [ set of BuildConfiguration | seq of BuildConfiguration ] +> bool
