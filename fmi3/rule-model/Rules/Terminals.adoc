@@ -25,8 +25,8 @@ See <<_coordinatesystem>>.
 ----
 validIcon: Icon +> bool
 validIcon(icon) ==
-	-- @OnFail("%NAME: Area is not bottom left to top right at %s", loc2str(icon.location))
-	( isBLtoTR(icon.x1, icon.y1, icon.x2, icon.y2) );
+	-- @OnFail("%NAME: Icon has zero area at %s", loc2str(icon.location))
+	( icon.x1 <> icon.x2 and icon.y1 <> icon.y2 );
 ----
 // {vdm}
 See <<_icon>>.
