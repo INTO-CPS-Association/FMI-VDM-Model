@@ -198,7 +198,7 @@ functions
 		isFloat(mv) and mv.derivative <> nil;
 
 	/**
-	 * Test coordinate/icon/terminal are bottom left to top right
+	 * Test coordinates are bottom left to top right
 	 */
 	 isBLtoTR: real * real * real * real +> bool
 	 isBLtoTR(x1, y1, x2, y2) ==
