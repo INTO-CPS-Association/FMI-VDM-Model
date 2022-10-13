@@ -30,7 +30,7 @@ types
 	ModelVariables' = ModelVariables	-- raw model variables, not effective values
 	inv mvs == allOf
 	([
-		apply[fmi3Variable](inv_fmi3Variable', mvs),
+		invs_fmi3Variable'(mvs),
 
 		-- Rules are defined in ModelVariables.adoc
 		rule("validValueReferences", validValueReferences(mvs)),

@@ -59,8 +59,7 @@ types
 	Terminals' = [Terminals] * [FmiModelDescription]
 	inv mk_(ts, fmd) == ts <> nil => allOf
 	([
-		apply[Terminal * [FmiModelDescription]](inv_Terminal',
-			[mk_(t, fmd) | t in seq ts])
+		invs_Terminal'([mk_(t, fmd) | t in seq ts])
 	]);
 
 	Terminal' = Terminal * [FmiModelDescription]

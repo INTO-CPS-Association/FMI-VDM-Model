@@ -30,7 +30,7 @@ types
 	UnitDefinitions' = [UnitDefinitions]
 	inv units == units <> nil => allOf
 	([
-		apply[Unit](inv_Unit', units),
+		invs_Unit'(units),
 
 		-- Rules are defined in UnitDefinitions.adoc
 		rule("validUnitNames", validUnitNames(units))
@@ -39,7 +39,7 @@ types
 	Unit' = Unit
 	inv unit == allOf
 	([
-		apply[DisplayUnit](inv_DisplayUnit', unit.displayUnit),
+		invs_DisplayUnit'(unit.displayUnit),
 		inv_BaseUnit'(unit.baseUnit),
 		inv_Annotations'(unit.annotations),
 

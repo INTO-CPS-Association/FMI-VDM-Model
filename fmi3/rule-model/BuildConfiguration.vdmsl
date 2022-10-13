@@ -30,24 +30,24 @@ types
 	FmiBuildDescription' = FmiBuildDescription
 	inv fbd == allOf
 	([
-		apply[BuildConfiguration](inv_BuildConfiguration', fbd.buildConfiguration),
+		invs_BuildConfiguration'(fbd.buildConfiguration),
 		inv_Annotations'(fbd.annotations)
 	]);
 
 	BuildConfiguration' = BuildConfiguration
 	inv bc == allOf
 	([
-		apply[SourceFileSet](inv_SourceFileSet', bc.sourceFileSet),
-		apply[Library](inv_Library', bc.library),
+		invs_SourceFileSet'(bc.sourceFileSet),
+		invs_Library'(bc.library),
 		inv_Annotations'(bc.annotations)
 	]);
 
 	SourceFileSet' = SourceFileSet
 	inv sfs == allOf
 	([
-		apply[SourceFile](inv_SourceFile', sfs.sourceFile),
-		apply[PreprocessorDefinition](inv_PreprocessorDefinition', sfs.preprocessorDefinition),
-		apply[IncludeDirectory](inv_IncludeDirectory', sfs.includeDirectory),
+		invs_SourceFile'(sfs.sourceFile),
+		invs_PreprocessorDefinition'(sfs.preprocessorDefinition),
+		invs_IncludeDirectory'(sfs.includeDirectory),
 		inv_Annotations'(sfs.annotations),
 
 		-- Rules are defined in BuildConfiguration.adoc

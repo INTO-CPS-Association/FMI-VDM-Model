@@ -30,7 +30,7 @@ types
 	TypeDefinitions' = [TypeDefinitions]
 	inv tdefs == allOf
 	([
-		apply[fmi3TypeDefinition](inv_fmi3TypeDefinition', tdefs),
+		invs_fmi3TypeDefinition'(tdefs),
 
 		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeDefinitionNames", validTypeDefinitionNames(tdefs))

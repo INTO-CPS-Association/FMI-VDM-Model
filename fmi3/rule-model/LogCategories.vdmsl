@@ -30,7 +30,7 @@ types
 	LogCategories' = [LogCategories]
 	inv lcats == lcats <> nil => allOf
 	([
-		apply[Category](inv_Category', lcats),
+		invs_Category'(lcats),
 
 		-- Rules defined in LogCategories.adoc
 		rule("validLogCategories", validLogCategories(lcats))

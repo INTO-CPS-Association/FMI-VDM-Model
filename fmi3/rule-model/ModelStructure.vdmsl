@@ -30,11 +30,11 @@ types
 	ModelStructure' = ModelStructure
 	inv ms == allOf
 	([
- 		apply[Output](inv_Output', ms.output),
-    	apply[ContinuousStateDerivative](inv_ContinuousStateDerivative', ms.continuousStateDerivative),
-		apply[ClockedState](inv_ClockedState', ms.clockedState),
-		apply[InitialUnknown](inv_InitialUnknown', ms.initialUnknown),
-		apply[EventIndicator](inv_EventIndicator', ms.eventIndicator)
+ 		invs_Output'(ms.output),
+    	invs_ContinuousStateDerivative'(ms.continuousStateDerivative),
+		invs_ClockedState'(ms.clockedState),
+		invs_InitialUnknown'(ms.initialUnknown),
+		invs_EventIndicator'(ms.eventIndicator)
 	]);
 
 	Output' = Output
