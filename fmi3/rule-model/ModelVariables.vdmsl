@@ -74,98 +74,98 @@ types
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	Float32' = Float32
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	Int64' = Int64
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	Int32' = Int32
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	Int16' = Int16
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	Int8' = Int8
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	UInt64' = UInt64
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	UInt32' = UInt32
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	UInt16' = UInt16
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	UInt8' = UInt8
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	Boolean' = Boolean
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	String' = String
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	Binary' = Binary
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	Enumeration' = Enumeration
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		apply[Dimension](inv_Dimension', mv.dimension)
+		invs_Dimension'(mv.dimension)
 	]);
 
 	Clock' = Clock
