@@ -745,7 +745,7 @@ public class XSDConverter_v11 extends XSDConverter
 			}
 
 			record = new RecordType(element.getPrefix(), typeName(elementName));
-			converted.put(elementName, record);
+			converted.put(typeName(elementName), record);
 			
 			if (element.hasAttr("type"))
 			{
