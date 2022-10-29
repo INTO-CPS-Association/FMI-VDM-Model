@@ -79,6 +79,7 @@ public class XMLSaxHandler extends DefaultHandler
 				
 				if (!aname.startsWith("xmlns:"))	// Ignore embedded xmlns?
 				{
+					String original = aname;
 					Field field = recordType.getField(aname);
 
 					if (field == null)
@@ -94,12 +95,12 @@ public class XMLSaxHandler extends DefaultHandler
 						
 						if (!recordValue.setAttribute(aname, vdmValue))
 						{
-							dumpStack("Attribute not set: " + aname, recordValue);
+							dumpStack("Attribute not set: " + original, recordValue);
 						}
 					}
 					else
 					{
-						dumpStack("Field not found: " + qName + "." + aname, recordValue);
+						dumpStack("Field not found: " + qName + "." + original, recordValue);
 					}
 				}
 			}
