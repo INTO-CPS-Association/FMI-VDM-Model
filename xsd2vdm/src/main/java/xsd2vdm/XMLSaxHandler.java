@@ -140,6 +140,12 @@ public class XMLSaxHandler extends DefaultHandler
 	public void endElement(String uri, String localName, String qName)
 	{
 		VDMValue value = stack.pop();
+		String mapped = map(qName);
+		
+		if (mapped != null)
+		{
+			qName = mapped;
+		}
 
 		if (!stack.isEmpty())
 		{
