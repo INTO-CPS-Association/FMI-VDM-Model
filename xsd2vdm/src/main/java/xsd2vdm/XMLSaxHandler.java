@@ -67,9 +67,9 @@ public class XMLSaxHandler extends DefaultHandler
 			qName = mapped;
 		}
 		
-		if (schema.containsKey(qName))
+		if (schema.containsKey(typeName(qName)))
 		{
-			RecordType recordType = (RecordType) schema.get(qName);
+			RecordType recordType = (RecordType) schema.get(typeName(qName));
 			RecordValue recordValue = new RecordValue(recordType, locator);
 			
 			for (int i=0; i<attributes.getLength(); i++)
@@ -219,4 +219,13 @@ public class XMLSaxHandler extends DefaultHandler
 
 		return Xsd2VDM.getProperty(path.toString());
 	}
+	
+	/**
+	 * Convert a string into a name with an uppercase initial letter.
+	 */
+	private String typeName(String attribute)
+	{
+		return attribute.substring(0, 1).toUpperCase() + attribute.substring(1);
+	}
+
 }
