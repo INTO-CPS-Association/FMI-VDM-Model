@@ -233,6 +233,102 @@ public class XSDElement
 		return sb.toString();
 	}
 	
+	/**
+	 * The toVDM method produces a raw VDM model of XML document elements.
+	 *
+	 *	Element ::
+	 *		name		: seq1 of char
+	 *		attrs		: seq of Attribute
+	 *		children	: seq of Element | Content;
+	 *
+	 *	Attribute ::
+	 *		name		: seq1 of char
+	 *		value		: seq1 of char;
+	 *
+	 *	Content = seq of char;
+	 */
+
+	private static String INDENT = "  ";
+	
+	public String toVDM()
+	{
+		return toVDM(INDENT);
+	}
+	
+	protected String toVDM(String indent)
+	{
+		StringBuilder sb = new StringBuilder();
+		String indent2 = indent + INDENT;
+		String indent3 = indent2 + INDENT;
+		
+		sb.append(indent);
+		sb.append("mk_Element\n");
+		sb.append(indent);
+		sb.append("(\n");
+		sb.append(indent2);
+		sb.append("\"");
+		sb.append(type);
+		sb.append("\",\n");
+
+		if (attributes.isEmpty())
+		{
+			sb.append(indent2);
+			sb.append("[],\n");
+		}
+		else
+		{
+			sb.append(indent2);
+			sb.append("[\n");
+	
+			String sep = "";
+	
+			for (Entry<String, String> pair: attributes.entrySet())
+			{
+				sb.append(sep);
+				sb.append(indent3);
+				sb.append("mk_Attribute(\"");
+				sb.append(pair.getKey());
+				sb.append("\", \"");
+				sb.append(pair.getValue());
+				sb.append("\")");
+				sep = ",\n";
+			}
+	
+			sb.append("\n");
+			sb.append(indent2);
+			sb.append("],\n");
+		}
+		
+		if (children.isEmpty())
+		{
+			sb.append(indent2);
+			sb.append("[]\n");
+		}
+		else
+		{
+			sb.append(indent2);
+			sb.append("[\n");
+			
+			String sep = "";
+			
+			for (XSDElement child: children)
+			{
+				sb.append(sep);
+				sb.append(child.toVDM(indent3));
+				sep = ",\n";
+			}
+	
+			sb.append("\n");
+			sb.append(indent2);
+			sb.append("]\n");
+		}
+		
+		sb.append(indent);
+		sb.append(")");
+
+		return sb.toString();
+	}
+	
 	@Override
 	public boolean equals(Object other)
 	{

@@ -41,4 +41,10 @@ public class XSDContent extends XSDElement
 	{
 		return content;
 	}
+	
+	@Override
+	protected String toVDM(String indent)
+	{
+		return indent + "\"" + content + "\"";
+	}
 }
