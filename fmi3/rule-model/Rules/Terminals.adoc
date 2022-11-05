@@ -19,7 +19,7 @@ validCoordinateSystem(cs) == allOf
 
 		-- @OnFail("%NAME: Coordinate system is not bottom left to top right at %s",
 		-- loc2str(cs.location))
-		( isBLtoTR(cs.x1, cs.y1, cs.x2,cs.y2) )
+		( isBLtoTR(cs.x1, cs.y1, cs.x2, cs.y2) )
 	]);
 ----
 // {vdm}

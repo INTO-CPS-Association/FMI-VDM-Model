@@ -83,8 +83,8 @@ validVariableDimensions(mvs) ==
 					dim.valueReference <> nil =>
 						dim.valueReference <> mv.valueReference ),
 
-			-- @OnFail("%NAME: Dimension of %s, %s",
-			-- "valueReference is not Integer, constant or structuralParameter, with start", mv.name)
+			-- @OnFail("%NAME: Dimension of %s, %s", mv.name,
+			-- "valueReference is not Integer, constant or structuralParameter, with start")
 			( mv.dimension <> nil =>
 				forall dim in seq mv.dimension &
 					dim.valueReference <> nil =>
@@ -126,7 +126,7 @@ validAliasDisplayUnits(mvs) ==
 	allOf
 	([
 		[
-			-- @OnFail("%NAME: Alias displayUnit requires Float unit definition at %s",
+			-- @OnFail("%NAME: Alias displayUnit requires Float with unit definition at %s",
 			-- loc2str(a.location))
 			( a.displayUnit <> nil => isFloat(mv) and mv.unit <> nil )
 			
