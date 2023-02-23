@@ -79,19 +79,6 @@
 							<finalName>FMI3-vdmcheck-${project.version}-${maven.build.timestamp}</finalName>
 						</configuration>
 					</execution>
-					<execution>
-						<id>rules</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<descriptors>
-								<descriptor>src/assembly/assembly2.xml</descriptor>
-							</descriptors>
-							<finalName>FMI3-vdmcheck-rules-${project.version}-${maven.build.timestamp}</finalName>
-						</configuration>
-					</execution>
 				</executions>
 			</plugin>
 		</plugins>
