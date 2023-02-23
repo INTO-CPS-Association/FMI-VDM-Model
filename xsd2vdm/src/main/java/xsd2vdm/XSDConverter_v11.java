@@ -2778,6 +2778,11 @@ public class XSDConverter_v11 extends XSDConverter
 					String name = stackAttr("name");
 					results.add(new Field(fieldName(name), name, convertElement(etype)));
 					break;
+					
+				case "xs:group":
+					name = stackAttr("name");
+					results.add(new Field(fieldName(name), name, convertGroup(etype)));
+					break;
 
 				default:
 					results.add(convertSimpleType(etype));

@@ -72,7 +72,7 @@ public class XSDElement
 			
 			if (name != null)
 			{
-				if (!prefix.isEmpty())
+				if (prefix != null && !prefix.isEmpty())
 				{
 					referenceMap.put(prefix + ":" + name, this);
 				}
