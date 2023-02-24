@@ -145,6 +145,8 @@ public class XSDConverter_v11 extends XSDConverter
 					
 				case "xs:complexType":
 					convertComplexType(child);
+					// RecordType record = convertComplexType(child);
+					// converted.put(child.getAttr("name"), record);
 					break;
 					
 				case "xs:element":
