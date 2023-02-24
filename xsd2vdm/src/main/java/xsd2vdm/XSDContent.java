@@ -45,6 +45,7 @@ public class XSDContent extends XSDElement
 	@Override
 	protected String toVDM(String indent)
 	{
-		return indent + "\"" + content + "\"";
+		String quoted = content.replaceAll("\\\"", "\\\\\"").replaceAll("\\n", "\\\\\\n");
+		return indent + "\"" + quoted + "\"";
 	}
 }
