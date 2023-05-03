@@ -178,7 +178,7 @@ types
 
 		-- Rules are defined in TypeDefinitions.adoc
 		rule("validTypeMinMax", validTypeMinMax(tdef)),
-		rule("validEnumerationBijection", validEnumerationTypeBijection(tdef))
+		rule("validEnumerationTypeBijection", validEnumerationTypeBijection(tdef))
 	]);
 
 	ClockType' = ClockType

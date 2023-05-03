@@ -98,7 +98,7 @@ functions
 	invs_SourceFileSet'(args) ==
 		apply[SourceFileSet](inv_SourceFileSet', args);
 
-	invs_Terminal': [ seq of Terminal ] * [FmiModelDescription] +> bool
+	invs_Terminal': seq of Terminal * [FmiModelDescription] +> bool
 	invs_Terminal'(args, fmd) ==
 		apply[Terminal * [FmiModelDescription]](inv_Terminal', [ mk_(arg, fmd) | arg in seq args ]);
 
