@@ -35,8 +35,8 @@ types
 		inv_Annotations'(fti.annotations)
 	]);
 
-	GraphicalRepresentation' = GraphicalRepresentation
-	inv gr == allOf
+	GraphicalRepresentation' = [GraphicalRepresentation]
+	inv gr == gr <> nil => allOf
 	([
     	inv_CoordinateSystem'(gr.coordinateSystem),
     	inv_Icon'(gr.icon),

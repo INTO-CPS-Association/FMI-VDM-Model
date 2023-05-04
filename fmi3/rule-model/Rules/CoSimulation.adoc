@@ -29,7 +29,7 @@ validCSIntermediateUpdate: CoSimulation +> bool
 validCSIntermediateUpdate(ecs) ==
 	-- @OnFail("%NAME: canReturnEarlyAfterIntermediateUpdate requires providesIntermediateUpdate at %s",
 	-- loc2str(ecs.location))
-	( ecs.canReturnEarlyAfterIntermediateUpdate => ecs.providesIntermediateUpdate );
+	( ecs.canReturnEarlyAfterIntermediateUpdate = true => ecs.providesIntermediateUpdate );
 ----
 // {vdm}
 - See <<table-CoSimulation-details>>.

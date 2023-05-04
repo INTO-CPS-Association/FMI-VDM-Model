@@ -50,13 +50,14 @@ functions
 			kind     = kindOf(mv)
 		in
 			if decltype = nil
-			then effectiveSimpleVariable(mv, kind)
-			elseif kindOf(decltype) <> kind
-			then mv		-- Type error reported elsewhere
-			else effectiveTypedVariable(mv, decltype, kind);
+			then effectiveSimpleVariable(mv)
+			elseif kindOf(decltype) = kind
+			then effectiveTypedVariable(mv, decltype)
+			else mv;		-- Type error reported elsewhere
 
-	effectiveTypedVariable: fmi3Variable * fmi3TypeDefinition * Kind +> fmi3Variable
-	effectiveTypedVariable(mv, decltype, kind) ==
+	effectiveTypedVariable: fmi3Variable * fmi3TypeDefinition +> fmi3Variable
+	effectiveTypedVariable(mv, decltype) ==
+		let kind = kindOf(mv) in
 		cases kind:
 			<Float64> -> 
 				let mk_(kmin, kmax) = minMaxOfKind(kind) in
@@ -440,10 +441,12 @@ functions
 				),
 
 			others -> undefined
-		end;
+		end
+	pre kindOf(decltype) = kindOf(mv);
 
-	effectiveSimpleVariable: fmi3Variable * Kind +> fmi3Variable
-	effectiveSimpleVariable(mv, kind) ==
+	effectiveSimpleVariable: fmi3Variable +> fmi3Variable
+	effectiveSimpleVariable(mv) ==
+		let kind = kindOf(mv) in
 		cases kind:
 			<Float64> -> 
 				let mk_(kmin, kmax) = minMaxOfKind(kind) in

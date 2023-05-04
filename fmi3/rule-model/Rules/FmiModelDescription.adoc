@@ -176,7 +176,7 @@ See <<table-type-attributes>>.
 validMultipleSets: FmiModelDescription * ModelVariables +> bool
 validMultipleSets(fmd, evs) == allOf
 	([
-		ev.canHandleMultipleSetPerTimeInstant =>
+		ev.canHandleMultipleSetPerTimeInstant = true =>
 			-- @OnFail("%NAME: Variable %s, canHandleMultipleSetPerTimeInstant invalid at %s",
 			-- ev.name, loc2str(ev.location))
 			( fmd.modelExchange <> nil and ev.causality = <input> )

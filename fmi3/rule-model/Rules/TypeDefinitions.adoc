@@ -38,7 +38,8 @@ validTypeMinMax(tdef) ==
 
 		-- @OnFail("%NAME: max %s not >= min %s", tdef.max, tdef.min)
 		( tdef.min <> nil and tdef.max <> nil => tdef.max >= tdef.min )
-	]);
+	])
+	pre is_(kindOf(tdef), NumericKind);
 ----
 // {vdm}
 See <<table-type-details>>.
@@ -50,7 +51,8 @@ See <<table-type-details>>.
 validTypeDisplayUnit: fmi3TypeDefinition +> bool
 validTypeDisplayUnit(tdef) ==
 	-- @OnFail("%NAME: Type %s, unit must be defined for displayUnit %s", tdef.name, tdef.displayUnit)
-	( tdef.displayUnit <> nil => tdef.unit <> nil );
+	( tdef.displayUnit <> nil => tdef.unit <> nil )
+pre is_(kindOf(tdef), FloatKind);
 ----
 // {vdm}
 See <<table-type-details>>.

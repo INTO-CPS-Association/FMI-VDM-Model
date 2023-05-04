@@ -44,7 +44,7 @@ validDisplayUnitNames(unit) ==
 validInverseAndOffset: DisplayUnit +> bool
 validInverseAndOffset(dunit) ==
 	-- @OnFail("%NAME: inverse is only allowed if offset = 0 at %s", loc2str(dunit.location))
-	( dunit.$inverse => dunit.offset = 0 )
+	( dunit.$inverse = true => dunit.offset = 0 )
 ----
 // {vdm}
 See <<figure-schema-DisplayUnit>>.
