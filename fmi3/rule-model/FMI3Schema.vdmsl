@@ -1,5 +1,5 @@
 /**
- * VDM schema created from fmi3.xsd on Fri May 13 10:07:24 BST 2022
+ * VDM schema created from fmi3.xsd on Fri Jun 16 12:55:06 BST 2023
  * DO NOT EDIT!
  */
 types
@@ -355,7 +355,7 @@ Float32 ::
     derivative                          : [nat]
     reinit                              : [bool]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -368,6 +368,8 @@ Dimension ::
     start           : [nat]
     valueReference  : [nat]
 ;
+
+fmi3Dimensions = [seq of (Dimension)];
 
 Initial = <exact> | <approx> | <calculated>;
 
@@ -403,7 +405,7 @@ Float64 ::
     derivative                          : [nat]
     reinit                              : [bool]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -425,7 +427,7 @@ Int8 ::
     max                                 : [int]
     start                               : [seq of (int)]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -447,7 +449,7 @@ UInt8 ::
     max                                 : [nat]
     start                               : [seq of (nat)]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -469,7 +471,7 @@ Int16 ::
     max                                 : [int]
     start                               : [seq of (int)]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -491,7 +493,7 @@ UInt16 ::
     max                                 : [nat]
     start                               : [seq of (nat)]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -513,7 +515,7 @@ Int32 ::
     max                                 : [int]
     start                               : [seq of (int)]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -535,7 +537,7 @@ UInt32 ::
     max                                 : [nat]
     start                               : [seq of (nat)]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -557,7 +559,7 @@ Int64 ::
     max                                 : [int]
     start                               : [seq of (int)]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -579,7 +581,7 @@ UInt64 ::
     max                                 : [nat]
     start                               : [seq of (nat)]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -598,7 +600,7 @@ Boolean ::
     initial                             : [Initial]
     start                               : [seq of (bool)]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 
@@ -616,7 +618,7 @@ String ::
     declaredType                        : [NormalizedString]
     initial                             : [Initial]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     start                               : [seq of (Start)]
     alias                               : [seq of (Alias)]
 ;
@@ -639,7 +641,7 @@ Binary ::
     mimeType                            : [NormalizedString]
     maxSize                             : [nat]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     start                               : [seq of (Start)]
     alias                               : [seq of (Alias)]
 ;
@@ -662,7 +664,7 @@ Enumeration ::
     max                                 : [int]
     start                               : [seq of (int)]
     annotations                         : [Annotations]
-    dimension                           : [seq of (Dimension)]
+    fmi3Dimensions                      : fmi3Dimensions
     alias                               : [seq of (Alias)]
 ;
 

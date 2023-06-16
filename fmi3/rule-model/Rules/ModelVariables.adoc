@@ -78,15 +78,15 @@ validVariableDimensions(mvs) ==
 	[
 		[
 			-- @OnFail("%NAME: Dimension of %s cannot reference itself", mv.name)
-			( mv.dimension <> nil =>
-				forall dim in seq mv.dimension &
+			( mv.fmi3Dimensions <> nil =>
+				forall dim in seq mv.fmi3Dimensions &
 					dim.valueReference <> nil =>
 						dim.valueReference <> mv.valueReference ),
 
 			-- @OnFail("%NAME: Dimension of %s, %s", mv.name,
 			-- "valueReference is not Integer, constant or structuralParameter, with start")
-			( mv.dimension <> nil =>
-				forall dim in seq mv.dimension &
+			( mv.fmi3Dimensions <> nil =>
+				forall dim in seq mv.fmi3Dimensions &
 					dim.valueReference <> nil =>
 						exists r in seq mvs &
 							r.valueReference = dim.valueReference
@@ -95,7 +95,7 @@ validVariableDimensions(mvs) ==
 							and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
 
 			-- @OnFail("%NAME: Structural parameter %s cannot have Dimension", mv.name)
-			( mv.dimension <> nil =>
+			( mv.fmi3Dimensions <> nil =>
 				mv.causality <> <structuralParameter> )
 		]
 

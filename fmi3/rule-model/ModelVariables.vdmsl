@@ -74,98 +74,98 @@ types
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	Float32' = Float32
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	Int64' = Int64
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	Int32' = Int32
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	Int16' = Int16
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	Int8' = Int8
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	UInt64' = UInt64
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	UInt32' = UInt32
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	UInt16' = UInt16
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	UInt8' = UInt8
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	Boolean' = Boolean
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	String' = String
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	Binary' = Binary
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	Enumeration' = Enumeration
 	inv mv == allOf
 	([
 		inv_Annotations'(mv.annotations),
-		invs_Dimension'(mv.dimension)
+		invs_Dimension'(mv.fmi3Dimensions)
 	]);
 
 	Clock' = Clock

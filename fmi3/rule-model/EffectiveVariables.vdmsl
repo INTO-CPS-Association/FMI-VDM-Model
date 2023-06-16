@@ -87,7 +87,7 @@ functions
 						mv.derivative,
 						default[bool](mv.reinit, false),
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -119,7 +119,7 @@ functions
 						mv.derivative,
 						default[bool](mv.reinit, false),
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -144,7 +144,7 @@ functions
 						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -169,7 +169,7 @@ functions
 						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -194,7 +194,7 @@ functions
 						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -219,7 +219,7 @@ functions
 						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -244,7 +244,7 @@ functions
 						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -269,7 +269,7 @@ functions
 						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -294,7 +294,7 @@ functions
 						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -319,7 +319,7 @@ functions
 						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -341,7 +341,7 @@ functions
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
 					mv.start,
 					mv.annotations,		-- NOT inherited?
-					mv.dimension,
+					mv.fmi3Dimensions,
 					mv.alias
 				),
 
@@ -362,7 +362,7 @@ functions
 					mv.declaredType,
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
 					mv.annotations,		-- NOT inherited?
-					mv.dimension,
+					mv.fmi3Dimensions,
 					mv.start,
 					mv.alias
 				),
@@ -385,7 +385,7 @@ functions
 					default[NormalizedString](mv.mimeType, "application/octet-stream"),
 					override[nat](mv.maxSize, decltype.maxSize, nil),
 					mv.annotations,		-- NOT inherited?
-					mv.dimension,
+					mv.fmi3Dimensions,
 					mv.start,
 					mv.alias
 				),
@@ -411,7 +411,7 @@ functions
 						override[real](mv.max, decltype.max, kmax),
 						mv.start,
 						mv.annotations,		-- NOT inherited?
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -476,7 +476,7 @@ functions
 						mv.derivative,
 						default[bool](mv.reinit, false),
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -508,7 +508,7 @@ functions
 						mv.derivative,
 						default[bool](mv.reinit, false),
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -533,7 +533,7 @@ functions
 						default[real](mv.max, kmax),
 						mv.start,
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -558,7 +558,7 @@ functions
 						default[real](mv.max, kmax),
 						mv.start,
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -583,7 +583,7 @@ functions
 						default[real](mv.max, kmax),
 						mv.start,
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -608,7 +608,7 @@ functions
 						default[real](mv.max, kmax),
 						mv.start,
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -633,7 +633,7 @@ functions
 						default[real](mv.max, kmax),
 						mv.start,
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -658,7 +658,7 @@ functions
 						default[real](mv.max, kmax),
 						mv.start,
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -683,7 +683,7 @@ functions
 						default[real](mv.max, kmax),
 						mv.start,
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -708,7 +708,7 @@ functions
 						default[real](mv.max, kmax),
 						mv.start,
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
@@ -729,7 +729,7 @@ functions
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
 					mv.start,
 					mv.annotations,
-					mv.dimension,
+					mv.fmi3Dimensions,
 					mv.alias
 				),
 
@@ -749,7 +749,7 @@ functions
 					mv.declaredType,
 					effectiveInitial(mv.causality, mv.variability, mv.initial, kind),
 					mv.annotations,
-					mv.dimension,
+					mv.fmi3Dimensions,
 					mv.start,
 					mv.alias
 				),
@@ -772,7 +772,7 @@ functions
 					default[NormalizedString](mv.mimeType, "application/octet-stream"),
 					mv.maxSize,
 					mv.annotations,
-					mv.dimension,
+					mv.fmi3Dimensions,
 					mv.start,
 					mv.alias
 				),
@@ -798,7 +798,7 @@ functions
 						default[real](mv.max, kmax),
 						mv.start,
 						mv.annotations,
-						mv.dimension,
+						mv.fmi3Dimensions,
 						mv.alias
 					),
 
