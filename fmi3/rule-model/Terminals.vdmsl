@@ -56,7 +56,7 @@ types
 		rule("validIcon", validIcon(icon))
 	]);
 
-	Terminals' = [Terminals] * [FmiModelDescription]
+	Terminals' = [seq of Terminal] * [FmiModelDescription]
 	inv mk_(ts, fmd) == ts <> nil => allOf
 	([
 		invs_Terminal'(ts, fmd)
