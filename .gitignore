@@ -1,6 +1,7 @@
 # Eclipse
 .classpath
 .settings/
+.metadata/
 
 # Intellij
 .idea/
@@ -23,3 +24,4 @@ target/
 generated
 .generated
 /install.sh
+
