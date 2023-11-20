@@ -123,6 +123,45 @@
 		          </configuration>
 		        </plugin>
 
+
+                <!-- Attatch sources to all installed jars -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <attach>true</attach>
+                    </configuration>
+                </plugin>
+
+                <!-- Enable JavaDoc but dont fail on error. This must be disabled for
+                     the Eclipse project in the IDE -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.3.2</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <failOnError>false</failOnError>
+                        <quiet>true</quiet>
+                    </configuration>
+                </plugin>
+
             </plugins>
         </pluginManagement>
 
@@ -150,18 +189,7 @@
         </plugins>
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>artifactory-into-cps-release</id>
-            <name>artifactory-into-cps-release</name>
-            <url>https://overture.au.dk/artifactory/into-cps</url>
-        </repository>
-        <snapshotRepository>
-            <id>artifactory-into-cps-snapshots</id>
-            <name>artifactory-into-cps-snapshots</name>
-            <url>https://overture.au.dk/artifactory/into-cps</url>
-        </snapshotRepository>
-    </distributionManagement>
+
 
   
     <scm>
@@ -190,5 +218,85 @@
     </organization>
 
     <inceptionYear>2020</inceptionYear>
+
+
+
+    <profiles>
+        <profile>
+            <id>sonatype</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+                </repository>
+            </distributionManagement>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.12</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <!--autoReleaseAfterClose>true</autoReleaseAfterClose-->
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>au</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>artifactory-into-cps-release</id>
+                    <name>artifactory-into-cps-release</name>
+                    <url>https://overture.au.dk/artifactory/into-cps</url>
+                </repository>
+                <snapshotRepository>
+                    <id>artifactory-into-cps-snapshots</id>
+                    <name>artifactory-into-cps-snapshots</name>
+                    <url>https://overture.au.dk/artifactory/into-cps</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
+
+    </profiles>
 
 </project>
