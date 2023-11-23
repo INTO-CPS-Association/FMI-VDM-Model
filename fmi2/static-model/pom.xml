@@ -9,6 +9,11 @@
 	<groupId>org.into-cps.vdmcheck.fmi2</groupId>
 	<artifactId>static-model</artifactId>
 	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}</directory>
+			</resource>
+		</resources>
 		<directory>.generated</directory>
 		<plugins>
 			<plugin>

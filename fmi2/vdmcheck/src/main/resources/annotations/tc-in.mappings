@@ -3,5 +3,5 @@
 ##########################################################################################
 
 # annotations
-package annotations.tc to annotations.in;
-map TCOnFailAnnotation{name, args} to INOnFailAnnotation(name, args);
+package annotations.tc to vdmcheck.annotations.in;
+map TCOnFailAnnotation{name, args,format} to INOnFailAnnotation(name, args,format);
