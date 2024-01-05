@@ -623,6 +623,10 @@ public class ClassMapper {
 
         return result;
     }
+    
+    public <T> T convertLocal(Object source) throws Exception {
+    	return convert(source);
+    }
 
     /**
      * Check whether an object is already in the process of being converted.
