@@ -151,7 +151,7 @@ public class MaestroCheck {
                 if (!errors.isEmpty()) {
                     errors.add(new OnFailError(1, "Syntax errors in VDMSL?"));
                 } else {
-                    ClassMapper instance = ClassMapper.getInstance(TCNode.MAPPINGS);
+                    ClassMapper instance = ClassMapper.getInstance(TCNode.MAPPINGS, new PrintStream(new ByteArrayOutputStream()));
                     TCModuleList tc = instance.init().convert(ast);
                     tc.combineDefaults();
                     TypeChecker tchecker = new ModuleTypeChecker(tc);
@@ -165,7 +165,7 @@ public class MaestroCheck {
                         errors.add(new OnFailError(2, "Type errors in VDMSL?"));
                     }
 
-                    ClassMapper classMapper = ClassMapper.getInstance(INNode.MAPPINGS);
+                    ClassMapper classMapper = ClassMapper.getInstance(INNode.MAPPINGS, new PrintStream(new ByteArrayOutputStream()));
                     //                    patch(classMapper, CustomINOnFailAnnotation.class);
                     INModuleList in = classMapper.init().convert(tc);
                     Interpreter interpreter = new ModuleInterpreter(in, tc);
