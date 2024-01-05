@@ -25,3 +25,4 @@ generated
 .generated
 /install.sh
 
+.ci-friendly-pom.xml

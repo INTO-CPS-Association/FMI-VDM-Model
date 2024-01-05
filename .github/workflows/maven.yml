@@ -3,9 +3,9 @@
 
 name: FMI to VDM
 
-on: [workflow_dispatch, push, pull_request]
+on: [ workflow_dispatch, push, pull_request ]
 env:
-  JAVA_VERSION: 1.8
+  JAVA_VERSION: 11.0.3
   SERVER_ID: ossrh
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ ubuntu-latest, windows-latest ]
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK
@@ -29,31 +29,31 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-        - id: install-secret-key
-          name: Install gpg secret key
-          run: |
-            cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
-            gpg --list-secret-keys --keyid-format LONG
+      - id: install-secret-key
+        name: Install gpg secret key
+        run: |
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
 
-#        - name: Configure deploy for snapshots
-#          if: github.ref == 'refs/heads/development'
-#          run: echo "SERVER_ID=artifactory-into-cps-snapshots" >> $GITHUB_ENV
-        - name: Environment variables
-          run: echo ${{ env.SERVER_ID }}
+      #        - name: Configure deploy for snapshots
+      #          if: github.ref == 'refs/heads/development'
+      #          run: echo "SERVER_ID=artifactory-into-cps-snapshots" >> $GITHUB_ENV
+      - name: Environment variables
+        run: echo ${{ env.SERVER_ID }}
 
-        - name: Set up JDK
-          uses: actions/setup-java@v1
-          with:
-            java-version: ${{ env.JAVA_VERSION }}
-            server-id: ${{ env.SERVER_ID }}
-            server-username: MAVEN_USERNAME
-            server-password: MAVEN_PASSWORD
-            gpg-passphrase: MAVEN_GPG_PASSPHRASE
-        - name: Deploy
-          run: mvn -B deploy -Psonatype
-          env:
-            MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
-            MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
-            MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          server-id: ${{ env.SERVER_ID }}
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Deploy
+        run: mvn -B deploy -Psonatype
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
