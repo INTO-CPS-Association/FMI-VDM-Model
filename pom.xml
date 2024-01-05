@@ -51,20 +51,12 @@
             <dependency>
                 <groupId>dk.au.ece.vdmj</groupId>
                 <artifactId>vdmj</artifactId>
-<<<<<<< HEAD
-                <version>4.5.0-SNAPSHOT</version>
-=======
                 <version>${vdmj.version}</version>
->>>>>>> 5548bbf (remove class mapper and update vdmj)
             </dependency>
             <dependency>
                 <groupId>dk.au.ece.vdmj</groupId>
                 <artifactId>annotations</artifactId>
-<<<<<<< HEAD
-                <version>4.5.0-SNAPSHOT</version>
-=======
                 <version>${vdmj.version}</version>
->>>>>>> 5548bbf (remove class mapper and update vdmj)
             </dependency>
             <dependency>
                 <groupId>org.into-cps.vdmcheck</groupId>
