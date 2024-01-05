@@ -135,10 +135,10 @@ jobs:
 
 
       - name: Maven download
-        run: mvn validate dependency:resolve-plugins -Psonatype -Prelease -B --quiet
+        run: mvn validate dependency:resolve-plugins -Psonatype  -B --quiet
 
       - name: Maven Build
-        run: mvn -B package -Psonatype -Prelease --file pom.xml "-Dmaven.test.skip=true"
+        run: mvn -B package -Psonatype -Prelease -Dchangelist= -Dsha1= --file pom.xml "-Dmaven.test.skip=true"
 
   final:
     name: Build and Deploy Combined Release
@@ -186,14 +186,14 @@ jobs:
 
 
       - name: Maven download
-        run: mvn validate dependency:resolve-plugins -Psonatype -Prelease -B --quiet
+        run: mvn validate dependency:resolve-plugins -Psonatype  -B --quiet
 
       - name: Maven Build Final
-        run: mvn -B package -Psonatype -Prelease --file pom.xml -Dmaven.test.skip=true
+        run: mvn -B package -Psonatype -Prelease -Dchangelist= -Dsha1= --file pom.xml -Dmaven.test.skip=true
 
       - name: Maven Deploy RELEASE
         # If autorelease is false then it must be released from here: https://oss.sonatype.org/#stagingRepositories -DautoReleaseAfterClose=true
-        run: mvn -B deploy -Dchangelist= -Dsha1= -Dmaven.test.skip=true -DskipITs -fae -Psonatype
+        run: mvn -B deploy -Dchangelist= -Dsha1= -Dmaven.test.skip=true -DskipITs -fae -Psonatype -Prelease
         env:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
