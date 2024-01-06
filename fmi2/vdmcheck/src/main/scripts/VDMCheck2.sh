@@ -161,7 +161,13 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 		BASE=$(basename $1)
 		sed -i -e "s+$BASE+$2+g" "$VDM"
 
-		java -Xmx1g -cp vdmj.jar:annotations.jar com.fujitsu.vdmj.VDMJ \
+		# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for Windows
+		CLASSPATH_SEPARATOR=":"
+		if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+			CLASSPATH_SEPARATOR="\;"
+		fi
+
+		java -Xmx1g -cp vdmj.jar${CLASSPATH_SEPARATOR}annotations.jar com.fujitsu.vdmj.VDMJ \
 			-vdmsl -q -annotations -e "isValidFMIConfiguration($VAR)" \
 			model $VDM |
 			awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'
