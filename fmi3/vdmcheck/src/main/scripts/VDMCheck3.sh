@@ -79,13 +79,18 @@ SCRIPT=$0
 	
 	XSD="schema/fmi3.xsd"
 	MODEL="model model/Rules/*.adoc"
-
+	
+	# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for Windows
+	CLASSPATH_SEPARATOR=":"
+	if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+		CLASSPATH_SEPARATOR="\;"
+	fi
 	java -Xmx1g \
 		-Dvdmj.parser.merge_comments=true \
 		-Dvdmj.parser.external_readers=.fmu=fmureader.FMUReader,.xml=fmureader.FMUReader \
 		-Dfmureader.noschema=true \
 		-Dfmureader.vdmfile="$SAVE" \
-		-cp vdmj.jar:annotations.jar:xsd2vdm.jar:fmuReader.jar com.fujitsu.vdmj.VDMJ \
+		-cp vdmj.jar${CLASSPATH_SEPARATOR}annotations.jar${CLASSPATH_SEPARATOR}xsd2vdm.jar${CLASSPATH_SEPARATOR}fmuReader.jar com.fujitsu.vdmj.VDMJ \
 		-vdmsl -q -annotations -e "isValidFMIConfiguration(modelDescription, buildDescription, terminalsAndIcons)" \
 		$MODEL "$FILE" |
 		sed -e "s+<FMI3_STANDARD>+$LINK+" |
