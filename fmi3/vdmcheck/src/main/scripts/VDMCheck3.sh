@@ -87,7 +87,6 @@ SCRIPT=$0
 	fi
 	java -Xmx1g \
 		-Dvdmj.parser.merge_comments=true \
-		-Dvdmj.parser.external_readers=.fmu=fmureader.FMUReader,.xml=fmureader.FMUReader \
 		-Dfmureader.noschema=true \
 		-Dfmureader.vdmfile="$SAVE" \
 		-cp vdmj.jar${CLASSPATH_SEPARATOR}annotations.jar${CLASSPATH_SEPARATOR}xsd2vdm.jar${CLASSPATH_SEPARATOR}fmuReader.jar com.fujitsu.vdmj.VDMJ \
