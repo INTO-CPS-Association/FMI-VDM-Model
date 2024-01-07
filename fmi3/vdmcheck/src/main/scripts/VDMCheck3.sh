@@ -80,10 +80,10 @@ SCRIPT=$0
 	XSD="schema/fmi3.xsd"
 	MODEL="model model/Rules/*.adoc"
 	
-	# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for Windows
+	# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for msys
 	CLASSPATH_SEPARATOR=":"
-	if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-		CLASSPATH_SEPARATOR="\;"
+	if [ $OSTYPE == "msys" ]; then
+		CLASSPATH_SEPARATOR=";"
 	fi
 	java -Xmx1g \
 		-Dvdmj.parser.merge_comments=true \
