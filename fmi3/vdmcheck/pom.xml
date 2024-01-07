@@ -58,7 +58,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>VDMCheck</Main-Class>
+                            <Main-Class>VDMCheckPlus</Main-Class>
                             <Implementation-Version>${project.version} build ${maven.build.timestamp}
                             </Implementation-Version>
                             <Class-Path>.</Class-Path>

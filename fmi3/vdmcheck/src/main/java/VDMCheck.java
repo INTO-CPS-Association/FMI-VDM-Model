@@ -301,7 +301,7 @@ public class VDMCheck
 			args.add("-q");
 			args.add("-annotations");
 			args.add("-e");
-			args.add("isValidFMIConfiguration(" + varName + ")");
+			args.add("isValidFMIConfiguration(" + varName + ", nil, nil)");
 			args.add("model");
 			
 			if (rules.exists())

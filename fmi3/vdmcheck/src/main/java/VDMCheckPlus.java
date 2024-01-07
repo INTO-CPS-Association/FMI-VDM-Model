@@ -100,7 +100,6 @@ public class VDMCheckPlus
 			args.add("java");
 			args.add("-Xmx1g");
 			args.add("-Dvdmj.parser.merge_comments=true");
-			args.add("-Dvdmj.parser.external_readers=.fmu=fmureader.FMUReader,.xml=fmureader.FMUReader");
 			args.add("-Dfmureader.noschema=true");
 			args.add("-Dfmureader.vdmfile=" + vdmOUT);
 			args.add("-cp");
