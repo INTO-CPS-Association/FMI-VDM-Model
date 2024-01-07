@@ -161,10 +161,10 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 		BASE=$(basename $1)
 		sed -i -e "s+$BASE+$2+g" "$VDM"
 
-		# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for Windows
+		# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for msys
 		CLASSPATH_SEPARATOR=":"
-		if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
-			CLASSPATH_SEPARATOR="\;"
+		if [ $OSTYPE == "msys" ]; then
+			CLASSPATH_SEPARATOR=";"
 		fi
 
 		java -Xmx1g -cp vdmj.jar${CLASSPATH_SEPARATOR}annotations.jar com.fujitsu.vdmj.VDMJ \
