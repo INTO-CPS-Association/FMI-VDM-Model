@@ -28,6 +28,10 @@
             <artifactId>xsd2vdm</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.into-cps.vdmcheck</groupId>
+            <artifactId>fmuReader</artifactId>
+        </dependency>
+        <dependency>
             <groupId>dk.au.ece.vdmj</groupId>
             <artifactId>vdmj</artifactId>
         </dependency>

@@ -16,6 +16,11 @@
 			<filtered>true</filtered>
 		</file>
 		<file>
+			<source>src/main/scripts/VDMCheck2+.sh</source>
+			<destName>VDMCheck2+.sh</destName>
+			<filtered>true</filtered>
+		</file>
+		<file>
 			<source>../../GPL3-LICENCE</source>
 			<destName>GPL3-LICENCE</destName>
 		</file>
@@ -57,6 +62,7 @@
 		<dependencySet>
 			<includes>
 				<include>org.into-cps.vdmcheck:xsd2vdm</include>
+				<include>org.into-cps.vdmcheck:fmuReader</include>
 				<include>org.into-cps.vdmcheck.fmi2:vdmcheck2</include>
 				<include>dk.au.ece.vdmj:vdmj</include>
 				<include>dk.au.ece.vdmj:annotations</include>
