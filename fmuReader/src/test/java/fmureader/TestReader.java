@@ -37,6 +37,18 @@ public class TestReader
 {
 	public static void main(String[] args) throws IOException
 	{
+		if (args.length != 1)
+		{
+			System.err.println("Usage: FMUReader <fmu file>");
+			System.exit(1);
+		}
+		
+		if (System.getProperty("fmureader.xsd") == null)
+		{
+			System.err.println("Usage: property fmureader.xsd must point to FMI schema XSD");
+			System.exit(1);
+		}
+		
 		FMUReader reader = new FMUReader();
 		char[] vdm = reader.getText(new File(args[0]), Charset.forName("utf8"));
 		System.out.println(new String(vdm));
