@@ -64,7 +64,8 @@ public class FMUReader implements ExternalFormatReader
 {
 	private static final String MODEL_DESCRIPTION = "modelDescription.xml";
 	private static final String BUILD_DESCRIPTION = "sources/buildDescription.xml";
-	private static final String TERMINALS_AND_ICONS = "terminalsAndIcons/terminalsAndIcons.xml";
+	private static final String TERMINALS_AND_ICONS = "icons/terminalsAndIcons.xml";
+	private static final String TERMINALS_AND_ICONS_204 = "terminalsAndIcons/terminalsAndIcons.xml";
 	
 	@Override
 	public char[] getText(File file, Charset charset) throws IOException
@@ -167,7 +168,7 @@ public class FMUReader implements ExternalFormatReader
 	{
 		String modelDescription = extractZipPart(fmuFile, MODEL_DESCRIPTION);
 		String buildDescription = extractZipPart(fmuFile, BUILD_DESCRIPTION);
-		String terminalsAndIcons = extractZipPart(fmuFile, TERMINALS_AND_ICONS);
+		String terminalsAndIcons = extractZipPart(fmuFile, TERMINALS_AND_ICONS, TERMINALS_AND_ICONS_204);
 		
 		try
 		{
@@ -247,34 +248,37 @@ public class FMUReader implements ExternalFormatReader
 		return schema;
 	}
 	
-	private String extractZipPart(File fmuFile, String xmlName) throws IOException
+	private String extractZipPart(File fmuFile, String... xmlNames) throws IOException
 	{
-		ZipInputStream zip = new ZipInputStream(new FileInputStream(fmuFile));
-		ZipEntry ze = zip.getNextEntry();
 		StringBuilder sb = new StringBuilder();
-		InputStreamReader utf = new InputStreamReader(zip, "utf8");
 		
-		String backslashed = xmlName.replaceAll("/", "\\\\");
-		
-		while (ze != null)
+		loop: for (String xmlName: xmlNames)
 		{
-			if (ze.getName().equals(xmlName) || ze.getName().equals(backslashed))
+			ZipInputStream zip = new ZipInputStream(new FileInputStream(fmuFile));
+			ZipEntry ze = zip.getNextEntry();
+			InputStreamReader utf = new InputStreamReader(zip, "utf8");
+			String backslashed = xmlName.replaceAll("/", "\\\\");
+			
+			while (ze != null)
 			{
-				int c = utf.read();
-				
-				while (c > 0)
+				if (ze.getName().equals(xmlName) || ze.getName().equals(backslashed))
 				{
-					sb.append((char)c);
-					c = utf.read();
+					int c = utf.read();
+					
+					while (c > 0)
+					{
+						sb.append((char)c);
+						c = utf.read();
+					}
+					
+					break loop;
 				}
 				
-				break;
+				ze = zip.getNextEntry();
 			}
 			
-			ze = zip.getNextEntry();
+			utf.close();	// closes zip
 		}
-		
-		utf.close();	// closes zip
 		
 		return sb.length() == 0 ? null : sb.toString();
 	}
