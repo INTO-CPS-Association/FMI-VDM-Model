@@ -29,19 +29,11 @@
 			<Item name="b" value="2" />
 			<Item name="c" value="3" />
 		</EnumerationType>
-		<ClockType name="g" interval="fixed" priority="1" />
+		<ClockType name="g" intervalVariability="fixed" priority="1" />
 	</TypeDefinitions>
 	<ModelVariables>
 		<Float64 name="a" valueReference="1" start="INF NaN -INF">
 			<Dimension valueReference="3" />
-			<Annotations>
-				<Annotation type="one">
-					<stuff></stuff>
-				</Annotation>
-				<Annotation type="two">
-					<zzzstuff></zzzstuff>
-				</Annotation>
-			</Annotations>
 			<Alias name="alias1" />
 		</Float64>
 		<Int8 name="byte" valueReference="999" start="9" />
@@ -58,7 +50,7 @@
 		</String>
 		<Binary name="e" valueReference="5" />
 		<Enumeration name="f" valueReference="5" declaredType="f" />
-		<Clock name="g" valueReference="6" interval="fixed" priority="10" />
+		<Clock name="g" valueReference="6" intervalVariability="fixed" priority="10" />
 	</ModelVariables>
 	<ModelStructure>
 		<Output valueReference="1" dependencies="1" dependenciesKind="dependent" />
