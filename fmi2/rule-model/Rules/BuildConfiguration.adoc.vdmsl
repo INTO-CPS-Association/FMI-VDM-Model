@@ -1,0 +1,62 @@
+--
+-- Document created from BuildConfiguration.adoc at Thu Jan 11 21:03:23 GMT 2024
+--
+functions
+----
+validCompilerOptions: SourceFileSet +> bool
+validCompilerOptions(sfs) ==
+	-- @OnFail("%NAME: Compiler options set without compiler at %s", loc2str(sfs.location))
+	( sfs.compilerOptions <> nil => sfs.compiler <> nil );
+----
+----
+validSourceFileNames: SourceFileSet +> bool
+validSourceFileNames(sfs) ==
+	let files = sfs.sourceFile in
+	let names = [ sf.name | sf in seq files ] in
+		-- @OnFail("%NAME: SourceFileSet has duplicate names: %s",
+		--	{ files(a) | a, b in set inds names & a <> b and files(a) = files(b) })
+		( card elems names = len names );
+----
+----
+validPreprocessorDefinitionNames: SourceFileSet +> bool
+validPreprocessorDefinitionNames(sfs) ==
+	let defs = sfs.preprocessorDefinition in
+	defs <> nil =>
+		let names = [ d.name | d in seq defs ] in
+			-- @OnFail("%NAME: PreprocessorDefinitions has duplicate names: %s",
+			--	{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
+			( card elems names = len names );
+----
+----
+validIncludeDirectoryNames: SourceFileSet +> bool
+validIncludeDirectoryNames(sfs) ==
+	let incs = sfs.includeDirectory in
+	incs <> nil =>
+		let names = [ d.name | d in seq incs ] in
+			-- @OnFail("%NAME: IncludeDirectories has duplicate names: %s",
+			--	{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
+			( card elems names = len names );
+----
+values
+	BuildConfiguration_refs : ReferenceMap =
+	{
+		"validCompilerOptions" |->
+		[
+			"<FMI3_STANDARD>#table-SourceFileSet-details"
+		],
+
+		"validSourceFileNames" |->
+		[
+			"<FMI3_STANDARD>#table-SourceFile-details"
+		],
+
+		"validPreprocessorDefinitionNames" |->
+		[
+			"<FMI3_STANDARD>#table-ProcessorDefinition-details"
+		],
+
+		"validIncludeDirectoryNames" |->
+		[
+			"<FMI3_STANDARD>#table-IncludeDirectory-details"
+		]
+	};

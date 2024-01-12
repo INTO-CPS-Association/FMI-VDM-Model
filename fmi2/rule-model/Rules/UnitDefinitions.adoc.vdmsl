@@ -1,0 +1,36 @@
+--
+-- Document created from UnitDefinitions.adoc at Thu Jan 11 21:03:23 GMT 2024
+--
+functions
+----
+validUnitNames: UnitDefinitions +> bool
+validUnitNames(units) ==
+	-- @OnFail("%NAME: Unit names must be unique")
+	( let names = [ u.name | u in seq units ] in
+		len names = card elems names );
+----
+----
+validDisplayUnitNames: Unit +> bool
+validDisplayUnitNames(unit) ==
+	unit.displayUnit <> nil =>
+		-- @OnFail("%NAME: DisplayUnit names must be unique within %s at %s",
+		-- unit.name, loc2str(unit.location))
+		( let names = [ u.name | u in seq unit.displayUnit ] in
+			len names = card elems names );
+----
+
+values
+	UnitDefinitions_refs : ReferenceMap =
+	{
+		"validUnitNames" |->
+		[
+			"<FMI3_STANDARD>#_physical_units",
+			"<FMI3_STANDARD>#uniqueNameAttribute"
+		],
+
+		"validDisplayUnitNames" |->
+		[
+			"<FMI3_STANDARD>#figure-schema-DisplayUnit",
+			"<FMI3_STANDARD>#uniqueNameAttribute"
+		]
+	};

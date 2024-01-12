@@ -1,0 +1,69 @@
+--
+-- Document created from TypeDefinitions.adoc at Thu Jan 11 21:03:23 GMT 2024
+--
+functions
+----
+validTypeDefinitionNames: [TypeDefinitions] +> bool
+validTypeDefinitionNames(tdefs) ==
+	tdefs <> nil =>
+		-- @OnFail("%NAME: TypeDefinition names must be unique")
+		( let names = [ td.name | td in seq tdefs ] in
+			len names = card elems names );
+----
+----
+validTypeMinMax: RealType | IntegerType | EnumerationType +> bool
+validTypeMinMax(type) ==
+	let mk_(kmin, kmax) = minMaxOfKind(kindOf(type)) in allOf
+	([
+		-- @OnFail("%NAME: max %s is not a valid value of this type", type.max)
+		( type.max <> nil => type.max <= kmax and type.max >= kmin ),
+
+		-- @OnFail("%NAME: min %s is not a valid value of this type", type.min)
+		( type.min <> nil => type.min <= kmax and type.min >= kmin ),
+
+		-- @OnFail("%NAME: max %s not >= min %s", type.max, type.min)
+		( type.min <> nil and type.max <> nil => type.max >= type.min )
+	]);
+----
+----
+validTypeDisplayUnit: RealType | IntegerType +> bool
+validTypeDisplayUnit(tdef) ==
+	-- @OnFail("%NAME: Type %s, unit must be defined for displayUnit %s",
+	-- tdef.name, tdef.fmi2SimpleType.displayUnit)
+	( tdef.displayUnit <> nil => tdef.unit <> nil );
+----
+----
+validEnumerationTypeBijection: EnumerationType +> bool
+validEnumerationTypeBijection(tdef) ==
+	-- @OnFail("%NAME: Enumeration item items do not form a bijection at %s",
+	-- loc2str(tdef.location))
+	(
+		card { i.name | i in seq tdef.item } = len tdef.item
+		and	card { i.value | i in seq tdef.item } = len tdef.item
+	);
+----
+
+values
+	TypeDefinitions_refs : ReferenceMap =
+	{
+		"validTypeDefinitionNames" |->
+		[
+			"<FMI3_STANDARD>#definition-of-types",
+			"<FMI3_STANDARD>#table-type-details"
+		],
+
+		"validTypeMinMax" |->
+		[
+			"<FMI3_STANDARD>#table-type-details"
+		],
+
+		"validTypeDisplayUnit" |->
+		[
+			"<FMI3_STANDARD>#table-type-details"
+		],
+
+		"validEnumerationTypeBijection" |->
+		[
+			"<FMI3_STANDARD>#figure-schema-EnumerationType"
+		]
+	};

@@ -1,0 +1,20 @@
+--
+-- Document created from CoSimulation.adoc at Thu Jan 11 21:03:23 GMT 2024
+--
+functions
+----
+validCSModelIdentifier: CoSimulation +> bool
+validCSModelIdentifier(ecs) ==
+	-- @OnFail("%NAME: %s not valid C variable name at %s",
+	-- ecs.modelIdentifier, loc2str(ecs.location))
+	( validIdentifier(ecs.modelIdentifier) );
+----
+values
+	CoSimulation_refs : ReferenceMap =
+	{
+		"validCSModelIdentifier" |->
+		[
+			"<FMI3_STANDARD>#modelIdentifier",
+			"<FMI3_STANDARD>#header-files-and-naming-of-functions"
+		]
+	};

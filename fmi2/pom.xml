@@ -21,6 +21,7 @@
 		<module>cosim-model</module>
 		<module>cosim2vdm</module>
 		<module>static-model</module>
+		<module>rule-model</module>
 		<module>vdmcheck</module>
 	</modules>
 

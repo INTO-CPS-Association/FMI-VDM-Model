@@ -1,0 +1,20 @@
+--
+-- Document created from LogCategories.adoc at Thu Jan 11 21:03:23 GMT 2024
+--
+functions
+----
+validLogCategories: LogCategories +> bool
+validLogCategories(cats) ==
+	-- @OnFail("%NAME: LogCategory names are not unique: %s",
+	-- { cats(a).name | a, b in set inds cats &
+	--   a <> b and cats(a).name = cats(b).name })
+	( card { c.name | c in seq cats } = len cats );
+----
+values
+	LogCategories_refs : ReferenceMap =
+	{
+		"validLogCategories" |->
+		[
+			"<FMI3_STANDARD>#definition-of-log-categories"
+		]
+	};

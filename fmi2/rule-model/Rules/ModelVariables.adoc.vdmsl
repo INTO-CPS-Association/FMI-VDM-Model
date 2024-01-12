@@ -1,0 +1,46 @@
+--
+-- Document created from ModelVariables.adoc at Thu Jan 11 21:03:23 GMT 2024
+--
+functions
+----
+validValueReferences: ModelVariables +> bool
+validValueReferences(mvs) ==
+	let refs = [ mv.valueReference | mv in seq mvs ] in
+		-- @OnFail("%NAME: ModelVariable valueReferences must be unique: %s",
+		--	{ vr | vr in seq refs & len [ v2 | v2 in seq refs & vr = v2 ] > 1 })
+		( len refs = card elems refs );	
+----
+----
+validAliasNames: ModelVariables +> bool
+validAliasNames(mvs) ==
+	let aliases = conc [ [ a.name | a in seq mv.alias ] | mv in seq mvs & mv.alias <> nil ],
+		names = [ mv.name | mv in seq mvs ] ^ aliases
+	in
+		-- @OnFail("%NAME: ModelVariable names and aliases must be unique")
+		( len names = card elems names );
+----
+----
+validIndependentVariable: ModelVariables +> bool
+validIndependentVariable(mvs) ==
+	-- @OnFail("%NAME: Variables define more than one independent variable: %s",
+	-- { mv.name | mv in seq mvs & mv.causality = <independent> })
+	( card { mv | mv in seq mvs & mv.causality = <independent> } <= 1 );
+----
+values
+	ModelVariables_refs : ReferenceMap =
+	{
+		"validValueReferences" |->
+		[
+			"<FMI3_STANDARD>#_platform_dependent_definitions"
+		],
+
+		"validAliasNames" |->
+		[
+			"<FMI3_STANDARD>#_alias_variables"
+		],
+
+		"validIndependentVariable" |->
+		[
+			"<FMI3_STANDARD>#ModelVariables"
+		]
+	};
