@@ -69,6 +69,136 @@ validIndependentVariable(mvs) ==
 	-- { mv.name | mv in seq mvs & mv.causality = <independent> })
 	( card { mv | mv in seq mvs & mv.causality = <independent> } <= 1 );
 ----
+----
+validModelVariables: ModelVariables +> bool
+validModelVariables(svs) == allOf
+([
+	-- @OnFail("%NAME: Variables define more than one independent variable: %s",
+	--	{ sv.name | sv in seq svs & sv.causality = <independent> })
+	( card { sv | sv in seq svs & sv.causality = <independent> } <= 1 ),
+
+	-- @OnFail("%NAME: Variable names are not unique: %s",
+	--	{ svs(a).name | a, b in set inds svs &
+	--		a <> b and svs(a).name = svs(b).name } )
+	( card { sv.name | sv in seq svs } = len svs ),
+
+	[
+		-- @OnFail("%NAME: Variable %s invalid at %s", sv.name, loc2str(sv.location))
+		( validVariableAttributes(sv) )
+
+		| sv in seq svs
+	]
+]);
+----
+----
+validVariableAttributes: ScalarVariable +> bool
+validVariableAttributes(sv) ==
+	let variable	 = sv.fmi2ScalarVariable,
+		eCausality   = effectiveCausality(sv.causality, kindOf(variable)),
+		eVariability = effectiveVariability(sv.variability, kindOf(variable)),
+		eInitial     = effectiveInitial(sv.causality, sv.variability, sv.initial, kindOf(variable))
+	in
+	{
+		/* @OnFail(1460, "2.4.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %s",
+			sv.name, eCausality, eVariability, eInitial, variable.start, loc2str(sv.location)) */
+		(
+			cases eCausality:
+				<parameter> ->
+					eVariability in set {<fixed>, <tunable>}
+					and eInitial = <exact>,	-- (A)
+
+				<calculatedParameter> ->
+					eVariability in set {<fixed>, <tunable>}
+					and eInitial in set {<approx>, <calculated>},	-- (B)
+
+				<input> ->
+					eVariability in set {<discrete>, <continuous>},	-- (D)
+
+				<independent> ->
+					eVariability = <continuous>
+					and eInitial = nil		-- (D)
+					and variable.start = nil
+					-- @OnFail(1461, "2.4.7 Independent variable must be Real at %s", loc2str(sv.location))
+					and ( is_Real(variable) ),
+
+				<output> ->
+					cases eVariability:
+						<constant> ->
+							eInitial in set {<exact>},	-- (A)
+
+						<discrete>,
+						<continuous> ->
+							eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
+
+						others -> false
+					end,
+
+				<local> ->
+					cases eVariability:
+						<constant> ->
+							eInitial = <exact>,	-- (A)
+
+						<fixed>,
+						<tunable> ->
+							eInitial in set { <calculated>, <approx> },	-- (B)
+
+						<discrete>,
+						<continuous> ->
+							eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
+
+						others -> false
+					end
+			end
+		),
+
+		/* @OnFail(1462, "2.4.7 Variable %s variability/causality %s/%s invalid at %s",
+			sv.name, eVariability, eCausality, loc2str(sv.location)) */
+		(
+			cases eVariability:
+				<constant> ->
+					eCausality in set {<output>, <local>},
+
+				<fixed>, <tunable> ->
+					eCausality in set {<structuralParameter>, <parameter>, <calculatedParameter>, <local>},
+
+				<discrete> ->
+					eCausality in set {<input>, <output>, <local>},
+
+				<continuous> ->
+					eCausality in set {<input>, <output>, <local>, <independent>}
+					-- @OnFail(1463, "2.4.7 Continuous variable must be Real at %s", loc2str(sv.location))
+					and (is_Real(variable))
+			end
+		),
+
+		/* @OnFail(1464, "2.4.7 Variable %s initial/causality %s/%s invalid at %s",
+			sv.name, sv.initial, eCausality, loc2str(sv.location)) */
+		(
+			sv.initial <> nil => eCausality <> <independent>
+		),
+
+		/* @OnFail(1465, "2.4.7 Variable %s initial/variability/start %s/%s/%s invalid at %s",
+			sv.name, eInitial, eVariability, variable.start, loc2str(sv.location)) */
+		(
+			cases eInitial:
+				<exact> ->
+					variable.start <> nil,
+
+				<approx> ->
+					variable.start <> nil
+					and eVariability <> <constant>,
+
+				<calculated> ->
+					variable.start = nil
+					and eVariability <> <constant>,
+
+				nil ->		-- Note that eInitial can be nil
+					true	-- Tests on eInitial above are sufficient
+			end
+		)
+	} = {true};
+----
+
 values
 	ModelVariables_refs : ReferenceMap =
 	{
@@ -80,6 +210,16 @@ values
 		"validAliasNames" |->
 		[
 			"<FMI3_STANDARD>#_alias_variables"
+		],
+
+		"validModelVariables" |->
+		[
+			"<FMI3_STANDARD>#ModelVariables"
+		],
+
+		"validVariableAttributes" |->
+		[
+			"<FMI3_STANDARD>#ModelVariables"
 		],
 
 		"validIndependentVariable" |->
