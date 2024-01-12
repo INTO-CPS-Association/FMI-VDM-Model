@@ -37,7 +37,7 @@ types
 
 types
 	Variable = Real | Integer | Boolean | String | Enumeration;
-	NumType = RealType | IntegerType | EnumerationType;
+	NumType  = RealType | IntegerType | EnumerationType;		-- Have min/max
 
 	-- Value references
 	fmi2ValueReference = nat;
@@ -188,3 +188,46 @@ functions
 	 isBLtoTR: real * real * real * real +> bool
 	 isBLtoTR(x1, y1, x2, y2) ==
 	 	x1 < x2 and y1 < y2;
+
+	/**
+	 * Get the alias refmap, from alias tags to sets of SVs
+	 */
+	getAliasRefMap: seq1 of ScalarVariable -> map AliasTag to set of ScalarVariable
+	getAliasRefMap(svs) ==
+		let tags = { svi |-> aliasTag(svs(svi)) | svi in set inds svs } in
+		{
+			tags(svi) |-> { svs(v) | v in set inds svs & tags(v) = tags(svi) }
+			| svi in set inds svs
+		};
+
+	/**
+	 * Generate an alias "tag" for a ScalarVariable, made of the valueReference and
+	 * the type of the variable. All aliases of a variable have the same tag.
+	 */
+	aliasTag: ScalarVariable +> AliasTag
+	aliasTag(sv) ==
+		mk_AliasTag(sv.valueReference, kindOf(sv.fmi2ScalarVariable));
+
+	/**
+	 * Test whether a ScalarVariable is settable with fmi2SetXXX. See sections 3.2.3 and 4.2.4.
+	 */
+	isSettable: ScalarVariable +> bool
+	isSettable(sv) ==
+		sv.variability <> <constant> and sv.initial in set { <exact>, <approx> }
+		or
+		sv.causality = <input>
+		or
+		sv.causality = <parameter> and sv.variability = <tunable>;
+
+	/**
+	 * Ordering to allow ordered comparison of variabilities.
+	 */
+	varValue: Variability +> nat
+	varValue(a) ==
+		cases a:
+			<constant>   -> 1,
+			<fixed>      -> 2,
+			<tunable>    -> 3,
+			<discrete>   -> 4,
+			<continuous> -> 5
+		end;

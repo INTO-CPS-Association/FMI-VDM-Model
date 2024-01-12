@@ -13,9 +13,8 @@ validVendorAnnotations:FmiModelDescription +> bool
 validVendorAnnotations(fmd) ==
 	let tools = fmd.vendorAnnotations in
 		tools <> nil =>
-			/* @OnFail(1250, "2.2.6 VendorAnnotations tool names are not unique: %s",
-				{ tools(a) | a, b in set inds tools &
-					a <> b and tools(a) = tools(b) }) */
+			-- @OnFail(1250, "2.2.6 VendorAnnotations tool names are not unique: %s",
+			--	{ tools(a) | a, b in set inds tools & a <> b and tools(a) = tools(b) })
 			( card { name | name in seq tools } = len tools );
 ----
 ----
@@ -107,14 +106,15 @@ validStart(-, evs) == allOf
 				  (type.max <> nil => type.max >= 0) ) or true	-- NOTE warning
 		]
 
-		| ev in seq evs & is_NumericKind(kindOf(ev.fmi2ScalarVariable))
+		| ev in seq evs & is_NumType(ev.fmi2ScalarVariable)
 	]);
 ----
 ----
 validMinMax: FmiModelDescription * ModelVariables +> bool
-validMinMax(-, evs) == allOf
+validMinMax(fmd, evs) == allOf
 	([
 		let type = ev.fmi2ScalarVariable,
+			tdef = lookupType(type.declaredType, fmd.typeDefinitions),
 			mk_(kmin, kmax) = minMaxOfKind(kindOf(type)) in
 		[
 			-- @OnFail("%NAME: max %s is not a valid value of this type", type.max)
@@ -124,10 +124,20 @@ validMinMax(-, evs) == allOf
 			( type.min <= kmax and type.min >= kmin ),
 
 			-- @OnFail("%NAME: max %s not >= min %s", type.max, type.min)
-			( type.max >= type.min )
+			( type.max >= type.min ),
+
+			-- @OnFail(1034, "%NAME: ScalarVariable %s min/max exceeds RealType %s at %s",
+			-- sv.name, sv.fmi2ScalarVariable.declaredType, loc2str(sv.location))
+			( tdef <> nil and tdef.fmi2SimpleType.min <> nil and type.min <> nil =>
+				tdef.fmi2SimpleType.min <= type.min ),
+
+			-- @OnFail(1034, "%NAME: ScalarVariable %s min/max exceeds RealType %s at %s",
+			-- sv.name, sv.fmi2ScalarVariable.declaredType, loc2str(sv.location))
+			( tdef <> nil and tdef.fmi2SimpleType.max <> nil and type.max <> nil =>
+				tdef.fmi2SimpleType.max >= type.max )
 		]
 
-		| ev in seq evs & is_NumericKind(kindOf(ev.fmi2ScalarVariable))
+		| ev in seq evs & is_NumType(ev.fmi2ScalarVariable)
 	]);
 ----
 ----
@@ -160,7 +170,7 @@ validVariableUnits(fmd, evs) == allOf
 ([
 	is_Real(sv.fmi2ScalarVariable) => allOf
 	([
-		-- @OnFail(1019, "2.2.7 ScalarVariable %s, Real unit must be defined for displayUnit %s at %s",
+		-- @OnFail(1019, "%NAME: ScalarVariable %s, Real unit must be defined for displayUnit %s at %s",
 		--	sv.name, sv.fmi2ScalarVariable.displayUnit, loc2str(sv.location))
 		( sv.fmi2ScalarVariable.displayUnit <> nil => sv.fmi2ScalarVariable.unit <> nil ),
 
@@ -181,23 +191,23 @@ validOutputs(fmd, evs) ==
 	let outputIndexes = { svi | svi in set inds evs & evs(svi).causality = <output> } in
 		if outputIndexes <> {}
 		then
-			-- @OnFail(1022, "2.2.8 Output variables but no outputs declared at %s",
+			-- @OnFail(1022, "%NAME: Output variables but no outputs declared at %s",
 			--	loc2str(fmd.modelStructure.location))
 			( fmd.modelStructure.outputs <> nil )
 
 			and let structIndexes = { u.index | u in seq fmd.modelStructure.outputs } in allOf
 			([
 
-				-- @OnFail(1023, "2.2.8 Outputs section does not match output variables at %s",
+				-- @OnFail(1023, "%NAME: Outputs section does not match output variables at %s",
 				--	loc2str(fmd.modelStructure.location))
 				( structIndexes = outputIndexes ),
 
-				-- @OnFail(1024, "2.2.8 Output indexes out of range at %s",
+				-- @OnFail(1024, "%NAME: Output indexes out of range at %s",
 				--	loc2str(fmd.modelStructure.location))
 				( forall i in set structIndexes & i <= len evs )
 			])
 		else
-			/* @OnFail(1025, "2.2.8 Outputs should be omitted at %s",
+			/* @OnFail(1025, "%NAME: Outputs should be omitted at %s",
 				loc2str(fmd.modelStructure.location)) */
 			( fmd.modelStructure.outputs = nil );
 ----
@@ -208,15 +218,15 @@ validDerivatives(fmd, evs) ==
 	or (fmd.coSimulation <> nil and fmd.coSimulation.providesDirectionalDerivative = true) =>
 		fmd.modelStructure.derivatives <> nil => allOf
 		([
-			-- @OnFail(1026, "2.2.8 Derivative index out of range at %s", loc2str(u.location))
+			-- @OnFail(1026, "%NAME: Derivative index out of range at %s", loc2str(u.location))
 			( u.index <= len evs )
 
 			and let sv = evs(u.index) in allOf
 			([
-				-- @OnFail(1027, "2.2.8 SV not a state derivative at %s", loc2str(u.location))
+				-- @OnFail(1027, "%NAME: SV not a state derivative at %s", loc2str(u.location))
 				( isStateDerivative(sv) ),
 
-				-- @OnFail(1028, "2.2.8 Derivative must be continuous at %s", loc2str(u.location))
+				-- @OnFail(1028, "%NAME: Derivative must be continuous at %s", loc2str(u.location))
 				( u.dependencies <> nil => sv.variability = <continuous> )
 			])
 
@@ -244,14 +254,14 @@ validInitialUnknowns(fmd, evs) ==
 		initIndexes <> {} =>
 			let ius = fmd.modelStructure.initialUnknowns in allOf
 			([
-				-- @OnFail(1029, "2.2.8 InitialUnknowns must include: %s", initIndexes)
+				-- @OnFail(1029, "%NAME: InitialUnknowns must include: %s", initIndexes)
 				( ius <> nil ),
 
-				-- @OnFail(1030, "2.2.8 InitialUnknowns must not include: %s",
+				-- @OnFail(1030, "%NAME: InitialUnknowns must not include: %s",
 				-- { u.index | u in seq ius } \ initIndexes )
 				( ius <> nil => { u.index | u in seq ius } subset initIndexes ),
 
-				-- @OnFail(1031, "2.2.8 InitialUnknowns are not sorted: %s",
+				-- @OnFail(1031, "%NAME: InitialUnknowns are not sorted: %s",
 				-- [ u.index | u in seq ius ])
 				( ius <> nil => 
 						forall i in set inds ius &
@@ -262,6 +272,16 @@ validInitialUnknowns(fmd, evs) ==
 values
 	FmiModelDescription_refs : ReferenceMap =
 	{
+		"validModelAttributes" |->
+		[
+			"<FMI3_STANDARD>#table-schema-fmiModelDescription"
+		],
+
+		"validVendorAnnotations" |->
+		[
+			"<FMI3_STANDARD>#table-schema-fmiModelDescription"
+		],
+
 		"validModelTypes" |->
 		[
 			"<FMI3_STANDARD>#table-schema-fmiModelDescription"
@@ -313,17 +333,17 @@ values
 			"<FMI3_STANDARD>#ModelVariables"
 		],
 
-		"validCSEventMode" |->
+		"validVariableUnits" |->
 		[
-			"<FMI3_STANDARD>#table-CoSimulation-details"
+			"<FMI3_STANDARD>#table-variableBase-attributes"
 		],
 
-		"validOutput" |->
+		"validOutputs" |->
 		[
 			"<FMI3_STANDARD>#ModelStructure"
 		],
 
-		"validStateDerivatives" |->
+		"validDerivatives" |->
 		[
 			"<FMI3_STANDARD>#ModelStructure"
 		],
@@ -331,25 +351,5 @@ values
 		"validInitialUnknowns" |->
 		[
 			"<FMI3_STANDARD>#ModelStructure"
-		],
-		
-		"validEventIndicators" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-		
-		"validOutputReferences" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-		
-		"validUnknownDependencies" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-
-		"validClockPriorities" |->
-		[
-			"<FMI3_STANDARD>#table-type-details"
 		]
 	};

@@ -13,11 +13,54 @@ validValueReferences(mvs) ==
 ----
 validAliasNames: ModelVariables +> bool
 validAliasNames(mvs) ==
-	let aliases = conc [ [ a.name | a in seq mv.alias ] | mv in seq mvs & mv.alias <> nil ],
-		names = [ mv.name | mv in seq mvs ] ^ aliases
-	in
-		-- @OnFail("%NAME: ModelVariable names and aliases must be unique")
-		( len names = card elems names );
+	let refmap = getAliasRefMap(mvs) in
+	{
+		let aliases = refmap(ref) in allOf
+		([
+			-- @OnFail(1316, "2.2.7 Multiple aliases of reference %s are settable: %s", ref,
+			--		{ a.name | a in set aliases & isSettable(a) })
+			( card { a | a in set aliases & isSettable(a) } <= 1 ),
+
+			-- @OnFail(1317, "2.2.7 Aliases of reference %s are settable and independent: %s", ref,
+			--		{ {a.name, b.name} | a, b in set aliases &
+			--			a <> b and isSettable(a) and b.causality = <independent> } )
+			( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
+
+			-- @OnFail(1318, "2.2.7 Too many aliases of reference %s have start set", ref)
+			( card { a.fmi2ScalarVariable.start | a in set aliases &
+				a.variability <> <constant> and a.fmi2ScalarVariable.start <> nil } <= 1 ),
+
+			-- @OnFail(1319, "2.2.7 Constant aliases of reference %s have different start values", ref)
+			( card { a.fmi2ScalarVariable.start | a in set aliases &
+				a.variability = <constant> and a.fmi2ScalarVariable.start <> nil } <= 1 ),
+
+			-- @OnFail(1320, "2.2.7 Aliases of reference %s must all be constant or variable", ref)
+			( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
+
+			-- @OnFail(1321, "2.2.7 Aliases of reference %s must all have same unit/baseUnits", ref)
+			( card { a.fmi2ScalarVariable.unit | a in set aliases & is_Real(a.fmi2ScalarVariable) } <= 1 ),
+
+			/*
+			* In case of different variability among the set of alias variables, and if that set of aliases
+			* does not contain an input or parameter, the variability should be the highest of the variables
+			* in the set, e.g. continuous > discrete > tunable > fixed. If the set includes a parameter or
+			* input the aliases will have the stated variability of that parameter or input.
+			*/
+			let vars = { a.variability | a in set aliases } in
+				if exists a in set aliases & a.causality in set {<input>, <parameter>}
+				then
+					let a in set aliases be st a.causality in set {<input>, <parameter>} in
+						-- @OnFail(1322, "2.2.7 Warning: aliases of reference %s must all be %s, because of %s",
+						--		ref, a.variability, a.name)
+						( vars = { a.variability } ) or true
+				else
+					let highest in set vars be st not exists v in set vars & varValue(v) > varValue(highest) in
+						-- @OnFail(1323, "2.2.7 Warning: aliases of reference %s must all be %s", ref, highest)
+						( vars = { highest } ) or true
+		])
+
+		| ref in set dom refmap & card refmap(ref) > 1
+	} = {true};
 ----
 ----
 validIndependentVariable: ModelVariables +> bool
