@@ -3,6 +3,22 @@
 --
 functions
 ----
+validModelAttributes: FmiModelDescription +> bool
+validModelAttributes(md) ==
+	-- @OnFail(1000, "%NAME: ModelAttribute fmiVersion should be 2.0")
+	( md.fmiVersion in set { "2.0" } );
+----
+----
+validVendorAnnotations:FmiModelDescription +> bool
+validVendorAnnotations(fmd) ==
+	let tools = fmd.vendorAnnotations in
+		tools <> nil =>
+			/* @OnFail(1250, "2.2.6 VendorAnnotations tool names are not unique: %s",
+				{ tools(a) | a, b in set inds tools &
+					a <> b and tools(a) = tools(b) }) */
+			( card { name | name in seq tools } = len tools );
+----
+----
 validModelTypes: FmiModelDescription +> bool
 validModelTypes(fmd) ==
 	-- @OnFail("%NAME: At least one of ModelExchange, CoSimulation or ScheduledExecution must be set")

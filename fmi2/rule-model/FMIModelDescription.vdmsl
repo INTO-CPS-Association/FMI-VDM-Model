@@ -44,6 +44,8 @@ types
 
 		-- If these rules use variables at all, they are the "raw" values
 		-- The rules are defined in FmiModelDescription.adoc
+		rule("validModelAttributes", validModelAttributes(fmd)),
+		rule("validVendorAnnotations", validVendorAnnotations(fmd)),
 		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
 		rule("validModelTypes",	validModelTypes(fmd)),
 		rule("validTypeUnits", validTypeUnits(fmd)),
