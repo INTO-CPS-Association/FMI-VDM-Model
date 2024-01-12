@@ -33,6 +33,7 @@ types
 		invs_fmi3Variable'(mvs),
 
 		-- Rules are defined in ModelVariables.adoc
+		rule("validModelVariables", validModelVariables(mvs)),
 		rule("validValueReferences", validValueReferences(mvs)),
 		rule("validAliasNames", validAliasNames(mvs)),
 		rule("validIndependentVariable", validIndependentVariable(mvs)),

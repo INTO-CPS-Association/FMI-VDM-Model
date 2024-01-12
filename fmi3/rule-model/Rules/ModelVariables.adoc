@@ -139,6 +139,161 @@ validAliasDisplayUnits(mvs) ==
 // {vdm}
 See <<ModelVariables>>.
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validModelVariables
+[[validModelVariables]]
+// {vdm}
+----
+validModelVariables: ModelVariables +> bool
+validModelVariables(svs) == allOf
+([
+	-- @OnFail("%NAME: Variables define more than one independent variable: %s",
+	--	{ sv.name | sv in seq svs & sv.causality = <independent> })
+	( card { sv | sv in seq svs & sv.causality = <independent> } <= 1 ),
+
+	-- @OnFail("%NAME: Variable names are not unique: %s",
+	--	{ svs(a).name | a, b in set inds svs &
+	--		a <> b and svs(a).name = svs(b).name } )
+	( card { sv.name | sv in seq svs } = len svs ),
+
+	-- @OnFail("%NAME: Variable previous fields are not unique: %s",
+	--	{ svs(a).name | a, b in set inds svs & not is_Clock(a) and not is_Clock(b) and
+	--		a <> b and svs(a).previous <> nil and svs(a).previous = svs(b).previous } )
+	( let plist =  [ sv.previous | sv in seq svs & not is_Clock(sv) and sv.previous <> nil ] in
+		card elems plist = len plist ),
+
+	[
+		-- @OnFail("%NAME: Variable %s invalid at %s", sv.name, loc2str(sv.location))
+		( validVariableAttributes(sv) )
+
+		| sv in seq svs
+	]
+]);
+----
+// {vdm}
+See <<ModelVariables>>.
+
+===== A.{section}.{subsection}.{counter:typerule} Rule: validVariableAttributes
+[[validVariableAttributes]]
+// {vdm}
+----
+validVariableAttributes: fmi3Variable +> bool
+validVariableAttributes(sv) ==
+	let eCausality   = effectiveCausality(sv.causality, kindOf(sv)),
+		eVariability = effectiveVariability(sv.variability, kindOf(sv)),
+		eInitial     = effectiveInitial(sv.causality, sv.variability,
+						if is_Clock(sv) then nil else sv.initial, kindOf(sv))
+	in
+	{
+		/* @OnFail(1460, "2.4.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %s",
+			sv.name, eCausality, eVariability, eInitial, sv.start, loc2str(sv.location)) */
+		(
+			cases eCausality:
+				<structuralParameter> ->
+					eVariability in set {<fixed>, <tunable>}
+					and eInitial = <exact>,	-- (A)
+
+				<parameter> ->
+					eVariability in set {<fixed>, <tunable>}
+					and eInitial = <exact>,	-- (A)
+
+				<calculatedParameter> ->
+					eVariability in set {<fixed>, <tunable>}
+					and eInitial in set {<approx>, <calculated>},	-- (B)
+
+				<input> ->
+					(eVariability in set {<discrete>, <continuous>}
+						-- and eInitial = nil
+						and not is_Clock(sv) => sv.start <> nil),	-- (D)
+
+				<independent> ->
+					eVariability = <continuous>
+					and eInitial = nil		-- (D)
+					and sv.start = nil
+					-- @OnFail(1461, "2.4.7 Independent variable must be Float at %s", loc2str(sv.location))
+					and (is_Float64(sv) or is_Float32(sv)),
+
+				<output> ->
+					cases eVariability:
+						<constant> ->
+							eInitial in set {<exact>},	-- (A)
+
+						<discrete>,
+						<continuous> ->
+							eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
+
+						others -> false
+					end,
+
+				<local> ->
+					cases eVariability:
+						<constant> ->
+							eInitial = <exact>,	-- (A)
+
+						<fixed>,
+						<tunable> ->
+							eInitial in set { <calculated>, <approx> },	-- (B)
+
+						<discrete>,
+						<continuous> ->
+							eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
+
+						others -> false
+					end
+			end
+		),
+
+		/* @OnFail(1462, "2.4.7 Variable %s variability/causality %s/%s invalid at %s",
+			sv.name, eVariability, eCausality, loc2str(sv.location)) */
+		(
+			cases eVariability:
+				<constant> ->
+					eCausality in set {<output>, <local>},
+
+				<fixed>, <tunable> ->
+					eCausality in set {<structuralParameter>, <parameter>, <calculatedParameter>, <local>},
+
+				<discrete> ->
+					eCausality in set {<input>, <output>, <local>},
+
+				<continuous> ->
+					eCausality in set {<input>, <output>, <local>, <independent>}
+					-- @OnFail(1463, "2.4.7 Continuous variable must be Real at %s", loc2str(sv.location))
+					and (is_Float64(sv) or is_Float32(sv))
+			end
+		),
+
+		/* @OnFail(1464, "2.4.7 Variable %s initial/causality %s/%s invalid at %s",
+			sv.name, sv.initial, eCausality, loc2str(sv.location)) */
+		(
+			not is_Clock(sv) =>
+				sv.initial <> nil =>
+					eCausality <> <independent>
+		),
+
+		/* @OnFail(1465, "2.4.7 Variable %s initial/variability/start %s/%s/%s invalid at %s",
+			sv.name, eInitial, eVariability, sv.start, loc2str(sv.location)) */
+		(
+			cases eInitial:
+				<exact> ->
+					not is_Clock(sv) => sv.start <> nil,
+
+				<approx> ->
+					(not is_Clock(sv) => sv.start <> nil)
+					and eVariability <> <constant>,
+
+				<calculated> ->
+					(not is_Clock(sv) => sv.start = nil)
+					and eVariability <> <constant>,
+
+				nil ->		-- Note that eInitial can be nil
+					true	-- Tests on eInitial above are sufficient
+			end
+		)
+	} = {true};
+----
+// {vdm}
+See <<ModelVariables>>.
+
 
 // This adds the docrefs for VDM only
 ifdef::hidden[]
@@ -157,6 +312,16 @@ values
 		],
 
 		"validIndependentVariable" |->
+		[
+			"<FMI3_STANDARD>#ModelVariables"
+		],
+
+		"validModelVariables" |->
+		[
+			"<FMI3_STANDARD>#ModelVariables"
+		],
+
+		"validVariableAttributes" |->
 		[
 			"<FMI3_STANDARD>#ModelVariables"
 		],
