@@ -61,9 +61,9 @@ types
 			rule("validMinMax", validMinMax(fmd, evs)),
 			rule("validStart", validStart(fmd, evs)),
 			rule("validMultipleSets", validMultipleSets(fmd, evs)),
-			rule("validOutput", validOutput(fmd, evs)),
-			rule("validInitialUnknowns", validInitialUnknowns(fmd, evs)),
-			rule("validOutputReferences", validOutputReferences(fmd, evs)),
-			rule("validUnknownDependencies", validUnknownDependencies(fmd, evs))
+			rule("validVariableUnits", validVariableUnits(fmd, evs)),
+			rule("validOutputs", validOutputs(fmd, evs)),
+			rule("validDerivatives", validDerivatives(fmd, evs)),
+			rule("validInitialUnknowns", validInitialUnknowns(fmd, evs))
 		]
 	]);

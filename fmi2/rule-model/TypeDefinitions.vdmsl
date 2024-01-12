@@ -38,7 +38,7 @@ types
 
 	SimpleType' = SimpleType	-- The union of all types
 	inv tdef ==
-		cases kindOf(tdef):
+		cases kindOf(tdef.fmi2SimpleType):
 			<Real>	        -> inv_RealType'(tdef.fmi2SimpleType),
 			<Integer>	    -> inv_IntegerType'(tdef.fmi2SimpleType),
 			<Boolean>	    -> inv_BooleanType'(tdef.fmi2SimpleType),

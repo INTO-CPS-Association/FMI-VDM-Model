@@ -37,6 +37,7 @@ types
 
 types
 	Variable = Real | Integer | Boolean | String | Enumeration;
+	NumType = RealType | IntegerType | EnumerationType;
 
 	-- Value references
 	fmi2ValueReference = nat;
@@ -94,7 +95,8 @@ functions
 	/**
 	 * Turn a Variable or Type into a Kind.
 	 */
-	kindOf: Real | Integer | Boolean | String | Enumeration | SimpleType +> Kind
+	kindOf: Real | Integer | Boolean | String | Enumeration |
+			RealType | IntegerType | BooleanType | StringType | EnumerationType +> Kind
 	kindOf(v) ==
 		if     is_(v, Integer) or is_(v, IntegerType) then <Integer>
 		elseif is_(v, Boolean) or is_(v, BooleanType) then <Boolean>

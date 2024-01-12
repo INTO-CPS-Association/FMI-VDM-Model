@@ -51,7 +51,7 @@ functions
 		in
 			if decltype = nil
 			then effectivetypeVariable(mv)
-			elseif kindOf(decltype) = kind
+			elseif kindOf(decltype.fmi2SimpleType) = kind
 			then effectiveTypedVariable(mv, decltype)
 			else mv;		-- Type error reported elsewhere
 
@@ -193,7 +193,7 @@ functions
 
 			others -> undefined
 		end
-	pre kindOf(decltype) = kindOf(mv.fmi2ScalarVariable);
+	pre kindOf(decltype.fmi2SimpleType) = kindOf(mv.fmi2ScalarVariable);
 
 	effectivetypeVariable: ScalarVariable +> ScalarVariable
 	effectivetypeVariable(mv) ==

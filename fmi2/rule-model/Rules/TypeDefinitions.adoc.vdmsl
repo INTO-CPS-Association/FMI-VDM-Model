@@ -11,7 +11,7 @@ validTypeDefinitionNames(tdefs) ==
 			len names = card elems names );
 ----
 ----
-validTypeMinMax: RealType | IntegerType | EnumerationType +> bool
+validTypeMinMax: NumType +> bool
 validTypeMinMax(type) ==
 	let mk_(kmin, kmax) = minMaxOfKind(kindOf(type)) in allOf
 	([
