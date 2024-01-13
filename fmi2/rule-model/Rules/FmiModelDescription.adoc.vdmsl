@@ -18,6 +18,7 @@ validVendorAnnotations(fmd) ==
 			( card { name | name in seq tools } = len tools );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
 validModelTypes: FmiModelDescription +> bool
 validModelTypes(fmd) ==
 	-- @OnFail("%NAME: At least one of ModelExchange, CoSimulation or ScheduledExecution must be set")

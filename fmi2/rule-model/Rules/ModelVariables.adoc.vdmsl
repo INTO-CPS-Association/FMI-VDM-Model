@@ -14,6 +14,7 @@ validValueReferences(mvs) ==
 validAliasNames: ModelVariables +> bool
 validAliasNames(mvs) ==
 	let refmap = getAliasRefMap(mvs) in
+	card dom refmap < len mvs => -- Must be some aliases
 	{
 		let aliases = refmap(ref) in allOf
 		([

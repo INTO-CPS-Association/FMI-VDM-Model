@@ -87,7 +87,8 @@ functions
 	minMaxOfKind: Kind -> real * real
 	minMaxOfKind(kind) ==
 		cases kind:
-			<Integer> 		-> mk_(-3.402823466385288598e+38, 3.402823466385288598e+38),
+			<Real>			-> mk_(-1.797693134862315708e+308, 1.797693134862315708e+308),
+			<Integer>		-> mk_(-3.402823466385288598e+38, 3.402823466385288598e+38),
 			<Enumeration>	-> mk_(-9.223372036854775808e+18, 9.223372036854775807e+18), -- xs:long = Int64
 			others			-> undefined
 		end;
@@ -98,7 +99,8 @@ functions
 	kindOf: Real | Integer | Boolean | String | Enumeration |
 			RealType | IntegerType | BooleanType | StringType | EnumerationType +> Kind
 	kindOf(v) ==
-		if     is_(v, Integer) or is_(v, IntegerType) then <Integer>
+		if     is_(v, Real)    or is_(v, RealType)    then <Real>
+		elseif is_(v, Integer) or is_(v, IntegerType) then <Integer>
 		elseif is_(v, Boolean) or is_(v, BooleanType) then <Boolean>
 		elseif is_(v, String)  or is_(v, StringType)  then <String>
 		elseif is_(v, Enumeration) or is_(v, EnumerationType) then <Enumeration>

@@ -47,7 +47,7 @@ types
 		rule("validModelAttributes", validModelAttributes(fmd)),
 		rule("validVendorAnnotations", validVendorAnnotations(fmd)),
 		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
-		rule("validModelTypes",	validModelTypes(fmd)),
+		validModelTypes(fmd),
 		rule("validTypeUnits", validTypeUnits(fmd)),
 		rule("validVariableTypes", validVariableTypes(fmd)),
 		rule("validVariableNames", validVariableNames(fmd)),
