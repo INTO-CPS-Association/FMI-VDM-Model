@@ -31,8 +31,8 @@
  * The model definition for the Spring Mass Damper example in section 4.3.2 on p111
  */
 functions
-	test: () +> bool
-	test() ==
+	tests: () +> bool
+	tests() ==
 		isValidFMIConfiguration(springMassDamper, nil, nil);
 
 values
