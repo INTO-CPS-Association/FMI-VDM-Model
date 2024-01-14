@@ -3,17 +3,19 @@
 --
 functions
 ----
+-- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
 validModelAttributes: FmiModelDescription +> bool
 validModelAttributes(md) ==
 	-- @OnFail(1000, "%NAME: ModelAttribute fmiVersion should be 2.0")
 	( md.fmiVersion in set { "2.0" } );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
 validVendorAnnotations:FmiModelDescription +> bool
 validVendorAnnotations(fmd) ==
 	let tools = fmd.vendorAnnotations in
 		tools <> nil =>
-			-- @OnFail(1250, "2.2.6 VendorAnnotations tool names are not unique: %s",
+			-- @OnFail(1250, "%NAME: VendorAnnotations tool names are not unique: %s",
 			--	{ tools(a) | a, b in set inds tools & a <> b and tools(a) = tools(b) })
 			( card { name | name in seq tools } = len tools );
 ----
@@ -21,10 +23,11 @@ validVendorAnnotations(fmd) ==
 -- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
 validModelTypes: FmiModelDescription +> bool
 validModelTypes(fmd) ==
-	-- @OnFail("%NAME: At least one of ModelExchange, CoSimulation or ScheduledExecution must be set")
+	-- @OnFail("%NAME: Either ModelExchange or CoSimulation must be set")
 	( fmd.modelExchange <> nil or fmd.coSimulation <> nil );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription-attributes")
 validGenerationDateAndTime: FmiModelDescription +> bool
 validGenerationDateAndTime(fmd) ==
 	-- @OnFail("%NAME: generationDateAndTime should be YYYY-MM-DDThh:mm:ssZ at %s",
@@ -32,6 +35,7 @@ validGenerationDateAndTime(fmd) ==
 	( fmd.generationDateAndTime <> nil => iso8601(fmd.generationDateAndTime) );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeUnits: FmiModelDescription +> bool
 validTypeUnits(fmd) ==
 	fmd.typeDefinitions <> nil => allOf
@@ -46,6 +50,8 @@ validTypeUnits(fmd) ==
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#ModelVariables",
+--			"<FMI3_STANDARD>#definition-of-types")
 validVariableTypes: FmiModelDescription +> bool
 validVariableTypes(fmd) == allOf
 	([
@@ -63,6 +69,7 @@ validVariableTypes(fmd) == allOf
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeNames: FmiModelDescription +> bool
 validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
 	([
@@ -74,6 +81,7 @@ validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validVariableNames: FmiModelDescription +> bool
 validVariableNames(fmd) ==
 	fmd.variableNamingConvention = <structured> => allOf(conc
@@ -90,6 +98,7 @@ validVariableNames(fmd) ==
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-type-attributes")
 validStart: FmiModelDescription * ModelVariables +> bool
 validStart(-, evs) == allOf
 	([
@@ -111,6 +120,7 @@ validStart(-, evs) == allOf
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-type-attributes")
 validMinMax: FmiModelDescription * ModelVariables +> bool
 validMinMax(fmd, evs) == allOf
 	([
@@ -142,6 +152,7 @@ validMinMax(fmd, evs) == allOf
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-variableBase-attributes")
 validMultipleSets: FmiModelDescription * ModelVariables +> bool
 validMultipleSets(fmd, evs) == allOf
 	([
@@ -154,6 +165,7 @@ validMultipleSets(fmd, evs) == allOf
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validReinits: FmiModelDescription +> bool
 validReinits(fmd) == allOf
 	([
@@ -166,17 +178,18 @@ validReinits(fmd) == allOf
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-variableBase-attributes")
 validVariableUnits: FmiModelDescription * ModelVariables +> bool
 validVariableUnits(fmd, evs) == allOf
 ([
 	is_Real(sv.fmi2ScalarVariable) => allOf
 	([
-		-- @OnFail(1019, "%NAME: ScalarVariable %s, Real unit must be defined for displayUnit %s at %s",
+		-- @OnFail("%NAME: ScalarVariable %s, Real unit must be defined for displayUnit %s at %s",
 		--	sv.name, sv.fmi2ScalarVariable.displayUnit, loc2str(sv.location))
 		( sv.fmi2ScalarVariable.displayUnit <> nil => sv.fmi2ScalarVariable.unit <> nil ),
 
 		sv.fmi2ScalarVariable.unit <> nil =>
-			-- @OnFail(1020, "2.2.7 ScalarVariable %s, Real unit %s not defined in UnitDefinitions at %s",
+			-- @OnFail("%NAME: ScalarVariable %s, Real unit %s not defined in UnitDefinitions at %s",
 			--	sv.name, sv.fmi2ScalarVariable.unit, loc2str(sv.location))
 			( fmd.unitDefinitions <> nil
 				and exists u in seq fmd.unitDefinitions & u.name = sv.fmi2ScalarVariable.unit )
@@ -187,47 +200,49 @@ validVariableUnits(fmd, evs) == allOf
 
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validOutputs: FmiModelDescription * ModelVariables +> bool
 validOutputs(fmd, evs) ==
 	let outputIndexes = { svi | svi in set inds evs & evs(svi).causality = <output> } in
 		if outputIndexes <> {}
 		then
-			-- @OnFail(1022, "%NAME: Output variables but no outputs declared at %s",
+			-- @OnFail("%NAME: Output variables but no outputs declared at %s",
 			--	loc2str(fmd.modelStructure.location))
 			( fmd.modelStructure.outputs <> nil )
 
 			and let structIndexes = { u.index | u in seq fmd.modelStructure.outputs } in allOf
 			([
 
-				-- @OnFail(1023, "%NAME: Outputs section does not match output variables at %s",
+				-- @OnFail("%NAME: Outputs section does not match output variables at %s",
 				--	loc2str(fmd.modelStructure.location))
 				( structIndexes = outputIndexes ),
 
-				-- @OnFail(1024, "%NAME: Output indexes out of range at %s",
+				-- @OnFail("%NAME: Output indexes out of range at %s",
 				--	loc2str(fmd.modelStructure.location))
 				( forall i in set structIndexes & i <= len evs )
 			])
 		else
-			/* @OnFail(1025, "%NAME: Outputs should be omitted at %s",
-				loc2str(fmd.modelStructure.location)) */
+			-- @OnFail("%NAME: Outputs should be omitted at %s",
+			--	loc2str(fmd.modelStructure.location))
 			( fmd.modelStructure.outputs = nil );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validDerivatives: FmiModelDescription * ModelVariables +> bool
 validDerivatives(fmd, evs) ==
 	fmd.modelExchange <> nil
 	or (fmd.coSimulation <> nil and fmd.coSimulation.providesDirectionalDerivative = true) =>
 		fmd.modelStructure.derivatives <> nil => allOf
 		([
-			-- @OnFail(1026, "%NAME: Derivative index out of range at %s", loc2str(u.location))
+			-- @OnFail("%NAME: Derivative index out of range at %s", loc2str(u.location))
 			( u.index <= len evs )
 
 			and let sv = evs(u.index) in allOf
 			([
-				-- @OnFail(1027, "%NAME: SV not a state derivative at %s", loc2str(u.location))
+				-- @OnFail("%NAME: SV not a state derivative at %s", loc2str(u.location))
 				( isStateDerivative(sv) ),
 
-				-- @OnFail(1028, "%NAME: Derivative must be continuous at %s", loc2str(u.location))
+				-- @OnFail("%NAME: Derivative must be continuous at %s", loc2str(u.location))
 				( u.dependencies <> nil => sv.variability = <continuous> )
 			])
 
@@ -235,6 +250,7 @@ validDerivatives(fmd, evs) ==
 		]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validInitialUnknowns: FmiModelDescription * ModelVariables +> bool
 validInitialUnknowns(fmd, evs) ==
 	let ctVars = continuousTimeStates(evs),
@@ -255,102 +271,17 @@ validInitialUnknowns(fmd, evs) ==
 		initIndexes <> {} =>
 			let ius = fmd.modelStructure.initialUnknowns in allOf
 			([
-				-- @OnFail(1029, "%NAME: InitialUnknowns must include: %s", initIndexes)
+				-- @OnFail("%NAME: InitialUnknowns must include: %s", initIndexes)
 				( ius <> nil ),
 
-				-- @OnFail(1030, "%NAME: InitialUnknowns must not include: %s",
+				-- @OnFail("%NAME: InitialUnknowns must not include: %s",
 				-- { u.index | u in seq ius } \ initIndexes )
 				( ius <> nil => { u.index | u in seq ius } subset initIndexes ),
 
-				-- @OnFail(1031, "%NAME: InitialUnknowns are not sorted: %s",
+				-- @OnFail("%NAME: InitialUnknowns are not sorted: %s",
 				-- [ u.index | u in seq ius ])
 				( ius <> nil => 
 						forall i in set inds ius &
 							i = len ius or ius(i).index < ius(i+1).index )
 			]);
 ----
-
-values
-	FmiModelDescription_refs : ReferenceMap =
-	{
-		"validModelAttributes" |->
-		[
-			"<FMI3_STANDARD>#table-schema-fmiModelDescription"
-		],
-
-		"validVendorAnnotations" |->
-		[
-			"<FMI3_STANDARD>#table-schema-fmiModelDescription"
-		],
-
-		"validModelTypes" |->
-		[
-			"<FMI3_STANDARD>#table-schema-fmiModelDescription"
-		],
-
-		"validGenerationDateAndTime" |->
-		[
-			"<FMI3_STANDARD>#table-schema-fmiModelDescription-attributes"
-		],
-
-		"validTypeUnits" |->
-		[
-			"<FMI3_STANDARD>#table-type-details"
-		],
-
-		"validVariableTypes" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables",
-			"<FMI3_STANDARD>#definition-of-types"
-		],
-
-		"validTypeNames" |->
-		[
-			"<FMI3_STANDARD>#table-type-details"
-		],
-
-		"validVariableNames" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validStart" |->
-		[
-			"<FMI3_STANDARD>#table-type-attributes"
-		],
-
-		"validMinMax" |->
-		[
-			"<FMI3_STANDARD>#table-type-attributes"
-		],
-
-		"validMultipleSets" |->
-		[
-			"<FMI3_STANDARD>#table-variableBase-attributes"
-		],
-
-		"validReinits" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validVariableUnits" |->
-		[
-			"<FMI3_STANDARD>#table-variableBase-attributes"
-		],
-
-		"validOutputs" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-
-		"validDerivatives" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-		
-		"validInitialUnknowns" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		]
-	};

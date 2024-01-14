@@ -41,7 +41,7 @@ values
 	 */
 	docReferences : ReferenceMap = merge
 	{
-		FmiModelDescription_refs,
+		-- FmiModelDescription_refs,
 		ModelExchange_refs,
 		CoSimulation_refs,
 		UnitDefinitions_refs,

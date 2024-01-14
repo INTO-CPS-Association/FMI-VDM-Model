@@ -44,26 +44,26 @@ types
 
 		-- If these rules use variables at all, they are the "raw" values
 		-- The rules are defined in FmiModelDescription.adoc
-		rule("validModelAttributes", validModelAttributes(fmd)),
-		rule("validVendorAnnotations", validVendorAnnotations(fmd)),
-		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
+		validModelAttributes(fmd),
+		validVendorAnnotations(fmd),
+		validGenerationDateAndTime(fmd),
 		validModelTypes(fmd),
-		rule("validTypeUnits", validTypeUnits(fmd)),
-		rule("validVariableTypes", validVariableTypes(fmd)),
-		rule("validVariableNames", validVariableNames(fmd)),
-		rule("validTypeNames", validTypeNames(fmd)),
-		rule("validReinits", validReinits(fmd)),
+		validTypeUnits(fmd),
+		validVariableTypes(fmd),
+		validVariableNames(fmd),
+		validTypeNames(fmd),
+		validReinits(fmd),
 		
 		let evs = effectiveVariables(fmd.modelVariables, fmd.typeDefinitions) in
 		[
 			-- If these rules use variables, they use the effective values
 			-- The rules are defined in FmiModelDescription.adoc
-			rule("validMinMax", validMinMax(fmd, evs)),
-			rule("validStart", validStart(fmd, evs)),
-			rule("validMultipleSets", validMultipleSets(fmd, evs)),
-			rule("validVariableUnits", validVariableUnits(fmd, evs)),
-			rule("validOutputs", validOutputs(fmd, evs)),
-			rule("validDerivatives", validDerivatives(fmd, evs)),
-			rule("validInitialUnknowns", validInitialUnknowns(fmd, evs))
+			validMinMax(fmd, evs),
+			validStart(fmd, evs),
+			validMultipleSets(fmd, evs),
+			validVariableUnits(fmd, evs),
+			validOutputs(fmd, evs),
+			validDerivatives(fmd, evs),
+			validInitialUnknowns(fmd, evs)
 		]
 	]);
