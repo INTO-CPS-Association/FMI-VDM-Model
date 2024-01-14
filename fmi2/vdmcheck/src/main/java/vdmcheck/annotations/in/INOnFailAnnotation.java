@@ -24,6 +24,7 @@
 
 package vdmcheck.annotations.in;
 
+import com.fujitsu.vdmj.in.annotations.INAnnotationList;
 import com.fujitsu.vdmj.in.expressions.INExpression;
 import com.fujitsu.vdmj.in.expressions.INExpressionList;
 import com.fujitsu.vdmj.in.expressions.INIntegerLiteralExpression;
@@ -42,13 +43,13 @@ public class INOnFailAnnotation extends annotations.in.INOnFailAnnotation {
 
     private final String format;
 
-    public INOnFailAnnotation(TCIdentifierToken name, INExpressionList args, String format) {
-        super(name, args, format);
+    public INOnFailAnnotation(TCIdentifierToken name, INExpressionList args, String format, INAnnotationList doclinks) {
+        super(name, args, format, doclinks);
         this.format = format;
     }
 
     public INOnFailAnnotation(TCIdentifierToken name, INExpressionList args) {
-        this(name, args, "");
+        this(name, args, "", null);
     }
 
     @Override
