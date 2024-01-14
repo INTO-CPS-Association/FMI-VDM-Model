@@ -36,18 +36,18 @@ types
 		validTypeDefinitionNames(tdefs)
 	]);
 
-	SimpleType' = SimpleType	-- The union of all types
-	inv tdef == allOf
+	SimpleType' = SimpleType
+	inv stype == allOf
 	([
-		cases kindOf(tdef.fmi2SimpleType):
-			<Real>	        -> inv_RealType'(tdef.fmi2SimpleType),
-			<Integer>	    -> inv_IntegerType'(tdef.fmi2SimpleType),
-			<Boolean>	    -> inv_BooleanType'(tdef.fmi2SimpleType),
-			<String>	    -> inv_StringType'(tdef.fmi2SimpleType),
-			<Enumeration>	-> inv_EnumerationType'(tdef.fmi2SimpleType)
+		cases kindOf(stype.fmi2SimpleType):
+			<Real>	        -> inv_RealType'(stype.fmi2SimpleType),
+			<Integer>	    -> inv_IntegerType'(stype.fmi2SimpleType),
+			<Boolean>	    -> inv_BooleanType'(stype.fmi2SimpleType),
+			<String>	    -> inv_StringType'(stype.fmi2SimpleType),
+			<Enumeration>	-> inv_EnumerationType'(stype.fmi2SimpleType)
 		end,
 
-		validTypeDisplayUnit(tdef)
+		validTypeDisplayUnit(stype)
 	]);
 
 	RealType' = RealType
