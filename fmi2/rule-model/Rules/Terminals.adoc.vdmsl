@@ -3,6 +3,7 @@
 --
 functions
 ----
+
 -- @DocLink("<FMI3_STANDARD>#_coordinatesystem")
 validCoordinateSystem: CoordinateSystem +> bool
 validCoordinateSystem(cs) == allOf
@@ -16,6 +17,7 @@ validCoordinateSystem(cs) == allOf
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#_icon")
 validIcon: Icon +> bool
 validIcon(icon) ==
@@ -23,6 +25,7 @@ validIcon(icon) ==
 	( icon.x1 <> icon.x2 and icon.y1 <> icon.y2 );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#section-terminalvars")
 validTerminalMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalMemberVariables(terminal, fmd) ==
@@ -38,6 +41,7 @@ validTerminalMemberVariables(terminal, fmd) ==
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#_terminal_stream_member_variable")
 validTerminalStreamMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalStreamMemberVariables(terminal, fmd) ==
@@ -61,6 +65,7 @@ validTerminalStreamMemberVariables(terminal, fmd) ==
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#_terminal_graphical_representation")
 validTerminalGraphicalRepresentation: Terminal +> bool
 validTerminalGraphicalRepresentation(terminal) ==

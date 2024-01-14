@@ -3,6 +3,7 @@
 --
 functions
 ----
+
 -- @DocLink("<FMI3_STANDARD>#_physical_units",
 --			"<FMI3_STANDARD>#uniqueNameAttribute")
 validUnitNames: UnitDefinitions +> bool
@@ -12,6 +13,7 @@ validUnitNames(units) ==
 		len names = card elems names );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit",
 --			"<FMI3_STANDARD>#uniqueNameAttribute")
 validDisplayUnitNames: Unit +> bool

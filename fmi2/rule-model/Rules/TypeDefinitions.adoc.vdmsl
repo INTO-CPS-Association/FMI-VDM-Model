@@ -3,6 +3,7 @@
 --
 functions
 ----
+
 -- @DocLink("<FMI3_STANDARD>#definition-of-types",
 --			"<FMI3_STANDARD>#table-type-details")
 validTypeDefinitionNames: [TypeDefinitions] +> bool
@@ -13,6 +14,7 @@ validTypeDefinitionNames(tdefs) ==
 			len names = card elems names );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeMinMax: NumType +> bool
 validTypeMinMax(type) ==
@@ -29,14 +31,17 @@ validTypeMinMax(type) ==
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-type-details")
-validTypeDisplayUnit: RealType | IntegerType +> bool
+validTypeDisplayUnit: SimpleType +> bool
 validTypeDisplayUnit(tdef) ==
-	-- @OnFail("%NAME: Type %s, unit must be defined for displayUnit %s",
-	-- tdef.name, tdef.fmi2SimpleType.displayUnit)
-	( tdef.displayUnit <> nil => tdef.unit <> nil );
+	is_Real(tdef.fmi2SimpleType) =>
+		-- @OnFail("%NAME: Real %s, unit must be defined for displayUnit %s",
+		-- tdef.name, tdef.fmi2SimpleType.displayUnit)
+		( tdef.fmi2SimpleType.displayUnit <> nil => tdef.fmi2SimpleType.unit <> nil );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#figure-schema-EnumerationType")
 validEnumerationTypeBijection: EnumerationType +> bool
 validEnumerationTypeBijection(tdef) ==

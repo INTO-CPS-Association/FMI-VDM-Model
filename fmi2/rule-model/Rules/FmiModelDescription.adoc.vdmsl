@@ -3,6 +3,7 @@
 --
 functions
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
 validModelAttributes: FmiModelDescription +> bool
 validModelAttributes(md) ==
@@ -10,6 +11,7 @@ validModelAttributes(md) ==
 	( md.fmiVersion in set { "2.0" } );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
 validVendorAnnotations:FmiModelDescription +> bool
 validVendorAnnotations(fmd) ==
@@ -20,6 +22,7 @@ validVendorAnnotations(fmd) ==
 			( card { name | name in seq tools } = len tools );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
 validModelTypes: FmiModelDescription +> bool
 validModelTypes(fmd) ==
@@ -27,6 +30,7 @@ validModelTypes(fmd) ==
 	( fmd.modelExchange <> nil or fmd.coSimulation <> nil );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription-attributes")
 validGenerationDateAndTime: FmiModelDescription +> bool
 validGenerationDateAndTime(fmd) ==
@@ -35,6 +39,7 @@ validGenerationDateAndTime(fmd) ==
 	( fmd.generationDateAndTime <> nil => iso8601(fmd.generationDateAndTime) );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeUnits: FmiModelDescription +> bool
 validTypeUnits(fmd) ==
@@ -42,7 +47,7 @@ validTypeUnits(fmd) ==
 	([
 		tdef.fmi2SimpleType.unit <> nil =>
 			-- @OnFail("%NAME: Type %s, unit %s not defined in UnitDefinitions at %s",
-			-- tdef.name, tdef.unit, loc2str(tdef.location))
+			-- tdef.name, tdef.fmi2SimpleType.unit, loc2str(tdef.location))
 			( fmd.unitDefinitions <> nil
 				and exists u in seq fmd.unitDefinitions & u.name = tdef.fmi2SimpleType.unit )
 
@@ -50,6 +55,7 @@ validTypeUnits(fmd) ==
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables",
 --			"<FMI3_STANDARD>#definition-of-types")
 validVariableTypes: FmiModelDescription +> bool
@@ -58,17 +64,18 @@ validVariableTypes(fmd) == allOf
 		mv.fmi2ScalarVariable.declaredType <> nil =>
 		let tdef = lookupType(mv.fmi2ScalarVariable.declaredType, fmd.typeDefinitions) in
 			-- @OnFail("%NAME: %s type %s not found at %s",
-			-- mv.name, mv.declaredType, loc2str(mv.location))
+			-- mv.name, mv.fmi2ScalarVariable.declaredType, loc2str(mv.location))
 			( tdef <> nil )
 
 			-- @OnFail("%NAME: %s type %s mismatch at %s",
-			-- mv.name, mv.declaredType, loc2str(mv.location))
+			-- mv.name, mv.fmi2ScalarVariable.declaredType, loc2str(mv.location))
 			and ( kindOf(tdef.fmi2SimpleType) = kindOf(mv.fmi2ScalarVariable) )
 
 		| mv in seq fmd.modelVariables
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeNames: FmiModelDescription +> bool
 validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
@@ -81,6 +88,7 @@ validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validVariableNames: FmiModelDescription +> bool
 validVariableNames(fmd) ==
@@ -98,6 +106,7 @@ validVariableNames(fmd) ==
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-type-attributes")
 validStart: FmiModelDescription * ModelVariables +> bool
 validStart(-, evs) == allOf
@@ -106,12 +115,12 @@ validStart(-, evs) == allOf
 		[
 			type.start <> nil =>
 				-- @OnFail("%NAME: all start values must be between %s and %s at %s",
-				-- ev.min, ev.max, ev.location)
+				-- ev.fmi2ScalarVariable.min, ev.fmi2ScalarVariable.max, loc2str(ev.location))
 				( type.min <= type.start and type.max >= type.start ),
 
 			type.start = nil and ev.initial <> <calculated> =>
 				-- @OnFail("%NAME: Warning: implicit start of 0 not within min/max at %s",
-				-- ev.location)
+				-- loc2str(ev.location))
 				( (type.min <> nil => type.min <= 0) and
 				  (type.max <> nil => type.max >= 0) ) or true	-- NOTE warning
 		]
@@ -120,6 +129,7 @@ validStart(-, evs) == allOf
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-type-attributes")
 validMinMax: FmiModelDescription * ModelVariables +> bool
 validMinMax(fmd, evs) == allOf
@@ -138,12 +148,12 @@ validMinMax(fmd, evs) == allOf
 			( type.max >= type.min ),
 
 			-- @OnFail(1034, "%NAME: ScalarVariable %s min/max exceeds RealType %s at %s",
-			-- sv.name, sv.fmi2ScalarVariable.declaredType, loc2str(sv.location))
+			-- ev.name, ev.fmi2ScalarVariable.declaredType, loc2str(ev.location))
 			( tdef <> nil and tdef.fmi2SimpleType.min <> nil and type.min <> nil =>
 				tdef.fmi2SimpleType.min <= type.min ),
 
 			-- @OnFail(1034, "%NAME: ScalarVariable %s min/max exceeds RealType %s at %s",
-			-- sv.name, sv.fmi2ScalarVariable.declaredType, loc2str(sv.location))
+			-- ev.name, ev.fmi2ScalarVariable.declaredType, loc2str(ev.location))
 			( tdef <> nil and tdef.fmi2SimpleType.max <> nil and type.max <> nil =>
 				tdef.fmi2SimpleType.max >= type.max )
 		]
@@ -152,6 +162,7 @@ validMinMax(fmd, evs) == allOf
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-variableBase-attributes")
 validMultipleSets: FmiModelDescription * ModelVariables +> bool
 validMultipleSets(fmd, evs) == allOf
@@ -165,6 +176,7 @@ validMultipleSets(fmd, evs) == allOf
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validReinits: FmiModelDescription +> bool
 validReinits(fmd) == allOf
@@ -178,6 +190,7 @@ validReinits(fmd) == allOf
 	]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-variableBase-attributes")
 validVariableUnits: FmiModelDescription * ModelVariables +> bool
 validVariableUnits(fmd, evs) == allOf
@@ -200,6 +213,7 @@ validVariableUnits(fmd, evs) == allOf
 
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validOutputs: FmiModelDescription * ModelVariables +> bool
 validOutputs(fmd, evs) ==
@@ -227,6 +241,7 @@ validOutputs(fmd, evs) ==
 			( fmd.modelStructure.outputs = nil );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validDerivatives: FmiModelDescription * ModelVariables +> bool
 validDerivatives(fmd, evs) ==
@@ -250,6 +265,7 @@ validDerivatives(fmd, evs) ==
 		]);
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validInitialUnknowns: FmiModelDescription * ModelVariables +> bool
 validInitialUnknowns(fmd, evs) ==

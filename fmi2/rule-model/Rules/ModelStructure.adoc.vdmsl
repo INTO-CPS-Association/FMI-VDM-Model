@@ -3,6 +3,7 @@
 --
 functions
 ----
+
 -- @DocLink("<FMI3_STANDARD>#modelStructure")
 validDependencyKinds: Unknown +> bool
 validDependencyKinds(entry) ==

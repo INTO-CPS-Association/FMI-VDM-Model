@@ -3,6 +3,7 @@
 --
 functions
 ----
+
 -- @DocLink("<FMI3_STANDARD>#definition-of-log-categories")
 validLogCategories: LogCategories +> bool
 validLogCategories(cats) ==

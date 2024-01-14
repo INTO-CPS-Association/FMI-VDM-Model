@@ -3,6 +3,7 @@
 --
 functions
 ----
+
 -- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
 validTolerance: DefaultExperiment +> bool
 validTolerance(de) ==
@@ -10,6 +11,7 @@ validTolerance(de) ==
 	( de.tolerance <> nil => de.tolerance >= 0 );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
 validStartStopTime: DefaultExperiment +> bool
 validStartStopTime(e) ==
@@ -17,6 +19,7 @@ validStartStopTime(e) ==
 	( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
 validStepSize: DefaultExperiment +> bool
 validStepSize(e) ==

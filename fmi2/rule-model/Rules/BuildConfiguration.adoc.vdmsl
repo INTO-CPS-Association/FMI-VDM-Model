@@ -3,6 +3,7 @@
 --
 functions
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-SourceFileSet-details")
 validCompilerOptions: SourceFileSet +> bool
 validCompilerOptions(sfs) ==
@@ -10,6 +11,7 @@ validCompilerOptions(sfs) ==
 	( sfs.compilerOptions <> nil => sfs.compiler <> nil );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-SourceFile-details")
 validSourceFileNames: SourceFileSet +> bool
 validSourceFileNames(sfs) ==
@@ -20,6 +22,7 @@ validSourceFileNames(sfs) ==
 		( card elems names = len names );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-ProcessorDefinition-details")
 validPreprocessorDefinitionNames: SourceFileSet +> bool
 validPreprocessorDefinitionNames(sfs) ==
@@ -31,6 +34,7 @@ validPreprocessorDefinitionNames(sfs) ==
 			( card elems names = len names );
 ----
 ----
+
 -- @DocLink("<FMI3_STANDARD>#table-IncludeDirectory-details")
 validIncludeDirectoryNames: SourceFileSet +> bool
 validIncludeDirectoryNames(sfs) ==

@@ -37,31 +37,31 @@ types
 	]);
 
 	SimpleType' = SimpleType	-- The union of all types
-	inv tdef ==
+	inv tdef == allOf
+	([
 		cases kindOf(tdef.fmi2SimpleType):
 			<Real>	        -> inv_RealType'(tdef.fmi2SimpleType),
 			<Integer>	    -> inv_IntegerType'(tdef.fmi2SimpleType),
 			<Boolean>	    -> inv_BooleanType'(tdef.fmi2SimpleType),
 			<String>	    -> inv_StringType'(tdef.fmi2SimpleType),
-			<Enumeration>	-> inv_EnumerationType'(tdef.fmi2SimpleType),
+			<Enumeration>	-> inv_EnumerationType'(tdef.fmi2SimpleType)
+		end,
 
-			others	-> undefined
-		end;
+		validTypeDisplayUnit(tdef)
+	]);
 
 	RealType' = RealType
 	inv tdef == allOf
 	([
 		-- Rules are defined in TypeDefinitions.adoc
-		validTypeMinMax(tdef),
-		validTypeDisplayUnit(tdef)
+		validTypeMinMax(tdef)
 	]);
 
 	IntegerType' = IntegerType
 	inv tdef == allOf
 	([
 		-- Rules are defined in TypeDefinitions.adoc
-		validTypeMinMax(tdef),
-		validTypeDisplayUnit(tdef)
+		validTypeMinMax(tdef)
 	]);
 
 	BooleanType' = BooleanType
