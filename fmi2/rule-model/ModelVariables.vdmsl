@@ -31,8 +31,8 @@ types
 	inv mvs == allOf
 	([
 		-- Rules are defined in ModelVariables.adoc
-		rule("validModelVariables", validModelVariables(mvs)),
-		rule("validValueReferences", validValueReferences(mvs)),
-		rule("validAliasNames", validAliasNames(mvs)),
-		rule("validIndependentVariable", validIndependentVariable(mvs))
+		validModelVariables(mvs),
+		validValueReferences(mvs),
+		validAliasNames(mvs),
+		validIndependentVariable(mvs)
 	]);

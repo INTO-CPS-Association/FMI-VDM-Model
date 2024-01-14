@@ -3,17 +3,10 @@
 --
 functions
 ----
+-- @DocLink("<FMI3_STANDARD>#modelIdentifier",
+--			"<FMI3_STANDARD>#header-files-and-naming-of-functions")
 validMEModelIdentifier: ModelExchange +> bool
 validMEModelIdentifier(me) ==
 	-- @OnFail("%NAME: %s not valid C variable name at %s", me.modelIdentifier, loc2str(me.location))
 	( validIdentifier(me.modelIdentifier) );
 ----
-values
-	ModelExchange_refs : ReferenceMap =
-	{
-		"validMEModelIdentifier" |->
-		[
-			"<FMI3_STANDARD>#modelIdentifier",
-			"<FMI3_STANDARD>#header-files-and-naming-of-functions"
-		]
-	};

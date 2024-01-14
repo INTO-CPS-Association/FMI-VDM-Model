@@ -3,12 +3,14 @@
 --
 functions
 ----
+-- @DocLink("<FMI3_STANDARD>#table-SourceFileSet-details")
 validCompilerOptions: SourceFileSet +> bool
 validCompilerOptions(sfs) ==
 	-- @OnFail("%NAME: Compiler options set without compiler at %s", loc2str(sfs.location))
 	( sfs.compilerOptions <> nil => sfs.compiler <> nil );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-SourceFile-details")
 validSourceFileNames: SourceFileSet +> bool
 validSourceFileNames(sfs) ==
 	let files = sfs.sourceFile in
@@ -18,6 +20,7 @@ validSourceFileNames(sfs) ==
 		( card elems names = len names );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-ProcessorDefinition-details")
 validPreprocessorDefinitionNames: SourceFileSet +> bool
 validPreprocessorDefinitionNames(sfs) ==
 	let defs = sfs.preprocessorDefinition in
@@ -28,6 +31,7 @@ validPreprocessorDefinitionNames(sfs) ==
 			( card elems names = len names );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-IncludeDirectory-details")
 validIncludeDirectoryNames: SourceFileSet +> bool
 validIncludeDirectoryNames(sfs) ==
 	let incs = sfs.includeDirectory in
@@ -36,27 +40,5 @@ validIncludeDirectoryNames(sfs) ==
 			-- @OnFail("%NAME: IncludeDirectories has duplicate names: %s",
 			--	{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
 			( card elems names = len names );
+
 ----
-values
-	BuildConfiguration_refs : ReferenceMap =
-	{
-		"validCompilerOptions" |->
-		[
-			"<FMI3_STANDARD>#table-SourceFileSet-details"
-		],
-
-		"validSourceFileNames" |->
-		[
-			"<FMI3_STANDARD>#table-SourceFile-details"
-		],
-
-		"validPreprocessorDefinitionNames" |->
-		[
-			"<FMI3_STANDARD>#table-ProcessorDefinition-details"
-		],
-
-		"validIncludeDirectoryNames" |->
-		[
-			"<FMI3_STANDARD>#table-IncludeDirectory-details"
-		]
-	};

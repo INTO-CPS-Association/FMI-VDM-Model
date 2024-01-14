@@ -39,5 +39,5 @@ types
 	inv out == allOf
 	([
 		-- Rules are defined in ModelStructure.adoc
-		rule("validDependencyKinds", validDependencyKinds(out))
+		validDependencyKinds(out)
 	]);

@@ -45,7 +45,7 @@ values
 		"2.0", "MassSpringDamper", "GUID", nil, nil, nil, nil, nil, nil, nil, <structured>, nil,
 
 		-- Model types
-		mk_ModelExchange(loc, "MSD", nil, nil, nil, nil, nil, nil, nil, nil),
+		nil, --mk_ModelExchange(loc, "MSD", nil, nil, nil, nil, nil, nil, nil, nil),
 		nil,
 
 		-- Unit definitions
@@ -71,7 +71,7 @@ values
 		-- ScalarVariables
 		[
 /* 1 */		mk_ScalarVariable(loc, "inertial.J", 0, nil, <parameter>, <fixed>, nil, nil,
-					mk_Real(loc, "Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
+					mk_Real(loc, "Modelica.SIunits.InertiaZZ", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
 
 /* 2 */		mk_ScalarVariable(mk_Location("F", 2), "torque.tau", 1, nil, <input>, nil, nil, nil,
 					mk_Real(loc, "Modelica.SIunits.Torque", nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),

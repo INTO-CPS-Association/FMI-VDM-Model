@@ -3,6 +3,7 @@
 --
 functions
 ----
+-- @DocLink("<FMI3_STANDARD>#definition-of-log-categories")
 validLogCategories: LogCategories +> bool
 validLogCategories(cats) ==
 	-- @OnFail("%NAME: LogCategory names are not unique: %s",
@@ -10,11 +11,3 @@ validLogCategories(cats) ==
 	--   a <> b and cats(a).name = cats(b).name })
 	( card { c.name | c in seq cats } = len cats );
 ----
-values
-	LogCategories_refs : ReferenceMap =
-	{
-		"validLogCategories" |->
-		[
-			"<FMI3_STANDARD>#definition-of-log-categories"
-		]
-	};

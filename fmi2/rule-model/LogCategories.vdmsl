@@ -33,7 +33,7 @@ types
 		invs_Category'(lcats),
 
 		-- Rules defined in LogCategories.adoc
-		rule("validLogCategories", validLogCategories(lcats))
+		validLogCategories(lcats)
 	]);
 
 	Category' = Category

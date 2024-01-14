@@ -31,7 +31,7 @@ types
 	inv dexp == dexp <> nil => allOf
 	([
 		-- The rules are defined in DefaultExperiment.adoc
-		rule("validTolerance", validTolerance(dexp)),
-		rule("validStartStopTime", validStartStopTime(dexp)),
-		rule("validStepSize", validStepSize(dexp))
+		validTolerance(dexp),
+		validStartStopTime(dexp),
+		validStepSize(dexp)
 	]);

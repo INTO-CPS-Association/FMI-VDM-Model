@@ -3,6 +3,7 @@
 --
 functions
 ----
+-- @DocLink("<FMI3_STANDARD>#_coordinatesystem")
 validCoordinateSystem: CoordinateSystem +> bool
 validCoordinateSystem(cs) == allOf
 	([
@@ -15,12 +16,14 @@ validCoordinateSystem(cs) == allOf
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#_icon")
 validIcon: Icon +> bool
 validIcon(icon) ==
 	-- @OnFail("%NAME: Icon has zero area at %s", loc2str(icon.location))
 	( icon.x1 <> icon.x2 and icon.y1 <> icon.y2 );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#section-terminalvars")
 validTerminalMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalMemberVariables(terminal, fmd) ==
 	let tmvs = terminal.terminalMemberVariable in
@@ -35,6 +38,7 @@ validTerminalMemberVariables(terminal, fmd) ==
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#_terminal_stream_member_variable")
 validTerminalStreamMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalStreamMemberVariables(terminal, fmd) ==
 	let tsmvs = terminal.terminalStreamMemberVariable in
@@ -57,6 +61,7 @@ validTerminalStreamMemberVariables(terminal, fmd) ==
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#_terminal_graphical_representation")
 validTerminalGraphicalRepresentation: Terminal +> bool
 validTerminalGraphicalRepresentation(terminal) ==
 	let tgr = terminal.terminalGraphicalRepresentation in
@@ -76,31 +81,3 @@ validTerminalGraphicalRepresentation(terminal) ==
 			tgr.defaultConnectionStrokeSize > 0 )
 	]);
 ----
-values
-	Terminals_refs : ReferenceMap =
-	{
-		"validCoordinateSystem" |->
-		[
-			"<FMI3_STANDARD>#_coordinatesystem"
-		],
-
-		"validIcon" |->
-		[
-			"<FMI3_STANDARD>#_icon"
-		],
-
-		"validTerminalMemberVariables" |->
-		[
-			"<FMI3_STANDARD>#section-terminalvars"
-		],
-
-		"validTerminalGraphicalRepresentation" |->
-		[
-			"<FMI3_STANDARD>#_terminal_graphical_representation"
-		],
-
-		"validTerminalStreamMemberVariables" |->
-		[
-			"<FMI3_STANDARD>#_terminal_stream_member_variable"
-		]
-	};

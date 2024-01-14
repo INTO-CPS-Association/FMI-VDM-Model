@@ -40,13 +40,13 @@ validTypeUnits: FmiModelDescription +> bool
 validTypeUnits(fmd) ==
 	fmd.typeDefinitions <> nil => allOf
 	([
-		tdef.unit <> nil =>
+		tdef.fmi2SimpleType.unit <> nil =>
 			-- @OnFail("%NAME: Type %s, unit %s not defined in UnitDefinitions at %s",
 			-- tdef.name, tdef.unit, loc2str(tdef.location))
 			( fmd.unitDefinitions <> nil
-				and exists u in seq fmd.unitDefinitions & u.name = tdef.unit )
+				and exists u in seq fmd.unitDefinitions & u.name = tdef.fmi2SimpleType.unit )
 
-		| tdef in seq fmd.typeDefinitions & is_Real(tdef)
+		| tdef in seq fmd.typeDefinitions & is_Real(tdef.fmi2SimpleType)
 	]);
 ----
 ----

@@ -3,17 +3,10 @@
 --
 functions
 ----
+-- @DocLink("<FMI3_STANDARD>#modelStructure")
 validDependencyKinds: Unknown +> bool
 validDependencyKinds(entry) ==
 	entry.dependenciesKind <> nil =>
 		-- @OnFail("%NAME: dependencies do not match dependenciesKind at %s", loc2str(entry.location))
 		( entry.dependencies <> nil and len entry.dependenciesKind = len entry.dependencies );
 ----
-values
-	ModelStructure_refs : ReferenceMap =
-	{
-		"validDependencyKinds" |->
-		[
-			"<FMI3_STANDARD>#modelStructure"
-		]
-	};

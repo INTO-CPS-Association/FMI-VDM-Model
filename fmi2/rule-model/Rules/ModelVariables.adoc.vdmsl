@@ -3,6 +3,7 @@
 --
 functions
 ----
+-- @DocLink("<FMI3_STANDARD>#_platform_dependent_definitions")
 validValueReferences: ModelVariables +> bool
 validValueReferences(mvs) ==
 	let refs = [ mv.valueReference | mv in seq mvs ] in
@@ -11,6 +12,7 @@ validValueReferences(mvs) ==
 		( len refs = card elems refs );	
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#_alias_variables")
 validAliasNames: ModelVariables +> bool
 validAliasNames(mvs) ==
 	let refmap = getAliasRefMap(mvs) in
@@ -18,27 +20,27 @@ validAliasNames(mvs) ==
 	{
 		let aliases = refmap(ref) in allOf
 		([
-			-- @OnFail(1316, "2.2.7 Multiple aliases of reference %s are settable: %s", ref,
+			-- @OnFail("%NAME: Multiple aliases of reference %s are settable: %s", ref,
 			--		{ a.name | a in set aliases & isSettable(a) })
 			( card { a | a in set aliases & isSettable(a) } <= 1 ),
 
-			-- @OnFail(1317, "2.2.7 Aliases of reference %s are settable and independent: %s", ref,
+			-- @OnFail("%NAME: Aliases of reference %s are settable and independent: %s", ref,
 			--		{ {a.name, b.name} | a, b in set aliases &
 			--			a <> b and isSettable(a) and b.causality = <independent> } )
 			( not exists a, b in set aliases & a <> b and isSettable(a) and b.causality = <independent> ),
 
-			-- @OnFail(1318, "2.2.7 Too many aliases of reference %s have start set", ref)
+			-- @OnFail("%NAME: Too many aliases of reference %s have start set", ref)
 			( card { a.fmi2ScalarVariable.start | a in set aliases &
 				a.variability <> <constant> and a.fmi2ScalarVariable.start <> nil } <= 1 ),
 
-			-- @OnFail(1319, "2.2.7 Constant aliases of reference %s have different start values", ref)
+			-- @OnFail("%NAME: Constant aliases of reference %s have different start values", ref)
 			( card { a.fmi2ScalarVariable.start | a in set aliases &
 				a.variability = <constant> and a.fmi2ScalarVariable.start <> nil } <= 1 ),
 
-			-- @OnFail(1320, "2.2.7 Aliases of reference %s must all be constant or variable", ref)
+			-- @OnFail("%NAME: Aliases of reference %s must all be constant or variable", ref)
 			( card { a | a in set aliases & a.variability = <constant> } in set {0, card aliases} ),
 
-			-- @OnFail(1321, "2.2.7 Aliases of reference %s must all have same unit/baseUnits", ref)
+			-- @OnFail("%NAME: Aliases of reference %s must all have same unit/baseUnits", ref)
 			( card { a.fmi2ScalarVariable.unit | a in set aliases & is_Real(a.fmi2ScalarVariable) } <= 1 ),
 
 			/*
@@ -51,12 +53,12 @@ validAliasNames(mvs) ==
 				if exists a in set aliases & a.causality in set {<input>, <parameter>}
 				then
 					let a in set aliases be st a.causality in set {<input>, <parameter>} in
-						-- @OnFail(1322, "2.2.7 Warning: aliases of reference %s must all be %s, because of %s",
+						-- @OnFail("%NAME: Warning: aliases of reference %s must all be %s, because of %s",
 						--		ref, a.variability, a.name)
 						( vars = { a.variability } ) or true
 				else
 					let highest in set vars be st not exists v in set vars & varValue(v) > varValue(highest) in
-						-- @OnFail(1323, "2.2.7 Warning: aliases of reference %s must all be %s", ref, highest)
+						-- @OnFail("%NAME: Warning: aliases of reference %s must all be %s", ref, highest)
 						( vars = { highest } ) or true
 		])
 
@@ -64,6 +66,7 @@ validAliasNames(mvs) ==
 	} = {true};
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validIndependentVariable: ModelVariables +> bool
 validIndependentVariable(mvs) ==
 	-- @OnFail("%NAME: Variables define more than one independent variable: %s",
@@ -71,6 +74,7 @@ validIndependentVariable(mvs) ==
 	( card { mv | mv in seq mvs & mv.causality = <independent> } <= 1 );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validModelVariables: ModelVariables +> bool
 validModelVariables(svs) == allOf
 ([
@@ -92,6 +96,7 @@ validModelVariables(svs) == allOf
 ]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validVariableAttributes: ScalarVariable +> bool
 validVariableAttributes(sv) ==
 	let variable	 = sv.fmi2ScalarVariable,
@@ -99,8 +104,9 @@ validVariableAttributes(sv) ==
 		eVariability = effectiveVariability(sv.variability, kindOf(variable)),
 		eInitial     = effectiveInitial(sv.causality, sv.variability, sv.initial, kindOf(variable))
 	in
-	{
-		/* @OnFail(1460, "2.4.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %s",
+	allOf
+	([
+		/* @OnFail("%NAME: Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %s",
 			sv.name, eCausality, eVariability, eInitial, variable.start, loc2str(sv.location)) */
 		(
 			cases eCausality:
@@ -119,7 +125,7 @@ validVariableAttributes(sv) ==
 					eVariability = <continuous>
 					and eInitial = nil		-- (D)
 					and variable.start = nil
-					-- @OnFail(1461, "2.4.7 Independent variable must be Real at %s", loc2str(sv.location))
+					-- @OnFail("%NAME: Independent variable must be Real at %s", loc2str(sv.location))
 					and ( is_Real(variable) ),
 
 				<output> ->
@@ -152,7 +158,7 @@ validVariableAttributes(sv) ==
 			end
 		),
 
-		/* @OnFail(1462, "2.4.7 Variable %s variability/causality %s/%s invalid at %s",
+		/* @OnFail("%NAME: Variable %s variability/causality %s/%s invalid at %s",
 			sv.name, eVariability, eCausality, loc2str(sv.location)) */
 		(
 			cases eVariability:
@@ -167,18 +173,18 @@ validVariableAttributes(sv) ==
 
 				<continuous> ->
 					eCausality in set {<input>, <output>, <local>, <independent>}
-					-- @OnFail(1463, "2.4.7 Continuous variable must be Real at %s", loc2str(sv.location))
+					-- @OnFail("%NAME: Continuous variable must be Real at %s", loc2str(sv.location))
 					and (is_Real(variable))
 			end
 		),
 
-		/* @OnFail(1464, "2.4.7 Variable %s initial/causality %s/%s invalid at %s",
+		/* @OnFail("%NAME: Variable %s initial/causality %s/%s invalid at %s",
 			sv.name, sv.initial, eCausality, loc2str(sv.location)) */
 		(
 			sv.initial <> nil => eCausality <> <independent>
 		),
 
-		/* @OnFail(1465, "2.4.7 Variable %s initial/variability/start %s/%s/%s invalid at %s",
+		/* @OnFail("%NAME: Variable %s initial/variability/start %s/%s/%s invalid at %s",
 			sv.name, eInitial, eVariability, variable.start, loc2str(sv.location)) */
 		(
 			cases eInitial:
@@ -197,34 +203,5 @@ validVariableAttributes(sv) ==
 					true	-- Tests on eInitial above are sufficient
 			end
 		)
-	} = {true};
+	]);
 ----
-
-values
-	ModelVariables_refs : ReferenceMap =
-	{
-		"validValueReferences" |->
-		[
-			"<FMI3_STANDARD>#_platform_dependent_definitions"
-		],
-
-		"validAliasNames" |->
-		[
-			"<FMI3_STANDARD>#_alias_variables"
-		],
-
-		"validModelVariables" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validVariableAttributes" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validIndependentVariable" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		]
-	};

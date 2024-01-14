@@ -3,18 +3,11 @@
 --
 functions
 ----
+-- @DocLink("<FMI3_STANDARD>#modelIdentifier",
+--			"<FMI3_STANDARD>#header-files-and-naming-of-functions")
 validCSModelIdentifier: CoSimulation +> bool
 validCSModelIdentifier(ecs) ==
 	-- @OnFail("%NAME: %s not valid C variable name at %s",
 	-- ecs.modelIdentifier, loc2str(ecs.location))
 	( validIdentifier(ecs.modelIdentifier) );
 ----
-values
-	CoSimulation_refs : ReferenceMap =
-	{
-		"validCSModelIdentifier" |->
-		[
-			"<FMI3_STANDARD>#modelIdentifier",
-			"<FMI3_STANDARD>#header-files-and-naming-of-functions"
-		]
-	};

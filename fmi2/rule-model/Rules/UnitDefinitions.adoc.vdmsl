@@ -3,6 +3,8 @@
 --
 functions
 ----
+-- @DocLink("<FMI3_STANDARD>#_physical_units",
+--			"<FMI3_STANDARD>#uniqueNameAttribute")
 validUnitNames: UnitDefinitions +> bool
 validUnitNames(units) ==
 	-- @OnFail("%NAME: Unit names must be unique")
@@ -10,6 +12,8 @@ validUnitNames(units) ==
 		len names = card elems names );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit",
+--			"<FMI3_STANDARD>#uniqueNameAttribute")
 validDisplayUnitNames: Unit +> bool
 validDisplayUnitNames(unit) ==
 	unit.displayUnit <> nil =>
@@ -18,19 +22,3 @@ validDisplayUnitNames(unit) ==
 		( let names = [ u.name | u in seq unit.displayUnit ] in
 			len names = card elems names );
 ----
-
-values
-	UnitDefinitions_refs : ReferenceMap =
-	{
-		"validUnitNames" |->
-		[
-			"<FMI3_STANDARD>#_physical_units",
-			"<FMI3_STANDARD>#uniqueNameAttribute"
-		],
-
-		"validDisplayUnitNames" |->
-		[
-			"<FMI3_STANDARD>#figure-schema-DisplayUnit",
-			"<FMI3_STANDARD>#uniqueNameAttribute"
-		]
-	};

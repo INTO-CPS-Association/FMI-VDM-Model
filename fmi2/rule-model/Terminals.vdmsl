@@ -47,13 +47,13 @@ types
 	inv cs == cs <> nil => allOf
 	([
 		-- Rules are defined in Terminals.adoc
-		rule("validCoordinateSystem", validCoordinateSystem(cs))
+		validCoordinateSystem(cs)
 	]);
 
 	Icon' = [Icon]
 	inv icon == icon <> nil => allOf
 	([
-		rule("validIcon", validIcon(icon))
+		validIcon(icon)
 	]);
 
 	Terminals' = [seq of Terminal] * [FmiModelDescription]
@@ -69,8 +69,8 @@ types
 		inv_Annotations'(t.annotations),
 
 		-- Rules are defined in Terminals.adoc
-		rule("validTerminalMemberVariables", validTerminalMemberVariables(t, fmd)),
-		rule("validTerminalGraphicalRepresentation", validTerminalGraphicalRepresentation(t)),
-		rule("validTerminalStreamMemberVariables", validTerminalStreamMemberVariables(t, fmd))
+		validTerminalMemberVariables(t, fmd),
+		validTerminalGraphicalRepresentation(t),
+		validTerminalStreamMemberVariables(t, fmd)
 	]);
 

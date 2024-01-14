@@ -3,6 +3,8 @@
 --
 functions
 ----
+-- @DocLink("<FMI3_STANDARD>#definition-of-types",
+--			"<FMI3_STANDARD>#table-type-details")
 validTypeDefinitionNames: [TypeDefinitions] +> bool
 validTypeDefinitionNames(tdefs) ==
 	tdefs <> nil =>
@@ -11,6 +13,7 @@ validTypeDefinitionNames(tdefs) ==
 			len names = card elems names );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeMinMax: NumType +> bool
 validTypeMinMax(type) ==
 	let mk_(kmin, kmax) = minMaxOfKind(kindOf(type)) in allOf
@@ -26,6 +29,7 @@ validTypeMinMax(type) ==
 	]);
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeDisplayUnit: RealType | IntegerType +> bool
 validTypeDisplayUnit(tdef) ==
 	-- @OnFail("%NAME: Type %s, unit must be defined for displayUnit %s",
@@ -33,6 +37,7 @@ validTypeDisplayUnit(tdef) ==
 	( tdef.displayUnit <> nil => tdef.unit <> nil );
 ----
 ----
+-- @DocLink("<FMI3_STANDARD>#figure-schema-EnumerationType")
 validEnumerationTypeBijection: EnumerationType +> bool
 validEnumerationTypeBijection(tdef) ==
 	-- @OnFail("%NAME: Enumeration item items do not form a bijection at %s",
@@ -42,28 +47,3 @@ validEnumerationTypeBijection(tdef) ==
 		and	card { i.value | i in seq tdef.item } = len tdef.item
 	);
 ----
-
-values
-	TypeDefinitions_refs : ReferenceMap =
-	{
-		"validTypeDefinitionNames" |->
-		[
-			"<FMI3_STANDARD>#definition-of-types",
-			"<FMI3_STANDARD>#table-type-details"
-		],
-
-		"validTypeMinMax" |->
-		[
-			"<FMI3_STANDARD>#table-type-details"
-		],
-
-		"validTypeDisplayUnit" |->
-		[
-			"<FMI3_STANDARD>#table-type-details"
-		],
-
-		"validEnumerationTypeBijection" |->
-		[
-			"<FMI3_STANDARD>#figure-schema-EnumerationType"
-		]
-	};

@@ -33,7 +33,7 @@ types
 		invs_SimpleTypes'(tdefs),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeDefinitionNames", validTypeDefinitionNames(tdefs))
+		validTypeDefinitionNames(tdefs)
 	]);
 
 	SimpleType' = SimpleType	-- The union of all types
@@ -52,16 +52,16 @@ types
 	inv tdef == allOf
 	([
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		validTypeMinMax(tdef),
+		validTypeDisplayUnit(tdef)
 	]);
 
 	IntegerType' = IntegerType
 	inv tdef == allOf
 	([
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		validTypeMinMax(tdef),
+		validTypeDisplayUnit(tdef)
 	]);
 
 	BooleanType' = BooleanType
@@ -80,6 +80,6 @@ types
 	inv tdef == allOf
 	([
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef)),
-		rule("validEnumerationTypeBijection", validEnumerationTypeBijection(tdef))
+		validTypeMinMax(tdef),
+		validEnumerationTypeBijection(tdef)
 	]);

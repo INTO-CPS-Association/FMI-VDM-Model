@@ -41,16 +41,6 @@ functions
 		if value = nil then ifnil else value;
 
 	/**
-	 * Check the result of a named rule and list the FMI Standard document references that
-	 * describe the correct behaviour, if the rule failed.
-	 */
-	rule: RuleName * bool +> bool
-	rule(name, result) ==
-		-- @OnFail("%s", listReferences(name))
-		( result )
-	pre name in set dom docReferences;
-
-	/**
 	 * Apply a test function to every member of a set or sequence, and return true
 	 * if all of the results are true.
 	 */
@@ -74,21 +64,6 @@ functions
 				then allOf(e)
 				else e
 	measure is not yet specified;
-
-	/**
-	 * Format the references of a rule name, one per line.
-	 */
-	listReferences: RuleName +> seq1 of char
-	listReferences(name) ==
-		list2Str(docReferences(name))
-	pre name in set dom docReferences;
-
-	list2Str: seq of ReferenceURL +> seq of char
-	list2Str(refs) ==
-		if refs = []
-		then ""
-		else "See: " ^ hd refs ^ "\n" ^ list2Str(tl refs)
-	measure len refs;
 
 	/**
 	 * Turn a Location into a printable string for errors.

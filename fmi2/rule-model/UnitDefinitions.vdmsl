@@ -33,7 +33,7 @@ types
 		invs_Unit'(units),
 
 		-- Rules are defined in UnitDefinitions.adoc
-		rule("validUnitNames", validUnitNames(units))
+		validUnitNames(units)
 	]);
 
 	Unit' = Unit
@@ -43,22 +43,19 @@ types
 		inv_BaseUnit'(unit.baseUnit),
 
 		-- Rules are defined in UnitDefinitions.adoc
-		rule("validDisplayUnitNames", validDisplayUnitNames(unit))
+		validDisplayUnitNames(unit)
 	]);
 
 	BaseUnit' = [BaseUnit]
 	inv bunit == bunit <> nil => allOf
-	(
-		let - = effectiveBaseUnit(bunit) in
-		[
-			true	-- No rules for BaseUnit?
-		]
-	);
+	([
+		true	-- No rules for BaseUnit?
+	]);
 
 	DisplayUnit' = DisplayUnit
 	inv - == allOf
 	([
-		true
+		true	-- No rules for DisplayUnit?
 	]);
 
 functions
