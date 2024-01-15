@@ -4,8 +4,7 @@
 functions
 ----
 
--- @DocLink("<FMI2_STANDARD>#modelIdentifier",
---			"<FMI2_STANDARD>#header-files-and-naming-of-functions")
+-- @DocLink("<FMI2_STANDARD>#_header_files_and_naming_of_functions")
 validCSModelIdentifier: CoSimulation +> bool
 validCSModelIdentifier(ecs) ==
 	-- @OnFail("%NAME: %s not valid C variable name at %s",

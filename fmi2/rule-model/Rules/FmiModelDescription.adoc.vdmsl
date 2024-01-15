@@ -4,7 +4,7 @@
 functions
 ----
 
--- @DocLink("<FMI2_STANDARD>#table-schema-fmiModelDescription")
+-- @DocLink("<FMI2_STANDARD>#_inquire_platform_and_version_number_of_header_files")
 validModelAttributes: FmiModelDescription +> bool
 validModelAttributes(md) ==
 	-- @OnFail(1000, "%NAME: ModelAttribute fmiVersion should be 2.0")
@@ -12,7 +12,7 @@ validModelAttributes(md) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#table-schema-fmiModelDescription")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_vendor_annotations_vendorannotations")
 validVendorAnnotations:FmiModelDescription +> bool
 validVendorAnnotations(fmd) ==
 	let tools = fmd.vendorAnnotations in
@@ -23,7 +23,7 @@ validVendorAnnotations(fmd) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#table-schema-fmiModelDescription")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_an_fmu_fmimodeldescription")
 validModelTypes: FmiModelDescription +> bool
 validModelTypes(fmd) ==
 	-- @OnFail("%NAME: Either ModelExchange or CoSimulation must be set")
@@ -31,7 +31,7 @@ validModelTypes(fmd) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#table-schema-fmiModelDescription-attributes")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_an_fmu_fmimodeldescription")
 validGenerationDateAndTime: FmiModelDescription +> bool
 validGenerationDateAndTime(fmd) ==
 	-- @OnFail("%NAME: generationDateAndTime should be YYYY-MM-DDThh:mm:ssZ at %s",
@@ -40,7 +40,7 @@ validGenerationDateAndTime(fmd) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#table-type-details")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 validTypeUnits: FmiModelDescription +> bool
 validTypeUnits(fmd) ==
 	fmd.typeDefinitions <> nil => allOf
@@ -56,8 +56,8 @@ validTypeUnits(fmd) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#ModelVariables",
---			"<FMI2_STANDARD>#definition-of-types")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables",
+--			"<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 validVariableTypes: FmiModelDescription +> bool
 validVariableTypes(fmd) == allOf
 	([
@@ -76,7 +76,7 @@ validVariableTypes(fmd) == allOf
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#table-type-details")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 validTypeNames: FmiModelDescription +> bool
 validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
 	([
@@ -89,7 +89,7 @@ validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#ModelVariables")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 validVariableNames: FmiModelDescription +> bool
 validVariableNames(fmd) ==
 	fmd.variableNamingConvention = <structured> => allOf(conc
@@ -107,7 +107,7 @@ validVariableNames(fmd) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#table-type-attributes")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 validStart: FmiModelDescription * ModelVariables +> bool
 validStart(-, evs) == allOf
 	([
@@ -130,7 +130,7 @@ validStart(-, evs) == allOf
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#table-type-attributes")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 validMinMax: FmiModelDescription * ModelVariables +> bool
 validMinMax(fmd, evs) == allOf
 	([
@@ -163,7 +163,7 @@ validMinMax(fmd, evs) == allOf
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#table-variableBase-attributes")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 validMultipleSets: FmiModelDescription * ModelVariables +> bool
 validMultipleSets(fmd, evs) == allOf
 	([
@@ -177,7 +177,7 @@ validMultipleSets(fmd, evs) == allOf
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#ModelVariables")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 validReinits: FmiModelDescription +> bool
 validReinits(fmd) == allOf
 	([
@@ -214,7 +214,7 @@ validVariableUnits(fmd, evs) == allOf
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#ModelStructure")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_the_model_structure_modelstructure")
 validOutputs: FmiModelDescription * ModelVariables +> bool
 validOutputs(fmd, evs) ==
 	let outputIndexes = { svi | svi in set inds evs & evs(svi).causality = <output> } in
@@ -242,7 +242,7 @@ validOutputs(fmd, evs) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#ModelStructure")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_the_model_structure_modelstructure")
 validDerivatives: FmiModelDescription * ModelVariables +> bool
 validDerivatives(fmd, evs) ==
 	fmd.modelExchange <> nil
@@ -266,7 +266,7 @@ validDerivatives(fmd, evs) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#ModelStructure")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_the_model_structure_modelstructure")
 validInitialUnknowns: FmiModelDescription * ModelVariables +> bool
 validInitialUnknowns(fmd, evs) ==
 	let ctVars = continuousTimeStates(evs),

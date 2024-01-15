@@ -4,7 +4,7 @@
 functions
 ----
 
--- @DocLink("<FMI2_STANDARD>#_platform_dependent_definitions")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 validValueReferences: ModelVariables +> bool
 validValueReferences(mvs) ==
 	let refs = [ mv.valueReference | mv in seq mvs ] in
@@ -14,7 +14,7 @@ validValueReferences(mvs) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#_alias_variables")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 validAliasNames: ModelVariables +> bool
 validAliasNames(mvs) ==
 	let refmap = getAliasRefMap(mvs) in
@@ -69,7 +69,7 @@ validAliasNames(mvs) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#ModelVariables")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 validIndependentVariable: ModelVariables +> bool
 validIndependentVariable(mvs) ==
 	-- @OnFail("%NAME: Variables define more than one independent variable: %s",
@@ -78,7 +78,7 @@ validIndependentVariable(mvs) ==
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#ModelVariables")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 validModelVariables: ModelVariables +> bool
 validModelVariables(svs) == allOf
 ([
@@ -101,7 +101,7 @@ validModelVariables(svs) == allOf
 ----
 ----
 
--- @DocLink("<FMI2_STANDARD>#ModelVariables")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 validVariableAttributes: ScalarVariable +> bool
 validVariableAttributes(sv) ==
 	let variable	 = sv.fmi2ScalarVariable,

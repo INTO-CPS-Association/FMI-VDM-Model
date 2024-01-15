@@ -4,7 +4,7 @@
 functions
 ----
 
--- @DocLink("<FMI2_STANDARD>#modelStructure")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_the_model_structure_modelstructure")
 validDependencyKinds: Unknown +> bool
 validDependencyKinds(entry) ==
 	entry.dependenciesKind <> nil =>

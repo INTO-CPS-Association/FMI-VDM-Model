@@ -4,7 +4,7 @@
 functions
 ----
 
--- @DocLink("<FMI2_STANDARD>#definition-of-log-categories")
+-- @DocLink("<FMI2_STANDARD>#_definition_of_log_categories_logcategories")
 validLogCategories: LogCategories +> bool
 validLogCategories(cats) ==
 	-- @OnFail("%NAME: LogCategory names are not unique: %s",

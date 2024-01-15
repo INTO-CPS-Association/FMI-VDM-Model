@@ -4,8 +4,7 @@
 functions
 ----
 
--- @DocLink("<FMI2_STANDARD>#modelIdentifier",
---			"<FMI2_STANDARD>#header-files-and-naming-of-functions")
+-- @DocLink("<FMI2_STANDARD>#_model_exchange_fmu_modelexchange")
 validMEModelIdentifier: ModelExchange +> bool
 validMEModelIdentifier(me) ==
 	-- @OnFail("%NAME: %s not valid C variable name at %s", me.modelIdentifier, loc2str(me.location))
