@@ -41,11 +41,8 @@ public class INOnFailAnnotation extends annotations.in.INOnFailAnnotation {
     private static final long serialVersionUID = 1L;
     private static List<OnFailError> errorList = new Vector<>();
 
-    private final String format;
-
     public INOnFailAnnotation(TCIdentifierToken name, INExpressionList args, String format, INAnnotationList doclinks) {
         super(name, args, format, doclinks);
-        this.format = format;
     }
 
     public INOnFailAnnotation(TCIdentifierToken name, INExpressionList args) {
@@ -60,7 +57,6 @@ public class INOnFailAnnotation extends annotations.in.INOnFailAnnotation {
                 int offset = 1;
                 if (this.args.get(0) instanceof INIntegerLiteralExpression) {
                     INIntegerLiteralExpression num = (INIntegerLiteralExpression) this.args.get(0);
-                    //                    errno = String.format("%04d: ", num.value.value);
                     errno = Long.valueOf(num.value.value).intValue();
                     offset = 2;
                 }
@@ -77,8 +73,7 @@ public class INOnFailAnnotation extends annotations.in.INOnFailAnnotation {
                     location = this.name.getLocation().toString();
                     useformat = this.format.substring(0, this.format.length() - 1);
                 }
-                errorList.add(new OnFailError(errno, String.format(useformat + location, values)));
-                //                Console.out.printf(errno + useformat + location + "\n", values);
+                errorList.add(new OnFailError(errno, String.format(useformat + location, values), doclinks));
             }
         } catch (ValueException var9) {
         }

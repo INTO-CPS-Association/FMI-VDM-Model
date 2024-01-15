@@ -24,6 +24,14 @@
 
 package maestro;
 
+import java.util.List;
+import java.util.Vector;
+
+import com.fujitsu.vdmj.in.annotations.INAnnotation;
+import com.fujitsu.vdmj.in.annotations.INAnnotationList;
+import com.fujitsu.vdmj.in.expressions.INExpression;
+import com.fujitsu.vdmj.in.expressions.INStringLiteralExpression;
+
 /**
  * Object for returning number/message pairs from @OnFail messages.
  */
@@ -31,17 +39,45 @@ public class OnFailError
 {
 	public final int errno;
 	public final String message;
+	public final INAnnotationList doclinks;
 	
-	public OnFailError(int errno, String message)
+	public OnFailError(int errno, String message, INAnnotationList doclinks)
 	{
 		this.errno = errno;
 		this.message = message;
+		this.doclinks = doclinks;
+	}
+	
+	public OnFailError(int errno, String message)
+	{
+		this(errno, message, null);
 	}
 	
 	@Override
 	public String toString()
 	{
 		return errno + ": " + message;
+	}
+	
+	public List<String> getDocLinks()
+	{
+		List<String> links = null;
+		
+		if (doclinks != null)
+		{
+			links = new Vector<String>();
+			
+			for (INAnnotation doclink: doclinks)
+			{
+				for (INExpression arg: doclink.args)
+				{
+					INStringLiteralExpression s = (INStringLiteralExpression) arg;
+					links.add(s.value.value);
+				}
+			}
+		}
+		
+		return links;
 	}
 }
 
