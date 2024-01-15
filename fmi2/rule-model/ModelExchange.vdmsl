@@ -31,5 +31,6 @@ types
 	inv me == me <> nil => allOf
 	([
 		-- Rules are defined in ModelExchange.adoc
-		validMEModelIdentifier(me)
+		validMEModelIdentifier(me),
+		validMESourceFiles(me)
 	]);

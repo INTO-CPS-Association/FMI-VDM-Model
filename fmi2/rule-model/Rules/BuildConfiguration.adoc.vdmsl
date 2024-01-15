@@ -7,7 +7,7 @@ functions
 -- @DocLink("<FMI3_STANDARD>#table-SourceFileSet-details"). Note, from FMI3
 validCompilerOptions: SourceFileSet +> bool
 validCompilerOptions(sfs) ==
-	-- @OnFail("%NAME: Compiler options set without compiler at %s", loc2str(sfs.location))
+	-- @OnFail("%NAME: Compiler options set without compiler at %#s", loc2str(sfs.location))
 	( sfs.compilerOptions <> nil => sfs.compiler <> nil );
 ----
 ----

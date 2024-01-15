@@ -26,7 +26,7 @@ validVendorAnnotations(fmd) ==
 -- @DocLink("<FMI2_STANDARD>#_definition_of_an_fmu_fmimodeldescription")
 validModelTypes: FmiModelDescription +> bool
 validModelTypes(fmd) ==
-	-- @OnFail("%NAME: Either ModelExchange or CoSimulation must be set")
+	-- @OnFail("%NAME: Either ModelExchange or CoSimulation must be defined")
 	( fmd.modelExchange <> nil or fmd.coSimulation <> nil );
 ----
 ----
@@ -34,7 +34,7 @@ validModelTypes(fmd) ==
 -- @DocLink("<FMI2_STANDARD>#_definition_of_an_fmu_fmimodeldescription")
 validGenerationDateAndTime: FmiModelDescription +> bool
 validGenerationDateAndTime(fmd) ==
-	-- @OnFail("%NAME: generationDateAndTime should be YYYY-MM-DDThh:mm:ssZ at %s",
+	-- @OnFail("%NAME: generationDateAndTime should be YYYY-MM-DDThh:mm:ssZ at %#s",
 	-- loc2str(fmd.location))
 	( fmd.generationDateAndTime <> nil => iso8601(fmd.generationDateAndTime) );
 ----
@@ -46,7 +46,7 @@ validTypeUnits(fmd) ==
 	fmd.typeDefinitions <> nil => allOf
 	([
 		tdef.fmi2SimpleType.unit <> nil =>
-			-- @OnFail("%NAME: Type %s, unit %s not defined in UnitDefinitions at %s",
+			-- @OnFail("%NAME: Type %s, unit %s not defined in UnitDefinitions at %#s",
 			-- tdef.name, tdef.fmi2SimpleType.unit, loc2str(tdef.location))
 			( fmd.unitDefinitions <> nil
 				and exists u in seq fmd.unitDefinitions & u.name = tdef.fmi2SimpleType.unit )
@@ -63,11 +63,11 @@ validVariableTypes(fmd) == allOf
 	([
 		mv.fmi2ScalarVariable.declaredType <> nil =>
 		let tdef = lookupType(mv.fmi2ScalarVariable.declaredType, fmd.typeDefinitions) in
-			-- @OnFail("%NAME: %s type %s not found at %s",
+			-- @OnFail("%NAME: %s type %s not found at %#s",
 			-- mv.name, mv.fmi2ScalarVariable.declaredType, loc2str(mv.location))
 			( tdef <> nil )
 
-			-- @OnFail("%NAME: %s type %s mismatch at %s",
+			-- @OnFail("%NAME: %s type %s mismatch at %#s",
 			-- mv.name, mv.fmi2ScalarVariable.declaredType, loc2str(mv.location))
 			and ( kindOf(tdef.fmi2SimpleType) = kindOf(mv.fmi2ScalarVariable) )
 
@@ -80,7 +80,7 @@ validVariableTypes(fmd) == allOf
 validTypeNames: FmiModelDescription +> bool
 validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
 	([
-		-- @OnFail("%NAME: TypeDefinition and Variable names overlap: %s at %s",
+		-- @OnFail("%NAME: TypeDefinition and Variable names overlap: %s at %#s",
 		-- tdef.name, loc2str(tdef.location))
 		( not exists mv in seq fmd.modelVariables & mv.name = tdef.name )
 
@@ -95,10 +95,10 @@ validVariableNames(fmd) ==
 	fmd.variableNamingConvention = <structured> => allOf(conc
 	[
 		[
-			-- @OnFail("%NAME: Structured name %s invalid at %s", mv.name, loc2str(mv.location))
+			-- @OnFail("%NAME: Structured name %s invalid at %#s", mv.name, loc2str(mv.location))
 			( validStructuredName(mv.name) ),
 
-			-- @OnFail("%NAME: Name %s is not Float at %s", mv.name, loc2str(mv.location))
+			-- @OnFail("%NAME: Name %s is not Float at %#s", mv.name, loc2str(mv.location))
 			( mv.name(1, ..., 4) = "der(" => is_Real(mv) )
 		]
 
@@ -114,12 +114,12 @@ validStart(-, evs) == allOf
 		let type = ev.fmi2ScalarVariable in
 		[
 			type.start <> nil =>
-				-- @OnFail("%NAME: all start values must be between %s and %s at %s",
+				-- @OnFail("%NAME: all start values must be between %s and %s at %#s",
 				-- ev.fmi2ScalarVariable.min, ev.fmi2ScalarVariable.max, loc2str(ev.location))
 				( type.min <= type.start and type.max >= type.start ),
 
 			type.start = nil and ev.initial <> <calculated> =>
-				-- @OnFail("%NAME: Warning: implicit start of 0 not within min/max at %s",
+				-- @OnFail("%NAME: Warning: implicit start of 0 not within min/max at %#s",
 				-- loc2str(ev.location))
 				( (type.min <> nil => type.min <= 0) and
 				  (type.max <> nil => type.max >= 0) ) or true	-- NOTE warning
@@ -147,12 +147,12 @@ validMinMax(fmd, evs) == allOf
 			-- @OnFail("%NAME: max %s not >= min %s", type.max, type.min)
 			( type.max >= type.min ),
 
-			-- @OnFail(1034, "%NAME: ScalarVariable %s min/max exceeds RealType %s at %s",
+			-- @OnFail(1034, "%NAME: ScalarVariable %s min/max exceeds RealType %s at %#s",
 			-- ev.name, ev.fmi2ScalarVariable.declaredType, loc2str(ev.location))
 			( tdef <> nil and tdef.fmi2SimpleType.min <> nil and type.min <> nil =>
 				tdef.fmi2SimpleType.min <= type.min ),
 
-			-- @OnFail(1034, "%NAME: ScalarVariable %s min/max exceeds RealType %s at %s",
+			-- @OnFail(1034, "%NAME: ScalarVariable %s min/max exceeds RealType %s at %#s",
 			-- ev.name, ev.fmi2ScalarVariable.declaredType, loc2str(ev.location))
 			( tdef <> nil and tdef.fmi2SimpleType.max <> nil and type.max <> nil =>
 				tdef.fmi2SimpleType.max >= type.max )
@@ -168,7 +168,7 @@ validMultipleSets: FmiModelDescription * ModelVariables +> bool
 validMultipleSets(fmd, evs) == allOf
 	([
 		ev.canHandleMultipleSetPerTimeInstant = true =>
-			-- @OnFail("%NAME: Variable %s, canHandleMultipleSetPerTimeInstant invalid at %s",
+			-- @OnFail("%NAME: Variable %s, canHandleMultipleSetPerTimeInstant invalid at %#s",
 			-- ev.name, loc2str(ev.location))
 			( fmd.modelExchange <> nil and ev.causality = <input> )
 
@@ -182,7 +182,7 @@ validReinits: FmiModelDescription +> bool
 validReinits(fmd) == allOf
 	([
 		is_Real(mv.fmi2ScalarVariable) and mv.fmi2ScalarVariable.reinit <> nil =>
-			-- @OnFail("%NAME: %s, Real reinit for model exchange continuous time only at %s",
+			-- @OnFail("%NAME: %s, Real reinit for model exchange continuous time only at %#s",
 			-- mv.name, loc2str(mv.location))
 			( isContinuousTimeState(mv.valueReference, fmd.modelVariables) and fmd.modelExchange <> nil )
 
@@ -197,12 +197,12 @@ validVariableUnits(fmd, evs) == allOf
 ([
 	is_Real(sv.fmi2ScalarVariable) => allOf
 	([
-		-- @OnFail("%NAME: ScalarVariable %s, Real unit must be defined for displayUnit %s at %s",
+		-- @OnFail("%NAME: ScalarVariable %s, Real unit must be defined for displayUnit %s at %#s",
 		--	sv.name, sv.fmi2ScalarVariable.displayUnit, loc2str(sv.location))
 		( sv.fmi2ScalarVariable.displayUnit <> nil => sv.fmi2ScalarVariable.unit <> nil ),
 
 		sv.fmi2ScalarVariable.unit <> nil =>
-			-- @OnFail("%NAME: ScalarVariable %s, Real unit %s not defined in UnitDefinitions at %s",
+			-- @OnFail("%NAME: ScalarVariable %s, Real unit %s not defined in UnitDefinitions at %#s",
 			--	sv.name, sv.fmi2ScalarVariable.unit, loc2str(sv.location))
 			( fmd.unitDefinitions <> nil
 				and exists u in seq fmd.unitDefinitions & u.name = sv.fmi2ScalarVariable.unit )
@@ -220,23 +220,23 @@ validOutputs(fmd, evs) ==
 	let outputIndexes = { svi | svi in set inds evs & evs(svi).causality = <output> } in
 		if outputIndexes <> {}
 		then
-			-- @OnFail("%NAME: Output variables but no outputs declared at %s",
+			-- @OnFail("%NAME: Output variables but no outputs declared at %#s",
 			--	loc2str(fmd.modelStructure.location))
 			( fmd.modelStructure.outputs <> nil )
 
 			and let structIndexes = { u.index | u in seq fmd.modelStructure.outputs } in allOf
 			([
 
-				-- @OnFail("%NAME: Outputs section does not match output variables at %s",
+				-- @OnFail("%NAME: Outputs section does not match output variables at %#s",
 				--	loc2str(fmd.modelStructure.location))
 				( structIndexes = outputIndexes ),
 
-				-- @OnFail("%NAME: Output indexes out of range at %s",
+				-- @OnFail("%NAME: Output indexes out of range at %#s",
 				--	loc2str(fmd.modelStructure.location))
 				( forall i in set structIndexes & i <= len evs )
 			])
 		else
-			-- @OnFail("%NAME: Outputs should be omitted at %s",
+			-- @OnFail("%NAME: Outputs should be omitted at %#s",
 			--	loc2str(fmd.modelStructure.location))
 			( fmd.modelStructure.outputs = nil );
 ----
@@ -249,15 +249,15 @@ validDerivatives(fmd, evs) ==
 	or (fmd.coSimulation <> nil and fmd.coSimulation.providesDirectionalDerivative = true) =>
 		fmd.modelStructure.derivatives <> nil => allOf
 		([
-			-- @OnFail("%NAME: Derivative index out of range at %s", loc2str(u.location))
+			-- @OnFail("%NAME: Derivative index out of range at %#s", loc2str(u.location))
 			( u.index <= len evs )
 
 			and let sv = evs(u.index) in allOf
 			([
-				-- @OnFail("%NAME: SV not a state derivative at %s", loc2str(u.location))
+				-- @OnFail("%NAME: SV not a state derivative at %#s", loc2str(u.location))
 				( isStateDerivative(sv) ),
 
-				-- @OnFail("%NAME: Derivative must be continuous at %s", loc2str(u.location))
+				-- @OnFail("%NAME: Derivative must be continuous at %#s", loc2str(u.location))
 				( u.dependencies <> nil => sv.variability = <continuous> )
 			])
 

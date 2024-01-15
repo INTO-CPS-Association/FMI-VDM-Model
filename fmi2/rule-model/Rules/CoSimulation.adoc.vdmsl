@@ -7,7 +7,17 @@ functions
 -- @DocLink("<FMI2_STANDARD>#_header_files_and_naming_of_functions")
 validCSModelIdentifier: CoSimulation +> bool
 validCSModelIdentifier(ecs) ==
-	-- @OnFail("%NAME: %s not valid C variable name at %s",
+	-- @OnFail("%NAME: %s not valid C variable name at %#s",
 	-- ecs.modelIdentifier, loc2str(ecs.location))
 	( validIdentifier(ecs.modelIdentifier) );
+----
+----
+
+-- @DocLink("<FMI2_STANDARD>#_header_files_and_naming_of_functions")
+validCSSourceFiles: CoSimulation +> bool
+validCSSourceFiles(ecs) ==
+	-- @OnFail("%NAME: CoSimulation source file names are not unique: %s",
+	-- { ecs.sourceFiles(a)  | a, b in set inds ecs.sourceFiles &
+	--		a <> b and ecs.sourceFiles(a) = ecs.sourceFiles(b) } )
+	( card { file | file in seq ecs.sourceFiles } = len ecs.sourceFiles );
 ----

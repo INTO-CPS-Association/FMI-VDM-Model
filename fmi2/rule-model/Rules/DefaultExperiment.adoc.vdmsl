@@ -7,7 +7,7 @@ functions
 -- @DocLink("<FMI2_STANDARD>#_definition_of_a_default_experiment_defaultexperiment")
 validTolerance: DefaultExperiment +> bool
 validTolerance(de) ==
-	-- @OnFail("%NAME: tolerance must be >= 0 at %s", loc2str(de.location))
+	-- @OnFail("%NAME: tolerance must be >= 0 at %#s", loc2str(de.location))
 	( de.tolerance <> nil => de.tolerance >= 0 );
 ----
 ----
@@ -15,7 +15,7 @@ validTolerance(de) ==
 -- @DocLink("<FMI2_STANDARD>#_definition_of_a_default_experiment_defaultexperiment")
 validStartStopTime: DefaultExperiment +> bool
 validStartStopTime(e) ==
-	-- @OnFail("%NAME: stop time must be later than start time at %s", loc2str(e.location))
+	-- @OnFail("%NAME: stop time must be later than start time at %#s", loc2str(e.location))
 	( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime );
 ----
 ----
@@ -23,7 +23,7 @@ validStartStopTime(e) ==
 -- @DocLink("<FMI2_STANDARD>#_definition_of_a_default_experiment_defaultexperiment")
 validStepSize: DefaultExperiment +> bool
 validStepSize(e) ==
-	-- @OnFail("%NAME: stepSize must be less than start-stop interval at %s", loc2str(e.location))
+	-- @OnFail("%NAME: stepSize must be less than start-stop interval at %#s", loc2str(e.location))
 	( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
 		e.stopTime - e.startTime > e.stepSize );
 ----

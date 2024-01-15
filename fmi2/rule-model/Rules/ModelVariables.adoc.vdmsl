@@ -92,7 +92,7 @@ validModelVariables(svs) == allOf
 	( card { sv.name | sv in seq svs } = len svs ),
 
 	[
-		-- @OnFail("%NAME: Variable %s invalid at %s", sv.name, loc2str(sv.location))
+		-- @OnFail("%NAME: Variable %s invalid at %#s", sv.name, loc2str(sv.location))
 		( validVariableAttributes(sv) )
 
 		| sv in seq svs
@@ -111,7 +111,7 @@ validVariableAttributes(sv) ==
 	in
 	allOf
 	([
-		/* @OnFail("%NAME: Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %s",
+		/* @OnFail("%NAME: Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %#s",
 			sv.name, eCausality, eVariability, eInitial, variable.start, loc2str(sv.location)) */
 		(
 			cases eCausality:
@@ -130,7 +130,7 @@ validVariableAttributes(sv) ==
 					eVariability = <continuous>
 					and eInitial = nil		-- (D)
 					and variable.start = nil
-					-- @OnFail("%NAME: Independent variable must be Real at %s", loc2str(sv.location))
+					-- @OnFail("%NAME: Independent variable must be Real at %#s", loc2str(sv.location))
 					and ( is_Real(variable) ),
 
 				<output> ->
@@ -163,7 +163,7 @@ validVariableAttributes(sv) ==
 			end
 		),
 
-		/* @OnFail("%NAME: Variable %s variability/causality %s/%s invalid at %s",
+		/* @OnFail("%NAME: Variable %s variability/causality %s/%s invalid at %#s",
 			sv.name, eVariability, eCausality, loc2str(sv.location)) */
 		(
 			cases eVariability:
@@ -178,18 +178,18 @@ validVariableAttributes(sv) ==
 
 				<continuous> ->
 					eCausality in set {<input>, <output>, <local>, <independent>}
-					-- @OnFail("%NAME: Continuous variable must be Real at %s", loc2str(sv.location))
+					-- @OnFail("%NAME: Continuous variable must be Real at %#s", loc2str(sv.location))
 					and (is_Real(variable))
 			end
 		),
 
-		/* @OnFail("%NAME: Variable %s initial/causality %s/%s invalid at %s",
+		/* @OnFail("%NAME: Variable %s initial/causality %s/%s invalid at %#s",
 			sv.name, sv.initial, eCausality, loc2str(sv.location)) */
 		(
 			sv.initial <> nil => eCausality <> <independent>
 		),
 
-		/* @OnFail("%NAME: Variable %s initial/variability/start %s/%s/%s invalid at %s",
+		/* @OnFail("%NAME: Variable %s initial/variability/start %s/%s/%s invalid at %#s",
 			sv.name, eInitial, eVariability, variable.start, loc2str(sv.location)) */
 		(
 			cases eInitial:

@@ -44,7 +44,7 @@ validTypeDisplayUnit(tdef) ==
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 validEnumerationTypeBijection: EnumerationType +> bool
 validEnumerationTypeBijection(tdef) ==
-	-- @OnFail("%NAME: Enumeration item items do not form a bijection at %s",
+	-- @OnFail("%NAME: Enumeration item items do not form a bijection at %#s",
 	-- loc2str(tdef.location))
 	(
 		card { i.name | i in seq tdef.item } = len tdef.item
