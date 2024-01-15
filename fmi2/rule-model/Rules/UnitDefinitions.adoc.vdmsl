@@ -4,8 +4,8 @@
 functions
 ----
 
--- @DocLink("<FMI3_STANDARD>#_physical_units",
---			"<FMI3_STANDARD>#uniqueNameAttribute")
+-- @DocLink("<FMI2_STANDARD>#_physical_units",
+--			"<FMI2_STANDARD>#uniqueNameAttribute")
 validUnitNames: UnitDefinitions +> bool
 validUnitNames(units) ==
 	-- @OnFail("%NAME: Unit names must be unique")
@@ -14,8 +14,8 @@ validUnitNames(units) ==
 ----
 ----
 
--- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit",
---			"<FMI3_STANDARD>#uniqueNameAttribute")
+-- @DocLink("<FMI2_STANDARD>#figure-schema-DisplayUnit",
+--			"<FMI2_STANDARD>#uniqueNameAttribute")
 validDisplayUnitNames: Unit +> bool
 validDisplayUnitNames(unit) ==
 	unit.displayUnit <> nil =>

@@ -4,7 +4,7 @@
 functions
 ----
 
--- @DocLink("<FMI3_STANDARD>#table-SourceFileSet-details")
+-- @DocLink("<FMI2_STANDARD>#table-SourceFileSet-details")
 validCompilerOptions: SourceFileSet +> bool
 validCompilerOptions(sfs) ==
 	-- @OnFail("%NAME: Compiler options set without compiler at %s", loc2str(sfs.location))
@@ -12,7 +12,7 @@ validCompilerOptions(sfs) ==
 ----
 ----
 
--- @DocLink("<FMI3_STANDARD>#table-SourceFile-details")
+-- @DocLink("<FMI2_STANDARD>#table-SourceFile-details")
 validSourceFileNames: SourceFileSet +> bool
 validSourceFileNames(sfs) ==
 	let files = sfs.sourceFile in
@@ -23,7 +23,7 @@ validSourceFileNames(sfs) ==
 ----
 ----
 
--- @DocLink("<FMI3_STANDARD>#table-ProcessorDefinition-details")
+-- @DocLink("<FMI2_STANDARD>#table-ProcessorDefinition-details")
 validPreprocessorDefinitionNames: SourceFileSet +> bool
 validPreprocessorDefinitionNames(sfs) ==
 	let defs = sfs.preprocessorDefinition in
@@ -35,7 +35,7 @@ validPreprocessorDefinitionNames(sfs) ==
 ----
 ----
 
--- @DocLink("<FMI3_STANDARD>#table-IncludeDirectory-details")
+-- @DocLink("<FMI2_STANDARD>#table-IncludeDirectory-details")
 validIncludeDirectoryNames: SourceFileSet +> bool
 validIncludeDirectoryNames(sfs) ==
 	let incs = sfs.includeDirectory in

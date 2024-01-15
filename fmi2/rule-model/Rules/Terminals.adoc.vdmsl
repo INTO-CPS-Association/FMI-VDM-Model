@@ -4,7 +4,7 @@
 functions
 ----
 
--- @DocLink("<FMI3_STANDARD>#_coordinatesystem")
+-- @DocLink("<FMI2_STANDARD>#_coordinatesystem")
 validCoordinateSystem: CoordinateSystem +> bool
 validCoordinateSystem(cs) == allOf
 	([
@@ -18,7 +18,7 @@ validCoordinateSystem(cs) == allOf
 ----
 ----
 
--- @DocLink("<FMI3_STANDARD>#_icon")
+-- @DocLink("<FMI2_STANDARD>#_icon")
 validIcon: Icon +> bool
 validIcon(icon) ==
 	-- @OnFail("%NAME: Icon has zero area at %s", loc2str(icon.location))
@@ -26,7 +26,7 @@ validIcon(icon) ==
 ----
 ----
 
--- @DocLink("<FMI3_STANDARD>#section-terminalvars")
+-- @DocLink("<FMI2_STANDARD>#section-terminalvars")
 validTerminalMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalMemberVariables(terminal, fmd) ==
 	let tmvs = terminal.terminalMemberVariable in
@@ -42,7 +42,7 @@ validTerminalMemberVariables(terminal, fmd) ==
 ----
 ----
 
--- @DocLink("<FMI3_STANDARD>#_terminal_stream_member_variable")
+-- @DocLink("<FMI2_STANDARD>#_terminal_stream_member_variable")
 validTerminalStreamMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalStreamMemberVariables(terminal, fmd) ==
 	let tsmvs = terminal.terminalStreamMemberVariable in
@@ -66,7 +66,7 @@ validTerminalStreamMemberVariables(terminal, fmd) ==
 ----
 ----
 
--- @DocLink("<FMI3_STANDARD>#_terminal_graphical_representation")
+-- @DocLink("<FMI2_STANDARD>#_terminal_graphical_representation")
 validTerminalGraphicalRepresentation: Terminal +> bool
 validTerminalGraphicalRepresentation(terminal) ==
 	let tgr = terminal.terminalGraphicalRepresentation in
