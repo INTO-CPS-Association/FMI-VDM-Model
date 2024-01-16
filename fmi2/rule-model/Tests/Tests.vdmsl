@@ -1,6 +1,6 @@
 /*********************************************************************************
  *
- *	Copyright (c) 2017-2024, INTO-CPS Association,
+ *	Copyright (c) 2017-2022, INTO-CPS Association,
  *	c/o Professor Peter Gorm Larsen, Department of Engineering
  *	Finlandsgade 22, 8200 Aarhus N.
  *
@@ -26,59 +26,11 @@
  *	SPDX-License-Identifier: MIT
  *
  *********************************************************************************/
-types
-	TypeDefinitions' = [TypeDefinitions]
-	inv tdefs == allOf
-	([
-		invs_SimpleTypes'(tdefs),
 
-		-- Rules are defined in TypeDefinitions.adoc
-		validTypeDefinitionNames(tdefs)
-	]);
-
-	SimpleType' = SimpleType
-	inv stype == allOf
-	([
-		cases kindOf(stype.fmi2SimpleType):
-			<Real>	        -> inv_RealType'(stype.fmi2SimpleType),
-			<Integer>	    -> inv_IntegerType'(stype.fmi2SimpleType),
-			<Boolean>	    -> inv_BooleanType'(stype.fmi2SimpleType),
-			<String>	    -> inv_StringType'(stype.fmi2SimpleType),
-			<Enumeration>	-> inv_EnumerationType'(stype.fmi2SimpleType)
-		end,
-
-		validTypeDisplayUnit(stype)
-	]);
-
-	RealType' = RealType
-	inv tdef == allOf
-	([
-		-- Rules are defined in TypeDefinitions.adoc
-		validTypeMinMax(tdef)
-	]);
-
-	IntegerType' = IntegerType
-	inv tdef == allOf
-	([
-		-- Rules are defined in TypeDefinitions.adoc
-		validTypeMinMax(tdef)
-	]);
-
-	BooleanType' = BooleanType
-	inv - == allOf
-	([
-		true
-	]);
-
-	StringType' = StringType
-	inv - == allOf
-	([
-		true
-	]);
-
-	EnumerationType' = EnumerationType
-	inv tdef == allOf
-	([
-		-- Rules are defined in TypeDefinitions.adoc
-		validEnumerationTypeBijection(tdef)
-	]);
+/**
+ * The model definition for the Spring Mass Damper example in section 4.3.2 on p111
+ */
+functions
+	tests: () +> bool
+	tests() ==
+		isValidFMIConfiguration(integrateSignal, nil, nil);

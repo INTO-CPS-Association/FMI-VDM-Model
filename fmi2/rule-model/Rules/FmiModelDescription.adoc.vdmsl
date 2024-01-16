@@ -7,7 +7,7 @@ functions
 -- @DocLink("<FMI2_STANDARD>#_inquire_platform_and_version_number_of_header_files")
 validModelAttributes: FmiModelDescription +> bool
 validModelAttributes(md) ==
-	-- @OnFail(1000, "%NAME: ModelAttribute fmiVersion should be 2.0")
+	-- @OnFail("%NAME: ModelAttribute fmiVersion should be 2.0")
 	( md.fmiVersion in set { "2.0" } );
 ----
 ----
@@ -17,7 +17,7 @@ validVendorAnnotations:FmiModelDescription +> bool
 validVendorAnnotations(fmd) ==
 	let tools = fmd.vendorAnnotations in
 		tools <> nil =>
-			-- @OnFail(1250, "%NAME: VendorAnnotations tool names are not unique: %s",
+			-- @OnFail("%NAME: VendorAnnotations tool names are not unique: %s",
 			--	{ tools(a) | a, b in set inds tools & a <> b and tools(a) = tools(b) })
 			( card { name | name in seq tools } = len tools );
 ----
@@ -98,8 +98,8 @@ validVariableNames(fmd) ==
 			-- @OnFail("%NAME: Structured name %s invalid at %#s", mv.name, loc2str(mv.location))
 			( validStructuredName(mv.name) ),
 
-			-- @OnFail("%NAME: Name %s is not Float at %#s", mv.name, loc2str(mv.location))
-			( mv.name(1, ..., 4) = "der(" => is_Real(mv) )
+			-- @OnFail("%NAME: Name %s is not Real at %#s", mv.name, loc2str(mv.location))
+			( mv.name(1, ..., 4) = "der(" => is_Real(mv.fmi2ScalarVariable) )
 		]
 
 		| mv in seq fmd.modelVariables
@@ -125,7 +125,7 @@ validStart(-, evs) == allOf
 				  (type.max <> nil => type.max >= 0) ) or true	-- NOTE warning
 		]
 
-		| ev in seq evs & is_NumType(ev.fmi2ScalarVariable)
+		| ev in seq evs & is_MinMaxType(ev.fmi2ScalarVariable)
 	]);
 ----
 ----
@@ -158,7 +158,7 @@ validMinMax(fmd, evs) == allOf
 				tdef.fmi2SimpleType.max >= type.max )
 		]
 
-		| ev in seq evs & is_NumType(ev.fmi2ScalarVariable)
+		| ev in seq evs & is_MinMaxType(ev.fmi2ScalarVariable)
 	]);
 ----
 ----
@@ -181,12 +181,13 @@ validMultipleSets(fmd, evs) == allOf
 validReinits: FmiModelDescription +> bool
 validReinits(fmd) == allOf
 	([
-		is_Real(mv.fmi2ScalarVariable) and mv.fmi2ScalarVariable.reinit <> nil =>
-			-- @OnFail("%NAME: %s, Real reinit for model exchange continuous time only at %#s",
-			-- mv.name, loc2str(mv.location))
-			( isContinuousTimeState(mv.valueReference, fmd.modelVariables) and fmd.modelExchange <> nil )
+		let mv = fmd.modelVariables(i) in
+			is_Real(mv.fmi2ScalarVariable) and mv.fmi2ScalarVariable.reinit <> nil =>
+				-- @OnFail("%NAME: %s, Real reinit for model exchange continuous time only at %#s",
+				-- mv.name, loc2str(mv.location))
+				( isContinuousTimeState(i, fmd.modelVariables) and fmd.modelExchange <> nil )
 
-		| mv in seq fmd.modelVariables
+		| i in set inds fmd.modelVariables
 	]);
 ----
 ----

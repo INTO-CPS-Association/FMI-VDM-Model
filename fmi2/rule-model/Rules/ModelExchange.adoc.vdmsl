@@ -15,8 +15,9 @@ validMEModelIdentifier(me) ==
 -- @DocLink("<FMI2_STANDARD>#_header_files_and_naming_of_functions")
 validMESourceFiles: ModelExchange +> bool
 validMESourceFiles(me) ==
-	-- @OnFail("%NAME: ModelExchange source file names are not unique: %s",
-	-- { me.sourceFiles(a)  | a, b in set inds me.sourceFiles &
-	--		a <> b and me.sourceFiles(a) = me.sourceFiles(b) } )
-	( card { file | file in seq me.sourceFiles } = len me.sourceFiles );
+	me.sourceFiles <> nil =>
+		-- @OnFail("%NAME: ModelExchange source file names are not unique: %s",
+		-- { me.sourceFiles(a)  | a, b in set inds me.sourceFiles &
+		--		a <> b and me.sourceFiles(a) = me.sourceFiles(b) } )
+		( card { file | file in seq me.sourceFiles } = len me.sourceFiles );
 ----

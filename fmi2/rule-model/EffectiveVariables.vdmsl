@@ -183,8 +183,8 @@ functions
 							mv.location,
 							decltype.name,
 							override[NormalizedString](var.quantity, type.quantity, nil),
-							override[real](var.min, type.min, kmin),
-							override[real](var.max, type.max, kmax),
+							override[real](var.min, nil, kmin),
+							override[real](var.max, nil, kmax),
 							var.start
 						),
 
@@ -340,14 +340,10 @@ functions
 		else <local>;
 
 	effectiveVariability: [Variability] * Kind +> Variability
-	effectiveVariability(variability, kind) ==
+	effectiveVariability(variability, -) ==
 		if variability <> nil
 		then variability
-		else
-			cases kind:
-				<Real> -> <continuous>,
-				others -> <discrete>
-			end;
+		else <continuous>;	-- Or discrete for IntegerKinds?
 
 	effectiveInitial: [Causality] * [Variability] * [Initial] * Kind +> [Initial]
 	effectiveInitial(causality, variability, initial, kind) ==

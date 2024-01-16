@@ -15,7 +15,7 @@ validTypeDefinitionNames(tdefs) ==
 ----
 
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
-validTypeMinMax: NumType +> bool
+validTypeMinMax: MinMaxType +> bool
 validTypeMinMax(type) ==
 	let mk_(kmin, kmax) = minMaxOfKind(kindOf(type)) in allOf
 	([

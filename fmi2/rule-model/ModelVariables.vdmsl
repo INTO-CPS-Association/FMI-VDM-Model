@@ -32,7 +32,6 @@ types
 	([
 		-- Rules are defined in ModelVariables.adoc
 		validModelVariables(mvs),
-		validValueReferences(mvs),
 		validAliasNames(mvs),
 		validIndependentVariable(mvs)
 	]);

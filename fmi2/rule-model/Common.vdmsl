@@ -30,14 +30,12 @@ types
 	/**
 	 * Kind is a convenient tag for variables and typedefs of a particular type.
 	 */
-	FloatKind = <Real>;
 	IntegerKind = <Integer> | <Enumeration>;
-	NumericKind = FloatKind | IntegerKind;	-- have min/max
+	NumericKind = <Real> | IntegerKind;
 	Kind = NumericKind | <Boolean> | <String>;
 
 types
-	Variable = Real | Integer | Boolean | String | Enumeration;
-	NumType  = RealType | IntegerType | EnumerationType;		-- Have min/max
+	MinMaxType  = RealType | IntegerType;		-- Have min/max/start
 
 	-- Value references
 	fmi2ValueReference = nat;
@@ -103,15 +101,8 @@ functions
 		elseif is_(v, Integer) or is_(v, IntegerType) then <Integer>
 		elseif is_(v, Boolean) or is_(v, BooleanType) then <Boolean>
 		elseif is_(v, String)  or is_(v, StringType)  then <String>
-		elseif is_(v, Enumeration) or is_(v, EnumerationType) then <Enumeration>
+		elseif is_(v, Enumeration) or is_(v, EnumerationType) then <Integer>	-- NOTE!!
 		else undefined;
-
-	/**
-	 * Test whether a variable or type is a floating point kind.
-	 */
-	isFloat: Variable | SimpleType +> bool
-	isFloat(v) ==
-		is_FloatKind(kindOf(v));
 
 	/**
 	 * Lookup a type by name from the list of TypeDefinitions passed.

@@ -105,6 +105,7 @@ SCRIPT=$0
 	fi
 
 	java -Xmx1g \
+		-Dvdmj.parser.merge_comments=true \
 		-Dfmureader.noschema=true \
 		-Dfmureader.xsd=schema/fmi2.xsd \
 		-Dfmureader.vdmfile="$SAVE" \

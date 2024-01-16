@@ -30,11 +30,6 @@
 /**
  * The model definition for the Spring Mass Damper example in section 4.3.2 on p111
  */
-functions
-	tests: () +> bool
-	tests() ==
-		isValidFMIConfiguration(springMassDamper, nil, nil);
-
 values
 	loc : Location = mk_Location("?", 1);	-- Dummy location
 

@@ -5,16 +5,6 @@ functions
 ----
 
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
-validValueReferences: ModelVariables +> bool
-validValueReferences(mvs) ==
-	let refs = [ mv.valueReference | mv in seq mvs ] in
-		-- @OnFail("%NAME: ModelVariable valueReferences must be unique: %s",
-		--	{ vr | vr in seq refs & len [ v2 | v2 in seq refs & vr = v2 ] > 1 })
-		( len refs = card elems refs );	
-----
-----
-
--- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 validAliasNames: ModelVariables +> bool
 validAliasNames(mvs) ==
 	let refmap = getAliasRefMap(mvs) in
@@ -92,10 +82,8 @@ validModelVariables(svs) == allOf
 	( card { sv.name | sv in seq svs } = len svs ),
 
 	[
-		-- @OnFail("%NAME: Variable %s invalid at %#s", sv.name, loc2str(sv.location))
-		( validVariableAttributes(sv) )
-
-		| sv in seq svs
+		-- Individual tests are OnFailed in this function
+		validVariableAttributes(sv) | sv in seq svs
 	]
 ]);
 ----
@@ -111,27 +99,28 @@ validVariableAttributes(sv) ==
 	in
 	allOf
 	([
-		/* @OnFail("%NAME: Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %#s",
-			sv.name, eCausality, eVariability, eInitial, variable.start, loc2str(sv.location)) */
+		-- @OnFail("%NAME: Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %#s",
+		-- sv.name, eCausality, eVariability, eInitial, sv.fmi2ScalarVariable.start, loc2str(sv.location))
 		(
+			-- Table on p46 defining causality, and p48/49 defining combinations
 			cases eCausality:
 				<parameter> ->
 					eVariability in set {<fixed>, <tunable>}
-					and eInitial = <exact>,	-- (A)
+					and eInitial = <exact>,		-- (A)
 
 				<calculatedParameter> ->
 					eVariability in set {<fixed>, <tunable>}
 					and eInitial in set {<approx>, <calculated>},	-- (B)
 
 				<input> ->
-					eVariability in set {<discrete>, <continuous>},	-- (D)
+					eVariability in set {<discrete>, <continuous>}
+					and eInitial = nil
+					and sv.fmi2ScalarVariable.start <> nil,		-- (D)
 
 				<independent> ->
 					eVariability = <continuous>
 					and eInitial = nil		-- (D)
-					and variable.start = nil
-					-- @OnFail("%NAME: Independent variable must be Real at %#s", loc2str(sv.location))
-					and ( is_Real(variable) ),
+					and sv.fmi2ScalarVariable.start = nil,
 
 				<output> ->
 					cases eVariability:
@@ -156,55 +145,65 @@ validVariableAttributes(sv) ==
 
 						<discrete>,
 						<continuous> ->
-							eInitial in set { <exact>, <approx>, <calculated> }, -- (C)
-
-						others -> false
+							eInitial in set { <exact>, <approx>, <calculated> } -- (C)
 					end
 			end
 		),
 
-		/* @OnFail("%NAME: Variable %s variability/causality %s/%s invalid at %#s",
-			sv.name, eVariability, eCausality, loc2str(sv.location)) */
+		-- @OnFail("%NAME: Independent variable must be Real at %#s", loc2str(sv.location))
 		(
+			eCausality = <independent> => is_Real(sv.fmi2ScalarVariable)
+		),
+
+		-- @OnFail("%NAME: Variable %s variability/causality %s/%s invalid at %#s",
+		-- sv.name, eVariability, eCausality, loc2str(sv.location))
+		(
+			-- Table on p46 defining variability, and p49 defining combinations
 			cases eVariability:
 				<constant> ->
 					eCausality in set {<output>, <local>},
 
 				<fixed>, <tunable> ->
-					eCausality in set {<structuralParameter>, <parameter>, <calculatedParameter>, <local>},
+					eCausality in set {<parameter>, <calculatedParameter>, <local>},
 
 				<discrete> ->
 					eCausality in set {<input>, <output>, <local>},
 
 				<continuous> ->
 					eCausality in set {<input>, <output>, <local>, <independent>}
-					-- @OnFail("%NAME: Continuous variable must be Real at %#s", loc2str(sv.location))
-					and (is_Real(variable))
 			end
 		),
 
-		/* @OnFail("%NAME: Variable %s initial/causality %s/%s invalid at %#s",
-			sv.name, sv.initial, eCausality, loc2str(sv.location)) */
+		-- @OnFail("%NAME: Continuous variable must be Real at %#s", loc2str(sv.location))
 		(
-			sv.initial <> nil => eCausality <> <independent>
+			eVariability = <continuous> => is_Real(sv.fmi2ScalarVariable)
 		),
 
-		/* @OnFail("%NAME: Variable %s initial/variability/start %s/%s/%s invalid at %#s",
-			sv.name, eInitial, eVariability, variable.start, loc2str(sv.location)) */
+		-- @OnFail("%NAME: Variable %s initial/causality %s/%s invalid at %#s",
+		-- sv.name, sv.initial, eCausality, sv.location)
 		(
+			-- Table on p47 defining initial
+			sv.initial <> nil =>
+				(eCausality not in set {<input>, <independent>})
+		),
+
+		-- @OnFail("%NAME: Variable %s initial/variability/start %s/%s/%s invalid at %#s",
+		-- sv.name, eInitial, eVariability, sv.fmi2ScalarVariable.start, loc2str(sv.location))
+		(
+			-- Table on p47 defining initial
 			cases eInitial:
 				<exact> ->
-					variable.start <> nil,
+					sv.fmi2ScalarVariable.start <> nil,
 
 				<approx> ->
-					variable.start <> nil
+					sv.fmi2ScalarVariable.start <> nil
 					and eVariability <> <constant>,
 
 				<calculated> ->
-					variable.start = nil
+					sv.fmi2ScalarVariable.start = nil
 					and eVariability <> <constant>,
 
-				nil ->		-- Note that eInitial can be nil
+				nil ->		-- Note that eInitial can be nil (undefined in table on p48)
 					true	-- Tests on eInitial above are sufficient
 			end
 		)
