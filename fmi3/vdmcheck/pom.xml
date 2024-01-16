@@ -82,7 +82,6 @@
                             <descriptors>
                                 <descriptor>src/assembly/assembly.xml</descriptor>
                             </descriptors>
-                            <finalName>FMI3-vdmcheck-${project.version}</finalName>
                         </configuration>
                     </execution>
                 </executions>
