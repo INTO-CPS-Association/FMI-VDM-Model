@@ -27,7 +27,7 @@
 # Process an FMI V3 FMU or XML file, and validate the XML structure using the VDM-SL model.
 #
 
-USAGE="Usage: VDMCheck3.sh [-h <FMI Standard base URL>] [-v <VDM outfile>] <file>.fmu | <file>.xml"
+USAGE="Usage: VDMCheck3.sh [-h <FMI Standard base URL>] [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
 
 while getopts ":h:v:x:s:" OPT
 do
@@ -55,6 +55,13 @@ fi
 if [ -z "$LINK" ]
 then
 	LINK="https://fmi-standard.org/docs/3.0/"
+fi
+
+if [ "$XML" ]
+then
+	FILE=/tmp/input$$.xml
+	echo "$XML" > $FILE
+	trap "rm $FILE" EXIT
 fi
 
 if [ -z "$FILE" ]
