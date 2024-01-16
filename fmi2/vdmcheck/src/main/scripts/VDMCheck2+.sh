@@ -27,11 +27,17 @@
 # Process an FMI V2 FMU or XML file, and validate the XML structure using the VDM-SL model.
 #
 
-USAGE="Usage: VDMCheck2.sh [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
+USAGE="Usage: VDMCheck2.sh [-h2|-h3 <FMI2/3 Standard base URL>] [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml"
 
 while getopts ":h:v:x:s:" OPT
 do
     case "$OPT" in
+    	h2)
+    		LINK2=${OPTARG}
+    		;;
+    	h3)
+    		LINK3=${OPTARG}
+    		;;
     	x)
     		XML=${OPTARG}
     		;;
@@ -50,6 +56,16 @@ shift "$((OPTIND-1))"
 if [ $# = 1 ]
 then
 	FILE=$(realpath "$1")
+fi
+
+if [ -z "$LINK2" ]
+then
+	LINK2="https://fmi-standard.org/docs/2.0/"
+fi
+
+if [ -z "$LINK3" ]
+then
+	LINK3="https://fmi-standard.org/docs/3.0/"
 fi
 
 if [ "$XML" ]
@@ -80,7 +96,7 @@ SCRIPT=$0
 	cd "$dir"
 	
 	XSD="schema/fmi2.xsd"
-	MODEL="model"
+	MODEL="model model/Rules"
 	
 	# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for msys
 	CLASSPATH_SEPARATOR=":"
@@ -93,8 +109,9 @@ SCRIPT=$0
 		-Dfmureader.xsd=schema/fmi2.xsd \
 		-Dfmureader.vdmfile="$SAVE" \
 		-cp vdmj.jar${CLASSPATH_SEPARATOR}annotations.jar${CLASSPATH_SEPARATOR}xsd2vdm.jar${CLASSPATH_SEPARATOR}fmuReader.jar com.fujitsu.vdmj.VDMJ \
-		-vdmsl -q -annotations -e "isValidFMIConfiguration2(modelDescription, buildDescription, terminalsAndIcons)" \
+		-vdmsl -q -annotations -e "isValidFMIConfiguration(modelDescription, buildDescription, terminalsAndIcons)" \
 		$MODEL "$FILE" |
+		sed -e "s+<FMI2_STANDARD>+$LINK2+;s+<FMI3_STANDARD>+$LINK3+" |
 		awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'
 )
 
