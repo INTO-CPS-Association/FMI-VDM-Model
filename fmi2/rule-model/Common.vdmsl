@@ -101,7 +101,7 @@ functions
 		elseif is_(v, Integer) or is_(v, IntegerType) then <Integer>
 		elseif is_(v, Boolean) or is_(v, BooleanType) then <Boolean>
 		elseif is_(v, String)  or is_(v, StringType)  then <String>
-		elseif is_(v, Enumeration) or is_(v, EnumerationType) then <Integer>	-- NOTE!!
+		elseif is_(v, Enumeration) or is_(v, EnumerationType) then <Enumeration>
 		else undefined;
 
 	/**

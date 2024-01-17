@@ -31,6 +31,13 @@
  * The model definition for the Spring Mass Damper example in section 4.3.2 on p111
  */
 functions
-	tests: () +> bool
+	tests: () +> seq of bool
 	tests() ==
-		isValidFMIConfiguration(integrateSignal, nil, nil);
+	[
+		-- @Printf("------------ controlledTemperature\n")
+		isValidFMIConfiguration(controlledTemperature, nil, nil),
+		-- @Printf("------------ integrateSignal\n")
+		isValidFMIConfiguration(integrateSignal, nil, nil),
+		-- @Printf("------------ springMassDamper\n")
+		isValidFMIConfiguration(springMassDamper, nil, nil)
+	];

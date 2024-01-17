@@ -60,6 +60,7 @@ types
 			-- The rules are defined in FmiModelDescription.adoc
 			validMinMax(fmd, evs),
 			validStart(fmd, evs),
+			validAliasNames(evs),
 			validMultipleSets(fmd, evs),
 			validVariableUnits(fmd, evs),
 			validOutputs(fmd, evs),
