@@ -376,8 +376,8 @@ functions
 							<constant>		-> nil,
 							<fixed>			-> nil,
 							<tunable>		-> nil,
-							<discrete>		-> <exact>,
-							<continuous>	-> <exact>
+							<discrete>		-> nil,		-- <exact> in FMI3
+							<continuous>	-> nil		-- <exact> in FMI3
 						end,
 					<output> ->
 						cases eVariability:
