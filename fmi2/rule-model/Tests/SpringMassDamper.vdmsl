@@ -31,7 +31,7 @@
  * The model definition for the Spring Mass Damper example in section 4.3.2 on p111
  */
 values
-	loc : Location = mk_Location("?", 1);	-- Dummy location
+	loc : Location = mk_Location("dummy", 1);	-- Dummy location
 
 	springMassDamper = mk_FmiModelDescription
 	(
@@ -68,13 +68,13 @@ values
 /* 1 */		mk_ScalarVariable(loc, "inertial.J", 0, nil, <parameter>, <fixed>, nil, nil,
 					mk_Real(loc, "Modelica.SIunits.Inertia", nil, nil, nil, nil, nil, nil, nil, nil, 1, nil, nil), nil),
 
-/* 2 */		mk_ScalarVariable(mk_Location("F", 2), "torque.tau", 1, nil, <input>, nil, nil, nil,
+/* 2 */		mk_ScalarVariable(loc, "torque.tau", 1, nil, <input>, nil, nil, nil,
 					mk_Real(loc, "Modelica.SIunits.Torque", nil, nil, nil, nil, nil, nil, nil, nil, 0, nil, nil), nil),
 
-/* 3 */		mk_ScalarVariable(mk_Location("F", 3), "inertial.phi", 2, nil, <output>, nil, nil, nil,
+/* 3 */		mk_ScalarVariable(loc, "inertial.phi", 2, nil, <output>, nil, nil, nil,
 					mk_Real(loc, "Modelica.SIunits.Angle", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil),
 
-/* 4 */		mk_ScalarVariable(mk_Location("F", 4), "inertial.w", 3, nil, <output>, nil, nil, nil,
+/* 4 */		mk_ScalarVariable(loc, "inertial.w", 3, nil, <output>, nil, nil, nil,
 					mk_Real(loc, "Modelica.SIunits.AngularVelocity", nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, nil), nil)
 		],
 
