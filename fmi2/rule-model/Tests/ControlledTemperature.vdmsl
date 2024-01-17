@@ -2720,20 +2720,3 @@ values
             ] 
         ) 
     );
-
-/**
- * VDM value missing
- */
-values
-    buildDescription = nil;
-
-
-
-/**
- * VDM value missing
- */
-values
-    terminalsAndIcons = nil;
-
-
-
