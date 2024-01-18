@@ -15,7 +15,7 @@ values
         nil,  -- copyright
         nil,  -- license
         nil,  -- generationTool
-        "2022-05-01T13:06:01Z",  -- generationDateAndTime
+        "+++2022-05-01T13:06:01Z",  -- generationDateAndTime
         nil,  -- variableNamingConvention
         nil,  -- modelExchange
         mk_CoSimulation

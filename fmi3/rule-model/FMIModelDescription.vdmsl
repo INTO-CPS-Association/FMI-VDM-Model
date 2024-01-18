@@ -46,28 +46,28 @@ types
 
 		-- If these rules use variables at all, they are the "raw" values
 		-- The rules are defined in FmiModelDescription.adoc
-		rule("validGenerationDateAndTime", validGenerationDateAndTime(fmd)),
-		rule("validModelTypes",	validModelTypes(fmd)),
-		rule("validTypeUnits", validTypeUnits(fmd)),
-		rule("validVariableTypes", validVariableTypes(fmd)),
-		rule("validVariableNames", validVariableNames(fmd)),
-		rule("validTypeNames", validTypeNames(fmd)),
-		rule("validReinits", validReinits(fmd)),
-		rule("validCSEventMode", validCSEventMode(fmd)),
+		validGenerationDateAndTime(fmd),
+		validModelTypes(fmd),
+		validTypeUnits(fmd),
+		validVariableTypes(fmd),
+		validVariableNames(fmd),
+		validTypeNames(fmd),
+		validReinits(fmd),
+		validCSEventMode(fmd),
 		
 		let evs = effectiveVariables(fmd.modelVariables, fmd.typeDefinitions) in
 		[
 			-- If these rules use variables, they use the effective values
 			-- The rules are defined in FmiModelDescription.adoc
-			rule("validMinMax", validMinMax(fmd, evs)),
-			rule("validStart", validStart(fmd, evs)),
-			rule("validMultipleSets", validMultipleSets(fmd, evs)),
-			rule("validClockPriorities", validClockPriorities(fmd, evs)),
-			rule("validOutput", validOutput(fmd, evs)),
-			rule("validStateDerivatives", validStateDerivatives(fmd, evs)),
-			rule("validInitialUnknowns", validInitialUnknowns(fmd, evs)),
-			rule("validEventIndicators", validEventIndicators(fmd, evs)),
-			rule("validOutputReferences", validOutputReferences(fmd, evs)),
-			rule("validUnknownDependencies", validUnknownDependencies(fmd, evs))
+			validMinMax(fmd, evs),
+			validStart(fmd, evs),
+			validMultipleSets(fmd, evs),
+			validClockPriorities(fmd, evs),
+			validOutput(fmd, evs),
+			validStateDerivatives(fmd, evs),
+			validInitialUnknowns(fmd, evs),
+			validEventIndicators(fmd, evs),
+			validOutputReferences(fmd, evs),
+			validUnknownDependencies(fmd, evs)
 		]
 	]);

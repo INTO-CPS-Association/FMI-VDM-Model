@@ -33,13 +33,13 @@ types
 		invs_fmi3Variable'(mvs),
 
 		-- Rules are defined in ModelVariables.adoc
-		rule("validModelVariables", validModelVariables(mvs)),
-		rule("validValueReferences", validValueReferences(mvs)),
-		rule("validAliasNames", validAliasNames(mvs)),
-		rule("validIndependentVariable", validIndependentVariable(mvs)),
-		rule("validPreviousVariables", validPreviousVariables(mvs)),
-		rule("validVariableDimensions", validVariableDimensions(mvs)),
-		rule("validAliasDisplayUnits", validAliasDisplayUnits(mvs))
+		validModelVariables(mvs),
+		validValueReferences(mvs),
+		validAliasNames(mvs),
+		validIndependentVariable(mvs),
+		validPreviousVariables(mvs),
+		validVariableDimensions(mvs),
+		validAliasDisplayUnits(mvs)
 	]);
 
 	fmi3Variable' = fmi3Variable	-- The union of all kinds
@@ -179,5 +179,5 @@ types
 	inv d == allOf
 	([
 		-- Rules are defined in ModelVariables.adoc
-		rule("validStartAndVRef", validStartAndVRef(d))
+		validStartAndVRef(d)
 	]);

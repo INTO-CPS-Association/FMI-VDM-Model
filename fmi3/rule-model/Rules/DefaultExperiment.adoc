@@ -11,9 +11,11 @@ endif::[]
 [[validTolerance]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
 validTolerance: DefaultExperiment +> bool
 validTolerance(de) ==
-	-- @OnFail("%NAME: tolerance must be >= 0 at %s", loc2str(de.location))
+	-- @OnFail("%NAME: tolerance must be >= 0 at %#s", loc2str(de.location))
 	( de.tolerance <> nil => de.tolerance >= 0 );
 ----
 // {vdm}
@@ -23,9 +25,11 @@ See <<DefaultExperiment>>.
 [[validStartStopTime]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
 validStartStopTime: DefaultExperiment +> bool
 validStartStopTime(e) ==
-	-- @OnFail("%NAME: stop time must be later than start time at %s", loc2str(e.location))
+	-- @OnFail("%NAME: stop time must be later than start time at %#s", loc2str(e.location))
 	( e.startTime <> nil and e.stopTime <> nil => e.stopTime > e.startTime );
 ----
 // {vdm}
@@ -35,35 +39,14 @@ See <<DefaultExperiment>>.
 [[validStepSize]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
 validStepSize: DefaultExperiment +> bool
 validStepSize(e) ==
-	-- @OnFail("%NAME: stepSize must be less than start-stop interval at %s", loc2str(e.location))
+	-- @OnFail("%NAME: stepSize must be less than start-stop interval at %#s", loc2str(e.location))
 	( e.startTime <> nil and e.stopTime <> nil and e.stepSize <> nil =>
 		e.stopTime - e.startTime > e.stepSize );
 ----
 // {vdm}
 See <<DefaultExperiment>>.
 
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	DefaultExperiment_refs : ReferenceMap =
-	{
-		"validTolerance" |->
-		[
-			"<FMI3_STANDARD>#DefaultExperiment"
-		],
-
-		"validStartStopTime" |->
-		[
-			"<FMI3_STANDARD>#DefaultExperiment"
-		],
-
-		"validStepSize" |->
-		[
-			"<FMI3_STANDARD>#DefaultExperiment"
-		]
-	};
-// {vdm}
-endif::[]

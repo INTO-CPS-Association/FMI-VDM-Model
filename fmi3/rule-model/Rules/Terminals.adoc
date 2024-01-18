@@ -11,13 +11,15 @@ endif::[]
 [[validCoordinateSystem]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#_coordinatesystem")
 validCoordinateSystem: CoordinateSystem +> bool
 validCoordinateSystem(cs) == allOf
 	([
-		-- @OnFail("%NAME: Coordinate system has zero area at %s", loc2str(cs.location))
+		-- @OnFail("%NAME: Coordinate system has zero area at %#s", loc2str(cs.location))
 		( cs.x1 <> cs.x2 and cs.y1 <> cs.y2 ),
 
-		-- @OnFail("%NAME: Coordinate system is not bottom left to top right at %s",
+		-- @OnFail("%NAME: Coordinate system is not bottom left to top right at %#s",
 		-- loc2str(cs.location))
 		( isBLtoTR(cs.x1, cs.y1, cs.x2, cs.y2) )
 	]);
@@ -29,9 +31,11 @@ See <<_coordinatesystem>>.
 [[validIcon]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#_icon")
 validIcon: Icon +> bool
 validIcon(icon) ==
-	-- @OnFail("%NAME: Icon has zero area at %s", loc2str(icon.location))
+	-- @OnFail("%NAME: Icon has zero area at %#s", loc2str(icon.location))
 	( icon.x1 <> icon.x2 and icon.y1 <> icon.y2 );
 ----
 // {vdm}
@@ -41,13 +45,15 @@ See <<_icon>>.
 [[validTerminalMemberVariables]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#section-terminalvars")
 validTerminalMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalMemberVariables(terminal, fmd) ==
 	let tmvs = terminal.terminalMemberVariable in
 	tmvs <> nil and fmd <> nil => allOf
 	([
 		let var = lookupVariableName(tmv.variableName, fmd.modelVariables) in
-			-- @OnFail("%NAME: Terminal member variable %s not declared at %s",
+			-- @OnFail("%NAME: Terminal member variable %s not declared at %#s",
 			-- tmv.variableName, loc2str(tmv.location))
 			( var <> nil )
 
@@ -61,6 +67,8 @@ See <<section-terminalvars>>.
 [[validTerminalStreamMemberVariables]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#_terminal_stream_member_variable")
 validTerminalStreamMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalStreamMemberVariables(terminal, fmd) ==
 	let tsmvs = terminal.terminalStreamMemberVariable in
@@ -70,11 +78,11 @@ validTerminalStreamMemberVariables(terminal, fmd) ==
 			ovar = lookupVariableName(tsmv.outStreamVariableName, fmd.modelVariables)
 		in
 		[
-			-- @OnFail("%NAME: Terminal inStreamVariableName %s not declared at %s",
+			-- @OnFail("%NAME: Terminal inStreamVariableName %s not declared at %#s",
 			-- tsmv.inStreamVariableName, loc2str(tsmv.location))
 			( ivar <> nil ),
 
-			-- @OnFail("%NAME: Terminal outStreamVariableName %s not declared at %s",
+			-- @OnFail("%NAME: Terminal outStreamVariableName %s not declared at %#s",
 			-- tsmv.outStreamVariableName, loc2str(tsmv.location))
 			( ovar <> nil )
 		]
@@ -89,20 +97,22 @@ See <<_terminal_stream_member_variable>>.
 [[validTerminalGraphicalRepresentation]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#_terminal_graphical_representation")
 validTerminalGraphicalRepresentation: Terminal +> bool
 validTerminalGraphicalRepresentation(terminal) ==
 	let tgr = terminal.terminalGraphicalRepresentation in
 	tgr <> nil => allOf
 	([
-		-- @OnFail("%NAME: Terminal area is zero at %s", loc2str(tgr.location))
+		-- @OnFail("%NAME: Terminal area is zero at %#s", loc2str(tgr.location))
 		( tgr.x1 <> tgr.x2 and tgr.y1 <> tgr.y2 ),
 
-		-- @OnFail("%NAME: Colour attributes must be octets (<=255) at %s",
+		-- @OnFail("%NAME: Colour attributes must be octets (<=255) at %#s",
 		-- loc2str(tgr.location))
 		( tgr.defaultConnectionColor <> nil =>
 			forall c in seq tgr.defaultConnectionColor & c <= 255 ),
 
-		-- @OnFail("%NAME: defaultConnectionStrokeSize must be >0 at %s",
+		-- @OnFail("%NAME: defaultConnectionStrokeSize must be >0 at %#s",
 		-- loc2str(tgr.location))
 		( tgr.defaultConnectionStrokeSize <> nil =>
 			tgr.defaultConnectionStrokeSize > 0 )
@@ -111,39 +121,6 @@ validTerminalGraphicalRepresentation(terminal) ==
 // {vdm}
 See <<_terminal_graphical_representation>>.
 
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	Terminals_refs : ReferenceMap =
-	{
-		"validCoordinateSystem" |->
-		[
-			"<FMI3_STANDARD>#_coordinatesystem"
-		],
-
-		"validIcon" |->
-		[
-			"<FMI3_STANDARD>#_icon"
-		],
-
-		"validTerminalMemberVariables" |->
-		[
-			"<FMI3_STANDARD>#section-terminalvars"
-		],
-
-		"validTerminalGraphicalRepresentation" |->
-		[
-			"<FMI3_STANDARD>#_terminal_graphical_representation"
-		],
-
-		"validTerminalStreamMemberVariables" |->
-		[
-			"<FMI3_STANDARD>#_terminal_stream_member_variable"
-		]
-	};
-// {vdm}
-endif::[]
 
 
 

@@ -51,10 +51,10 @@ types
 		inv_Annotations'(sfs.annotations),
 
 		-- Rules are defined in BuildConfiguration.adoc
-		rule("validCompilerOptions", validCompilerOptions(sfs)),
-		rule("validSourceFileNames", validSourceFileNames(sfs)),
-		rule("validPreprocessorDefinitionNames", validPreprocessorDefinitionNames(sfs)),
-		rule("validIncludeDirectoryNames", validIncludeDirectoryNames(sfs))
+		validCompilerOptions(sfs),
+		validSourceFileNames(sfs),
+		validPreprocessorDefinitionNames(sfs),
+		validIncludeDirectoryNames(sfs)
 	]);
 
 	SourceFile' = SourceFile

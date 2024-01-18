@@ -11,6 +11,9 @@ endif::[]
 [[validUnitNames]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#_physical_units")
+-- @DocLink("<FMI3_STANDARD>#uniqueNameAttribute")
 validUnitNames: UnitDefinitions +> bool
 validUnitNames(units) ==
 	-- @OnFail("%NAME: Unit names must be unique")
@@ -25,10 +28,13 @@ validUnitNames(units) ==
 [[validDisplayUnitNames]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit")
+-- @DocLink("<FMI3_STANDARD>#uniqueNameAttribute")
 validDisplayUnitNames: Unit +> bool
 validDisplayUnitNames(unit) ==
 	unit.displayUnit <> nil =>
-		-- @OnFail("%NAME: DisplayUnit names must be unique within %s at %s",
+		-- @OnFail("%NAME: DisplayUnit names must be unique within %s at %#s",
 		-- unit.name, loc2str(unit.location))
 		( let names = [ u.name | u in seq unit.displayUnit ] in
 			len names = card elems names );
@@ -41,41 +47,12 @@ validDisplayUnitNames(unit) ==
 [[validInverseAndOffset]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit")
 validInverseAndOffset: DisplayUnit +> bool
 validInverseAndOffset(dunit) ==
-	-- @OnFail("%NAME: inverse is only allowed if offset = 0 at %s", loc2str(dunit.location))
+	-- @OnFail("%NAME: inverse is only allowed if offset = 0 at %#s", loc2str(dunit.location))
 	( dunit.$inverse = true => dunit.offset = 0 )
 ----
 // {vdm}
 See <<figure-schema-DisplayUnit>>.
-
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	UnitDefinitions_refs : ReferenceMap =
-	{
-		"validUnitNames" |->
-		[
-			"<FMI3_STANDARD>#_physical_units",
-			"<FMI3_STANDARD>#uniqueNameAttribute"
-		],
-
-		"validDisplayUnitNames" |->
-		[
-			"<FMI3_STANDARD>#figure-schema-DisplayUnit",
-			"<FMI3_STANDARD>#uniqueNameAttribute"
-		],
-
-		"validInverseAndOffset" |->
-		[
-			"<FMI3_STANDARD>#figure-schema-DisplayUnit"
-		]
-	};
-// {vdm}
-endif::[]
-
-
-
-
-

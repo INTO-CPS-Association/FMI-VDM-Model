@@ -11,9 +11,12 @@ endif::[]
 [[validCSModelIdentifier]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#modelIdentifier")
+-- @DocLink("<FMI3_STANDARD>#header-files-and-naming-of-functions")
 validCSModelIdentifier: CoSimulation +> bool
 validCSModelIdentifier(ecs) ==
-	-- @OnFail("%NAME: %s not valid C variable name at %s",
+	-- @OnFail("%NAME: %s not valid C variable name at %#s",
 	-- ecs.modelIdentifier, loc2str(ecs.location))
 	( validIdentifier(ecs.modelIdentifier) );
 ----
@@ -25,31 +28,13 @@ validCSModelIdentifier(ecs) ==
 [[validCSIntermediateUpdate]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-CoSimulation-details")
 validCSIntermediateUpdate: CoSimulation +> bool
 validCSIntermediateUpdate(ecs) ==
-	-- @OnFail("%NAME: canReturnEarlyAfterIntermediateUpdate requires providesIntermediateUpdate at %s",
+	-- @OnFail("%NAME: canReturnEarlyAfterIntermediateUpdate requires providesIntermediateUpdate at %#s",
 	-- loc2str(ecs.location))
 	( ecs.canReturnEarlyAfterIntermediateUpdate = true => ecs.providesIntermediateUpdate );
 ----
 // {vdm}
 - See <<table-CoSimulation-details>>.
-
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	CoSimulation_refs : ReferenceMap =
-	{
-		"validCSModelIdentifier" |->
-		[
-			"<FMI3_STANDARD>#modelIdentifier",
-			"<FMI3_STANDARD>#header-files-and-naming-of-functions"
-		],
-
-		"validCSIntermediateUpdate" |->
-		[
-			"<FMI3_STANDARD>#table-CoSimulation-details"
-		]
-	};
-// {vdm}
-endif::[]

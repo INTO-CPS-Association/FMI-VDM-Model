@@ -33,7 +33,7 @@ types
 		invs_fmi3TypeDefinition'(tdefs),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeDefinitionNames", validTypeDefinitionNames(tdefs))
+		validTypeDefinitionNames(tdefs)
 	]);
 
 	fmi3TypeDefinition' = fmi3TypeDefinition	-- The union of all types
@@ -67,8 +67,8 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		validTypeMinMax(tdef),
+		validTypeDisplayUnit(tdef)
 	]);
 
 	Float32Type' = Float32Type
@@ -77,8 +77,8 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef)),
-		rule("validTypeDisplayUnit", validTypeDisplayUnit(tdef))
+		validTypeMinMax(tdef),
+		validTypeDisplayUnit(tdef)
 	]);
 
 	Int64Type' = Int64Type
@@ -87,7 +87,7 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef))
+		validTypeMinMax(tdef)
 	]);
 
 	Int32Type' = Int32Type
@@ -96,7 +96,7 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef))
+		validTypeMinMax(tdef)
 	]);
 
 	Int16Type' = Int16Type
@@ -105,7 +105,7 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef))
+		validTypeMinMax(tdef)
 	]);
 
 	Int8Type' = Int8Type
@@ -114,7 +114,7 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef))
+		validTypeMinMax(tdef)
 	]);
 
 	UInt64Type' = UInt64Type
@@ -123,7 +123,7 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef))
+		validTypeMinMax(tdef)
 	]);
 
 	UInt32Type' = UInt32Type
@@ -132,7 +132,7 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef))
+		validTypeMinMax(tdef)
 	]);
 
 	UInt16Type' = UInt16Type
@@ -141,7 +141,7 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef))
+		validTypeMinMax(tdef)
 	]);
 
 	UInt8Type' = UInt8Type
@@ -150,7 +150,7 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef))
+		validTypeMinMax(tdef)
 	]);
 
 	BooleanType' = BooleanType
@@ -177,8 +177,8 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validTypeMinMax", validTypeMinMax(tdef)),
-		rule("validEnumerationTypeBijection", validEnumerationTypeBijection(tdef))
+		validTypeMinMax(tdef),
+		validEnumerationTypeBijection(tdef)
 	]);
 
 	ClockType' = ClockType
@@ -187,5 +187,5 @@ types
 		inv_Annotations'(tdef.annotations),
 
 		-- Rules are defined in TypeDefinitions.adoc
-		rule("validClockType", validClockType(tdef))
+		validClockType(tdef)
 	]);

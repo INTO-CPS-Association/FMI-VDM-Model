@@ -33,7 +33,7 @@ types
 		inv_Annotations'(dexp.annotations),
 
 		-- The rules are defined in DefaultExperiment.adoc
-		rule("validTolerance", validTolerance(dexp)),
-		rule("validStartStopTime", validStartStopTime(dexp)),
-		rule("validStepSize", validStepSize(dexp))
+		validTolerance(dexp),
+		validStartStopTime(dexp),
+		validStepSize(dexp)
 	]);

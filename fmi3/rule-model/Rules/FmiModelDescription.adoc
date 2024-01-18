@@ -14,6 +14,8 @@ Note that  ModelVariables are passed to some of the rules in this section, in ad
 [[validModelTypes]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
 validModelTypes: FmiModelDescription +> bool
 validModelTypes(fmd) ==
 	-- @OnFail("%NAME: At least one of ModelExchange, CoSimulation or ScheduledExecution must be set")
@@ -26,9 +28,11 @@ See <<table-schema-fmiModelDescription>>.
 [[validGenerationDateAndTime]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription-attributes")
 validGenerationDateAndTime: FmiModelDescription +> bool
 validGenerationDateAndTime(fmd) ==
-	-- @OnFail("%NAME: generationDateAndTime should be YYYY-MM-DDThh:mm:ssZ at %s",
+	-- @OnFail("%NAME: generationDateAndTime should be YYYY-MM-DDThh:mm:ssZ at %#s",
 	-- loc2str(fmd.location))
 	( fmd.generationDateAndTime <> nil => iso8601(fmd.generationDateAndTime) );
 ----
@@ -39,12 +43,14 @@ See <<table-schema-fmiModelDescription-attributes>>.
 [[validTypeUnits]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeUnits: FmiModelDescription +> bool
 validTypeUnits(fmd) ==
 	fmd.typeDefinitions <> nil => allOf
 	([
 		tdef.unit <> nil =>
-			-- @OnFail("%NAME: Type %s, unit %s not defined in UnitDefinitions at %s",
+			-- @OnFail("%NAME: Type %s, unit %s not defined in UnitDefinitions at %#s",
 			-- tdef.name, tdef.unit, loc2str(tdef.location))
 			( fmd.unitDefinitions <> nil
 				and exists u in seq fmd.unitDefinitions & u.name = tdef.unit )
@@ -59,16 +65,19 @@ See <<table-type-details>>.
 [[validVariableTypes]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
+-- @DocLink("<FMI3_STANDARD>#definition-of-types")
 validVariableTypes: FmiModelDescription +> bool
 validVariableTypes(fmd) == allOf
 	([
 		mv.declaredType <> nil =>
 		let tdef = lookupType(mv.declaredType, fmd.typeDefinitions) in
-			-- @OnFail("%NAME: %s type %s not found at %s",
+			-- @OnFail("%NAME: %s type %s not found at %#s",
 			-- mv.name, mv.declaredType, loc2str(mv.location))
 			( tdef <> nil )
 
-			-- @OnFail("%NAME: %s type %s mismatch at %s",
+			-- @OnFail("%NAME: %s type %s mismatch at %#s",
 			-- mv.name, mv.declaredType, loc2str(mv.location))
 			and ( kindOf(tdef) = kindOf(mv) )
 
@@ -83,10 +92,12 @@ validVariableTypes(fmd) == allOf
 [[validTypeNames]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeNames: FmiModelDescription +> bool
 validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
 	([
-		-- @OnFail("%NAME: TypeDefinition and Variable names overlap: %s at %s",
+		-- @OnFail("%NAME: TypeDefinition and Variable names overlap: %s at %#s",
 		-- tdef.name, loc2str(tdef.location))
 		( not exists mv in seq fmd.modelVariables & mv.name = tdef.name )
 
@@ -100,15 +111,17 @@ See <<table-type-details>>.
 [[validVariableNames]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validVariableNames: FmiModelDescription +> bool
 validVariableNames(fmd) ==
 	fmd.variableNamingConvention = <structured> => allOf(conc
 	[
 		[
-			-- @OnFail("%NAME: Structured name %s invalid at %s", mv.name, loc2str(mv.location))
+			-- @OnFail("%NAME: Structured name %s invalid at %#s", mv.name, loc2str(mv.location))
 			( validStructuredName(mv.name) ),
 
-			-- @OnFail("%NAME: Name %s is not Float at %s", mv.name, loc2str(mv.location))
+			-- @OnFail("%NAME: Name %s is not Float at %#s", mv.name, loc2str(mv.location))
 			( mv.name(1, ..., 4) = "der(" => isFloat(mv) )
 		]
 
@@ -122,17 +135,19 @@ See <<ModelVariables>>.
 [[validStart]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-type-attributes")
 validStart: FmiModelDescription * ModelVariables +> bool
 validStart(-, evs) == allOf
 	([
 		[
 			ev.start <> nil =>
-				-- @OnFail("%NAME: all start values must be between %s and %s at %s",
+				-- @OnFail("%NAME: all start values must be between %s and %s at %#s",
 				-- ev.min, ev.max, ev.location)
 				( forall sv in seq ev.start & ev.min <= sv and ev.max >= sv ),
 
 			ev.start = nil and ev.initial <> <calculated> =>
-				-- @OnFail("%NAME: Warning: implicit start of 0 not within min/max at %s",
+				-- @OnFail("%NAME: Warning: implicit start of 0 not within min/max at %#s",
 				-- ev.location)
 				( (ev.min <> nil => ev.min <= 0) and
 				  (ev.max <> nil => ev.max >= 0) ) or true	-- NOTE warning
@@ -148,6 +163,8 @@ See <<table-type-attributes>>.
 [[validMinMax]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-type-attributes")
 validMinMax: FmiModelDescription * ModelVariables +> bool
 validMinMax(-, evs) == allOf
 	([
@@ -173,11 +190,13 @@ See <<table-type-attributes>>.
 [[validMultipleSets]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-variableBase-attributes")
 validMultipleSets: FmiModelDescription * ModelVariables +> bool
 validMultipleSets(fmd, evs) == allOf
 	([
 		ev.canHandleMultipleSetPerTimeInstant = true =>
-			-- @OnFail("%NAME: Variable %s, canHandleMultipleSetPerTimeInstant invalid at %s",
+			-- @OnFail("%NAME: Variable %s, canHandleMultipleSetPerTimeInstant invalid at %#s",
 			-- ev.name, loc2str(ev.location))
 			( fmd.modelExchange <> nil and ev.causality = <input> )
 
@@ -191,11 +210,13 @@ See <<table-variableBase-attributes>>.
 [[validReinits]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validReinits: FmiModelDescription +> bool
 validReinits(fmd) == allOf
 	([
 		isFloat(mv) and mv.reinit <> nil =>
-			-- @OnFail("%NAME: %s, Float reinit for model exchange continuous time only at %s",
+			-- @OnFail("%NAME: %s, Float reinit for model exchange continuous time only at %#s",
 			-- mv.name, loc2str(mv.location))
 			( isContinuousTimeState(mv, fmd.modelVariables) and fmd.modelExchange <> nil )
 
@@ -209,10 +230,12 @@ See <<ModelVariables>>.
 [[validCSEventMode]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-CoSimulation-details")
 validCSEventMode: FmiModelDescription +> bool
 validCSEventMode(fmd) ==
 	fmd.coSimulation <> nil =>
-		-- @OnFail("%NAME: hasEventMode must be true since FMU has clocks at %s",
+		-- @OnFail("%NAME: hasEventMode must be true since FMU has clocks at %#s",
 		-- loc2str(fmd.coSimulation.location))
 		( let hasClocks = exists mv in seq fmd.modelVariables & is_Clock(mv) in
 			hasClocks => fmd.coSimulation.hasEventMode = true );
@@ -225,6 +248,8 @@ validCSEventMode(fmd) ==
 [[validOutput]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validOutput: FmiModelDescription * ModelVariables +> bool
 validOutput(fmd, evs) ==
 	let outputRefs = { ev.valueReference | ev in seq evs & ev.causality = <output> },
@@ -233,16 +258,16 @@ validOutput(fmd, evs) ==
 	in
 		if outputRefs <> {}
 		then
-			-- @OnFail("%NAME: Output variables but no outputs declared at %s",
+			-- @OnFail("%NAME: Output variables but no outputs declared at %#s",
 			-- loc2str(fmd.modelStructure.location))
 			( structRefs <> {} )
 
 			and
-			-- @OnFail("%NAME: Outputs section does not match output variables at %s",
+			-- @OnFail("%NAME: Outputs section does not match output variables at %#s",
 			-- loc2str(fmd.modelStructure.location))
 			( structRefs = outputRefs )
 		else
-			-- @OnFail("%NAME: Outputs should be omitted at %s",
+			-- @OnFail("%NAME: Outputs should be omitted at %#s",
 			-- loc2str(fmd.modelStructure.location))
 			( structRefs = {} );
 ----
@@ -253,20 +278,22 @@ See <<ModelStructure>>.
 [[validStateDerivatives]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validStateDerivatives: FmiModelDescription * ModelVariables +> bool
 validStateDerivatives(fmd, evs) ==
 	fmd.modelExchange <> nil => allOf
 	([
 		let ev = lookupVariable(uk.valueReference, evs) in
-			-- @OnFail("%NAME: Derivative valueReference unknown at %s", loc2str(uk.location))
+			-- @OnFail("%NAME: Derivative valueReference unknown at %#s", loc2str(uk.location))
 			( ev <> nil )
 
 			and allOf
 			([
-				-- @OnFail("%NAME: SV not a state derivative at %s", loc2str(uk.location))
+				-- @OnFail("%NAME: SV not a state derivative at %#s", loc2str(uk.location))
 				( isStateDerivative(ev) ),
 
-				-- @OnFail("%NAME: Derivative must be continuous at %s", loc2str(uk.location))
+				-- @OnFail("%NAME: Derivative must be continuous at %#s", loc2str(uk.location))
 				( uk.dependencies <> nil => ev.variability = <continuous> )
 			])
 
@@ -281,6 +308,8 @@ See <<ModelStructure>>.
 [[validInitialUnknowns]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validInitialUnknowns: FmiModelDescription * ModelVariables +> bool
 validInitialUnknowns(fmd, evs) ==
 	let ctVars = continuousTimeStates(evs),
@@ -322,7 +351,7 @@ validInitialUnknowns(fmd, evs) ==
 			
 			[
 				iu.dependencies <> nil and iu.dependencies <> [] =>
-					-- @OnFail("%NAME: InitialUnknown dependencies must all be known at %s",
+					-- @OnFail("%NAME: InitialUnknown dependencies must all be known at %#s",
 					-- loc2str(iu.location))
 					( forall d in seq iu.dependencies & d not in set allIUs )
 
@@ -337,11 +366,13 @@ See <<ModelStructure>>.
 [[validEventIndicators]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validEventIndicators: FmiModelDescription * ModelVariables +> bool
 validEventIndicators(fmd, evs) ==
 	fmd.modelStructure.eventIndicator <> nil => allOf
 	([
-		-- @OnFail("%NAME: EventIndicator valueReference %s invalid at %s",
+		-- @OnFail("%NAME: EventIndicator valueReference %s invalid at %#s",
 		-- ei.valueReference, loc2str(ei.location))
 		( exists ev in seq evs & ev.valueReference = ei.valueReference )
 
@@ -355,11 +386,13 @@ See <<ModelStructure>>.
 [[validOutputReferences]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validOutputReferences: FmiModelDescription * ModelVariables +> bool
 validOutputReferences(fmd, evs) ==
 	fmd.modelStructure.output <> nil => allOf
 	([
-		-- @OnFail("%NAME: Output valueReference %s is not an output at %s",
+		-- @OnFail("%NAME: Output valueReference %s is not an output at %#s",
 		--  ei.valueReference, loc2str(ei.location))
 		( exists ev in seq evs &
 			ev.valueReference = ei.valueReference and ev.causality = <output> )
@@ -374,6 +407,8 @@ See <<ModelStructure>>.
 [[validUnknownDependencies]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validUnknownDependencies: FmiModelDescription * ModelVariables +> bool
 validUnknownDependencies(fmd, evs) ==
 	let allUnknowns = conc
@@ -388,7 +423,7 @@ validUnknownDependencies(fmd, evs) ==
 		([
 			unk.dependencies <> nil and unk.dependencies <> [] => allOf
 			([
-				-- @OnFail("%NAME: Unknown dependency %s invalid at %s", vr, loc2str(unk.location))
+				-- @OnFail("%NAME: Unknown dependency %s invalid at %#s", vr, loc2str(unk.location))
 				( exists ev in seq evs & ev.valueReference = vr )
 
 				| vr in seq unk.dependencies
@@ -404,25 +439,27 @@ See <<ModelStructure>>.
 [[validClockPriorities]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
 validClockPriorities: FmiModelDescription * ModelVariables +> bool
 validClockPriorities(fmd, evs) == allOf
 	([
 		if fmd.scheduledExecution <> nil then
 			cases ev.causality:
 				<input> ->
-					-- @OnFail("%NAME: Input clock %s must have a priority for SE at %s",
+					-- @OnFail("%NAME: Input clock %s must have a priority for SE at %#s",
 					-- ev.name, loc2str(ev.location))
 					( ev.priority <> nil ),
 
 				<output> ->	
-					-- @OnFail("%NAME: Output clock %s must not have a priority for SE at %s",
+					-- @OnFail("%NAME: Output clock %s must not have a priority for SE at %#s",
 					-- ev.name, loc2str(ev.location))
 					( ev.priority = nil ),
 
 				<local> -> true
 			end
 		else
-			-- @OnFail("%NAME: Clock %s must not have a priority unless SE at %s",
+			-- @OnFail("%NAME: Clock %s must not have a priority unless SE at %#s",
 			-- ev.name, loc2str(ev.location))
 			( ev.priority = nil )
 			
@@ -431,103 +468,3 @@ validClockPriorities(fmd, evs) == allOf
 ----
 // {vdm}
 See <<table-type-details>>.
-
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	FmiModelDescription_refs : ReferenceMap =
-	{
-		"validModelTypes" |->
-		[
-			"<FMI3_STANDARD>#table-schema-fmiModelDescription"
-		],
-
-		"validGenerationDateAndTime" |->
-		[
-			"<FMI3_STANDARD>#table-schema-fmiModelDescription-attributes"
-		],
-
-		"validTypeUnits" |->
-		[
-			"<FMI3_STANDARD>#table-type-details"
-		],
-
-		"validVariableTypes" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables",
-			"<FMI3_STANDARD>#definition-of-types"
-		],
-
-		"validTypeNames" |->
-		[
-			"<FMI3_STANDARD>#table-type-details"
-		],
-
-		"validVariableNames" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validStart" |->
-		[
-			"<FMI3_STANDARD>#table-type-attributes"
-		],
-
-		"validMinMax" |->
-		[
-			"<FMI3_STANDARD>#table-type-attributes"
-		],
-
-		"validMultipleSets" |->
-		[
-			"<FMI3_STANDARD>#table-variableBase-attributes"
-		],
-
-		"validReinits" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validCSEventMode" |->
-		[
-			"<FMI3_STANDARD>#table-CoSimulation-details"
-		],
-
-		"validOutput" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-
-		"validStateDerivatives" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-		
-		"validInitialUnknowns" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-		
-		"validEventIndicators" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-		
-		"validOutputReferences" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-		
-		"validUnknownDependencies" |->
-		[
-			"<FMI3_STANDARD>#ModelStructure"
-		],
-
-		"validClockPriorities" |->
-		[
-			"<FMI3_STANDARD>#table-type-details"
-		]
-	};
-// {vdm}
-endif::[]

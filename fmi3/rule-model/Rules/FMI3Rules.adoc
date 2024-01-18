@@ -25,7 +25,7 @@ All rules are functions that return a boolean success/fail result. They are pass
 ----
 validTolerance: DefaultExperiment +> bool
 validTolerance(de) ==
-	-- @OnFail("%NAME: tolerance must be >= 0 at %s", loc2str(de.location))
+	-- @OnFail("%NAME: tolerance must be >= 0 at %#s", loc2str(de.location))
 	( de.tolerance <> nil => de.tolerance >= 0 );
 ----
 

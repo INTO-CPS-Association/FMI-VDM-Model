@@ -33,7 +33,7 @@ types
 		invs_Unit'(units),
 
 		-- Rules are defined in UnitDefinitions.adoc
-		rule("validUnitNames", validUnitNames(units))
+		validUnitNames(units)
 	]);
 
 	Unit' = Unit
@@ -44,7 +44,7 @@ types
 		inv_Annotations'(unit.annotations),
 
 		-- Rules are defined in UnitDefinitions.adoc
-		rule("validDisplayUnitNames", validDisplayUnitNames(unit))
+		validDisplayUnitNames(unit)
 	]);
 
 	BaseUnit' = [BaseUnit]
@@ -64,7 +64,7 @@ types
 			inv_Annotations'(edu.annotations),
 
 			-- Rules are defined in UnitDefinitions.adoc
-			rule("validInverseAndOffset", validInverseAndOffset(edu))
+			validInverseAndOffset(edu)
 		]
 	);
 

@@ -11,9 +11,11 @@ endif::[]
 [[validCompilerOptions]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-SourceFileSet-details")
 validCompilerOptions: SourceFileSet +> bool
 validCompilerOptions(sfs) ==
-	-- @OnFail("%NAME: Compiler options set without compiler at %s", loc2str(sfs.location))
+	-- @OnFail("%NAME: Compiler options set without compiler at %#s", loc2str(sfs.location))
 	( sfs.compilerOptions <> nil => sfs.compiler <> nil );
 ----
 // {vdm}
@@ -23,6 +25,8 @@ See <<table-SourceFileSet-details>>.
 [[validSourceFileNames]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-SourceFile-details")
 validSourceFileNames: SourceFileSet +> bool
 validSourceFileNames(sfs) ==
 	let files = sfs.sourceFile in
@@ -38,6 +42,8 @@ See <<table-SourceFile-details>>.
 [[validPreprocessorDefinitionNames]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-ProcessorDefinition-details")
 validPreprocessorDefinitionNames: SourceFileSet +> bool
 validPreprocessorDefinitionNames(sfs) ==
 	let defs = sfs.preprocessorDefinition in
@@ -54,6 +60,8 @@ See <<table-ProcessorDefinition-details>>.
 [[validIncludeDirectoryNames]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-IncludeDirectory-details")
 validIncludeDirectoryNames: SourceFileSet +> bool
 validIncludeDirectoryNames(sfs) ==
 	let incs = sfs.includeDirectory in
@@ -65,32 +73,3 @@ validIncludeDirectoryNames(sfs) ==
 ----
 // {vdm}
 See <<table-IncludeDirectory-details>>.
-
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	BuildConfiguration_refs : ReferenceMap =
-	{
-		"validCompilerOptions" |->
-		[
-			"<FMI3_STANDARD>#table-SourceFileSet-details"
-		],
-
-		"validSourceFileNames" |->
-		[
-			"<FMI3_STANDARD>#table-SourceFile-details"
-		],
-
-		"validPreprocessorDefinitionNames" |->
-		[
-			"<FMI3_STANDARD>#table-ProcessorDefinition-details"
-		],
-
-		"validIncludeDirectoryNames" |->
-		[
-			"<FMI3_STANDARD>#table-IncludeDirectory-details"
-		]
-	};
-// {vdm}
-endif::[]

@@ -11,6 +11,8 @@ endif::[]
 [[validLogCategories]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#definition-of-log-categories")
 validLogCategories: LogCategories +> bool
 validLogCategories(cats) ==
 	-- @OnFail("%NAME: LogCategory names are not unique: %s",
@@ -20,17 +22,3 @@ validLogCategories(cats) ==
 ----
 // {vdm}
 - See <<definition-of-log-categories>>.
-
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	LogCategories_refs : ReferenceMap =
-	{
-		"validLogCategories" |->
-		[
-			"<FMI3_STANDARD>#definition-of-log-categories"
-		]
-	};
-// {vdm}
-endif::[]

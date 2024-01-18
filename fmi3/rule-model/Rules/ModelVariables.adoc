@@ -14,6 +14,8 @@ Note that the rules in this section are checking the "raw" ModelVariable values,
 [[validValueReferences]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#_platform_dependent_definitions")
 validValueReferences: ModelVariables +> bool
 validValueReferences(mvs) ==
 	let refs = [ mv.valueReference | mv in seq mvs ] in
@@ -28,6 +30,8 @@ See <<_platform_dependent_definitions>>.
 [[validAliasNames]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#_alias_variables")
 validAliasNames: ModelVariables +> bool
 validAliasNames(mvs) ==
 	let aliases = conc [ [ a.name | a in seq mv.alias ] | mv in seq mvs & mv.alias <> nil ],
@@ -43,6 +47,8 @@ See <<_alias_variables>>.
 [[validIndependentVariable]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validIndependentVariable: ModelVariables +> bool
 validIndependentVariable(mvs) ==
 	-- @OnFail("%NAME: Variables define more than one independent variable: %s",
@@ -56,6 +62,8 @@ See <<ModelVariables>>.
 [[validPreviousVariables]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validPreviousVariables: ModelVariables +> bool
 validPreviousVariables(mvs) ==
 	let plist =  [ mv.previous | mv in seq mvs & not is_Clock(mv) and mv.previous <> nil ]
@@ -72,6 +80,8 @@ See <<ModelVariables>>.
 [[validVariableDimensions]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validVariableDimensions: ModelVariables +> bool
 validVariableDimensions(mvs) ==
 	allOf(conc
@@ -109,9 +119,11 @@ See <<ModelVariables>>.
 [[validStartAndVRef]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validStartAndVRef: Dimension +> bool
 validStartAndVRef(d) ==
-	-- @OnFail("%NAME: Dimension cannot define start and valueReference at %s", loc2str(d.location))
+	-- @OnFail("%NAME: Dimension cannot define start and valueReference at %#s", loc2str(d.location))
 	( d.start = nil <=> d.valueReference <> nil );
 ----
 // {vdm}
@@ -121,12 +133,14 @@ See <<ModelVariables>>.
 [[validAliasDisplayUnits]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validAliasDisplayUnits: ModelVariables +> bool
 validAliasDisplayUnits(mvs) ==
 	allOf
 	([
 		[
-			-- @OnFail("%NAME: Alias displayUnit requires Float with unit definition at %s",
+			-- @OnFail("%NAME: Alias displayUnit requires Float with unit definition at %#s",
 			-- loc2str(a.location))
 			( a.displayUnit <> nil => isFloat(mv) and mv.unit <> nil )
 			
@@ -143,6 +157,8 @@ See <<ModelVariables>>.
 [[validModelVariables]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validModelVariables: ModelVariables +> bool
 validModelVariables(svs) == allOf
 ([
@@ -162,7 +178,7 @@ validModelVariables(svs) == allOf
 		card elems plist = len plist ),
 
 	[
-		-- @OnFail("%NAME: Variable %s invalid at %s", sv.name, loc2str(sv.location))
+		-- @OnFail("%NAME: Variable %s invalid at %#s", sv.name, loc2str(sv.location))
 		( validVariableAttributes(sv) )
 
 		| sv in seq svs
@@ -176,6 +192,8 @@ See <<ModelVariables>>.
 [[validVariableAttributes]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validVariableAttributes: fmi3Variable +> bool
 validVariableAttributes(sv) ==
 	let eCausality   = effectiveCausality(sv.causality, kindOf(sv)),
@@ -184,7 +202,7 @@ validVariableAttributes(sv) ==
 						if is_Clock(sv) then nil else sv.initial, kindOf(sv))
 	in
 	{
-		/* @OnFail(1460, "2.4.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %s",
+		/* @OnFail(1460, "2.4.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %#s",
 			sv.name, eCausality, eVariability, eInitial, sv.start, loc2str(sv.location)) */
 		(
 			cases eCausality:
@@ -209,7 +227,7 @@ validVariableAttributes(sv) ==
 					eVariability = <continuous>
 					and eInitial = nil		-- (D)
 					and sv.start = nil
-					-- @OnFail(1461, "2.4.7 Independent variable must be Float at %s", loc2str(sv.location))
+					-- @OnFail(1461, "2.4.7 Independent variable must be Float at %#s", loc2str(sv.location))
 					and (is_Float64(sv) or is_Float32(sv)),
 
 				<output> ->
@@ -242,7 +260,7 @@ validVariableAttributes(sv) ==
 			end
 		),
 
-		/* @OnFail(1462, "2.4.7 Variable %s variability/causality %s/%s invalid at %s",
+		/* @OnFail(1462, "2.4.7 Variable %s variability/causality %s/%s invalid at %#s",
 			sv.name, eVariability, eCausality, loc2str(sv.location)) */
 		(
 			cases eVariability:
@@ -257,12 +275,12 @@ validVariableAttributes(sv) ==
 
 				<continuous> ->
 					eCausality in set {<input>, <output>, <local>, <independent>}
-					-- @OnFail(1463, "2.4.7 Continuous variable must be Real at %s", loc2str(sv.location))
+					-- @OnFail(1463, "2.4.7 Continuous variable must be Real at %#s", loc2str(sv.location))
 					and (is_Float64(sv) or is_Float32(sv))
 			end
 		),
 
-		/* @OnFail(1464, "2.4.7 Variable %s initial/causality %s/%s invalid at %s",
+		/* @OnFail(1464, "2.4.7 Variable %s initial/causality %s/%s invalid at %#s",
 			sv.name, sv.initial, eCausality, loc2str(sv.location)) */
 		(
 			not is_Clock(sv) =>
@@ -270,7 +288,7 @@ validVariableAttributes(sv) ==
 					eCausality <> <independent>
 		),
 
-		/* @OnFail(1465, "2.4.7 Variable %s initial/variability/start %s/%s/%s invalid at %s",
+		/* @OnFail(1465, "2.4.7 Variable %s initial/variability/start %s/%s/%s invalid at %#s",
 			sv.name, eInitial, eVariability, sv.start, loc2str(sv.location)) */
 		(
 			cases eInitial:
@@ -293,68 +311,3 @@ validVariableAttributes(sv) ==
 ----
 // {vdm}
 See <<ModelVariables>>.
-
-
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	ModelVariables_refs : ReferenceMap =
-	{
-		"validValueReferences" |->
-		[
-			"<FMI3_STANDARD>#_platform_dependent_definitions"
-		],
-
-		"validAliasNames" |->
-		[
-			"<FMI3_STANDARD>#_alias_variables"
-		],
-
-		"validIndependentVariable" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validModelVariables" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validVariableAttributes" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validPreviousVariables" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validVariableDimensions" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validStartAndVRef" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		],
-
-		"validAliasDisplayUnits" |->
-		[
-			"<FMI3_STANDARD>#ModelVariables"
-		]
-	};
-// {vdm}
-endif::[]
-
-
-
-
-
-
-
-
-
-

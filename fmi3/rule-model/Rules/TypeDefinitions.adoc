@@ -11,6 +11,9 @@ endif::[]
 [[validTypeDefinitionNames]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#definition-of-types")
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeDefinitionNames: [TypeDefinitions] +> bool
 validTypeDefinitionNames(tdefs) ==
 	tdefs <> nil =>
@@ -26,6 +29,8 @@ validTypeDefinitionNames(tdefs) ==
 [[validTypeMinMax]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeMinMax: fmi3TypeDefinition +> bool
 validTypeMinMax(tdef) ==
 	let mk_(kmin, kmax) = minMaxOfKind(kindOf(tdef)) in allOf
@@ -48,6 +53,8 @@ See <<table-type-details>>.
 [[validTypeDisplayUnit]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeDisplayUnit: fmi3TypeDefinition +> bool
 validTypeDisplayUnit(tdef) ==
 	-- @OnFail("%NAME: Type %s, unit must be defined for displayUnit %s", tdef.name, tdef.displayUnit)
@@ -61,6 +68,8 @@ See <<table-type-details>>.
 [[validEnumerationTypeBijection]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#figure-schema-EnumerationType")
 validEnumerationTypeBijection: EnumerationType +> bool
 validEnumerationTypeBijection(tdef) ==
 	-- @OnFail("%NAME: Type %s, Enumeration item name/values do not form a bijection", tdef.name)
@@ -76,6 +85,8 @@ See <<figure-schema-EnumerationType>>.
 [[validClockType]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#figure-schema-ClockType")
 validClockType: ClockType +> bool
 validClockType(tdef) ==
 	let periodic = clockIsPeriodic(tdef) in allOf
@@ -99,41 +110,6 @@ validClockType(tdef) ==
 ----
 // {vdm}
 See <<figure-schema-ClockType>>.
-
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	TypeDefinitions_refs : ReferenceMap =
-	{
-		"validTypeDefinitionNames" |->
-		[
-			"<FMI3_STANDARD>#definition-of-types",
-			"<FMI3_STANDARD>#table-type-details"
-		],
-
-		"validTypeMinMax" |->
-		[
-			"<FMI3_STANDARD>#table-type-details"
-		],
-
-		"validTypeDisplayUnit" |->
-		[
-			"<FMI3_STANDARD>#table-type-details"
-		],
-
-		"validEnumerationTypeBijection" |->
-		[
-			"<FMI3_STANDARD>#figure-schema-EnumerationType"
-		],
-
-		"validClockType" |->
-		[
-			"<FMI3_STANDARD>#figure-schema-ClockType"
-		]
-	};
-// {vdm}
-endif::[]
 
 
 

@@ -11,9 +11,12 @@ endif::[]
 [[validSEModelIdentifier]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#modelIdentifier")
+-- @DocLink("<FMI3_STANDARD>#header-files-and-naming-of-functions")
 validSEModelIdentifier: ScheduledExecution +> bool
 validSEModelIdentifier(se) ==
-	-- @OnFail("%NAME: %s not a valid C variable name at %s",
+	-- @OnFail("%NAME: %s not a valid C variable name at %#s",
 	-- se.modelIdentifier, loc2str(se.location))
 	( validIdentifier(se.modelIdentifier) );
 ----
@@ -21,17 +24,3 @@ validSEModelIdentifier(se) ==
 - See <<modelIdentifier>>.
 - See <<header-files-and-naming-of-functions>>.
 
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	ScheduledExecution_refs : ReferenceMap =
-	{
-		"validSEModelIdentifier" |->
-		[
-			"<FMI3_STANDARD>#modelIdentifier",
-			"<FMI3_STANDARD>#header-files-and-naming-of-functions"
-		]
-	};
-// {vdm}
-endif::[]

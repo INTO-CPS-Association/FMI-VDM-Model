@@ -13,26 +13,14 @@ This rule is used to check Output, ContinuousStateDerivative, ClockedState, Init
 [[validDependencyKinds]]
 // {vdm}
 ----
+
+-- @DocLink("<FMI3_STANDARD>#modelStructure")
 validDependencyKinds: Output | ContinuousStateDerivative | ClockedState |
                       InitialUnknown | EventIndicator +> bool
 validDependencyKinds(entry) ==
 	entry.dependenciesKind <> nil =>
-		-- @OnFail("%NAME: dependencies do not match dependenciesKind at %s", loc2str(entry.location))
+		-- @OnFail("%NAME: dependencies do not match dependenciesKind at %#s", loc2str(entry.location))
 		( entry.dependencies <> nil and len entry.dependenciesKind = len entry.dependencies );
 ----
 // {vdm}
 See <<modelStructure>>.
-
-// This adds the docrefs for VDM only
-ifdef::hidden[]
-// {vdm}
-values
-	ModelStructure_refs : ReferenceMap =
-	{
-		"validDependencyKinds" |->
-		[
-			"<FMI3_STANDARD>#modelStructure"
-		]
-	};
-// {vdm}
-endif::[]
