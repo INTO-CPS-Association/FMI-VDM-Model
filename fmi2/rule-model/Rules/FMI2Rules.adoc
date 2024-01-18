@@ -1,4 +1,4 @@
-== Appendix A: Formal Static Semantics of FMI3
+== Appendix A: Formal Static Semantics of FMI2
 
 === A.{counter:section} Introduction
 
@@ -43,8 +43,6 @@ Rules sometimes use a function called _allOf_, which is passed a comma-separated
 include::ModelExchange.adoc[]
 
 include::CoSimulation.adoc[]
-
-include::ScheduledExecution.adoc[]
 
 include::UnitDefinitions.adoc[]
 
