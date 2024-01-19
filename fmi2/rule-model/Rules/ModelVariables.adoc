@@ -1,10 +1,21 @@
---
--- Document created from ModelVariables.adoc at Thu Jan 11 21:03:23 GMT 2024
---
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
 functions
-----
+// {vdm}
+endif::[]
 
+==== A.{section}.{counter:subsection} ModelVariables Rules
+:!typerule:
+===== A.{section}.{subsection}.{counter:typerule} Rule: validAliasNames
+[[validAliasNames]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validAliasNames: ModelVariables +> bool
 validAliasNames(mvs) ==
 	let refmap = getAliasRefMap(mvs) in
@@ -57,18 +68,36 @@ validAliasNames(mvs) ==
 		| ref in set dom refmap & card refmap(ref) > 1
 	} = {true};
 ----
-----
+// {vdm}
+See <<_definition_of_model_variables_modelvariables>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validIndependentVariable
+[[validIndependentVariable]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validIndependentVariable: ModelVariables +> bool
 validIndependentVariable(mvs) ==
 	-- @OnFail("%NAME: Variables define more than one independent variable: %s",
 	-- { mv.name | mv in seq mvs & mv.causality = <independent> })
 	( card { mv | mv in seq mvs & mv.causality = <independent> } <= 1 );
 ----
-----
+// {vdm}
+See <<_definition_of_model_variables_modelvariables>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validModelVariables
+[[validModelVariables]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validModelVariables: ModelVariables +> bool
 validModelVariables(svs) == allOf
 ([
@@ -87,9 +116,18 @@ validModelVariables(svs) == allOf
 	]
 ]);
 ----
-----
+// {vdm}
+See <<_definition_of_model_variables_modelvariables>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validVariableAttributes
+[[validVariableAttributes]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validVariableAttributes: ScalarVariable +> bool
 validVariableAttributes(sv) ==
 	let variable	 = sv.fmi2ScalarVariable,
@@ -209,3 +247,5 @@ validVariableAttributes(sv) ==
 		)
 	]);
 ----
+// {vdm}
+See <<_definition_of_model_variables_modelvariables>>

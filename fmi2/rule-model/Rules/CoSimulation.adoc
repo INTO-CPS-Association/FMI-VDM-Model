@@ -1,19 +1,39 @@
---
--- Document created from CoSimulation.adoc at Thu Jan 11 21:03:23 GMT 2024
---
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
 functions
-----
+// {vdm}
+endif::[]
 
+==== A.{section}.{counter:subsection} SourceFileSet Rules
+:!typerule:
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCSModelIdentifier
+[[validCSModelIdentifier]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_header_files_and_naming_of_functions")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validCSModelIdentifier: CoSimulation +> bool
 validCSModelIdentifier(ecs) ==
 	-- @OnFail("%NAME: %s not valid C variable name at %#s",
 	-- ecs.modelIdentifier, loc2str(ecs.location))
 	( validIdentifier(ecs.modelIdentifier) );
 ----
-----
+// {vdm}
+See <<_header_files_and_naming_of_functions>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCSSourceFiles
+[[validCSSourceFiles]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_header_files_and_naming_of_functions")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validCSSourceFiles: CoSimulation +> bool
 validCSSourceFiles(ecs) ==
 	ecs.sourceFiles <> nil =>
@@ -22,3 +42,5 @@ validCSSourceFiles(ecs) ==
 		--		a <> b and ecs.sourceFiles(a) = ecs.sourceFiles(b) } )
 		( card { file | file in seq ecs.sourceFiles } = len ecs.sourceFiles );
 ----
+// {vdm}
+See <<_header_files_and_naming_of_functions>>

@@ -1,10 +1,21 @@
---
--- Document created from Terminals.adoc at Thu Jan 11 21:03:23 GMT 2024
---
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
 functions
-----
+// {vdm}
+endif::[]
 
+==== A.{section}.{counter:subsection} TerminalsAndIcons Rules
+:!typerule:
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCoordinateSystem
+[[validCoordinateSystem]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI3_STANDARD>#_coordinatesystem"). Note, from FMI3
+// {vdm}
+endif::[]
+// {vdm}
+----
 validCoordinateSystem: CoordinateSystem +> bool
 validCoordinateSystem(cs) == allOf
 	([
@@ -16,17 +27,35 @@ validCoordinateSystem(cs) == allOf
 		( isBLtoTR(cs.x1, cs.y1, cs.x2, cs.y2) )
 	]);
 ----
-----
+// {vdm}
+See <<_coordinatesystem>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validIcon
+[[validIcon]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI3_STANDARD>#_icon"). Note, from FMI3
+// {vdm}
+endif::[]
+// {vdm}
+----
 validIcon: Icon +> bool
 validIcon(icon) ==
 	-- @OnFail("%NAME: Icon has zero area at %#s", loc2str(icon.location))
 	( icon.x1 <> icon.x2 and icon.y1 <> icon.y2 );
 ----
-----
+// {vdm}
+See <<_ico>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalMemberVariables
+[[validTerminalMemberVariables]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#section-terminalvars"). Note, from FMI3
+// {vdm}
+endif::[]
+// {vdm}
+----
 validTerminalMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalMemberVariables(terminal, fmd) ==
 	let tmvs = terminal.terminalMemberVariable in
@@ -40,9 +69,18 @@ validTerminalMemberVariables(terminal, fmd) ==
 		| tmv in seq tmvs
 	]);
 ----
-----
+// {vdm}
+See <<section-terminalvars>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalStreamMemberVariables
+[[validTerminalStreamMemberVariables]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_terminal_stream_member_variable"). Note, from FMI3
+// {vdm}
+endif::[]
+// {vdm}
+----
 validTerminalStreamMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalStreamMemberVariables(terminal, fmd) ==
 	let tsmvs = terminal.terminalStreamMemberVariable in
@@ -64,9 +102,18 @@ validTerminalStreamMemberVariables(terminal, fmd) ==
 		| tsmv in seq tsmvs
 	]);
 ----
-----
+// {vdm}
+See <<_terminal_stream_member_variable>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalGraphicalRepresentation
+[[validTerminalGraphicalRepresentation]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_terminal_graphical_representation"). Note, from FMI3
+// {vdm}
+endif::[]
+// {vdm}
+----
 validTerminalGraphicalRepresentation: Terminal +> bool
 validTerminalGraphicalRepresentation(terminal) ==
 	let tgr = terminal.terminalGraphicalRepresentation in
@@ -86,3 +133,6 @@ validTerminalGraphicalRepresentation(terminal) ==
 			tgr.defaultConnectionStrokeSize > 0 )
 	]);
 ----
+// {vdm}
+See <<_terminal_graphical_representation>>
+

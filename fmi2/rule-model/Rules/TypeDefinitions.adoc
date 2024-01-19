@@ -1,10 +1,21 @@
---
--- Document created from TypeDefinitions.adoc at Thu Jan 11 21:03:23 GMT 2024
---
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
 functions
-----
+// {vdm}
+endif::[]
 
+==== A.{section}.{counter:subsection} TypeDefinitions Rules
+:!typerule:
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeDefinitionNames
+[[validTypeDefinitionNames]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validTypeDefinitionNames: [TypeDefinitions] +> bool
 validTypeDefinitionNames(tdefs) ==
 	tdefs <> nil =>
@@ -12,9 +23,18 @@ validTypeDefinitionNames(tdefs) ==
 		( let names = [ td.name | td in seq tdefs ] in
 			len names = card elems names );
 ----
-----
+// {vdm}
+See <<_definition_of_types_typedefinitions>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeMinMax
+[[validTypeMinMax]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validTypeMinMax: MinMaxType +> bool
 validTypeMinMax(type) ==
 	let mk_(kmin, kmax) = minMaxOfKind(kindOf(type)) in allOf
@@ -29,9 +49,18 @@ validTypeMinMax(type) ==
 		( type.min <> nil and type.max <> nil => type.max >= type.min )
 	]);
 ----
-----
+// {vdm}
+See <<_definition_of_types_typedefinitions>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeDisplayUnit
+[[validTypeDisplayUnit]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validTypeDisplayUnit: SimpleType +> bool
 validTypeDisplayUnit(tdef) ==
 	is_Real(tdef.fmi2SimpleType) =>
@@ -39,9 +68,18 @@ validTypeDisplayUnit(tdef) ==
 		-- tdef.name, tdef.fmi2SimpleType.displayUnit)
 		( tdef.fmi2SimpleType.displayUnit <> nil => tdef.fmi2SimpleType.unit <> nil );
 ----
-----
+// {vdm}
+See <<_definition_of_types_typedefinitions>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validEnumerationTypeBijection
+[[validEnumerationTypeBijection]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validEnumerationTypeBijection: EnumerationType +> bool
 validEnumerationTypeBijection(tdef) ==
 	-- @OnFail("%NAME: Enumeration item items do not form a bijection at %#s",
@@ -51,3 +89,5 @@ validEnumerationTypeBijection(tdef) ==
 		and	card { i.value | i in seq tdef.item } = len tdef.item
 	);
 ----
+// {vdm}
+See <<_definition_of_types_typedefinitions>>

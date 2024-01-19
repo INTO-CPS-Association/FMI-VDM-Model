@@ -1,18 +1,38 @@
---
--- Document created from BuildConfiguration.adoc at Thu Jan 11 21:03:23 GMT 2024
---
+// This adds the "functions" section header for VDM only
+ifdef::hidden[]
+// {vdm}
 functions
-----
+// {vdm}
+endif::[]
 
--- @DocLink("<FMI3_STANDARD>#table-SourceFileSet-details"). Note, from FMI3
+==== A.{section}.{counter:subsection} SourceFileSet Rules
+:!typerule:
+===== A.{section}.{subsection}.{counter:typerule} Rule: validCompilerOptions
+[[validCompilerOptions]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-SourceFileSet-details")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validCompilerOptions: SourceFileSet +> bool
 validCompilerOptions(sfs) ==
 	-- @OnFail("%NAME: Compiler options set without compiler at %#s", loc2str(sfs.location))
 	( sfs.compilerOptions <> nil => sfs.compiler <> nil );
 ----
-----
+// {vdm}
+See <<table-SourceFileSet-details>>.
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validSourceFileNames
+[[validSourceFileNames]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI3_STANDARD>#table-SourceFile-details"). Note, from FMI3
+// {vdm}
+endif::[]
+// {vdm}
+----
 validSourceFileNames: SourceFileSet +> bool
 validSourceFileNames(sfs) ==
 	let files = sfs.sourceFile in
@@ -21,9 +41,18 @@ validSourceFileNames(sfs) ==
 		--	{ files(a) | a, b in set inds names & a <> b and files(a) = files(b) })
 		( card elems names = len names );
 ----
-----
+// {vdm}
+See <<table-SourceFile-details>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validPreprocessorDefinitionNames
+[[validPreprocessorDefinitionNames]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI3_STANDARD>#table-ProcessorDefinition-details"). Note, from FMI3
+// {vdm}
+endif::[]
+// {vdm}
+----
 validPreprocessorDefinitionNames: SourceFileSet +> bool
 validPreprocessorDefinitionNames(sfs) ==
 	let defs = sfs.preprocessorDefinition in
@@ -33,9 +62,18 @@ validPreprocessorDefinitionNames(sfs) ==
 			--	{ names(a) | a, b in set inds names & a <> b and names(a) = names(b) })
 			( card elems names = len names );
 ----
-----
+// {vdm}
+See <<table-ProcessorDefinition-details>>
 
+===== A.{section}.{subsection}.{counter:typerule} Rule: validIncludeDirectoryNames
+[[validIncludeDirectoryNames]]
+ifdef::hidden[]
+// {vdm}
 -- @DocLink("<FMI3_STANDARD>#table-IncludeDirectory-details"). Note, from FMI3
+// {vdm}
+endif::[]
+// {vdm}
+----
 validIncludeDirectoryNames: SourceFileSet +> bool
 validIncludeDirectoryNames(sfs) ==
 	let incs = sfs.includeDirectory in
@@ -46,3 +84,5 @@ validIncludeDirectoryNames(sfs) ==
 			( card elems names = len names );
 
 ----
+// {vdm}
+See <<table-IncludeDirectory-details>>
