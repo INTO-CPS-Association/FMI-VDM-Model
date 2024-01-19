@@ -9,10 +9,13 @@ endif::[]
 :!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validLogCategories
 [[validLogCategories]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#definition-of-log-categories")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#definition-of-log-categories")
 validLogCategories: LogCategories +> bool
 validLogCategories(cats) ==
 	-- @OnFail("%NAME: LogCategory names are not unique: %s",

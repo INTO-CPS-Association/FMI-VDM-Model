@@ -9,11 +9,14 @@ endif::[]
 :!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeDefinitionNames
 [[validTypeDefinitionNames]]
+ifdef::hidden[]
 // {vdm}
-----
-
 -- @DocLink("<FMI3_STANDARD>#definition-of-types")
 -- @DocLink("<FMI3_STANDARD>#table-type-details")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validTypeDefinitionNames: [TypeDefinitions] +> bool
 validTypeDefinitionNames(tdefs) ==
 	tdefs <> nil =>
@@ -27,10 +30,13 @@ validTypeDefinitionNames(tdefs) ==
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeMinMax
 [[validTypeMinMax]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeMinMax: fmi3TypeDefinition +> bool
 validTypeMinMax(tdef) ==
 	let mk_(kmin, kmax) = minMaxOfKind(kindOf(tdef)) in allOf
@@ -51,13 +57,17 @@ See <<table-type-details>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeDisplayUnit
 [[validTypeDisplayUnit]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeDisplayUnit: fmi3TypeDefinition +> bool
 validTypeDisplayUnit(tdef) ==
-	-- @OnFail("%NAME: Type %s, unit must be defined for displayUnit %s", tdef.name, tdef.displayUnit)
+	-- @OnFail("%NAME: Type %s, unit must be defined for displayUnit %s",
+	-- tdef.name, tdef.displayUnit)
 	( tdef.displayUnit <> nil => tdef.unit <> nil )
 pre is_(kindOf(tdef), FloatKind);
 ----
@@ -66,10 +76,13 @@ See <<table-type-details>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validEnumerationTypeBijection
 [[validEnumerationTypeBijection]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#figure-schema-EnumerationType")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#figure-schema-EnumerationType")
 validEnumerationTypeBijection: EnumerationType +> bool
 validEnumerationTypeBijection(tdef) ==
 	-- @OnFail("%NAME: Type %s, Enumeration item name/values do not form a bijection", tdef.name)
@@ -83,10 +96,13 @@ See <<figure-schema-EnumerationType>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validClockType
 [[validClockType]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#figure-schema-ClockType")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#figure-schema-ClockType")
 validClockType: ClockType +> bool
 validClockType(tdef) ==
 	let periodic = clockIsPeriodic(tdef) in allOf

@@ -9,10 +9,13 @@ endif::[]
 :!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTolerance
 [[validTolerance]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
 validTolerance: DefaultExperiment +> bool
 validTolerance(de) ==
 	-- @OnFail("%NAME: tolerance must be >= 0 at %#s", loc2str(de.location))
@@ -23,10 +26,13 @@ See <<DefaultExperiment>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validStartStopTime
 [[validStartStopTime]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
 validStartStopTime: DefaultExperiment +> bool
 validStartStopTime(e) ==
 	-- @OnFail("%NAME: stop time must be later than start time at %#s", loc2str(e.location))
@@ -37,10 +43,13 @@ See <<DefaultExperiment>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validStepSize
 [[validStepSize]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
 validStepSize: DefaultExperiment +> bool
 validStepSize(e) ==
 	-- @OnFail("%NAME: stepSize must be less than start-stop interval at %#s", loc2str(e.location))

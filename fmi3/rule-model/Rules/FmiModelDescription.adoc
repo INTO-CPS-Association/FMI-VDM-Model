@@ -12,13 +12,16 @@ Note that  ModelVariables are passed to some of the rules in this section, in ad
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validModelTypes
 [[validModelTypes]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
 validModelTypes: FmiModelDescription +> bool
 validModelTypes(fmd) ==
-	-- @OnFail("%NAME: At least one of ModelExchange, CoSimulation or ScheduledExecution must be set")
+	-- @OnFail("%NAME: ModelExchange, CoSimulation or ScheduledExecution must be set")
 	( fmd.modelExchange <> nil or fmd.coSimulation <> nil or fmd.scheduledExecution <> nil );
 ----
 // {vdm}
@@ -26,10 +29,13 @@ See <<table-schema-fmiModelDescription>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validGenerationDateAndTime
 [[validGenerationDateAndTime]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription-attributes")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription-attributes")
 validGenerationDateAndTime: FmiModelDescription +> bool
 validGenerationDateAndTime(fmd) ==
 	-- @OnFail("%NAME: generationDateAndTime should be YYYY-MM-DDThh:mm:ssZ at %#s",
@@ -41,10 +47,13 @@ See <<table-schema-fmiModelDescription-attributes>>.
 	
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeUnits
 [[validTypeUnits]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeUnits: FmiModelDescription +> bool
 validTypeUnits(fmd) ==
 	fmd.typeDefinitions <> nil => allOf
@@ -63,11 +72,14 @@ See <<table-type-details>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validVariableTypes
 [[validVariableTypes]]
+ifdef::hidden[]
 // {vdm}
-----
-
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 -- @DocLink("<FMI3_STANDARD>#definition-of-types")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validVariableTypes: FmiModelDescription +> bool
 validVariableTypes(fmd) == allOf
 	([
@@ -90,10 +102,13 @@ validVariableTypes(fmd) == allOf
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeNames
 [[validTypeNames]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-type-details")
 validTypeNames: FmiModelDescription +> bool
 validTypeNames(fmd) == fmd.typeDefinitions <> nil => allOf
 	([
@@ -109,10 +124,13 @@ See <<table-type-details>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validVariableNames
 [[validVariableNames]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validVariableNames: FmiModelDescription +> bool
 validVariableNames(fmd) ==
 	fmd.variableNamingConvention = <structured> => allOf(conc
@@ -133,10 +151,13 @@ See <<ModelVariables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validStart
 [[validStart]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-type-attributes")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-type-attributes")
 validStart: FmiModelDescription * ModelVariables +> bool
 validStart(-, evs) == allOf
 	([
@@ -161,10 +182,13 @@ See <<table-type-attributes>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validMinMax
 [[validMinMax]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-type-attributes")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-type-attributes")
 validMinMax: FmiModelDescription * ModelVariables +> bool
 validMinMax(-, evs) == allOf
 	([
@@ -188,10 +212,13 @@ See <<table-type-attributes>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validMultipleSets
 [[validMultipleSets]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-variableBase-attributes")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-variableBase-attributes")
 validMultipleSets: FmiModelDescription * ModelVariables +> bool
 validMultipleSets(fmd, evs) == allOf
 	([
@@ -208,10 +235,13 @@ See <<table-variableBase-attributes>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validReinits
 [[validReinits]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validReinits: FmiModelDescription +> bool
 validReinits(fmd) == allOf
 	([
@@ -228,10 +258,13 @@ See <<ModelVariables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validCSEventMode
 [[validCSEventMode]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-CoSimulation-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-CoSimulation-details")
 validCSEventMode: FmiModelDescription +> bool
 validCSEventMode(fmd) ==
 	fmd.coSimulation <> nil =>
@@ -246,10 +279,13 @@ validCSEventMode(fmd) ==
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validOutput
 [[validOutput]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validOutput: FmiModelDescription * ModelVariables +> bool
 validOutput(fmd, evs) ==
 	let outputRefs = { ev.valueReference | ev in seq evs & ev.causality = <output> },
@@ -276,10 +312,13 @@ See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validStateDerivatives
 [[validStateDerivatives]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validStateDerivatives: FmiModelDescription * ModelVariables +> bool
 validStateDerivatives(fmd, evs) ==
 	fmd.modelExchange <> nil => allOf
@@ -306,10 +345,13 @@ See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validInitialUnknowns
 [[validInitialUnknowns]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validInitialUnknowns: FmiModelDescription * ModelVariables +> bool
 validInitialUnknowns(fmd, evs) ==
 	let ctVars = continuousTimeStates(evs),
@@ -364,10 +406,13 @@ See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validEventIndicators
 [[validEventIndicators]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validEventIndicators: FmiModelDescription * ModelVariables +> bool
 validEventIndicators(fmd, evs) ==
 	fmd.modelStructure.eventIndicator <> nil => allOf
@@ -384,10 +429,13 @@ See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validOutputReferences
 [[validOutputReferences]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validOutputReferences: FmiModelDescription * ModelVariables +> bool
 validOutputReferences(fmd, evs) ==
 	fmd.modelStructure.output <> nil => allOf
@@ -405,10 +453,13 @@ See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validUnknownDependencies
 [[validUnknownDependencies]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelStructure")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelStructure")
 validUnknownDependencies: FmiModelDescription * ModelVariables +> bool
 validUnknownDependencies(fmd, evs) ==
 	let allUnknowns = conc
@@ -423,7 +474,8 @@ validUnknownDependencies(fmd, evs) ==
 		([
 			unk.dependencies <> nil and unk.dependencies <> [] => allOf
 			([
-				-- @OnFail("%NAME: Unknown dependency %s invalid at %#s", vr, loc2str(unk.location))
+				-- @OnFail("%NAME: Unknown dependency %s invalid at %#s",
+				-- vr, loc2str(unk.location))
 				( exists ev in seq evs & ev.valueReference = vr )
 
 				| vr in seq unk.dependencies
@@ -437,10 +489,13 @@ See <<ModelStructure>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validClockPriorities
 [[validClockPriorities]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-type-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-type-details")
 validClockPriorities: FmiModelDescription * ModelVariables +> bool
 validClockPriorities(fmd, evs) == allOf
 	([

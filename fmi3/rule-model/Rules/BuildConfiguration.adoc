@@ -9,10 +9,13 @@ endif::[]
 :!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validCompilerOptions
 [[validCompilerOptions]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-SourceFileSet-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-SourceFileSet-details")
 validCompilerOptions: SourceFileSet +> bool
 validCompilerOptions(sfs) ==
 	-- @OnFail("%NAME: Compiler options set without compiler at %#s", loc2str(sfs.location))
@@ -23,10 +26,13 @@ See <<table-SourceFileSet-details>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validSourceFileNames
 [[validSourceFileNames]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-SourceFile-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-SourceFile-details")
 validSourceFileNames: SourceFileSet +> bool
 validSourceFileNames(sfs) ==
 	let files = sfs.sourceFile in
@@ -40,10 +46,13 @@ See <<table-SourceFile-details>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validPreprocessorDefinitionNames
 [[validPreprocessorDefinitionNames]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-ProcessorDefinition-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-ProcessorDefinition-details")
 validPreprocessorDefinitionNames: SourceFileSet +> bool
 validPreprocessorDefinitionNames(sfs) ==
 	let defs = sfs.preprocessorDefinition in
@@ -58,10 +67,13 @@ See <<table-ProcessorDefinition-details>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validIncludeDirectoryNames
 [[validIncludeDirectoryNames]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-IncludeDirectory-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-IncludeDirectory-details")
 validIncludeDirectoryNames: SourceFileSet +> bool
 validIncludeDirectoryNames(sfs) ==
 	let incs = sfs.includeDirectory in

@@ -11,15 +11,19 @@ endif::[]
 This rule is used to check Output, ContinuousStateDerivative, ClockedState, InitialUnknown and EventIndicator records, which all share the same structure.
 
 [[validDependencyKinds]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#modelStructure")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#modelStructure")
 validDependencyKinds: Output | ContinuousStateDerivative | ClockedState |
                       InitialUnknown | EventIndicator +> bool
 validDependencyKinds(entry) ==
 	entry.dependenciesKind <> nil =>
-		-- @OnFail("%NAME: dependencies do not match dependenciesKind at %#s", loc2str(entry.location))
+		-- @OnFail("%NAME: dependencies do not match dependenciesKind at %#s",
+		-- loc2str(entry.location))
 		( entry.dependencies <> nil and len entry.dependenciesKind = len entry.dependencies );
 ----
 // {vdm}

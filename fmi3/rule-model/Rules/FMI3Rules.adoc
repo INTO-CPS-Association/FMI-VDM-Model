@@ -23,7 +23,6 @@ Rules are associated with the most nested XML type that encapsulates all of the 
 All rules are functions that return a boolean success/fail result. They are passed the record that contains the data to check. For example:
 
 ----
--- @DocLink("<FMI3_STANDARD>#DefaultExperiment")
 validTolerance: DefaultExperiment +> bool
 validTolerance(de) ==
 	-- @OnFail("%NAME: tolerance must be >= 0 at %#s", loc2str(de.location))
@@ -32,11 +31,9 @@ validTolerance(de) ==
 
 This defines a rule called "validTolerance" which is passed a DefaultExperiment record to test. The record is referred to by the name "de" within the body of the rule, which follows the "==".
 
-Rules contain _@DocLink_ comments, which provide a link to the FMI Standard where the rule is discussed, using a placeholder for the base URL. Some rules define multiple _@DocLink_ locations.
+Rules contain _@OnFail_ comments, which define error messages associated with clauses in the rule. The comments themselves are not part of the rules and do not affect whether the rule succeeds or fails. The _%NAME_ placeholder is expanded to the rule name. All XML types have a _location_ field added which contains the filename and line number of the data in the original XML. The _loc2str_ function turns locations into useful strings.
 
-Rules also contain _@OnFail_ comments, which define error messages associated with clauses in the rule. The comments themselves are not part of the rules and do not affect whether the rule succeeds or fails. The _%NAME_ placeholder is expanded to the rule name. All XML types have a _location_ field added which contains the filename and line number of the data in the original XML. The _loc2str_ function turns locations into useful strings.
-
-Rules sometimes use a function called _allOf_, which is passed a comma-separated list of boolean values in square brackets, all of which must be true for the overall rule to be met.
+Rules sometimes use a function called _allOf_, which is passed a comma-separated list of boolean tests in square brackets, all of which must be true for the overall rule to be met.
 
 === A.{counter:section} Rules
 

@@ -9,10 +9,13 @@ endif::[]
 :!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validCoordinateSystem
 [[validCoordinateSystem]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#_coordinatesystem")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#_coordinatesystem")
 validCoordinateSystem: CoordinateSystem +> bool
 validCoordinateSystem(cs) == allOf
 	([
@@ -29,10 +32,13 @@ See <<_coordinatesystem>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validIcon
 [[validIcon]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#_icon")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#_icon")
 validIcon: Icon +> bool
 validIcon(icon) ==
 	-- @OnFail("%NAME: Icon has zero area at %#s", loc2str(icon.location))
@@ -43,10 +49,13 @@ See <<_icon>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalMemberVariables
 [[validTerminalMemberVariables]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#section-terminalvars")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#section-terminalvars")
 validTerminalMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalMemberVariables(terminal, fmd) ==
 	let tmvs = terminal.terminalMemberVariable in
@@ -65,10 +74,13 @@ See <<section-terminalvars>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalStreamMemberVariables
 [[validTerminalStreamMemberVariables]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#_terminal_stream_member_variable")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#_terminal_stream_member_variable")
 validTerminalStreamMemberVariables: Terminal * [FmiModelDescription] +> bool
 validTerminalStreamMemberVariables(terminal, fmd) ==
 	let tsmvs = terminal.terminalStreamMemberVariable in
@@ -95,10 +107,13 @@ See <<_terminal_stream_member_variable>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTerminalGraphicalRepresentation
 [[validTerminalGraphicalRepresentation]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#_terminal_graphical_representation")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#_terminal_graphical_representation")
 validTerminalGraphicalRepresentation: Terminal +> bool
 validTerminalGraphicalRepresentation(terminal) ==
 	let tgr = terminal.terminalGraphicalRepresentation in

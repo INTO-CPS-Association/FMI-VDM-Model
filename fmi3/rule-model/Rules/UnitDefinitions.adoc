@@ -9,11 +9,14 @@ endif::[]
 :!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validUnitNames
 [[validUnitNames]]
+ifdef::hidden[]
 // {vdm}
-----
-
 -- @DocLink("<FMI3_STANDARD>#_physical_units")
 -- @DocLink("<FMI3_STANDARD>#uniqueNameAttribute")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validUnitNames: UnitDefinitions +> bool
 validUnitNames(units) ==
 	-- @OnFail("%NAME: Unit names must be unique")
@@ -26,11 +29,14 @@ validUnitNames(units) ==
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validDisplayUnitNames
 [[validDisplayUnitNames]]
+ifdef::hidden[]
 // {vdm}
-----
-
 -- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit")
 -- @DocLink("<FMI3_STANDARD>#uniqueNameAttribute")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validDisplayUnitNames: Unit +> bool
 validDisplayUnitNames(unit) ==
 	unit.displayUnit <> nil =>
@@ -45,10 +51,13 @@ validDisplayUnitNames(unit) ==
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validInverseAndOffset
 [[validInverseAndOffset]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit")
 validInverseAndOffset: DisplayUnit +> bool
 validInverseAndOffset(dunit) ==
 	-- @OnFail("%NAME: inverse is only allowed if offset = 0 at %#s", loc2str(dunit.location))

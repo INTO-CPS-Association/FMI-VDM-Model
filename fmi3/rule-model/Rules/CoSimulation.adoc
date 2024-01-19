@@ -9,11 +9,14 @@ endif::[]
 :!typerule:
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validCSModelIdentifier
 [[validCSModelIdentifier]]
+ifdef::hidden[]
 // {vdm}
-----
-
 -- @DocLink("<FMI3_STANDARD>#modelIdentifier")
 -- @DocLink("<FMI3_STANDARD>#header-files-and-naming-of-functions")
+// {vdm}
+endif::[]
+// {vdm}
+----
 validCSModelIdentifier: CoSimulation +> bool
 validCSModelIdentifier(ecs) ==
 	-- @OnFail("%NAME: %s not valid C variable name at %#s",
@@ -26,14 +29,16 @@ validCSModelIdentifier(ecs) ==
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validCSIntermediateUpdate
 [[validCSIntermediateUpdate]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#table-CoSimulation-details")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#table-CoSimulation-details")
 validCSIntermediateUpdate: CoSimulation +> bool
 validCSIntermediateUpdate(ecs) ==
-	-- @OnFail("%NAME: canReturnEarlyAfterIntermediateUpdate requires providesIntermediateUpdate at %#s",
-	-- loc2str(ecs.location))
+	-- @OnFail("%NAME: canReturnEarlyAfterIntermediateUpdate requires providesIntermediateUpdate")
 	( ecs.canReturnEarlyAfterIntermediateUpdate = true => ecs.providesIntermediateUpdate );
 ----
 // {vdm}

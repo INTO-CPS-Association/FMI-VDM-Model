@@ -12,10 +12,13 @@ Note that the rules in this section are checking the "raw" ModelVariable values,
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validValueReferences
 [[validValueReferences]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#_platform_dependent_definitions")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#_platform_dependent_definitions")
 validValueReferences: ModelVariables +> bool
 validValueReferences(mvs) ==
 	let refs = [ mv.valueReference | mv in seq mvs ] in
@@ -28,10 +31,13 @@ See <<_platform_dependent_definitions>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validAliasNames
 [[validAliasNames]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#_alias_variables")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#_alias_variables")
 validAliasNames: ModelVariables +> bool
 validAliasNames(mvs) ==
 	let aliases = conc [ [ a.name | a in seq mv.alias ] | mv in seq mvs & mv.alias <> nil ],
@@ -45,10 +51,13 @@ See <<_alias_variables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validIndependentVariable
 [[validIndependentVariable]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validIndependentVariable: ModelVariables +> bool
 validIndependentVariable(mvs) ==
 	-- @OnFail("%NAME: Variables define more than one independent variable: %s",
@@ -60,10 +69,13 @@ See <<ModelVariables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validPreviousVariables
 [[validPreviousVariables]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validPreviousVariables: ModelVariables +> bool
 validPreviousVariables(mvs) ==
 	let plist =  [ mv.previous | mv in seq mvs & not is_Clock(mv) and mv.previous <> nil ]
@@ -78,10 +90,13 @@ See <<ModelVariables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validVariableDimensions
 [[validVariableDimensions]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validVariableDimensions: ModelVariables +> bool
 validVariableDimensions(mvs) ==
 	allOf(conc
@@ -101,7 +116,8 @@ validVariableDimensions(mvs) ==
 						exists r in seq mvs &
 							r.valueReference = dim.valueReference
 							and is_IntegerKind(kindOf(r))
-							and ( r.causality = <structuralParameter> or r.variability = <constant> )
+							and ( r.causality = <structuralParameter>
+								  or r.variability = <constant> )
 							and r.start <> nil and len r.start = 1 and r.start(1) >= 0 ),
 
 			-- @OnFail("%NAME: Structural parameter %s cannot have Dimension", mv.name)
@@ -117,10 +133,13 @@ See <<ModelVariables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validStartAndVRef
 [[validStartAndVRef]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validStartAndVRef: Dimension +> bool
 validStartAndVRef(d) ==
 	-- @OnFail("%NAME: Dimension cannot define start and valueReference at %#s", loc2str(d.location))
@@ -131,10 +150,13 @@ See <<ModelVariables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validAliasDisplayUnits
 [[validAliasDisplayUnits]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validAliasDisplayUnits: ModelVariables +> bool
 validAliasDisplayUnits(mvs) ==
 	allOf
@@ -155,10 +177,13 @@ See <<ModelVariables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validModelVariables
 [[validModelVariables]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validModelVariables: ModelVariables +> bool
 validModelVariables(svs) == allOf
 ([
@@ -190,10 +215,13 @@ See <<ModelVariables>>.
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validVariableAttributes
 [[validVariableAttributes]]
+ifdef::hidden[]
+// {vdm}
+-- @DocLink("<FMI3_STANDARD>#ModelVariables")
+// {vdm}
+endif::[]
 // {vdm}
 ----
-
--- @DocLink("<FMI3_STANDARD>#ModelVariables")
 validVariableAttributes: fmi3Variable +> bool
 validVariableAttributes(sv) ==
 	let eCausality   = effectiveCausality(sv.causality, kindOf(sv)),
@@ -201,9 +229,9 @@ validVariableAttributes(sv) ==
 		eInitial     = effectiveInitial(sv.causality, sv.variability,
 						if is_Clock(sv) then nil else sv.initial, kindOf(sv))
 	in
-	{
-		/* @OnFail(1460, "2.4.7 Variable %s causality/variability/initial/start %s/%s/%s/%s invalid at %#s",
-			sv.name, eCausality, eVariability, eInitial, sv.start, loc2str(sv.location)) */
+	allOf([
+		-- @OnFail("%NAME: %s causality/variability/initial/start %s/%s/%s/%s invalid at %#s",
+		--	sv.name, eCausality, eVariability, eInitial, sv.start, loc2str(sv.location))
 		(
 			cases eCausality:
 				<structuralParameter> ->
@@ -227,7 +255,8 @@ validVariableAttributes(sv) ==
 					eVariability = <continuous>
 					and eInitial = nil		-- (D)
 					and sv.start = nil
-					-- @OnFail(1461, "2.4.7 Independent variable must be Float at %#s", loc2str(sv.location))
+					-- @OnFail(1461, "2.4.7 Independent variable must be Float at %#s",
+					-- loc2str(sv.location))
 					and (is_Float64(sv) or is_Float32(sv)),
 
 				<output> ->
@@ -260,36 +289,38 @@ validVariableAttributes(sv) ==
 			end
 		),
 
-		/* @OnFail(1462, "2.4.7 Variable %s variability/causality %s/%s invalid at %#s",
-			sv.name, eVariability, eCausality, loc2str(sv.location)) */
+		-- @OnFail("%NAME: %s variability/causality %s/%s invalid at %#s",
+		--	sv.name, eVariability, eCausality, loc2str(sv.location))
 		(
 			cases eVariability:
 				<constant> ->
 					eCausality in set {<output>, <local>},
 
 				<fixed>, <tunable> ->
-					eCausality in set {<structuralParameter>, <parameter>, <calculatedParameter>, <local>},
+					eCausality in set {<structuralParameter>, <parameter>,
+									   <calculatedParameter>, <local>},
 
 				<discrete> ->
 					eCausality in set {<input>, <output>, <local>},
 
 				<continuous> ->
 					eCausality in set {<input>, <output>, <local>, <independent>}
-					-- @OnFail(1463, "2.4.7 Continuous variable must be Real at %#s", loc2str(sv.location))
+					-- @OnFail(1463, "2.4.7 Continuous variable must be Real at %#s",
+					-- loc2str(sv.location))
 					and (is_Float64(sv) or is_Float32(sv))
 			end
 		),
 
-		/* @OnFail(1464, "2.4.7 Variable %s initial/causality %s/%s invalid at %#s",
-			sv.name, sv.initial, eCausality, loc2str(sv.location)) */
+		-- @OnFail("%NAME: %s initial/causality %s/%s invalid at %#s",
+		--	sv.name, sv.initial, eCausality, loc2str(sv.location))
 		(
 			not is_Clock(sv) =>
 				sv.initial <> nil =>
 					eCausality <> <independent>
 		),
 
-		/* @OnFail(1465, "2.4.7 Variable %s initial/variability/start %s/%s/%s invalid at %#s",
-			sv.name, eInitial, eVariability, sv.start, loc2str(sv.location)) */
+		-- @OnFail("%NAME: %s initial/variability/start %s/%s/%s invalid at %#s",
+		--	sv.name, eInitial, eVariability, sv.start, loc2str(sv.location))
 		(
 			cases eInitial:
 				<exact> ->
@@ -307,7 +338,7 @@ validVariableAttributes(sv) ==
 					true	-- Tests on eInitial above are sufficient
 			end
 		)
-	} = {true};
+	]);
 ----
 // {vdm}
 See <<ModelVariables>>.
