@@ -96,7 +96,7 @@ SCRIPT=$0
 	cd "$dir"
 	
 	XSD="schema/fmi2.xsd"
-	MODEL="model model/Rules"
+	MODEL="model model/Rules/*.adoc"
 	
 	# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for msys
 	CLASSPATH_SEPARATOR=":"
