@@ -29,31 +29,44 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-resources</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>.generated/sources</outputDirectory>
-							<resources>
-								<resource>
-									<directory>.</directory>
-									<filtering>false</filtering>
-									<exclude>.generated/**</exclude>
-									<exclude>pom.xml</exclude>
-								</resource>
-								<resource>
-									<directory>..</directory>
-									<filtering>false</filtering>
-									<include>LICENCE</include>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
+					<executions>
+						<execution>
+							<id>copy-resources</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>.generated/fmi2model</outputDirectory>
+								<resources>
+									<resource>
+										<directory>.</directory>
+										<filtering>false</filtering>
+										<exclude>.generated/**</exclude>
+										<exclude>pom.xml</exclude>
+										<include>*.vdmsl</include>
+									</resource>
+								</resources>
+							</configuration>
+						</execution>
+						<execution>
+							<id>copy-licence</id>
+							<phase>prepare-package</phase>
+							<goals>
+								<goal>copy-resources</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>.generated</outputDirectory>
+								<resources>
+									<resource>
+										<directory>../..</directory>
+										<filtering>false</filtering>
+										<include>MIT-LICENCE</include>
+									</resource>
+								</resources>
+							</configuration>
+						</execution>
+					</executions>
 			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -64,10 +77,10 @@
 						<configuration>
 							<useDefaultManifestFile>true</useDefaultManifestFile>
 							<outputDirectory>.generated</outputDirectory>
-							<classesDirectory>.generated/sources</classesDirectory>
+							<classesDirectory>.generated</classesDirectory>
 							<includes>
-								<include>**/*.vdmsl</include>
-								<include>LICENCE</include>
+								<include>fmi2model/*.vdmsl</include>
+								<include>MIT-LICENCE</include>
 							</includes>
 						</configuration>
 					</execution>

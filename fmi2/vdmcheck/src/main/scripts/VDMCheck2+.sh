@@ -95,8 +95,8 @@ SCRIPT=$0
 	dir=$(dirname "$path")
 	cd "$dir"
 	
-	XSD="schema/fmi2.xsd"
-	MODEL="model model/Rules/*.adoc"
+	XSD="fmi2schema/fmi2.xsd"
+	MODEL="fmi2model fmi2model/Rules/*.adoc"
 	
 	# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for msys
 	CLASSPATH_SEPARATOR=":"
@@ -107,7 +107,7 @@ SCRIPT=$0
 	java -Xmx1g \
 		-Dvdmj.parser.merge_comments=true \
 		-Dfmureader.noschema=true \
-		-Dfmureader.xsd=schema/fmi2.xsd \
+		-Dfmureader.xsd=fmi2schema/fmi2.xsd \
 		-Dfmureader.vdmfile="$SAVE" \
 		-cp vdmj.jar${CLASSPATH_SEPARATOR}annotations.jar${CLASSPATH_SEPARATOR}xsd2vdm.jar${CLASSPATH_SEPARATOR}fmuReader.jar com.fujitsu.vdmj.VDMJ \
 		-vdmsl -q -annotations -e "isValidFMIConfiguration(modelDescription, buildDescription, terminalsAndIcons)" \

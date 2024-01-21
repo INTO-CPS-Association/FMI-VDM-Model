@@ -27,16 +27,12 @@
 			<source>../../LICENCE</source>
 			<destName>LICENCE</destName>
 		</file>
-		<file>
-			<source>src/main/resources/XSD.vdmsl</source>
-			<destName>model/XSD.vdmsl</destName>
-		</file>
 	</files>
 
 	<fileSets>
 		<fileSet>
 			<directory>src/main/resources/schema</directory>
-			<outputDirectory>schema</outputDirectory>
+			<outputDirectory>fmi2schema</outputDirectory>
 		</fileSet>
 	</fileSets>
 	
@@ -46,11 +42,11 @@
 				<include>org.into-cps.vdmcheck.fmi2:rule-model</include>
 			</includes>
 			<unpack>true</unpack>
-			<outputDirectory>model</outputDirectory>
+			<outputDirectory>.</outputDirectory>
 			<unpackOptions>
 				<excludes>
-					<exclude>Tests/**</exclude>
 					<exclude>META-INF/**</exclude>
+					<exclude>MIT-LICENSE</exclude>
 				</excludes>
 			</unpackOptions>
 		</dependencySet>

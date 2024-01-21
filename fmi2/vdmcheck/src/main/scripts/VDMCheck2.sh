@@ -143,7 +143,7 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 		cd "$dir"
 		VAR=model$$
 		
-		INXSD="schema/fmi2.xsd"
+		INXSD="fmi2schema/fmi2.xsd"
 	
 		if ! type java 2>/dev/null 1>&2
 		then
@@ -169,7 +169,7 @@ function check()	# $1 = the XML temp file to check, $2 = name of the file
 
 		java -Xmx1g -cp vdmj.jar${CLASSPATH_SEPARATOR}annotations.jar com.fujitsu.vdmj.VDMJ \
 			-vdmsl -q -annotations -e "isValidFMIConfiguration($VAR)" \
-			model $VDM |
+			fmi2model $VDM |
 			awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'
 	)
 	

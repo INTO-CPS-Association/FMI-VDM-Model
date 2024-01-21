@@ -101,10 +101,20 @@ public class MaestroCheck {
         schema.mkdir();
         schema.deleteOnExit();
 
-        copyResources(fmi2, "/schema/fmi2Annotation.xsd", "/schema/fmi2AttributeGroups.xsd", "/schema/fmi2ModelDescription.xsd",
-                "/schema/fmi2ScalarVariable.xsd", "/schema/fmi2Type.xsd", "/schema/fmi2Unit.xsd", "/schema/fmi2VariableDependency.xsd",
-                "/schema/fmi2.xsd", "/schema/fmi3Annotation.xsd", "/schema/fmi3BuildDescription.xsd", "/schema/fmi3TerminalsAndIcons.xsd",
-                "/schema/fmi3Terminal.xsd", "/schema/xsd2vdm.properties");
+        copyResources(fmi2,
+        		"/schema/fmi2Annotation.xsd",
+        		"/schema/fmi2AttributeGroups.xsd",
+        		"/schema/fmi2ModelDescription.xsd",
+                "/schema/fmi2ScalarVariable.xsd",
+                "/schema/fmi2Type.xsd",
+                "/schema/fmi2Unit.xsd",
+                "/schema/fmi2VariableDependency.xsd",
+                "/schema/fmi2.xsd",
+                "/schema/fmi3Annotation.xsd",
+                "/schema/fmi3BuildDescription.xsd",
+                "/schema/fmi3TerminalsAndIcons.xsd",
+                "/schema/fmi3Terminal.xsd",
+                "/schema/xsd2vdm.properties");
 
         File xsdFile = new File(schema, "fmi2.xsd");
         OnFailError validation = validate(modelDescriptionFile, xsdFile);
@@ -126,29 +136,34 @@ public class MaestroCheck {
 
             if (vdmFile.exists())    // Means successful?
             {
-                copyResources(vdmsl, "/CoSimulation_4.3.1.vdmsl", "/DefaultExperiment_2.2.5.vdmsl", "/FMI2Schema.vdmsl",
-                        "/FMIModelDescription_2.2.1.vdmsl", "/LogCategories_2.2.4.vdmsl", "/Misc.vdmsl", "/ModelExchange_3.3.1.vdmsl",
-                        "/ModelStructure_2.2.8.vdmsl", "/ModelVariables_2.2.7.vdmsl", "/TypeDefinitions_2.2.3.vdmsl", "/UnitDefinitions_2.2.2.vdmsl",
-                        "/VariableNaming_2.2.9.vdmsl", "/VendorAnnotations_2.2.6.vdmsl",
+                copyResources(vdmsl,
+            		"/fmi2model/CoSimulation_4.3.1.vdmsl",
+            		"/fmi2model/DefaultExperiment_2.2.5.vdmsl",
+            		"/fmi2model/FMI2Schema.vdmsl",
+                    "/fmi2model/FMIModelDescription_2.2.1.vdmsl",
+                    "/fmi2model/LogCategories_2.2.4.vdmsl",
+                    "/fmi2model/Misc.vdmsl",
+                    "/fmi2model/ModelExchange_3.3.1.vdmsl",
+                    "/fmi2model/ModelStructure_2.2.8.vdmsl",
+                    "/fmi2model/ModelVariables_2.2.7.vdmsl",
+                    "/fmi2model/TypeDefinitions_2.2.3.vdmsl",
+                    "/fmi2model/UnitDefinitions_2.2.2.vdmsl",
+                    "/fmi2model/VariableNaming_2.2.9.vdmsl",
+                    "/fmi2model/VendorAnnotations_2.2.6.vdmsl",
 
-                        "/BuildConfiguration_2.3.vdmsl", "/GraphicalRepresentation_2.3.vdmsl", "/Terminals_2.3.vdmsl", "/VendorAnnotations_2.3.vdmsl",
-                        "/Validation.vdmsl", "/XSD.vdmsl");
+                    "/fmi2model/BuildConfiguration_2.3.vdmsl",
+                    "/fmi2model/GraphicalRepresentation_2.3.vdmsl",
+                    "/fmi2model/Terminals_2.3.vdmsl",
+                    "/fmi2model/VendorAnnotations_2.3.vdmsl",
+                    "/fmi2model/Validation.vdmsl",
+                    "/fmi2model/XSD.vdmsl");
 
                 Properties.init();
                 Settings.annotations = true;
                 ASTModuleList ast = new ASTModuleList();
+                readDirectory(ast, vdmsl, errors);
 
-                for (File sl : vdmsl.listFiles()) {
-                    LexTokenReader ltr = new LexTokenReader(sl, Dialect.VDM_SL);
-                    ModuleReader mreader = new ModuleReader(ltr);
-                    ast.addAll(mreader.readModules());
-
-                    for (VDMError err : mreader.getErrors()) {
-                        errors.add(new OnFailError(err.number, err.message));
-                    }
-                }
-
-                if (!errors.isEmpty()) {
+                 if (!errors.isEmpty()) {
                     errors.add(new OnFailError(1, "Syntax errors in VDMSL?"));
                 } else {
                     ClassMapper instance = ClassMapper.getInstance(TCNode.MAPPINGS, new PrintStream(new ByteArrayOutputStream()));
@@ -183,6 +198,25 @@ public class MaestroCheck {
         return errors;
     }
 
+    private void readDirectory(ASTModuleList ast, File dir, List<OnFailError> errors)
+    {
+        for (File sl : dir.listFiles()) {
+        	if (sl.isDirectory())
+        	{
+        		readDirectory(ast, sl, errors);
+        	}
+        	else
+        	{
+	            LexTokenReader ltr = new LexTokenReader(sl, Dialect.VDM_SL);
+	            ModuleReader mreader = new ModuleReader(ltr);
+	            ast.addAll(mreader.readModules());
+	
+	            for (VDMError err : mreader.getErrors()) {
+	                errors.add(new OnFailError(err.number, err.message));
+	            }
+        	}
+        }
+    }
 
     private OnFailError validate(File xml, File xsd) {
         try {
@@ -224,7 +258,8 @@ public class MaestroCheck {
     }
 
     private void copyStream(InputStream data, File target, String file) throws IOException {
-        File targetFile = new File(target, file);
+        File targetFile = new File(target.getAbsolutePath() + file);
+        targetFile.getParentFile().mkdirs();
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(targetFile));
 
         while (data.available() > 0) {
