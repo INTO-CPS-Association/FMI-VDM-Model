@@ -270,7 +270,7 @@ public class VDMCheck
 			File tempOUT = File.createTempFile("out", "tmp");
 			tempOUT.deleteOnExit();
 			
-			File schema = new File(jarLocation.getAbsolutePath() + File.separator + "schema/fmi3.xsd");
+			File schema = new File(jarLocation.getAbsolutePath() + File.separator + "fmi3schema/fmi3.xsd");
 			
 			int exit = runCommand(jarLocation, tempOUT,
 					"java", "-jar", "xsd2vdm.jar", 
@@ -288,7 +288,7 @@ public class VDMCheck
 				
 			String[] dependencies = {"vdmj.jar", "annotations.jar"};
 			
-			File rules = new File(jarLocation.getAbsolutePath() + File.separator + "model/Rules");
+			File rules = new File(jarLocation.getAbsolutePath() + File.separator + "fmi3model/Rules");
 			List<String> args = new Vector<String>();
 			
 			args.add("java");
@@ -302,13 +302,13 @@ public class VDMCheck
 			args.add("-annotations");
 			args.add("-e");
 			args.add("isValidFMIConfiguration(" + varName + ", nil, nil)");
-			args.add("model");
+			args.add("fmi3model");
 			
 			if (rules.exists())
 			{
 				for (String adoc: rules.list())
 				{
-					args.add("model" + File.separator + "Rules" + File.separator + adoc);
+					args.add("fmi3model" + File.separator + "Rules" + File.separator + adoc);
 				}
 			}
 

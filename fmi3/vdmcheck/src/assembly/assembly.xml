@@ -32,7 +32,7 @@
 	<fileSets>
 		<fileSet>
 			<directory>src/main/resources/schema</directory>
-			<outputDirectory>schema</outputDirectory>
+			<outputDirectory>fmi3schema</outputDirectory>
 		</fileSet>
 	</fileSets>
 
@@ -42,7 +42,7 @@
 				<include>org.into-cps.vdmcheck.fmi3:rule-model</include>
 			</includes>
 			<unpack>true</unpack>
-			<outputDirectory>model</outputDirectory>
+			<outputDirectory>.</outputDirectory>
 			<unpackOptions>
 				<excludes>
 					<exclude>Tests/**</exclude>
