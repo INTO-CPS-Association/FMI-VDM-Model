@@ -250,7 +250,7 @@ public class VDMCheck
 			File tempOUT = File.createTempFile("out", "tmp");
 			tempOUT.deleteOnExit();
 			
-			File schema = new File(jarLocation.getAbsolutePath() + File.separator + "schema/fmi2.xsd");
+			File schema = new File(jarLocation.getAbsolutePath() + File.separator + "fmi2schema/fmi2.xsd");
 			
 			int exit = runCommand(jarLocation, tempOUT,
 					"java", "-jar", "xsd2vdm.jar", 
@@ -265,7 +265,7 @@ public class VDMCheck
 			runCommand(jarLocation, tempOUT,
 					"java", "-Xmx1g", "-cp", String.join(File.pathSeparator, dependencies), 
 					"com.fujitsu.vdmj.VDMJ", "-vdmsl", "-q", "-annotations",
-					"-e", "isValidFMIConfiguration(" + varName + ")", "model", tempVDM.getCanonicalPath());
+					"-e", "isValidFMIConfiguration(" + varName + ")", "fmi2model", tempVDM.getCanonicalPath());
 	
 			sed(tempOUT, System.out,
 					"^true$", "No errors found.",
