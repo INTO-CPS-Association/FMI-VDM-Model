@@ -84,14 +84,22 @@ public class MaestroCheck {
     }
 
 
-    public List<OnFailError> check(InputStream modelDescriptionStream) throws Exception {
+    /**
+     * Run model checks on the XML passed as a stream. This can be a modelDescription.xml,
+     * buildDescription.xml or terminalsAndIcons.xml source.
+     */
+    public List<OnFailError> check(InputStream xmlStream) throws Exception {
         File xmlfile = Files.createTempFile("fmi", ".xml", new FileAttribute[0]).toFile();
         xmlfile.deleteOnExit();
-        copyStream(modelDescriptionStream, xmlfile.getParentFile(), xmlfile.getName());
+        copyStream(xmlStream, xmlfile.getParentFile(), xmlfile.getName());
         return check(xmlfile);
     }
 
-    public List<OnFailError> check(File modelDescriptionFile) throws Exception {
+    /**
+     * Run model checks on the XML passed as a file. This can be a modelDescription.xml,
+     * buildDescription.xml or terminalsAndIcons.xml source.
+     */
+    public List<OnFailError> check(File xmlFile) throws Exception {
         List<OnFailError> errors = new Vector<>();
 
         File fmi2 = Files.createTempDirectory("fmi2", new FileAttribute[0]).toFile();
@@ -117,7 +125,7 @@ public class MaestroCheck {
                 "/fmi2schema/xsd2vdm.properties");
 
         File xsdFile = new File(fmi2schema, "fmi2.xsd");
-        OnFailError validation = validate(modelDescriptionFile, xsdFile);
+        OnFailError validation = validate(xmlFile, xsdFile);
 
         if (validation != null) {
             errors.add(validation);
@@ -131,8 +139,8 @@ public class MaestroCheck {
 
             Xsd2VDM converter = new Xsd2VDM();
             Xsd2VDM.loadProperties(xsdFile);
-            Map<String, Type> vdmSchema = converter.createVDMSchema(xsdFile, modelDescriptionFile, false, true);
-            converter.createVDMValue(vdmSchema, vdmFile, modelDescriptionFile, "model");
+            Map<String, Type> vdmSchema = converter.createVDMSchema(xsdFile, xmlFile, false, true);
+            converter.createVDMValue(vdmSchema, vdmFile, xmlFile, "model");
 
             if (vdmFile.exists())    // Means successful?
             {
