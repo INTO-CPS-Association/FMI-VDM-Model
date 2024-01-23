@@ -35,6 +35,8 @@ public class MaestroCheckTest
 		Assert.assertEquals(1, errors.size());
 		Assert.assertEquals(0, errors.get(0).errno);
 		System.err.println(errors.get(0).message);
-		Assert.assertTrue(errors.get(0).message.endsWith("noSuchFile.xml (No such file or directory)"));
+		Assert.assertEquals(
+			"XML validation: src/test/resources/noSuchFile.xml (No such file or directory)",
+			errors.get(0).message);
 	}
 }
