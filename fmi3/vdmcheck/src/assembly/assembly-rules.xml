@@ -31,7 +31,7 @@
 
 	<fileSets>
 		<fileSet>
-			<directory>src/main/resources/schema</directory>
+			<directory>src/main/resources/fmi3schema</directory>
 			<outputDirectory>fmi3schema</outputDirectory>
 		</fileSet>
 	</fileSets>

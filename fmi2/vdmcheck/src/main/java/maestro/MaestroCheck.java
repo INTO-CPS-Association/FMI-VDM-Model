@@ -97,26 +97,26 @@ public class MaestroCheck {
         File fmi2 = Files.createTempDirectory("fmi2", new FileAttribute[0]).toFile();
         fmi2.deleteOnExit();
 
-        File schema = new File(fmi2, "schema");
-        schema.mkdir();
-        schema.deleteOnExit();
+        File fmi2schema = new File(fmi2, "fmi2schema");
+        fmi2schema.mkdir();
+        fmi2schema.deleteOnExit();
 
         copyResources(fmi2,
-        		"/schema/fmi2Annotation.xsd",
-        		"/schema/fmi2AttributeGroups.xsd",
-        		"/schema/fmi2ModelDescription.xsd",
-                "/schema/fmi2ScalarVariable.xsd",
-                "/schema/fmi2Type.xsd",
-                "/schema/fmi2Unit.xsd",
-                "/schema/fmi2VariableDependency.xsd",
-                "/schema/fmi2.xsd",
-                "/schema/fmi3Annotation.xsd",
-                "/schema/fmi3BuildDescription.xsd",
-                "/schema/fmi3TerminalsAndIcons.xsd",
-                "/schema/fmi3Terminal.xsd",
-                "/schema/xsd2vdm.properties");
+        		"/fmi2schema/fmi2Annotation.xsd",
+        		"/fmi2schema/fmi2AttributeGroups.xsd",
+        		"/fmi2schema/fmi2ModelDescription.xsd",
+                "/fmi2schema/fmi2ScalarVariable.xsd",
+                "/fmi2schema/fmi2Type.xsd",
+                "/fmi2schema/fmi2Unit.xsd",
+                "/fmi2schema/fmi2VariableDependency.xsd",
+                "/fmi2schema/fmi2.xsd",
+                "/fmi2schema/fmi3Annotation.xsd",
+                "/fmi2schema/fmi3BuildDescription.xsd",
+                "/fmi2schema/fmi3TerminalsAndIcons.xsd",
+                "/fmi2schema/fmi3Terminal.xsd",
+                "/fmi2schema/xsd2vdm.properties");
 
-        File xsdFile = new File(schema, "fmi2.xsd");
+        File xsdFile = new File(fmi2schema, "fmi2.xsd");
         OnFailError validation = validate(modelDescriptionFile, xsdFile);
 
         if (validation != null) {

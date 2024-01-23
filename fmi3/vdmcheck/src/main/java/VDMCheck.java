@@ -270,11 +270,11 @@ public class VDMCheck
 			File tempOUT = File.createTempFile("out", "tmp");
 			tempOUT.deleteOnExit();
 			
-			File schema = new File(jarLocation.getAbsolutePath() + File.separator + "fmi3schema/fmi3.xsd");
+			File fmi3schema = new File(jarLocation.getAbsolutePath() + File.separator + "fmi3schema/fmi3.xsd");
 			
 			int exit = runCommand(jarLocation, tempOUT,
 					"java", "-jar", "xsd2vdm.jar", 
-					"-xsd", schema.getCanonicalPath(),
+					"-xsd", fmi3schema.getCanonicalPath(),
 					"-xml", tempXML.file.getCanonicalPath(),
 					"-vdm", tempVDM.getCanonicalPath(),
 					"-name", varName,
