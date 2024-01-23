@@ -38,6 +38,9 @@ do
         v)
             SAVE=$(realpath ${OPTARG})
             ;;
+    	x)
+    		XML=${OPTARG}
+    		;;
         *)
 			echo "$USAGE"
 			exit 1
@@ -87,7 +90,7 @@ SCRIPT=$0
 	XSD="fmi3schema/fmi3.xsd"
 	MODEL="fmi3model fmi3model/Rules/*.adoc"
 	
-	# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for msys
+	# Fix Class Path Separator - Default to colon for Unix-like systems, semicolon for msys
 	CLASSPATH_SEPARATOR=":"
 	if [ $OSTYPE == "msys" ]; then
 		CLASSPATH_SEPARATOR=";"
@@ -98,7 +101,7 @@ SCRIPT=$0
 		-Dfmureader.xsd=fmi3schema/fmi3.xsd \
 		-Dfmureader.vdmfile="$SAVE" \
 		-cp vdmj.jar${CLASSPATH_SEPARATOR}annotations.jar${CLASSPATH_SEPARATOR}xsd2vdm.jar${CLASSPATH_SEPARATOR}fmuReader.jar com.fujitsu.vdmj.VDMJ \
-		-vdmsl -q -annotations -e "isValidFMIConfiguration(modelDescription, buildDescription, terminalsAndIcons)" \
+		-vdmsl -q -annotations -e "isValidFMIConfigurations(modelDescription, buildDescription, terminalsAndIcons)" \
 		$MODEL "$FILE" |
 		sed -e "s+<FMI3_STANDARD>+$LINK+" |
 		awk '/^true$/{ print "No errors found."; exit 0 };/^false$/{ print "Errors found."; exit 1 };{ print }'

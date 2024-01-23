@@ -1,7 +1,7 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
-	<id>distribution</id>
+	<id>distribution-rules</id>
 
 	<formats>
 		<format>zip</format>
@@ -11,8 +11,8 @@
 
 	<files>
 		<file>
-			<source>src/main/scripts/VDMCheck3.sh</source>
-			<destName>VDMCheck3.sh</destName>
+			<source>src/main/scripts/VDMCheck2.sh</source>
+			<destName>VDMCheck2.sh</destName>
 			<filtered>true</filtered>
 		</file>
 		<file>
@@ -32,22 +32,21 @@
 	<fileSets>
 		<fileSet>
 			<directory>src/main/resources/schema</directory>
-			<outputDirectory>fmi3schema</outputDirectory>
+			<outputDirectory>fmi2schema</outputDirectory>
 		</fileSet>
 	</fileSets>
-
+	
 	<dependencySets>
 		<dependencySet>
 			<includes>
-				<include>org.into-cps.vdmcheck.fmi3:rule-model</include>
+				<include>org.into-cps.vdmcheck.fmi2:rule-model</include>
 			</includes>
 			<unpack>true</unpack>
 			<outputDirectory>.</outputDirectory>
 			<unpackOptions>
 				<excludes>
-					<exclude>Tests/**</exclude>
 					<exclude>META-INF/**</exclude>
-					<exclude>Rules/*.adoc.vdmsl</exclude>
+					<exclude>MIT-LICENSE</exclude>
 				</excludes>
 			</unpackOptions>
 		</dependencySet>
@@ -55,7 +54,7 @@
 			<includes>
 				<include>org.into-cps.vdmcheck:xsd2vdm</include>
 				<include>org.into-cps.vdmcheck:fmuReader</include>
-				<include>org.into-cps.vdmcheck.fmi3:vdmcheck3</include>
+				<include>org.into-cps.vdmcheck.fmi2:vdmcheck2</include>
 				<include>dk.au.ece.vdmj:vdmj</include>
 				<include>dk.au.ece.vdmj:annotations</include>
 			</includes>

@@ -1,7 +1,7 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
-	<id>distribution2</id>
+	<id>distribution-static</id>
 
 	<formats>
 		<format>zip</format>
@@ -11,8 +11,8 @@
 
 	<files>
 		<file>
-			<source>src/main/scripts/VDMCheck2+.sh</source>
-			<destName>VDMCheck2+.sh</destName>
+			<source>src/main/scripts/VDMCheck2.sh</source>
+			<destName>VDMCheck2.sh</destName>
 			<filtered>true</filtered>
 		</file>
 		<file>
@@ -39,14 +39,14 @@
 	<dependencySets>
 		<dependencySet>
 			<includes>
-				<include>org.into-cps.vdmcheck.fmi2:rule-model</include>
+				<include>org.into-cps.vdmcheck.fmi2:static-model</include>
 			</includes>
 			<unpack>true</unpack>
 			<outputDirectory>.</outputDirectory>
 			<unpackOptions>
 				<excludes>
+					<exclude>Tests/**</exclude>
 					<exclude>META-INF/**</exclude>
-					<exclude>MIT-LICENSE</exclude>
 				</excludes>
 			</unpackOptions>
 		</dependencySet>

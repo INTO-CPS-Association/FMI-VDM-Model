@@ -31,6 +31,10 @@
  * Functions to support the validation of FMU configuration files.
  */
 functions
+	/**
+	 * This function is called via VDMCheck.sh and MaestroCheck, being passed a single
+	 * XML type.
+	 */
 	isValidFMIConfiguration: FmiModelDescription | FmiBuildDescription | FmiTerminalsAndIcons +> bool
 	isValidFMIConfiguration(conf) ==
 		if is_(conf, FmiModelDescription)
@@ -43,3 +47,16 @@ functions
 		then isValidFMITerminalsAndIcons(conf)
 
 		else undefined;		-- Undefined top level type
+
+	/**
+	 * This function is called via a VDMCheck.sh which uses FMUReader to generate all three
+	 * XML files and check them in one pass.
+	 */
+	isValidFMIConfigurations: [FmiModelDescription] * [FmiBuildDescription] * [FmiTerminalsAndIcons] +> bool
+	isValidFMIConfigurations(model, build, terminals) ==
+	{
+		model <> nil => isValidFMIModelDescription(model),
+		build <> nil => isValidFMIBuildDescription(build),
+		terminals <> nil => isValidFMITerminalsAndIcons(terminals)
+	}
+	= {true};

@@ -58,7 +58,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Main-Class>VDMCheck</Main-Class>
+                            <Main-Class>VDMCheckPlus</Main-Class>
                             <Implementation-Version>${project.version} build ${maven.build.timestamp}
                             </Implementation-Version>
                             <Class-Path>.</Class-Path>
@@ -80,7 +80,7 @@
 						</goals>
 						<configuration>
 							<descriptors>
-								<descriptor>src/assembly/assembly.xml</descriptor>
+								<descriptor>src/assembly/assembly-static.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
@@ -92,7 +92,7 @@
 						</goals>
 						<configuration>
 							<descriptors>
-								<descriptor>src/assembly/assembly2.xml</descriptor>
+								<descriptor>src/assembly/assembly-rules.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>

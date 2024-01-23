@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *	Copyright (c) 2017-2022, INTO-CPS Association,
+ *	Copyright (c) 2017-2024, INTO-CPS Association,
  *	c/o Professor Peter Gorm Larsen, Department of Engineering
  *	Finlandsgade 22, 8200 Aarhus N.
  *
@@ -60,7 +60,7 @@ public class VDMCheckPlus
 		
 		if (filename == null)
 		{
-			System.err.println("Usage: java -jar vdmcheck3.jar [-h <FMI Standard base URL>] [-v <VDM outfile>] <file>.fmu | <file>.xml");
+			System.err.println("Usage: java -jar vdmcheck2.jar [-h <FMI Standard base URL>] [-v <VDM outfile>] <file>.fmu | <file>.xml");
 			System.exit(1);
 		}
 		else if (!filename.exists())
@@ -94,14 +94,14 @@ public class VDMCheckPlus
 			tempOUT.deleteOnExit();
 			
 			String[] dependencies = {"vdmj.jar", "annotations.jar", "xsd2vdm.jar", "fmuReader.jar"};
-			File rules = new File(jarLocation.getAbsolutePath(), "fmi3model/Rules");
+			File rules = new File(jarLocation.getAbsolutePath(), "fmi2model/Rules");
 			List<String> args = new Vector<String>();
 			
 			args.add("java");
 			args.add("-Xmx1g");
 			args.add("-Dvdmj.parser.merge_comments=true");
 			args.add("-Dfmureader.noschema=true");
-			args.add("-Dfmureader.xsd=fmi3schema/fmi3.xsd");
+			args.add("-Dfmureader.xsd=fmi2schema/fmi2.xsd");
 			args.add("-Dfmureader.vdmfile=" + vdmOUT);
 			args.add("-cp");
 			args.add(String.join(File.pathSeparator, dependencies)); 
@@ -111,7 +111,7 @@ public class VDMCheckPlus
 			args.add("-annotations");
 			args.add("-e");
 			args.add("isValidFMIConfigurations(modelDescription, buildDescription, terminalsAndIcons)");
-			args.add("fmi3model");
+			args.add("fmi2model");
 			args.add(filename.getAbsolutePath());
 			
 			if (rules.exists())
@@ -127,7 +127,7 @@ public class VDMCheckPlus
 				
 				for (String adoc: rules.list(filter))
 				{
-					args.add("fmi3model" + File.separator + "Rules" + File.separator + adoc);
+					args.add("fmi2model" + File.separator + "Rules" + File.separator + adoc);
 				}
 			}
 
@@ -135,6 +135,7 @@ public class VDMCheckPlus
 			runCommand(jarLocation, tempOUT, args.toArray(sargs));
 	
 			sed(tempOUT, System.out,
+					"<FMI2_STANDARD>", prefix,
 					"<FMI3_STANDARD>", prefix,
 					"^true$", "No errors found.",
 					"^false$", "Errors found.");

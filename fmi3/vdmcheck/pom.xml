@@ -73,14 +73,14 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>static</id>
+                        <id>rules</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/assembly/assembly.xml</descriptor>
+                                <descriptor>src/assembly/assembly-rules.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>

@@ -31,8 +31,8 @@ functions
 	 * Top level function to validate the top level records. This just
 	 * calls the invariant function for the corresponding "prime" checked type.
 	 */
-	isValidFMIConfiguration: [FmiModelDescription] * [FmiBuildDescription] * [FmiTerminalsAndIcons] +> bool
-	isValidFMIConfiguration(model, build, terminals) == allOf
+	isValidFMIConfigurations: [FmiModelDescription] * [FmiBuildDescription] * [FmiTerminalsAndIcons] +> bool
+	isValidFMIConfigurations(model, build, terminals) == allOf
 	([
 		model <> nil => inv_FmiModelDescription'(model),
 		build <> nil => inv_FmiBuildDescription'(build),
