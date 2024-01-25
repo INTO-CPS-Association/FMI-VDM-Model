@@ -88,7 +88,7 @@ SCRIPT=$0
 	cd "$dir"
 	
 	XSD="fmi3schema/fmi3.xsd"
-	MODEL="fmi3model fmi3model/Rules/*.adoc"
+	MODEL="fmi3-rule-model fmi3-rule-model/Rules/*.adoc"
 	
 	# Fix Class Path Separator - Default to colon for Unix-like systems, semicolon for msys
 	CLASSPATH_SEPARATOR=":"

@@ -28,6 +28,23 @@
  *********************************************************************************/
 functions
 	/**
+	 * This function is called via VDMCheck.sh and MaestroCheckFMI2, being passed a single
+	 * XML type.
+	 */
+	isValidFMIConfiguration: FmiModelDescription | FmiBuildDescription | FmiTerminalsAndIcons +> bool
+	isValidFMIConfiguration(conf) ==
+		if is_(conf, FmiModelDescription)
+		then inv_FmiModelDescription'(conf)
+
+		elseif is_(conf, FmiBuildDescription)
+		then inv_FmiBuildDescription'(conf)
+
+		else if is_(conf, FmiTerminalsAndIcons)
+		then inv_FmiTerminalsAndIcons'(mk_(conf, nil))
+
+		else undefined;		-- Undefined top level type
+
+	/**
 	 * Top level function to validate the top level records. This just
 	 * calls the invariant function for the corresponding "prime" checked type.
 	 */

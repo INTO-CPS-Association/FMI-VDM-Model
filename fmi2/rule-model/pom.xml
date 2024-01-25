@@ -32,7 +32,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<outputDirectory>.generated/fmi2model</outputDirectory>
+							<outputDirectory>.generated/fmi2-rule-model</outputDirectory>
 							<resources>
 								<resource>
 									<directory>.</directory>
@@ -75,8 +75,8 @@
 							<outputDirectory>.generated</outputDirectory>
 							<classesDirectory>.generated</classesDirectory>
 							<includes>
-								<include>fmi2model/*.vdmsl</include>
-								<include>fmi2model/Rules/*.adoc</include>
+								<include>fmi2-rule-model/*.vdmsl</include>
+								<include>fmi2-rule-model/Rules/*.adoc</include>
 								<include>MIT-LICENCE</include>
 							</includes>
 						</configuration>

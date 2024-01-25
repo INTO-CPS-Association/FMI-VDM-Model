@@ -94,7 +94,7 @@ public class VDMCheckPlus
 			tempOUT.deleteOnExit();
 			
 			String[] dependencies = {"vdmj.jar", "annotations.jar", "xsd2vdm.jar", "fmuReader.jar"};
-			File rules = new File(jarLocation.getAbsolutePath(), "fmi3model/Rules");
+			File rules = new File(jarLocation.getAbsolutePath(), "fmi3-rule-model/Rules");
 			List<String> args = new Vector<String>();
 			
 			args.add("java");
@@ -111,7 +111,7 @@ public class VDMCheckPlus
 			args.add("-annotations");
 			args.add("-e");
 			args.add("isValidFMIConfigurations(modelDescription, buildDescription, terminalsAndIcons)");
-			args.add("fmi3model");
+			args.add("fmi3-rule-model");
 			args.add(filename.getAbsolutePath());
 			
 			if (rules.exists())
@@ -127,7 +127,7 @@ public class VDMCheckPlus
 				
 				for (String adoc: rules.list(filter))
 				{
-					args.add("fmi3model" + File.separator + "Rules" + File.separator + adoc);
+					args.add("fmi3-rule-model" + File.separator + "Rules" + File.separator + adoc);
 				}
 			}
 

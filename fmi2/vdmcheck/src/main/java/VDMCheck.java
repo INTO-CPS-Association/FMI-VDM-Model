@@ -265,7 +265,7 @@ public class VDMCheck
 			runCommand(jarLocation, tempOUT,
 					"java", "-Xmx1g", "-cp", String.join(File.pathSeparator, dependencies), 
 					"com.fujitsu.vdmj.VDMJ", "-vdmsl", "-q", "-annotations",
-					"-e", "isValidFMIConfiguration(" + varName + ")", "fmi2model", tempVDM.getCanonicalPath());
+					"-e", "isValidFMIConfiguration(" + varName + ")", "fmi2-static-model", tempVDM.getCanonicalPath());
 	
 			sed(tempOUT, System.out,
 					"^true$", "No errors found.",

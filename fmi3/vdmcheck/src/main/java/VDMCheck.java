@@ -288,7 +288,7 @@ public class VDMCheck
 				
 			String[] dependencies = {"vdmj.jar", "annotations.jar"};
 			
-			File rules = new File(jarLocation.getAbsolutePath() + File.separator + "fmi3model/Rules");
+			File rules = new File(jarLocation.getAbsolutePath() + File.separator + "fmi3-rule-model/Rules");
 			List<String> args = new Vector<String>();
 			
 			args.add("java");
@@ -302,13 +302,13 @@ public class VDMCheck
 			args.add("-annotations");
 			args.add("-e");
 			args.add("isValidFMIConfiguration(" + varName + ", nil, nil)");
-			args.add("fmi3model");
+			args.add("fmi3-rule-model");
 			
 			if (rules.exists())
 			{
 				for (String adoc: rules.list())
 				{
-					args.add("fmi3model" + File.separator + "Rules" + File.separator + adoc);
+					args.add("fmi3-rule-model" + File.separator + "Rules" + File.separator + adoc);
 				}
 			}
 

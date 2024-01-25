@@ -97,11 +97,11 @@ SCRIPT=$0
 	
 	XSD="fmi2schema/fmi2.xsd"
 	
-	if [ -e fmi2model/Rules ]
+	if [ -e fmi2-rule-model/Rules ]
 	then
-		MODEL="fmi2model fmi2model/Rules/*.adoc"
+		MODEL="fmi2-rule-model fmi2-rule-model/Rules/*.adoc"
 	else
-		MODEL="fmi2model"
+		MODEL="fmi2-static-model"
 	fi
 	
 	# Fix Class Path Separator - Default to colon for Unix-like systems, , semicolon for msys

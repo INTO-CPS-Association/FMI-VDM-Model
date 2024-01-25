@@ -35,9 +35,9 @@ functions
 	tests() ==
 	[
 		-- @Printf("------------ controlledTemperature\n")
-		isValidFMIConfiguration(controlledTemperature, nil, nil),
+		isValidFMIConfigurations(controlledTemperature, nil, nil),
 		-- @Printf("------------ integrateSignal\n")
-		isValidFMIConfiguration(integrateSignal, nil, nil),
+		isValidFMIConfigurations(integrateSignal, nil, nil),
 		-- @Printf("------------ springMassDamper\n")
-		isValidFMIConfiguration(springMassDamper, nil, nil)
+		isValidFMIConfigurations(springMassDamper, nil, nil)
 	];

@@ -37,7 +37,7 @@
 								<goal>copy-resources</goal>
 							</goals>
 							<configuration>
-								<outputDirectory>.generated/fmi2model</outputDirectory>
+								<outputDirectory>.generated/fmi2-static-model</outputDirectory>
 								<resources>
 									<resource>
 										<directory>.</directory>
@@ -79,7 +79,7 @@
 							<outputDirectory>.generated</outputDirectory>
 							<classesDirectory>.generated</classesDirectory>
 							<includes>
-								<include>fmi2model/*.vdmsl</include>
+								<include>fmi2-static-model/*.vdmsl</include>
 								<include>MIT-LICENCE</include>
 							</includes>
 						</configuration>

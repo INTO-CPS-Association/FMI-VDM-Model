@@ -94,8 +94,21 @@ public class VDMCheckPlus
 			tempOUT.deleteOnExit();
 			
 			String[] dependencies = {"vdmj.jar", "annotations.jar", "xsd2vdm.jar", "fmuReader.jar"};
-			File rules = new File(jarLocation.getAbsolutePath(), "fmi2model/Rules");
+			File rule_model = new File(jarLocation.getAbsolutePath(), "fmi2-rule-model");
+			File rules = new File(jarLocation.getAbsolutePath(), "fmi2-rule-model/Rules");
+			File static_model = new File(jarLocation.getAbsolutePath(), "fmi2-static-model");
+			
 			List<String> args = new Vector<String>();
+			File model = null;
+			
+			if (rule_model.exists())
+			{
+				model = rule_model;
+			}
+			else
+			{
+				model = static_model;
+			}
 			
 			args.add("java");
 			args.add("-Xmx1g");
@@ -111,7 +124,7 @@ public class VDMCheckPlus
 			args.add("-annotations");
 			args.add("-e");
 			args.add("isValidFMIConfigurations(modelDescription, buildDescription, terminalsAndIcons)");
-			args.add("fmi2model");
+			args.add(model.getName());
 			args.add(filename.getAbsolutePath());
 			
 			if (rules.exists())
@@ -127,7 +140,7 @@ public class VDMCheckPlus
 				
 				for (String adoc: rules.list(filter))
 				{
-					args.add("fmi2model" + File.separator + "Rules" + File.separator + adoc);
+					args.add("fmi2-rule-model" + File.separator + "Rules" + File.separator + adoc);
 				}
 			}
 

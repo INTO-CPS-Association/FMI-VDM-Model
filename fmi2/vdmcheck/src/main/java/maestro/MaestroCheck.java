@@ -145,26 +145,26 @@ public class MaestroCheck {
             if (vdmFile.exists())    // Means successful?
             {
                 copyResources(vdmsl,
-            		"/fmi2model/CoSimulation_4.3.1.vdmsl",
-            		"/fmi2model/DefaultExperiment_2.2.5.vdmsl",
-            		"/fmi2model/FMI2Schema.vdmsl",
-                    "/fmi2model/FMIModelDescription_2.2.1.vdmsl",
-                    "/fmi2model/LogCategories_2.2.4.vdmsl",
-                    "/fmi2model/Misc.vdmsl",
-                    "/fmi2model/ModelExchange_3.3.1.vdmsl",
-                    "/fmi2model/ModelStructure_2.2.8.vdmsl",
-                    "/fmi2model/ModelVariables_2.2.7.vdmsl",
-                    "/fmi2model/TypeDefinitions_2.2.3.vdmsl",
-                    "/fmi2model/UnitDefinitions_2.2.2.vdmsl",
-                    "/fmi2model/VariableNaming_2.2.9.vdmsl",
-                    "/fmi2model/VendorAnnotations_2.2.6.vdmsl",
+            		"/fmi2-static-model/CoSimulation_4.3.1.vdmsl",
+            		"/fmi2-static-model/DefaultExperiment_2.2.5.vdmsl",
+            		"/fmi2-static-model/FMI2Schema.vdmsl",
+                    "/fmi2-static-model/FMIModelDescription_2.2.1.vdmsl",
+                    "/fmi2-static-model/LogCategories_2.2.4.vdmsl",
+                    "/fmi2-static-model/Misc.vdmsl",
+                    "/fmi2-static-model/ModelExchange_3.3.1.vdmsl",
+                    "/fmi2-static-model/ModelStructure_2.2.8.vdmsl",
+                    "/fmi2-static-model/ModelVariables_2.2.7.vdmsl",
+                    "/fmi2-static-model/TypeDefinitions_2.2.3.vdmsl",
+                    "/fmi2-static-model/UnitDefinitions_2.2.2.vdmsl",
+                    "/fmi2-static-model/VariableNaming_2.2.9.vdmsl",
+                    "/fmi2-static-model/VendorAnnotations_2.2.6.vdmsl",
 
-                    "/fmi2model/BuildConfiguration_2.3.vdmsl",
-                    "/fmi2model/GraphicalRepresentation_2.3.vdmsl",
-                    "/fmi2model/Terminals_2.3.vdmsl",
-                    "/fmi2model/VendorAnnotations_2.3.vdmsl",
-                    "/fmi2model/Validation.vdmsl",
-                    "/fmi2model/XSD.vdmsl");
+                    "/fmi2-static-model/BuildConfiguration_2.3.vdmsl",
+                    "/fmi2-static-model/GraphicalRepresentation_2.3.vdmsl",
+                    "/fmi2-static-model/Terminals_2.3.vdmsl",
+                    "/fmi2-static-model/VendorAnnotations_2.3.vdmsl",
+                    "/fmi2-static-model/Validation.vdmsl",
+                    "/fmi2-static-model/XSD.vdmsl");
 
                 Properties.init();
                 Settings.annotations = true;
