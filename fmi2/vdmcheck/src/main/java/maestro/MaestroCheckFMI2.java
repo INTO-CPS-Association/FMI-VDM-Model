@@ -194,7 +194,11 @@ public class MaestroCheckFMI2
 				Properties.init();
 				Settings.annotations = true;
 				ASTModuleList ast = new ASTModuleList();
+				
+				boolean saved = Properties.parser_merge_comments;
+				// Properties.parser_merge_comments = true;
 				readDirectory(ast, vdmsl, errors);
+				Properties.parser_merge_comments = saved;
 
 				if (!errors.isEmpty())
 				{

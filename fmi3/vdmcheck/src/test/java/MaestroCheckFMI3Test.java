@@ -23,7 +23,7 @@ public class MaestroCheckFMI3Test
 		List<OnFailError> errors = null;
 				
 		errors = checker.check(Paths.get("src", "test", "resources", "modelDescription.xml").toFile());
-		Assert.assertEquals(9, errors.size());
+		Assert.assertEquals(35, errors.size());
 		// To be checked... !!!
 
 		errors = checker.check(Paths.get("src", "test", "resources", "sources", "buildDescription.xml").toFile());

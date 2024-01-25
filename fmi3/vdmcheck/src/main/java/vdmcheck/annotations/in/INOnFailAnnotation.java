@@ -73,6 +73,7 @@ public class INOnFailAnnotation extends annotations.in.INOnFailAnnotation
 
 				String location = "";
 				String useformat = this.format;
+				
 				if (this.format.endsWith("$"))
 				{
 					location = this.name.getLocation().toString();
@@ -84,6 +85,7 @@ public class INOnFailAnnotation extends annotations.in.INOnFailAnnotation
 		}
 		catch (ValueException var9)
 		{
+			return;
 		}
 
 	}
