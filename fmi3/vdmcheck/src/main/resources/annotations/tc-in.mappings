@@ -1,0 +1,7 @@
+##########################################################################################
+# The annotation class mapping definition for the VDMJ Interpreter. See ClassMapper.
+##########################################################################################
+
+# annotations
+package annotations.tc to vdmcheck.annotations.in;
+map TCOnFailAnnotation{name, args,format, doclinks} to INOnFailAnnotation(name, args, format, doclinks);

@@ -32,7 +32,7 @@
 								<goal>copy-resources</goal>
 							</goals>
 							<configuration>
-								<outputDirectory>.generated/fmi3-rule-model</outputDirectory>
+								<outputDirectory>.generated/fmi3-static-model</outputDirectory>
 								<resources>
 									<resource>
 										<directory>.</directory>
@@ -74,7 +74,7 @@
 							<outputDirectory>.generated</outputDirectory>
 							<classesDirectory>.generated</classesDirectory>
 							<includes>
-								<include>fmi3-rule-model/*.vdmsl</include>
+								<include>fmi3-static-model/*.vdmsl</include>
 								<include>MIT-LICENCE</include>
 							</includes>
 						</configuration>
