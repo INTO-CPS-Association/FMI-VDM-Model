@@ -59,6 +59,10 @@
 									<filtering>false</filtering>
 									<include>MIT-LICENCE</include>
 								</resource>
+								<resource>
+									<directory>Rules</directory>
+									<include>FMI2Rules.html</include>
+								</resource>
 							</resources>
 						</configuration>
 					</execution>
@@ -78,6 +82,7 @@
 								<include>fmi2-rule-model/*.vdmsl</include>
 								<include>fmi2-rule-model/Rules/*.adoc</include>
 								<include>MIT-LICENCE</include>
+								<include>FMI2Rules.html</include>
 							</includes>
 						</configuration>
 					</execution>
