@@ -11,6 +11,7 @@ endif::[]
 [[validTypeDefinitionNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 // {vdm}
 endif::[]
@@ -30,6 +31,7 @@ See <<_definition_of_types_typedefinitions>>
 [[validTypeMinMax]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 // {vdm}
 endif::[]
@@ -56,6 +58,7 @@ See <<_definition_of_types_typedefinitions>>
 [[validTypeDisplayUnit]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 // {vdm}
 endif::[]
@@ -75,6 +78,7 @@ See <<_definition_of_types_typedefinitions>>
 [[validEnumerationTypeBijection]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 // {vdm}
 endif::[]

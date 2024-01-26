@@ -11,6 +11,7 @@ endif::[]
 [[validMEModelIdentifier]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_model_exchange_fmu_modelexchange")
 // {vdm}
 endif::[]
@@ -29,6 +30,7 @@ See <<_model_exchange_fmu_modelexchange>>
 [[validMESourceFiles]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_header_files_and_naming_of_functions")
 // {vdm}
 endif::[]

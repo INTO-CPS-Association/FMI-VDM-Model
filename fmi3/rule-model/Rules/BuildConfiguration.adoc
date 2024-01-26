@@ -11,6 +11,7 @@ endif::[]
 [[validCompilerOptions]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-SourceFileSet-details")
 // {vdm}
 endif::[]
@@ -28,6 +29,7 @@ See <<table-SourceFileSet-details>>.
 [[validSourceFileNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-SourceFile-details")
 // {vdm}
 endif::[]
@@ -48,6 +50,7 @@ See <<table-SourceFile-details>>.
 [[validPreprocessorDefinitionNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-ProcessorDefinition-details")
 // {vdm}
 endif::[]
@@ -69,6 +72,7 @@ See <<table-ProcessorDefinition-details>>.
 [[validIncludeDirectoryNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-IncludeDirectory-details")
 // {vdm}
 endif::[]

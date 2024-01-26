@@ -11,6 +11,7 @@ endif::[]
 [[validLogCategories]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_log_categories_logcategories")
 // {vdm}
 endif::[]

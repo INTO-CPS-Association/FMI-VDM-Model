@@ -24,7 +24,11 @@ public class MaestroCheckFMI3Test
 				
 		errors = checker.check(Paths.get("src", "test", "resources", "modelDescription.xml").toFile());
 		Assert.assertEquals(35, errors.size());
-		// To be checked... !!!
+		Assert.assertTrue(errors.get(0).doclinks != null);
+		Assert.assertEquals(1, errors.get(0).doclinks.size());
+		Assert.assertEquals(
+				"<FMI3_STANDARD>#modelIdentifier\n<FMI3_STANDARD>#header-files-and-naming-of-functions\n",
+				errors.get(0).doclinks.get(0).toString());
 
 		errors = checker.check(Paths.get("src", "test", "resources", "sources", "buildDescription.xml").toFile());
 		Assert.assertEquals(0, errors.size());

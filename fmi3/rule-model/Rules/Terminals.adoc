@@ -11,6 +11,7 @@ endif::[]
 [[validCoordinateSystem]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#_coordinatesystem")
 // {vdm}
 endif::[]
@@ -34,6 +35,7 @@ See <<_coordinatesystem>>.
 [[validIcon]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#_icon")
 // {vdm}
 endif::[]
@@ -51,6 +53,7 @@ See <<_icon>>.
 [[validTerminalMemberVariables]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#section-terminalvars")
 // {vdm}
 endif::[]
@@ -76,6 +79,7 @@ See <<section-terminalvars>>.
 [[validTerminalStreamMemberVariables]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#_terminal_stream_member_variable")
 // {vdm}
 endif::[]
@@ -109,6 +113,7 @@ See <<_terminal_stream_member_variable>>.
 [[validTerminalGraphicalRepresentation]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#_terminal_graphical_representation")
 // {vdm}
 endif::[]

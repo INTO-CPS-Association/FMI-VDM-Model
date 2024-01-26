@@ -11,8 +11,8 @@ endif::[]
 [[validUnitNames]]
 ifdef::hidden[]
 // {vdm}
--- @DocLink("<FMI3_STANDARD>#_physical_units")
--- @DocLink("<FMI3_STANDARD>#uniqueNameAttribute")
+
+-- @DocLink("<FMI3_STANDARD>#_physical_units", "<FMI3_STANDARD>#uniqueNameAttribute")
 // {vdm}
 endif::[]
 // {vdm}
@@ -31,8 +31,8 @@ validUnitNames(units) ==
 [[validDisplayUnitNames]]
 ifdef::hidden[]
 // {vdm}
--- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit")
--- @DocLink("<FMI3_STANDARD>#uniqueNameAttribute")
+
+-- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit", "<FMI3_STANDARD>#uniqueNameAttribute")
 // {vdm}
 endif::[]
 // {vdm}
@@ -53,6 +53,7 @@ validDisplayUnitNames(unit) ==
 [[validInverseAndOffset]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#figure-schema-DisplayUnit")
 // {vdm}
 endif::[]

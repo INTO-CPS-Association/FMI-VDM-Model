@@ -14,6 +14,7 @@ Note that  ModelVariables are passed to some of the rules in this section, in ad
 [[validModelTypes]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription")
 // {vdm}
 endif::[]
@@ -31,6 +32,7 @@ See <<table-schema-fmiModelDescription>>.
 [[validGenerationDateAndTime]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-schema-fmiModelDescription-attributes")
 // {vdm}
 endif::[]
@@ -49,6 +51,7 @@ See <<table-schema-fmiModelDescription-attributes>>.
 [[validTypeUnits]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-type-details")
 // {vdm}
 endif::[]
@@ -74,8 +77,8 @@ See <<table-type-details>>.
 [[validVariableTypes]]
 ifdef::hidden[]
 // {vdm}
--- @DocLink("<FMI3_STANDARD>#ModelVariables")
--- @DocLink("<FMI3_STANDARD>#definition-of-types")
+
+-- @DocLink("<FMI3_STANDARD>#ModelVariables", "<FMI3_STANDARD>#definition-of-types")
 // {vdm}
 endif::[]
 // {vdm}
@@ -104,6 +107,7 @@ validVariableTypes(fmd) == allOf
 [[validTypeNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-type-details")
 // {vdm}
 endif::[]
@@ -126,6 +130,7 @@ See <<table-type-details>>.
 [[validVariableNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 // {vdm}
 endif::[]
@@ -153,6 +158,7 @@ See <<ModelVariables>>.
 [[validStart]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-type-attributes")
 // {vdm}
 endif::[]
@@ -184,6 +190,7 @@ See <<table-type-attributes>>.
 [[validMinMax]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-type-attributes")
 // {vdm}
 endif::[]
@@ -214,6 +221,7 @@ See <<table-type-attributes>>.
 [[validMultipleSets]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-variableBase-attributes")
 // {vdm}
 endif::[]
@@ -237,6 +245,7 @@ See <<table-variableBase-attributes>>.
 [[validReinits]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 // {vdm}
 endif::[]
@@ -260,6 +269,7 @@ See <<ModelVariables>>.
 [[validCSEventMode]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-CoSimulation-details")
 // {vdm}
 endif::[]
@@ -281,6 +291,7 @@ validCSEventMode(fmd) ==
 [[validOutput]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelStructure")
 // {vdm}
 endif::[]
@@ -314,6 +325,7 @@ See <<ModelStructure>>.
 [[validStateDerivatives]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelStructure")
 // {vdm}
 endif::[]
@@ -347,6 +359,7 @@ See <<ModelStructure>>.
 [[validInitialUnknowns]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelStructure")
 // {vdm}
 endif::[]
@@ -408,6 +421,7 @@ See <<ModelStructure>>.
 [[validEventIndicators]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelStructure")
 // {vdm}
 endif::[]
@@ -431,6 +445,7 @@ See <<ModelStructure>>.
 [[validOutputReferences]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelStructure")
 // {vdm}
 endif::[]
@@ -455,6 +470,7 @@ See <<ModelStructure>>.
 [[validUnknownDependencies]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelStructure")
 // {vdm}
 endif::[]
@@ -491,6 +507,7 @@ See <<ModelStructure>>.
 [[validClockPriorities]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-type-details")
 // {vdm}
 endif::[]

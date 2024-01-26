@@ -11,6 +11,7 @@ endif::[]
 [[validUnitNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_units_unitdefinitions")
 // {vdm}
 endif::[]
@@ -29,6 +30,7 @@ See <<_definition_of_units_unitdefinitions>>
 [[validDisplayUnitNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_units_unitdefinitions")
 // {vdm}
 endif::[]

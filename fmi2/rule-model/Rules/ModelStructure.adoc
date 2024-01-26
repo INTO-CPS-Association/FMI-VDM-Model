@@ -11,6 +11,7 @@ endif::[]
 [[validDependencyKinds]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_the_model_structure_modelstructure")
 // {vdm}
 endif::[]

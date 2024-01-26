@@ -11,8 +11,8 @@ endif::[]
 [[validMEModelIdentifier]]
 ifdef::hidden[]
 // {vdm}
--- @DocLink("<FMI3_STANDARD>#modelIdentifier")
--- @DocLink("<FMI3_STANDARD>#header-files-and-naming-of-functions")
+
+-- @DocLink("<FMI3_STANDARD>#modelIdentifier", "<FMI3_STANDARD>#header-files-and-naming-of-functions")
 // {vdm}
 endif::[]
 // {vdm}

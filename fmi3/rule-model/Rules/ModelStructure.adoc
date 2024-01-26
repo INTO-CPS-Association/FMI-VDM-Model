@@ -13,6 +13,7 @@ This rule is used to check Output, ContinuousStateDerivative, ClockedState, Init
 [[validDependencyKinds]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#modelStructure")
 // {vdm}
 endif::[]

@@ -11,8 +11,8 @@ endif::[]
 [[validTypeDefinitionNames]]
 ifdef::hidden[]
 // {vdm}
--- @DocLink("<FMI3_STANDARD>#definition-of-types")
--- @DocLink("<FMI3_STANDARD>#table-type-details")
+
+-- @DocLink("<FMI3_STANDARD>#definition-of-types", "<FMI3_STANDARD>#table-type-details")
 // {vdm}
 endif::[]
 // {vdm}
@@ -32,6 +32,7 @@ validTypeDefinitionNames(tdefs) ==
 [[validTypeMinMax]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-type-details")
 // {vdm}
 endif::[]
@@ -59,6 +60,7 @@ See <<table-type-details>>.
 [[validTypeDisplayUnit]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#table-type-details")
 // {vdm}
 endif::[]
@@ -78,6 +80,7 @@ See <<table-type-details>>.
 [[validEnumerationTypeBijection]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#figure-schema-EnumerationType")
 // {vdm}
 endif::[]
@@ -98,6 +101,7 @@ See <<figure-schema-EnumerationType>>.
 [[validClockType]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#figure-schema-ClockType")
 // {vdm}
 endif::[]

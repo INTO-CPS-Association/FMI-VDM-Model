@@ -14,6 +14,7 @@ Note that the rules in this section are checking the "raw" ModelVariable values,
 [[validValueReferences]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#_platform_dependent_definitions")
 // {vdm}
 endif::[]
@@ -33,6 +34,7 @@ See <<_platform_dependent_definitions>>.
 [[validAliasNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#_alias_variables")
 // {vdm}
 endif::[]
@@ -53,6 +55,7 @@ See <<_alias_variables>>.
 [[validIndependentVariable]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 // {vdm}
 endif::[]
@@ -71,6 +74,7 @@ See <<ModelVariables>>.
 [[validPreviousVariables]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 // {vdm}
 endif::[]
@@ -92,6 +96,7 @@ See <<ModelVariables>>.
 [[validVariableDimensions]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 // {vdm}
 endif::[]
@@ -135,6 +140,7 @@ See <<ModelVariables>>.
 [[validStartAndVRef]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 // {vdm}
 endif::[]
@@ -152,6 +158,7 @@ See <<ModelVariables>>.
 [[validAliasDisplayUnits]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 // {vdm}
 endif::[]
@@ -179,6 +186,7 @@ See <<ModelVariables>>.
 [[validModelVariables]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 // {vdm}
 endif::[]
@@ -217,6 +225,7 @@ See <<ModelVariables>>.
 [[validVariableAttributes]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI3_STANDARD>#ModelVariables")
 // {vdm}
 endif::[]

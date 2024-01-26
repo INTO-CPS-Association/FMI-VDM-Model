@@ -11,6 +11,7 @@ endif::[]
 [[validModelAttributes]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_inquire_platform_and_version_number_of_header_files")
 // {vdm}
 endif::[]
@@ -29,6 +30,7 @@ See <<_inquire_platform_and_version_number_of_header_files>>
 [[validVendorAnnotations]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_vendor_annotations_vendorannotations")
 // {vdm}
 endif::[]
@@ -51,6 +53,7 @@ See <<_definition_of_vendor_annotations_vendorannotations>>
 [[validModelTypes]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_an_fmu_fmimodeldescription")
 // {vdm}
 endif::[]
@@ -68,6 +71,7 @@ See <<_definition_of_an_fmu_fmimodeldescription>>
 [[validGenerationDateAndTime]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_an_fmu_fmimodeldescription")
 // {vdm}
 endif::[]
@@ -86,6 +90,7 @@ See <<_definition_of_an_fmu_fmimodeldescription>>
 [[validTypeUnits]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 // {vdm}
 endif::[]
@@ -111,6 +116,7 @@ See <<_definition_of_types_typedefinitions>>
 [[validVariableTypes]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 // {vdm}
@@ -141,6 +147,7 @@ See <<_definition_of_types_typedefinitions>>
 [[validTypeNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 // {vdm}
 endif::[]
@@ -163,6 +170,7 @@ See <<_definition_of_types_typedefinitions>>
 [[validVariableNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 // {vdm}
 endif::[]
@@ -190,6 +198,7 @@ See <<_definition_of_model_variables_modelvariables>>
 [[validStart]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 // {vdm}
 endif::[]
@@ -222,6 +231,7 @@ See <<_definition_of_model_variables_modelvariables>>
 [[validMinMax]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_types_typedefinitions")
 // {vdm}
 endif::[]
@@ -264,6 +274,7 @@ See <<_definition_of_types_typedefinitions>>
 [[validMultipleSets]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 // {vdm}
 endif::[]
@@ -287,6 +298,7 @@ See <<_definition_of_model_variables_modelvariables>>
 [[validReinits]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 // {vdm}
 endif::[]
@@ -311,6 +323,7 @@ See <<_definition_of_model_variables_modelvariables>>
 [[validVariableUnits]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#table-variableBase-attributes")
 // {vdm}
 endif::[]
@@ -342,6 +355,7 @@ See <<table-variableBase-attributes>>
 [[validOutputs]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_the_model_structure_modelstructure")
 // {vdm}
 endif::[]
@@ -379,6 +393,7 @@ See <<_definition_of_the_model_structure_modelstructure>>
 [[validDerivatives]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_the_model_structure_modelstructure")
 // {vdm}
 endif::[]
@@ -412,6 +427,7 @@ See <<_definition_of_the_model_structure_modelstructure>>
 [[validInitialUnknowns]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_the_model_structure_modelstructure")
 // {vdm}
 endif::[]

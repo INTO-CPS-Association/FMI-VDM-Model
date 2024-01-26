@@ -11,6 +11,7 @@ endif::[]
 [[validCSModelIdentifier]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_header_files_and_naming_of_functions")
 // {vdm}
 endif::[]
@@ -29,6 +30,7 @@ See <<_header_files_and_naming_of_functions>>
 [[validCSSourceFiles]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_header_files_and_naming_of_functions")
 // {vdm}
 endif::[]

@@ -11,6 +11,7 @@ endif::[]
 [[validAliasNames]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 // {vdm}
 endif::[]
@@ -75,6 +76,7 @@ See <<_definition_of_model_variables_modelvariables>>
 [[validIndependentVariable]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 // {vdm}
 endif::[]
@@ -93,6 +95,7 @@ See <<_definition_of_model_variables_modelvariables>>
 [[validModelVariables]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 // {vdm}
 endif::[]
@@ -123,6 +126,7 @@ See <<_definition_of_model_variables_modelvariables>>
 [[validVariableAttributes]]
 ifdef::hidden[]
 // {vdm}
+
 -- @DocLink("<FMI2_STANDARD>#_definition_of_model_variables_modelvariables")
 // {vdm}
 endif::[]
