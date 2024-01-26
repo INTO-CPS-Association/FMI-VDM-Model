@@ -140,8 +140,8 @@ validVariableTypes(fmd) == allOf
 	]);
 ----
 // {vdm}
-See <<_definition_of_model_variables_modelvariables>>
-See <<_definition_of_types_typedefinitions>>
+- See <<_definition_of_model_variables_modelvariables>>
+- See <<_definition_of_types_typedefinitions>>
 
 ===== A.{section}.{subsection}.{counter:typerule} Rule: validTypeNames
 [[validTypeNames]]
