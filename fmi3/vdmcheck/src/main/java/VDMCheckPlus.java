@@ -23,14 +23,24 @@
  ******************************************************************************/
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.StringReader;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Vector;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.xml.sax.InputSource;
 
 public class VDMCheckPlus
 {
@@ -38,6 +48,7 @@ public class VDMCheckPlus
 	{
 		File filename = null;
 		String vdmOUT = null;
+		String xmlIN = null;
 		String prefix = "https://fmi-standard.org/docs/3.0/";
 		
 		for (int a=0; a < args.length; a++)
@@ -55,12 +66,37 @@ public class VDMCheckPlus
 				case "-h":
 					prefix = args[++a];
 					break;
+					
+				case "-x":
+					xmlIN = args[++a];
+					break;
 			}
 		}
-		
+
+		if (xmlIN != null)
+		{
+			try
+			{
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				dBuilder.parse(new InputSource(new StringReader(xmlIN)));
+				
+				// Write XML into tempXML
+				File tempXML = File.createTempFile("XML", ".xml");
+				tempXML.deleteOnExit();
+				copy(new ByteArrayInputStream(xmlIN.getBytes()), tempXML);
+				filename = tempXML;
+			}
+			catch (Exception e)
+			{
+				System.err.println("XML errors found: " + e.getMessage());
+				System.exit(1);
+			}
+		}
+
 		if (filename == null)
 		{
-			System.err.println("Usage: java -jar vdmcheck3.jar [-h <FMI Standard base URL>] [-v <VDM outfile>] <file>.fmu | <file>.xml");
+			System.err.println("Usage: java -jar vdmcheck3.jar [-h <FMI Standard base URL>] [-v <VDM outfile>] -x <XML> | <file>.fmu | <file>.xml");
 			System.exit(1);
 		}
 		else if (!filename.exists())
@@ -231,5 +267,18 @@ public class VDMCheckPlus
 		
 		br.close();
 		return result;
+	}
+	
+	private static void copy(InputStream in, File outfile) throws IOException
+	{
+		OutputStream out = new FileOutputStream(outfile);
+		
+		for (int b = in.read(); b != -1; b = in.read())
+		{
+			out.write(b);
+		}
+		
+		in.close();
+		out.close();
 	}
 }
