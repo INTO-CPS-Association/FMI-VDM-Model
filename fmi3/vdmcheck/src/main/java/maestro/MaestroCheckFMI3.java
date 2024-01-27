@@ -193,6 +193,14 @@ public class MaestroCheckFMI3
 
 			if (vdmFile.exists()) // Means successful?
 			{
+				File frm = new File(vdmsl, "fmi3-rule-model");
+				frm.deleteOnExit();
+				frm.mkdir();
+				
+				File rules = new File(frm, "Rules");
+				rules.deleteOnExit();
+				rules.mkdir();
+				
 				copyResources(vdmsl,
 					"/fmi3-rule-model/Rules/BuildConfiguration.adoc",
 					"/fmi3-rule-model/Rules/CoSimulation.adoc",
@@ -357,16 +365,7 @@ public class MaestroCheckFMI3
 	private String copyStream(InputStream data, File target, String file) throws IOException
 	{
 		File targetFile = new File(target.getAbsolutePath() + file);
-		
-		// Mark folders deleteOnExit up to, but excluding, the target root
-		File parent = targetFile.getParentFile();
-		
-		while (!parent.equals(target))
-		{
-			parent.mkdirs();
-			parent.deleteOnExit();
-			parent = parent.getParentFile();
-		}
+		targetFile.deleteOnExit(); // Note! All files temporary
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		BufferedOutputStream bos = new BufferedOutputStream(baos);
@@ -398,7 +397,6 @@ public class MaestroCheckFMI3
 		fos.write(xmlContent.getBytes("UTF-8"));
 		fos.close();
 
-		targetFile.deleteOnExit(); // Note! All files temporary
 		return varName;
 	}
 	

@@ -102,14 +102,14 @@ public class MaestroCheck {
     public List<OnFailError> check(File xmlFile) throws Exception {
         List<OnFailError> errors = new Vector<>();
 
-        File fmi2 = Files.createTempDirectory("fmi2", new FileAttribute[0]).toFile();
-        fmi2.deleteOnExit();
+        File maestro = Files.createTempDirectory("fmi2", new FileAttribute[0]).toFile();
+        maestro.deleteOnExit();
 
-        File fmi2schema = new File(fmi2, "fmi2schema");
+        File fmi2schema = new File(maestro, "fmi2schema");
         fmi2schema.mkdir();
         fmi2schema.deleteOnExit();
 
-        copyResources(fmi2,
+        copyResources(maestro,
         		"/fmi2schema/fmi2Annotation.xsd",
         		"/fmi2schema/fmi2AttributeGroups.xsd",
         		"/fmi2schema/fmi2ModelDescription.xsd",
@@ -130,7 +130,7 @@ public class MaestroCheck {
         if (validation != null) {
             errors.add(validation);
         } else {
-            File vdmsl = new File(fmi2, "vdmsl");
+            File vdmsl = new File(maestro, "vdmsl");
             vdmsl.mkdir();
             vdmsl.deleteOnExit();
 
@@ -139,11 +139,15 @@ public class MaestroCheck {
 
             Xsd2VDM converter = new Xsd2VDM();
             Xsd2VDM.loadProperties(xsdFile);
-            Map<String, Type> vdmSchema = converter.createVDMSchema(xsdFile, xmlFile, false, true);
+            Map<String, Type> vdmSchema = converter.createVDMSchema(xsdFile, null, false, true);
             converter.createVDMValue(vdmSchema, vdmFile, xmlFile, "model");
 
             if (vdmFile.exists())    // Means successful?
             {
+				File fsm = new File(vdmsl, "fmi2-static-model");
+				fsm.deleteOnExit();
+				fsm.mkdir();
+				
                 copyResources(vdmsl,
             		"/fmi2-static-model/CoSimulation_4.3.1.vdmsl",
             		"/fmi2-static-model/DefaultExperiment_2.2.5.vdmsl",
@@ -267,14 +271,13 @@ public class MaestroCheck {
 
     private void copyStream(InputStream data, File target, String file) throws IOException {
         File targetFile = new File(target.getAbsolutePath() + file);
-        targetFile.getParentFile().mkdirs();
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(targetFile));
+        targetFile.deleteOnExit();        // Note! All files temporary
+		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(targetFile));
 
         while (data.available() > 0) {
             bos.write(data.read());
         }
 
         bos.close();
-        targetFile.deleteOnExit();        // Note! All files temporary
     }
 }
