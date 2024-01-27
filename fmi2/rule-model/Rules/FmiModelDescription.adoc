@@ -253,12 +253,12 @@ validMinMax(fmd, evs) == allOf
 			-- @OnFail("%NAME: max %s not >= min %s", type.max, type.min)
 			( type.max >= type.min ),
 
-			-- @OnFail(1034, "%NAME: ScalarVariable %s min/max exceeds RealType %s at %#s",
+			-- @OnFail("%NAME: ScalarVariable %s min/max exceeds RealType %s at %#s",
 			-- ev.name, ev.fmi2ScalarVariable.declaredType, loc2str(ev.location))
 			( tdef <> nil and tdef.fmi2SimpleType.min <> nil and type.min <> nil =>
 				tdef.fmi2SimpleType.min <= type.min ),
 
-			-- @OnFail(1034, "%NAME: ScalarVariable %s min/max exceeds RealType %s at %#s",
+			-- @OnFail("%NAME: ScalarVariable %s min/max exceeds RealType %s at %#s",
 			-- ev.name, ev.fmi2ScalarVariable.declaredType, loc2str(ev.location))
 			( tdef <> nil and tdef.fmi2SimpleType.max <> nil and type.max <> nil =>
 				tdef.fmi2SimpleType.max >= type.max )

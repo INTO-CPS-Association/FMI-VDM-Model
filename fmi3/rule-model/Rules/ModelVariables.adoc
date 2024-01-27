@@ -264,7 +264,7 @@ validVariableAttributes(sv) ==
 					eVariability = <continuous>
 					and eInitial = nil		-- (D)
 					and sv.start = nil
-					-- @OnFail(1461, "2.4.7 Independent variable must be Float at %#s",
+					-- @OnFail("2.4.7 Independent variable must be Float at %#s",
 					-- loc2str(sv.location))
 					and (is_Float64(sv) or is_Float32(sv)),
 
@@ -314,7 +314,7 @@ validVariableAttributes(sv) ==
 
 				<continuous> ->
 					eCausality in set {<input>, <output>, <local>, <independent>}
-					-- @OnFail(1463, "2.4.7 Continuous variable must be Real at %#s",
+					-- @OnFail("2.4.7 Continuous variable must be Real at %#s",
 					-- loc2str(sv.location))
 					and (is_Float64(sv) or is_Float32(sv))
 			end
