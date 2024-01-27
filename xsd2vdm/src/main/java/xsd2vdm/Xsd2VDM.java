@@ -294,10 +294,17 @@ public class Xsd2VDM
 		return vdmSchema;
 	}
 	
-	public void createVDMValue(Map<String, Type> schema, File vdmFile, File xmlFile, String varName) throws Exception
+	public void createVDMValue(Map<String, Type> schema, File vdmFile, File xmlFile, String varName)
+			throws Exception
+	{
+		createVDMValue(schema, vdmFile, xmlFile, varName, false);
+	}
+	
+	public void createVDMValue(Map<String, Type> schema, File vdmFile, File xmlFile, String varName, boolean append)
+		throws Exception
 	{
 		PrintStream output = (vdmFile != null) ?
-				new PrintStream(new FileOutputStream(vdmFile)) :
+				new PrintStream(new FileOutputStream(vdmFile, append)) :
 				System.out;
 				
 		InputSource input = new InputSource(xmlFile.toURI().toASCIIString());
