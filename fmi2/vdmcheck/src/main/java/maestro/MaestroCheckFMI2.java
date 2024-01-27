@@ -68,7 +68,7 @@ public class MaestroCheckFMI2
 	{
 		MaestroCheckFMI2 checker = new MaestroCheckFMI2();
 
-		for (OnFailError err : checker.check(new File(args[0])))
+		for (OnFailError err : checker.check(new File(args[0]), new File(args[1]), new File(args[2])))
 		{
 			System.out.println(err.errno + " => " + err.message);
 		}
@@ -98,8 +98,22 @@ public class MaestroCheckFMI2
 	{
 		File xmlfile = Files.createTempFile("fmi", ".xml", new FileAttribute[0]).toFile();
 		xmlfile.deleteOnExit();
-		copyStream(xmlStream, xmlfile.getParentFile(), xmlfile.getName());
-		return check(xmlfile);
+		String varName = copyStream(xmlStream, xmlfile.getParentFile(), xmlfile.getName());
+		
+		switch (varName)
+		{
+			case "modelDescription":
+				return check(xmlfile, null, null);
+				
+			case "buildDescription":
+				return check(null, xmlfile, null);
+				
+			case "terminalsAndIcons":
+				return check(null, null, xmlfile);
+				
+			default:
+				throw new IOException("Unknown XML content");
+		}
 	}
 
 	/**
@@ -107,18 +121,18 @@ public class MaestroCheckFMI2
 	 * modelDescription.xml, buildDescription.xml or terminalsAndIcons.xml
 	 * source.
 	 */
-	public List<OnFailError> check(File xmlFile) throws Exception
+	public List<OnFailError> check(File modelFile, File buildFile, File termsFile) throws Exception
 	{
 		List<OnFailError> errors = new Vector<>();
 
-		File fmi2 = Files.createTempDirectory("fmi2", new FileAttribute[0]).toFile();
-		fmi2.deleteOnExit();
+		File maestro = Files.createTempDirectory("maestro", new FileAttribute[0]).toFile();
+		maestro.deleteOnExit();
 
-		File fmi2schema = new File(fmi2, "fmi2schema");
+		File fmi2schema = new File(maestro, "fmi2schema");
 		fmi2schema.mkdir();
 		fmi2schema.deleteOnExit();
 
-		copyResources(fmi2,
+		copyResources(maestro,
 			"/fmi2schema/fmi2Annotation.xsd",
 			"/fmi2schema/fmi2AttributeGroups.xsd",
 			"/fmi2schema/fmi2ModelDescription.xsd",
@@ -134,15 +148,13 @@ public class MaestroCheckFMI2
 			"/fmi2schema/xsd2vdm.properties");
 
 		File xsdFile = new File(fmi2schema, "fmi2.xsd");
-		OnFailError validation = validate(xmlFile, xsdFile);
+		validate(modelFile, xsdFile, errors);
+		validate(buildFile, xsdFile, errors);
+		validate(termsFile, xsdFile, errors);
 
-		if (validation != null)
+		if (errors.isEmpty())
 		{
-			errors.add(validation);
-		}
-		else
-		{
-			File vdmsl = new File(fmi2, "vdmsl");
+			File vdmsl = new File(maestro, "vdmsl");
 			vdmsl.mkdir();
 			vdmsl.deleteOnExit();
 
@@ -151,8 +163,34 @@ public class MaestroCheckFMI2
 
 			Xsd2VDM converter = new Xsd2VDM();
 			Xsd2VDM.loadProperties(xsdFile);
-			Map<String, Type> vdmSchema = converter.createVDMSchema(xsdFile, xmlFile, false, true);
-			converter.createVDMValue(vdmSchema, vdmFile, xmlFile, "model");
+			Map<String, Type> vdmSchema = converter.createVDMSchema(xsdFile, null, false, true);
+			
+			if (modelFile != null)
+			{
+				converter.createVDMValue(vdmSchema, vdmFile, modelFile, "modelDescription");
+			}
+			else
+			{
+				missingVariable("modelDescription", vdmFile);
+			}
+			
+			if (buildFile != null)
+			{
+				converter.createVDMValue(vdmSchema, vdmFile, buildFile, "buildDescription", true);
+			}
+			else
+			{
+				missingVariable("buildDescription", vdmFile);
+			}
+			
+			if (termsFile != null)
+			{
+				converter.createVDMValue(vdmSchema, vdmFile, termsFile, "terminalsAndIcons", true);
+			}
+			else
+			{
+				missingVariable("terminalsAndIcons", vdmFile);
+			}
 
 			if (vdmFile.exists()) // Means successful?
 			{
@@ -196,7 +234,7 @@ public class MaestroCheckFMI2
 				ASTModuleList ast = new ASTModuleList();
 				
 				boolean saved = Properties.parser_merge_comments;
-				// Properties.parser_merge_comments = true;
+				Properties.parser_merge_comments = true;
 				readDirectory(ast, vdmsl, errors);
 				Properties.parser_merge_comments = saved;
 
@@ -228,7 +266,7 @@ public class MaestroCheckFMI2
 					Interpreter interpreter = new ModuleInterpreter(in, tc);
 					interpreter.init();
 					INOnFailAnnotation.setErrorList(errors);
-					Value result = interpreter.execute("isValidFMIConfiguration(model)");
+					Value result = interpreter.execute("isValidFMIConfigurations(modelDescription, buildDescription, terminalsAndIcons)");
 
 					if (!result.boolValue(null))
 					{
@@ -263,8 +301,13 @@ public class MaestroCheckFMI2
 		}
 	}
 
-	private OnFailError validate(File xml, File xsd)
+	private void validate(File xml, File xsd, List<OnFailError> errors)
 	{
+		if (xml == null)
+		{
+			return;	// Missing file
+		}
+		
 		try
 		{
 			// Note that we pass a stream to allow the validator to determine the
@@ -278,18 +321,14 @@ public class MaestroCheckFMI2
 			Schema schema = schemaFactory.newSchema(xsdFile);
 			Validator validator = schema.newValidator();
 			validator.validate(xmlFile);
-
-			return null;
 		}
 		catch (SAXException e)
 		{
-			return new OnFailError(0, "XML validation: " + e); // Raw exception
-																// gives
-																// file/line/col
+			errors.add(new OnFailError(0, "XML validation: " + e));
 		}
 		catch (Exception e)
 		{
-			return new OnFailError(0, "XML validation: " + e.getMessage());
+			errors.add(new OnFailError(0, "XML validation: " + e.getMessage()));
 		}
 	}
 
@@ -314,11 +353,22 @@ public class MaestroCheckFMI2
 		}
 	}
 
-	private void copyStream(InputStream data, File target, String file) throws IOException
+	private String copyStream(InputStream data, File target, String file) throws IOException
 	{
 		File targetFile = new File(target.getAbsolutePath() + file);
-		targetFile.getParentFile().mkdirs();
-		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(targetFile));
+		
+		// Mark folders deleteOnExit up to, but excluding, the target root
+		File parent = targetFile.getParentFile();
+		
+		while (!parent.equals(target))
+		{
+			parent.mkdirs();
+			parent.deleteOnExit();
+			parent = parent.getParentFile();
+		}
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		BufferedOutputStream bos = new BufferedOutputStream(baos);
 
 		while (data.available() > 0)
 		{
@@ -326,6 +376,44 @@ public class MaestroCheckFMI2
 		}
 
 		bos.close();
+		
+		String xmlContent = baos.toString("UTF-8");
+		String varName = null;
+		
+		if (xmlContent.contains("<fmiModelDescription"))
+		{
+			varName = "modelDescription";
+		}
+		else if (xmlContent.contains("<fmiBuildDescription"))
+		{
+			varName = "buildDescription";
+		}
+		else if (xmlContent.contains("<fmiTerminalsAndIcons"))
+		{
+			varName = "terminalsAndIcons";
+		}
+		
+		BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(targetFile));
+		fos.write(xmlContent.getBytes("UTF-8"));
+		fos.close();
+
 		targetFile.deleteOnExit(); // Note! All files temporary
+		return varName;
 	}
+	
+	private void missingVariable(String varName, File vdmFile) throws IOException
+	{
+		PrintStream output = new PrintStream(new FileOutputStream(vdmFile, true));
+		
+		output.println("/**");
+		output.println(" * VDM value missing");
+		output.println(" */");
+		
+		output.println("values");
+		output.println("    " + varName + " = nil;\n");
+		output.println("\n");
+		
+		output.close();
+	}
+
 }
