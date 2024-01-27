@@ -1,3 +1,4 @@
+import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
 
@@ -21,23 +22,37 @@ public class MaestroCheckFMI3Test
 		MaestroCheckFMI3 checker = new MaestroCheckFMI3();
 
 		List<OnFailError> errors = null;
-				
-		errors = checker.check(Paths.get("src", "test", "resources", "modelDescription.xml").toFile());
+		File model = Paths.get("src", "test", "resources", "modelDescription.xml").toFile();
+		File build = Paths.get("src", "test", "resources", "sources", "buildDescription.xml").toFile();
+		File terms = Paths.get("src", "test", "resources", "terminalsAndIcons", "terminalsAndIcons.xml").toFile();
+		File nosuch = Paths.get("src", "test", "resources", "noSuchFile.xml").toFile();
+								
+		errors = checker.check(model, null, null);
 		Assert.assertEquals(35, errors.size());
+		Assert.assertEquals(
+				"validMEModelIdentifier: \"Test FMU\" not valid C variable name at modelDescription.xml:4",
+				errors.get(0).message);
 		Assert.assertTrue(errors.get(0).doclinks != null);
 		Assert.assertEquals(1, errors.get(0).doclinks.size());
 		Assert.assertEquals(
 				"<FMI3_STANDARD>#modelIdentifier\n<FMI3_STANDARD>#header-files-and-naming-of-functions\n",
 				errors.get(0).doclinks.get(0).toString());
 
-		errors = checker.check(Paths.get("src", "test", "resources", "sources", "buildDescription.xml").toFile());
+		errors = checker.check(null, build, null);
 		Assert.assertEquals(0, errors.size());
 
-		errors = checker.check(Paths.get("src", "test", "resources", "icons", "terminalsAndIcons.xml").toFile());
-		Assert.assertEquals(1, errors.size());
-		// To be checked... !!!
+		errors = checker.check(model, null, terms);
+		Assert.assertEquals(39, errors.size());
+		Assert.assertEquals(
+				"validTerminalMemberVariables: Terminal member variable \"vname\" not declared at terminalsAndIcons.xml:15",
+				errors.get(34).message);
+		Assert.assertTrue(errors.get(0).doclinks != null);
+		Assert.assertEquals(1, errors.get(0).doclinks.size());
+		Assert.assertEquals(
+				"<FMI3_STANDARD>#section-terminalvars\n",
+				errors.get(34).doclinks.get(0).toString());
 
-		errors = checker.check(Paths.get("src", "test", "resources", "noSuchFile.xml").toFile());
+		errors = checker.check(nosuch, null, null);
 		Assert.assertEquals(1, errors.size());
 		Assert.assertEquals(0, errors.get(0).errno);
 		System.err.println(errors.get(0).message);
