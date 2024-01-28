@@ -44,6 +44,7 @@
         <module>fmi3</module>
         <module>xsd2vdm</module>
         <module>fmuReader</module>
+        <module>combined</module>
     </modules>
 
     <dependencyManagement>

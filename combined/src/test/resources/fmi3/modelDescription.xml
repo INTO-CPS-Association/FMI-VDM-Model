@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fmiModelDescription fmiVersion="3.0-beta.1"
+	modelName="" instantiationToken="{111-222-333-444}">
+	<ModelExchange modelIdentifier="Test FMU">
+		<Annotations>
+			<Annotation type="two">
+				<more></more>
+			</Annotation>
+		</Annotations>
+	</ModelExchange>
+	<CoSimulation modelIdentifier="Test FMU">
+		<Annotations>
+			<Annotation type="one">
+				<stuff></stuff>
+			</Annotation>
+			<Annotation type="two">
+				<zzzstuff></zzzstuff>
+			</Annotation>
+		</Annotations>
+	</CoSimulation>
+	<TypeDefinitions>
+		<Float64Type name="a" />
+		<Int64Type name="b" />
+	 	<BooleanType name="c" />
+ 		<StringType name="d" />
+		<BinaryType name="e" />
+		<EnumerationType name="f">
+			<Item name="a" value="1" />
+			<Item name="b" value="2" />
+			<Item name="c" value="3" />
+		</EnumerationType>
+		<ClockType name="g" intervalVariability="fixed" priority="1" />
+	</TypeDefinitions>
+	<ModelVariables>
+		<Float64 name="a" valueReference="1" start="INF NaN -INF">
+			<Dimension valueReference="3" />
+			<Alias name="alias1" />
+		</Float64>
+		<Int8 name="byte" valueReference="999" start="9" />
+		<Int64 name="Int64" valueReference="9" start="-9223372036854775807 9223372036854775807 333">
+			<Dimension start="2" />
+		</Int64>
+		<UInt64 name="UInt64" valueReference="20" start="18446744073709551">
+			<Dimension start="2" />
+		</UInt64>
+		<Boolean name="c" valueReference="3" />
+		<String name="d" valueReference="4">
+			<Start value="123" />
+			<Start value="456" />
+		</String>
+		<Binary name="e" valueReference="5" />
+		<Enumeration name="f" valueReference="5" declaredType="f" />
+		<Clock name="g" valueReference="6" intervalVariability="fixed" priority="10" />
+	</ModelVariables>
+	<ModelStructure>
+		<Output valueReference="1" dependencies="1" dependenciesKind="dependent" />
+		<Output valueReference="2" dependencies="1" dependenciesKind="dependent" />
+		<Output valueReference="3" dependencies="1" dependenciesKind="dependent" />
+		<ContinuousStateDerivative valueReference="1" dependencies="1"
+			dependenciesKind="dependent" />
+		<ContinuousStateDerivative valueReference="2" dependencies="1"
+			dependenciesKind="dependent" />
+		<InitialUnknown valueReference="1" dependencies="1 22 333"
+			dependenciesKind="dependent fixed tunable" />
+		<InitialUnknown valueReference="2" dependencies="1"
+			dependenciesKind="dependent" />
+		<EventIndicator valueReference="123" />
+	</ModelStructure>
+</fmiModelDescription>
