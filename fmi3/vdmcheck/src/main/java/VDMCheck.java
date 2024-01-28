@@ -47,6 +47,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * This is the original Java VDMCheck. It should work, but it manually calls XSD2VDM and then
+ * VDMJ to process the spec. The new VDMCheckPlus class uses an FMUReader to do the same job,
+ * and is the preferred route going forward. 
+ */
+@Deprecated
 public class VDMCheck
 {
 	public static void main(String[] args)

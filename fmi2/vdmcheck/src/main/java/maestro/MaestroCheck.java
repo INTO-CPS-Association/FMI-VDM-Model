@@ -59,6 +59,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+/**
+ * This is the original FMI2 MaestroCheck that uses the static-model. It is replaced
+ * by MaestroCheckFMI2 which uses the rule-model, which is preferred going forward.
+ */
+@Deprecated
 public class MaestroCheck {
 
     /**
