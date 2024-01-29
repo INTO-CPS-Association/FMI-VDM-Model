@@ -69,6 +69,12 @@
 					<skip>true</skip>	<!-- Skipped because there is no jar, only tests -->
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<skipIfEmpty>true</skipIfEmpty>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
