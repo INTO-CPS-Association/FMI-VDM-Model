@@ -62,21 +62,11 @@
 	</dependencies>
 
 	<build>
-		<finalName>
-			${project.artifactId}-${project.version}-${maven.build.timestamp}
-		</finalName>
 		<plugins>
 			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
+				<artifactId>maven-install-plugin</artifactId>
 				<configuration>
-					<archive>
-						<manifestEntries>
-							<Main-Class>fmureader.FMUReader</Main-Class>
-							<Implementation-Version>${project.version} build
-								${maven.build.timestamp}</Implementation-Version>
-							<Class-Path>.</Class-Path>
-						</manifestEntries>
-					</archive>
+					<skip>true</skip>	<!-- Skipped because there is no jar, only tests -->
 				</configuration>
 			</plugin>
 		</plugins>
