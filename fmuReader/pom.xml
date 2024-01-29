@@ -14,7 +14,7 @@
 	<artifactId>fmuReader</artifactId>
 	<packaging>jar</packaging>
 	
-	<name>FMU Reader</name>
+	<name>fmuReader</name>
 	<description>A VDMJ ExternalFormatReader for reading FMUs</description>
 
 	<dependencies>

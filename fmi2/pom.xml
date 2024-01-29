@@ -10,11 +10,13 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-
 	<!-- parent pom -->
 	<groupId>org.into-cps.vdmcheck</groupId>
 	<artifactId>fmi2</artifactId>
 	<packaging>pom</packaging>
+
+	<name>FMI2 modules</name>
+	<description>Various projects concerning FMI2</description>
 
 	<!-- sub modules -->
 	<modules>

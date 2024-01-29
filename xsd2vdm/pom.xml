@@ -14,7 +14,7 @@
 	<artifactId>xsd2vdm</artifactId>
 	<packaging>jar</packaging>
 	
-	<name>XSD to VDM</name>
+	<name>xsd2vdm</name>
 	<description>A converter for XSD schemas to VDM-SL schemas</description>
 	
 	<properties>

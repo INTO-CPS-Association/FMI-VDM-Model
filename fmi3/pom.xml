@@ -16,6 +16,9 @@
 	<artifactId>fmi3</artifactId>
 	<packaging>pom</packaging>
 
+	<name>FMI3 modules</name>
+	<description>Various projects concerning FMI3</description>
+
 	<!-- sub modules -->
 	<modules>
 		<module>static-model</module>

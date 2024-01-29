@@ -18,6 +18,8 @@
     <version>${revision}${sha1}${changelist}</version>
 
     <packaging>pom</packaging>
+    <name>FMUCheck Tools</name>
+    <description>iA suite of tools for checking FMUs</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
