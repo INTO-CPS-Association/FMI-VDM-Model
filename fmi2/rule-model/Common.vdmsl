@@ -158,7 +158,8 @@ functions
 		and svs(i).variability = <continuous>
 		and svs(i).causality in set { <local>, <output> }	-- See defn. causality
 		and exists j in seq svs &
-			is_Real(j.fmi2ScalarVariable) and j.fmi2ScalarVariable.derivative = i;
+			is_Real(j.fmi2ScalarVariable) and j.fmi2ScalarVariable.derivative = i
+	pre i in set inds svs;
 
 	/**
 	 * Return the ScalarVariables from a list which are state derivatives, defined to be
