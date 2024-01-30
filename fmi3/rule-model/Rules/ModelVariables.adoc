@@ -328,6 +328,13 @@ validVariableAttributes(sv) ==
 					eCausality <> <independent>
 		),
 
+		-- @OnFail("%NAME: %s clock causality %s invalid at %#s",
+		--	sv.name, eCausality, loc2str(sv.location))
+		(
+			is_Clock(sv) =>
+				eCausality in set {<input>, <output>, <local>}
+		),
+
 		-- @OnFail("%NAME: %s initial/variability/start %s/%s/%s invalid at %#s",
 		--	sv.name, eInitial, eVariability, sv.start, loc2str(sv.location))
 		(

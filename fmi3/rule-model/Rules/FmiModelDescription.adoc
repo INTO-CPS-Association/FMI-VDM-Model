@@ -212,7 +212,9 @@ validMinMax(-, evs) == allOf
 		]
 
 		| ev in seq evs & is_NumericKind(kindOf(ev))
-	]);
+	])
+pre forall ev in seq evs &
+	is_NumericKind(kindOf(ev)) => ev.min <> nil and ev.max <> nil;
 ----
 // {vdm}
 See <<table-type-attributes>>.
@@ -528,7 +530,9 @@ validClockPriorities(fmd, evs) == allOf
 					-- ev.name, loc2str(ev.location))
 					( ev.priority = nil ),
 
-				<local> -> true
+				<local> -> true,
+
+				others	-> true
 			end
 		else
 			-- @OnFail("%NAME: Clock %s must not have a priority unless SE at %#s",
