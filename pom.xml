@@ -46,7 +46,7 @@
         <module>fmi3</module>
         <module>xsd2vdm</module>
         <module>fmuReader</module>
-        <module>combined</module>
+
     </modules>
 
     <dependencyManagement>
@@ -343,6 +343,16 @@
                     <url>https://overture.au.dk/artifactory/into-cps</url>
                 </snapshotRepository>
             </distributionManagement>
+        </profile>
+
+        <profile>
+            <id>combinedtest</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>combined</module>
+            </modules>
         </profile>
 
     </profiles>

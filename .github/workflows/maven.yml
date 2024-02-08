@@ -52,7 +52,7 @@ jobs:
           server-password: MAVEN_PASSWORD
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Deploy
-        run: mvn -B deploy -Psonatype
+        run: mvn -B deploy -Psonatype -P\!combinedtest
         env:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
