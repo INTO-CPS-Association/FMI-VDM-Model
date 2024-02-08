@@ -59,359 +59,277 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-public class MaestroCheckFMI3
-{
-	/**
-	 * Main class for testing. Maestro will use the default constructor.
-	 */
-	public static void main(String[] args) throws Exception
-	{
-		MaestroCheckFMI3 checker = new MaestroCheckFMI3();
+public class MaestroCheckFMI3 {
+    /**
+     * Main class for testing. Maestro will use the default constructor.
+     */
+    public static void main(String[] args) throws Exception {
+        MaestroCheckFMI3 checker = new MaestroCheckFMI3();
 
-		for (OnFailError err : checker.check(new File(args[0]), new File(args[1]), new File(args[2])))
-		{
-			System.out.println(err.errno + " => " + err.message);
-		}
-	}
+        for (OnFailError err : checker.check(new File(args[0]), new File(args[1]), new File(args[2]))) {
+            System.out.println(err.errno + " => " + err.message);
+        }
+    }
 
-	static
-	{
-		final String key = "vdmj.mapping.search_path";
-		String searchPath = System.getProperty(key);
-		
-		if (searchPath == null)
-		{
-			System.setProperty(key, "/annotations");
-		}
-		else
-		{
-			System.setProperty(key, searchPath + File.pathSeparator + "/annotations");
-		}
-	}
+    static {
+        final String key = "vdmj.mapping.search_path";
+        String searchPath = System.getProperty(key);
 
-	/**
-	 * Run model checks on the XML passed as a stream. This can be a
-	 * modelDescription.xml, buildDescription.xml or terminalsAndIcons.xml
-	 * source.
-	 */
-	public List<OnFailError> check(InputStream xmlStream) throws Exception
-	{
-		File xmlfile = Files.createTempFile("fmi", ".xml", new FileAttribute[0]).toFile();
-		xmlfile.deleteOnExit();
-		String varName = copyStream(xmlStream, xmlfile.getParentFile(), xmlfile.getName());
-		
-		switch (varName)
-		{
-			case "modelDescription":
-				return check(xmlfile, null, null);
-				
-			case "buildDescription":
-				return check(null, xmlfile, null);
-				
-			case "terminalsAndIcons":
-				return check(null, null, xmlfile);
-				
-			default:
-				throw new IOException("Unknown XML content");
-		}
-	}
+        if (searchPath == null) {
+            System.setProperty(key, "/annotations");
+        } else {
+            System.setProperty(key, searchPath + File.pathSeparator + "/annotations");
+        }
+    }
 
-	/**
-	 * Run model checks on the XML passed as a file. This can be a
-	 * modelDescription.xml, buildDescription.xml or terminalsAndIcons.xml
-	 * source.
-	 */
-	public List<OnFailError> check(File modelFile, File buildFile, File termsFile) throws Exception
-	{
-		List<OnFailError> errors = new Vector<>();
+    /**
+     * Run model checks on the XML passed as a stream. This can be a modelDescription.xml, buildDescription.xml or terminalsAndIcons.xml source.
+     */
+    public List<OnFailError> check(InputStream xmlStream) throws Exception {
+        File xmlfile = Files.createTempFile("fmi", ".xml", new FileAttribute[0]).toFile();
+        xmlfile.deleteOnExit();
+        String varName = copyStream(xmlStream, xmlfile.getParentFile(), xmlfile.getName());
 
-		File maestro = Files.createTempDirectory("maestro", new FileAttribute[0]).toFile();
-		maestro.deleteOnExit();
+        switch (varName) {
+            case "modelDescription":
+                return check(xmlfile, null, null);
 
-		File fmi3schema = new File(maestro, "fmi3schema");
-		fmi3schema.mkdir();
-		fmi3schema.deleteOnExit();
+            case "buildDescription":
+                return check(null, xmlfile, null);
 
-		copyResources(maestro,
-			"/fmi3schema/fmi3Annotation.xsd",
-			"/fmi3schema/fmi3AttributeGroups.xsd",
-			"/fmi3schema/fmi3BuildDescription.xsd",
-			"/fmi3schema/fmi3InterfaceType.xsd",
-			"/fmi3schema/fmi3ModelDescription.xsd",
-			"/fmi3schema/fmi3TerminalsAndIcons.xsd",
-			"/fmi3schema/fmi3Terminal.xsd",
-			"/fmi3schema/fmi3Type.xsd",
-			"/fmi3schema/fmi3Unit.xsd",
-			"/fmi3schema/fmi3VariableDependency.xsd",
-			"/fmi3schema/fmi3Variable.xsd",
-			"/fmi3schema/fmi3.xsd");
+            case "terminalsAndIcons":
+                return check(null, null, xmlfile);
 
-		File xsdFile = new File(fmi3schema, "fmi3.xsd");
-		validate(modelFile, xsdFile, errors);
-		validate(buildFile, xsdFile, errors);
-		validate(termsFile, xsdFile, errors);
+            default:
+                throw new IOException("Unknown XML content");
+        }
+    }
 
-		if (errors.isEmpty())
-		{
-			File vdmsl = new File(maestro, "vdmsl");
-			vdmsl.mkdir();
-			vdmsl.deleteOnExit();
+    /**
+     * Run model checks on the XML passed as a file. This can be a modelDescription.xml, buildDescription.xml or terminalsAndIcons.xml source.
+     */
+    public List<OnFailError> check(File modelFile, File buildFile, File termsFile) throws Exception {
+        List<OnFailError> errors = new Vector<>();
 
-			File vdmFile = new File(vdmsl, "model.vdmsl");
-			vdmFile.deleteOnExit();
+        File maestro = Files.createTempDirectory("maestro", new FileAttribute[0]).toFile();
+        maestro.deleteOnExit();
 
-			Xsd2VDM converter = new Xsd2VDM();
-			Xsd2VDM.loadProperties(xsdFile);
-			Map<String, Type> vdmSchema = converter.createVDMSchema(xsdFile, null, false, true);
+        File fmi3schema = new File(maestro, "fmi3schema");
+        fmi3schema.mkdir();
+        fmi3schema.deleteOnExit();
 
-			if (modelFile != null)
-			{
-				converter.createVDMValue(vdmSchema, vdmFile, modelFile, "modelDescription");
-			}
-			else
-			{
-				missingVariable("modelDescription", vdmFile);
-			}
-			
-			if (buildFile != null)
-			{
-				converter.createVDMValue(vdmSchema, vdmFile, buildFile, "buildDescription", true);
-			}
-			else
-			{
-				missingVariable("buildDescription", vdmFile);
-			}
-			
-			if (termsFile != null)
-			{
-				converter.createVDMValue(vdmSchema, vdmFile, termsFile, "terminalsAndIcons", true);
-			}
-			else
-			{
-				missingVariable("terminalsAndIcons", vdmFile);
-			}
+        copyResources(maestro, "/fmi3schema/fmi3Annotation.xsd", "/fmi3schema/fmi3AttributeGroups.xsd", "/fmi3schema/fmi3BuildDescription.xsd",
+                "/fmi3schema/fmi3InterfaceType.xsd", "/fmi3schema/fmi3ModelDescription.xsd", "/fmi3schema/fmi3TerminalsAndIcons.xsd",
+                "/fmi3schema/fmi3Terminal.xsd", "/fmi3schema/fmi3Type.xsd", "/fmi3schema/fmi3Unit.xsd", "/fmi3schema/fmi3VariableDependency.xsd",
+                "/fmi3schema/fmi3Variable.xsd", "/fmi3schema/fmi3.xsd");
 
-			if (vdmFile.exists()) // Means successful?
-			{
-				File frm = new File(vdmsl, "fmi3-rule-model");
-				frm.deleteOnExit();
-				frm.mkdir();
-				
-				File rules = new File(frm, "Rules");
-				rules.deleteOnExit();
-				rules.mkdir();
-				
-				copyResources(vdmsl,
-					"/fmi3-rule-model/Rules/BuildConfiguration.adoc",
-					"/fmi3-rule-model/Rules/CoSimulation.adoc",
-					"/fmi3-rule-model/Rules/DefaultExperiment.adoc",
-					"/fmi3-rule-model/Rules/FMI3Rules.adoc",
-					"/fmi3-rule-model/Rules/FmiModelDescription.adoc",
-					"/fmi3-rule-model/Rules/LogCategories.adoc",
-					"/fmi3-rule-model/Rules/ModelExchange.adoc",
-					"/fmi3-rule-model/Rules/ModelStructure.adoc",
-					"/fmi3-rule-model/Rules/ModelVariables.adoc",
-					"/fmi3-rule-model/Rules/ScheduledExecution.adoc",
-					"/fmi3-rule-model/Rules/Terminals.adoc",
-					"/fmi3-rule-model/Rules/TypeDefinitions.adoc",
-					"/fmi3-rule-model/Rules/UnitDefinitions.adoc",
-					"/fmi3-rule-model/Annotations.vdmsl",
-					
-					"/fmi3-rule-model/BuildConfiguration.vdmsl",
-					"/fmi3-rule-model/Common.vdmsl",
-					"/fmi3-rule-model/CoSimulation.vdmsl",
-					"/fmi3-rule-model/DefaultExperiment.vdmsl",
-					"/fmi3-rule-model/EffectiveVariables.vdmsl",
-					"/fmi3-rule-model/FMI3Schema.vdmsl",
-					"/fmi3-rule-model/FMIModelDescription.vdmsl",
-					"/fmi3-rule-model/InvariantSupport.vdmsl",
-					"/fmi3-rule-model/LogCategories.vdmsl",
-					"/fmi3-rule-model/ModelExchange.vdmsl",
-					"/fmi3-rule-model/ModelStructure.vdmsl",
-					"/fmi3-rule-model/ModelVariables.vdmsl",
-					"/fmi3-rule-model/ScheduledExecution.vdmsl",
-					"/fmi3-rule-model/Support.vdmsl",
-					"/fmi3-rule-model/Terminals.vdmsl",
-					"/fmi3-rule-model/TypeDefinitions.vdmsl",
-					"/fmi3-rule-model/UnitDefinitions.vdmsl",
-					"/fmi3-rule-model/Validation.vdmsl",
-					"/fmi3-rule-model/VariableNaming.vdmsl",
-					"/fmi3-rule-model/XSD.vdmsl");
+        File xsdFile = new File(fmi3schema, "fmi3.xsd");
+        validate(modelFile, xsdFile, errors);
+        validate(buildFile, xsdFile, errors);
+        validate(termsFile, xsdFile, errors);
 
-				Properties.init();
-				Settings.annotations = true;
-				ASTModuleList ast = new ASTModuleList();
-				
-				boolean saved = Properties.parser_merge_comments;
-				Properties.parser_merge_comments = true;
-				readDirectory(ast, vdmsl, errors);
-				Properties.parser_merge_comments = saved;
+        if (errors.isEmpty()) {
+            File vdmsl = new File(maestro, "vdmsl");
+            vdmsl.mkdir();
+            vdmsl.deleteOnExit();
 
-				if (!errors.isEmpty())
-				{
-					errors.add(new OnFailError(1, "Syntax errors in VDMSL?"));
-				}
-				else
-				{
-					PrintStream dummy = new PrintStream(new ByteArrayOutputStream());
-					ClassMapper instance = ClassMapper.getInstance(TCNode.MAPPINGS, dummy);
-					TCModuleList tc = instance.init().convert(ast);
-					tc.combineDefaults();
-					TypeChecker tchecker = new ModuleTypeChecker(tc);
-					tchecker.typeCheck();
+            File vdmFile = new File(vdmsl, "model.vdmsl");
+            vdmFile.deleteOnExit();
 
-					if (TypeChecker.getErrorCount() > 0)
-					{
-						for (VDMError err : TypeChecker.getErrors())
-						{
-							errors.add(new OnFailError(err.number, err.message));
-						}
+            Xsd2VDM converter = new Xsd2VDM();
+            Xsd2VDM.loadProperties(xsdFile);
+            Map<String, Type> vdmSchema = converter.createVDMSchema(xsdFile, null, false, true);
 
-						errors.add(new OnFailError(2, "Type errors in VDMSL?"));
-					}
+            if (modelFile != null) {
+                converter.createVDMValue(vdmSchema, vdmFile, modelFile, "modelDescription");
+            } else {
+                missingVariable("modelDescription", vdmFile);
+            }
 
-					ClassMapper classMapper = ClassMapper.getInstance(INNode.MAPPINGS, dummy);
-					INModuleList in = classMapper.init().convert(tc);
-					Interpreter interpreter = new ModuleInterpreter(in, tc);
-					interpreter.init();
-					INOnFailAnnotation.setErrorList(errors);
-					Value result = interpreter.execute("isValidFMIConfigurations(modelDescription, buildDescription, terminalsAndIcons)");
+            if (buildFile != null) {
+                converter.createVDMValue(vdmSchema, vdmFile, buildFile, "buildDescription", true);
+            } else {
+                missingVariable("buildDescription", vdmFile);
+            }
 
-					if (!result.boolValue(null))
-					{
-						errors.add(new OnFailError(3, "Errors found"));
-					}
-				}
-			}
-		}
+            if (termsFile != null) {
+                converter.createVDMValue(vdmSchema, vdmFile, termsFile, "terminalsAndIcons", true);
+            } else {
+                missingVariable("terminalsAndIcons", vdmFile);
+            }
 
-		return errors;
-	}
+            if (vdmFile.exists()) // Means successful?
+            {
+                File frm = new File(vdmsl, "fmi3-rule-model");
+                frm.deleteOnExit();
+                frm.mkdir();
 
-	private void readDirectory(ASTModuleList ast, File dir, List<OnFailError> errors)
-	{
-		for (File sl : dir.listFiles())
-		{
-			if (sl.isDirectory())
-			{
-				readDirectory(ast, sl, errors);
-			}
-			else
-			{
-				LexTokenReader ltr = new LexTokenReader(sl, Dialect.VDM_SL);
-				ModuleReader mreader = new ModuleReader(ltr);
-				ast.addAll(mreader.readModules());
+                File rules = new File(frm, "Rules");
+                rules.deleteOnExit();
+                rules.mkdir();
 
-				for (VDMError err : mreader.getErrors())
-				{
-					errors.add(new OnFailError(err.number, err.message));
-				}
-			}
-		}
-	}
+                copyResources(vdmsl, "/fmi3-rule-model/Rules/BuildConfiguration.adoc", "/fmi3-rule-model/Rules/CoSimulation.adoc",
+                        "/fmi3-rule-model/Rules/DefaultExperiment.adoc", "/fmi3-rule-model/Rules/FMI3Rules.adoc",
+                        "/fmi3-rule-model/Rules/FmiModelDescription.adoc", "/fmi3-rule-model/Rules/LogCategories.adoc",
+                        "/fmi3-rule-model/Rules/ModelExchange.adoc", "/fmi3-rule-model/Rules/ModelStructure.adoc",
+                        "/fmi3-rule-model/Rules/ModelVariables.adoc", "/fmi3-rule-model/Rules/ScheduledExecution.adoc",
+                        "/fmi3-rule-model/Rules/Terminals.adoc", "/fmi3-rule-model/Rules/TypeDefinitions.adoc",
+                        "/fmi3-rule-model/Rules/UnitDefinitions.adoc", "/fmi3-rule-model/Annotations.vdmsl",
 
-	private void validate(File xml, File xsd, List<OnFailError> errors)
-	{
-		if (xml == null)
-		{
-			return;	// Missing file
-		}
-		
-		try
-		{
-			// Note that we pass a stream to allow the validator to determine the
-			// encoding, rather than passing a File, which seems to use default encoding.
-			Source xmlFile = new StreamSource(new FileInputStream(xml));
-			xmlFile.setSystemId(xml.toURI().toASCIIString());
-			Source xsdFile = new StreamSource(xsd);
-			xsdFile.setSystemId(xsd.toURI().toASCIIString());
-			SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+                        "/fmi3-rule-model/BuildConfiguration.vdmsl", "/fmi3-rule-model/Common.vdmsl", "/fmi3-rule-model/CoSimulation.vdmsl",
+                        "/fmi3-rule-model/DefaultExperiment.vdmsl", "/fmi3-rule-model/EffectiveVariables.vdmsl", "/fmi3-rule-model/FMI3Schema.vdmsl",
+                        "/fmi3-rule-model/FMIModelDescription.vdmsl", "/fmi3-rule-model/InvariantSupport.vdmsl",
+                        "/fmi3-rule-model/LogCategories.vdmsl", "/fmi3-rule-model/ModelExchange.vdmsl", "/fmi3-rule-model/ModelStructure.vdmsl",
+                        "/fmi3-rule-model/ModelVariables.vdmsl", "/fmi3-rule-model/ScheduledExecution.vdmsl", "/fmi3-rule-model/Support.vdmsl",
+                        "/fmi3-rule-model/Terminals.vdmsl", "/fmi3-rule-model/TypeDefinitions.vdmsl", "/fmi3-rule-model/UnitDefinitions.vdmsl",
+                        "/fmi3-rule-model/Validation.vdmsl", "/fmi3-rule-model/VariableNaming.vdmsl", "/fmi3-rule-model/XSD.vdmsl");
 
-			Schema schema = schemaFactory.newSchema(xsdFile);
-			Validator validator = schema.newValidator();
-			validator.validate(xmlFile);
-		}
-		catch (SAXException e)
-		{
-			errors.add(new OnFailError(0, "XML validation: " + e));
-		}
-		catch (Exception e)
-		{
-			errors.add(new OnFailError(0, "XML validation: " + e.getMessage()));
-		}
-	}
+                Properties.init();
+                Settings.annotations = true;
+                ASTModuleList ast = new ASTModuleList();
 
-	private void copyResources(File target, String... resources) throws Exception
-	{
-		if (!target.exists())
-		{
-			throw new Exception("Target of copyResources does not exist: " + target);
-		}
+                boolean saved = Properties.parser_merge_comments;
+                Properties.parser_merge_comments = true;
+                readDirectory(ast, vdmsl, errors);
+                Properties.parser_merge_comments = saved;
 
-		for (String resource : resources)
-		{
-			InputStream is = MaestroCheckFMI3.class.getResourceAsStream(resource);
+                if (!errors.isEmpty()) {
+                    errors.add(new OnFailError(1, "Syntax errors in VDMSL?"));
+                } else {
+                    PrintStream dummy = new PrintStream(new ByteArrayOutputStream());
+                    ClassMapper instance = ClassMapper.getInstance(TCNode.MAPPINGS, dummy);
+                    TCModuleList tc = instance.init().convert(ast);
+                    tc.combineDefaults();
+                    TypeChecker tchecker = new ModuleTypeChecker(tc);
+                    tchecker.typeCheck();
 
-			if (is == null)
-			{
-				throw new Exception("Cannot load resource " + resource);
-			}
+                    if (TypeChecker.getErrorCount() > 0) {
+                        for (VDMError err : TypeChecker.getErrors()) {
+                            errors.add(new OnFailError(err.number, err.message));
+                        }
 
-			copyStream(is, target, resource);
-			is.close();
-		}
-	}
+                        errors.add(new OnFailError(2, "Type errors in VDMSL?"));
+                    }
 
-	private String copyStream(InputStream data, File target, String file) throws IOException
-	{
-		File targetFile = new File(target.getAbsolutePath() + file);
-		targetFile.deleteOnExit(); // Note! All files temporary
-		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		BufferedOutputStream bos = new BufferedOutputStream(baos);
+                    ClassMapper classMapper = ClassMapper.getInstance(INNode.MAPPINGS, dummy);
+                    INModuleList in = classMapper.init().convert(tc);
+                    Interpreter interpreter = new ModuleInterpreter(in, tc);
+                    interpreter.init();
+                    INOnFailAnnotation.setErrorList(errors);
+                    Value result = interpreter.execute("isValidFMIConfigurations(modelDescription, buildDescription, terminalsAndIcons)");
 
-		while (data.available() > 0)
-		{
-			bos.write(data.read());
-		}
+                    if (!result.boolValue(null)) {
+                        errors.add(new OnFailError(3, "Errors found"));
+                    }
+                }
+            }
+        }
 
-		bos.close();
-		
-		String xmlContent = baos.toString("UTF-8");
-		String varName = null;
-		
-		if (xmlContent.contains("<fmiModelDescription"))
-		{
-			varName = "modelDescription";
-		}
-		else if (xmlContent.contains("<fmiBuildDescription"))
-		{
-			varName = "buildDescription";
-		}
-		else if (xmlContent.contains("<fmiTerminalsAndIcons"))
-		{
-			varName = "terminalsAndIcons";
-		}
-		
-		BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(targetFile));
-		fos.write(xmlContent.getBytes("UTF-8"));
-		fos.close();
+        return errors;
+    }
 
-		return varName;
-	}
-	
-	private void missingVariable(String varName, File vdmFile) throws IOException
-	{
-		PrintStream output = new PrintStream(new FileOutputStream(vdmFile, true));
-		
-		output.println("/**");
-		output.println(" * VDM value missing");
-		output.println(" */");
-		
-		output.println("values");
-		output.println("    " + varName + " = nil;\n");
-		output.println("\n");
-		
-		output.close();
-	}
+    private void readDirectory(ASTModuleList ast, File dir, List<OnFailError> errors) {
+        for (File sl : dir.listFiles()) {
+            if (sl.isDirectory()) {
+                readDirectory(ast, sl, errors);
+            } else {
+                LexTokenReader ltr = new LexTokenReader(sl, Dialect.VDM_SL);
+                ModuleReader mreader = new ModuleReader(ltr);
+                ast.addAll(mreader.readModules());
+
+                for (VDMError err : mreader.getErrors()) {
+                    errors.add(new OnFailError(err.number, err.message));
+                }
+            }
+        }
+    }
+
+    private void validate(File xml, File xsd, List<OnFailError> errors) {
+        if (xml == null) {
+            return;    // Missing file
+        }
+
+        try {
+            // Note that we pass a stream to allow the validator to determine the
+            // encoding, rather than passing a File, which seems to use default encoding.
+            Source xmlFile = new StreamSource(new FileInputStream(xml));
+            xmlFile.setSystemId(xml.toURI().toASCIIString());
+            Source xsdFile = new StreamSource(xsd);
+            xsdFile.setSystemId(xsd.toURI().toASCIIString());
+            SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+            Schema schema = schemaFactory.newSchema(xsdFile);
+            Validator validator = schema.newValidator();
+            validator.validate(xmlFile);
+        } catch (SAXException e) {
+            errors.add(new OnFailError(0, "XML validation: " + e));
+        } catch (Exception e) {
+            errors.add(new OnFailError(0, "XML validation: " + e.getMessage()));
+        }
+    }
+
+    private void copyResources(File target, String... resources) throws Exception {
+        if (!target.exists()) {
+            throw new Exception("Target of copyResources does not exist: " + target);
+        }
+
+        for (String resource : resources) {
+            InputStream is = MaestroCheckFMI3.class.getResourceAsStream(resource);
+
+            if (is == null) {
+                throw new Exception("Cannot load resource " + resource);
+            }
+
+            copyStream(is, target, resource);
+            is.close();
+        }
+    }
+
+    private String copyStream(InputStream data, File target, String file) throws IOException {
+        if (!file.startsWith(File.separator)) {
+            file = File.separator + file;
+        }
+        File targetFile = new File(target.getAbsolutePath() + file.replace('/', File.separatorChar));
+        targetFile.deleteOnExit(); // Note! All files temporary
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        BufferedOutputStream bos = new BufferedOutputStream(baos);
+
+        while (data.available() > 0) {
+            bos.write(data.read());
+        }
+
+        bos.close();
+
+        String xmlContent = baos.toString("UTF-8");
+        String varName = null;
+
+        if (xmlContent.contains("<fmiModelDescription")) {
+            varName = "modelDescription";
+        } else if (xmlContent.contains("<fmiBuildDescription")) {
+            varName = "buildDescription";
+        } else if (xmlContent.contains("<fmiTerminalsAndIcons")) {
+            varName = "terminalsAndIcons";
+        }
+
+        BufferedOutputStream fos = new BufferedOutputStream(new FileOutputStream(targetFile));
+        fos.write(xmlContent.getBytes("UTF-8"));
+        fos.close();
+
+        return varName;
+    }
+
+    private void missingVariable(String varName, File vdmFile) throws IOException {
+        PrintStream output = new PrintStream(new FileOutputStream(vdmFile, true));
+
+        output.println("/**");
+        output.println(" * VDM value missing");
+        output.println(" */");
+
+        output.println("values");
+        output.println("    " + varName + " = nil;\n");
+        output.println("\n");
+
+        output.close();
+    }
 }
