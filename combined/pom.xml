@@ -1,43 +1,43 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.into-cps</groupId>
-		<artifactId>vdmcheck</artifactId>
-		<version>${revision}${sha1}${changelist}</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+    <parent>
+        <groupId>org.into-cps</groupId>
+        <artifactId>vdmcheck</artifactId>
+        <version>${revision}${sha1}${changelist}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-	<groupId>org.into-cps.vdmcheck</groupId>
-	<artifactId>combined</artifactId>
-	<packaging>jar</packaging>
+    <groupId>org.into-cps.vdmcheck</groupId>
+    <artifactId>combined</artifactId>
+    <packaging>jar</packaging>
 
-	<name>Combined FMI2/FMI3 Testing</name>
-	<description>A combined FMI2/FMI3 test for MaestroChecks</description>
+    <name>Combined FMI2/FMI3 Testing</name>
+    <description>A combined FMI2/FMI3 test for MaestroChecks</description>
 
     <properties>
         <vdmj.version>4.5.0-P-SNAPSHOT</vdmj.version>
     </properties>
 
- 	<dependencies>
-		<dependency>
-			<groupId>org.into-cps.vdmcheck.fmi2</groupId>
-			<artifactId>vdmcheck2</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>org.into-cps.vdmcheck.fmi2</groupId>
+            <artifactId>vdmcheck2</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.into-cps.vdmcheck.fmi2</groupId>
             <artifactId>rule-model</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<dependency>
-			<groupId>org.into-cps.vdmcheck.fmi3</groupId>
-			<artifactId>vdmcheck3</artifactId>
-			<version>${project.version}</version>
-		</dependency>
+        <dependency>
+            <groupId>org.into-cps.vdmcheck.fmi3</groupId>
+            <artifactId>vdmcheck3</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.into-cps.vdmcheck.fmi3</groupId>
             <artifactId>rule-model</artifactId>
@@ -53,28 +53,36 @@
             <artifactId>annotations</artifactId>
             <version>${vdmj.version}</version>
         </dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-install-plugin</artifactId>
-				<configuration>
-					<skip>true</skip>	<!-- Skipped because there is no jar, only tests -->
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<skipIfEmpty>true</skipIfEmpty>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+    <build>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>    <!-- Skipped because there is no jar, only tests -->
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <skipIfEmpty>true</skipIfEmpty>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
