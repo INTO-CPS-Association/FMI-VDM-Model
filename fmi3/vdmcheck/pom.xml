@@ -12,7 +12,7 @@
     <artifactId>vdmcheck3</artifactId>
 
     <properties>
-        <vdmj.version>4.5.0-P-SNAPSHOT</vdmj.version>
+        <vdmj.version>4.5.0-P</vdmj.version>
     </properties>
 
     <dependencies>
