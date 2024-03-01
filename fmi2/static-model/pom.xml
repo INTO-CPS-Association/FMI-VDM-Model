@@ -1,91 +1,146 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.into-cps.vdmcheck</groupId>
-		<artifactId>fmi2</artifactId>
-		<version>${revision}${sha1}${changelist}</version>
-		<relativePath>../pom.xml</relativePath>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.into-cps.vdmcheck</groupId>
+        <artifactId>fmi2</artifactId>
+        <version>${revision}${sha1}${changelist}</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-	<groupId>org.into-cps.vdmcheck.fmi2</groupId>
-	<artifactId>static-model</artifactId>
-	<build>
-		<resources>
-			<resource>
-				<directory>${basedir}</directory>
-			</resource>
-		</resources>
-		<directory>.generated</directory>
-		<plugins>
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<configuration>
-					<filesets>
-						<fileset>
-							<directory>.generated</directory>
-						</fileset>
-					</filesets>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-					<executions>
-						<execution>
-							<id>copy-resources</id>
-							<phase>prepare-package</phase>
-							<goals>
-								<goal>copy-resources</goal>
-							</goals>
-							<configuration>
-								<outputDirectory>.generated/fmi2-static-model</outputDirectory>
-								<resources>
-									<resource>
-										<directory>.</directory>
-										<filtering>false</filtering>
-										<exclude>.generated/**</exclude>
-										<exclude>pom.xml</exclude>
-										<include>*.vdmsl</include>
-									</resource>
-								</resources>
-							</configuration>
-						</execution>
-						<execution>
-							<id>copy-licence</id>
-							<phase>prepare-package</phase>
-							<goals>
-								<goal>copy-resources</goal>
-							</goals>
-							<configuration>
-								<outputDirectory>.generated</outputDirectory>
-								<resources>
-									<resource>
-										<directory>../..</directory>
-										<filtering>false</filtering>
-										<include>MIT-LICENCE</include>
-									</resource>
-								</resources>
-							</configuration>
-						</execution>
-					</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-jar</id>
-						<phase>package</phase>
-						<configuration>
-							<useDefaultManifestFile>true</useDefaultManifestFile>
-							<outputDirectory>.generated</outputDirectory>
-							<classesDirectory>.generated</classesDirectory>
-							<includes>
-								<include>fmi2-static-model/*.vdmsl</include>
-								<include>MIT-LICENCE</include>
-							</includes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+    <groupId>org.into-cps.vdmcheck.fmi2</groupId>
+    <artifactId>static-model</artifactId>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/fmi2-static-model</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}</directory>
+                                    <filtering>false</filtering>
+                                    <exclude>${project.build.directory}/**</exclude>
+                                    <exclude>pom.xml</exclude>
+                                    <include>*.vdmsl</include>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-licence</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../..</directory>
+                                    <filtering>false</filtering>
+                                    <include>MIT-LICENCE</include>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <useDefaultManifestFile>true</useDefaultManifestFile>
+                            <classesDirectory>${project.build.directory}</classesDirectory>
+                            <includes>
+                                <include>fmi2-static-model/*.vdmsl</include>
+                                <include>MIT-LICENCE</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>javadoc-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>javadoc</classifier>
+                            <classesDirectory>${project.build.directory}</classesDirectory>
+                            <includes>
+                                <include>MIT-LICENCE</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>sources-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>sources</classifier>
+                            <classesDirectory>${project.build.directory}</classesDirectory>
+                            <includes>
+                                <include>MIT-LICENCE</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-source-plugin</artifactId>-->
+            <!--                <version>3.2.1</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>attach-sources</id>-->
+            <!--                        <phase>package</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>jar</goal>-->
+            <!--                        </goals>-->
+            <!--                        <configuration>-->
+            <!--                            <includes>-->
+            <!--                                <include>${project.basedir}/*.vdmsl</include>-->
+            <!--                            </includes>-->
+            <!--                            <useDefaultExcludes>false</useDefaultExcludes>-->
+            <!--                        </configuration>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-javadoc-plugin</artifactId>-->
+            <!--                <version>3.1.1</version>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>attach-javadocs</id>-->
+            <!--                        <goals>-->
+            <!--                            <goal>jar</goal>-->
+            <!--                        </goals>-->
+            <!--                        <phase>package</phase>-->
+            <!--                        <configuration>-->
+
+            <!--                            <failOnError>false</failOnError>-->
+            <!--                            <sourcepath>src/main/java</sourcepath>-->
+            <!--                            <quiet>true</quiet>-->
+            <!--                        </configuration>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--                <configuration>-->
+            <!--                    <failOnError>false</failOnError>-->
+            <!--                </configuration>-->
+            <!--            </plugin>-->
+        </plugins>
+    </build>
 </project>
