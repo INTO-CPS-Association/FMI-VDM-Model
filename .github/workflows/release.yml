@@ -238,25 +238,36 @@ jobs:
           prerelease: false
 
       - name: Upload Release Asset - VDMCheck2
-        id: upload-release-asset2
+        id: upload-release-asset-vdmcheck2-static
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: fmi2/vdmcheck/target/FMI2-vdmcheck-${{ needs.version_change.outputs.build_version }}-distribution.zip
-          asset_name: FMI2-vdmcheck-${{ needs.version_change.outputs.build_version }}-distribution.zip
+          asset_path: fmi2/vdmcheck/target/vdmcheck2-${{ needs.version_change.outputs.build_version }}-distribution-static.zip
+          asset_name: vdmcheck2-${{ needs.version_change.outputs.build_version }}-distribution-static.zip
+          asset_content_type: application/zip
+
+      - name: Upload Release Asset - VDMCheck2
+        id: upload-release-asset-vdmcheck2-rules
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: fmi2/vdmcheck/target/vdmcheck2-${{ needs.version_change.outputs.build_version }}-distribution-rules.zip
+          asset_name: vdmcheck2-${{ needs.version_change.outputs.build_version }}-distribution-rules.zip
           asset_content_type: application/zip
 
       - name: Upload Release Asset - VDMCheck3
-        id: upload-release-asset3
+        id: upload-release-asset-vdmcheck3-rules
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: fmi3/vdmcheck/target/FMI3-vdmcheck-${{ needs.version_change.outputs.build_version }}-distribution.zip
-          asset_name: FMI3-vdmcheck-${{ needs.version_change.outputs.build_version }}-distribution.zip
+          asset_path: fmi3/vdmcheck/target/vdmcheck3-${{ needs.version_change.outputs.build_version }}-distribution-rules.zip
+          asset_name: vdmcheck3-${{ needs.version_change.outputs.build_version }}-distribution-rules.zip
           asset_content_type: application/zip
 
 
