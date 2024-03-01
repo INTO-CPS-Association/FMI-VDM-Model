@@ -193,7 +193,7 @@ jobs:
 
       - name: Maven Deploy RELEASE
         # If autorelease is false then it must be released from here: https://oss.sonatype.org/#stagingRepositories -DautoReleaseAfterClose=true
-        run: mvn -B deploy -Dchangelist= -Dsha1= -Dmaven.test.skip=true -DskipITs -fae -Psonatype -Prelease -P\!combinedtest
+        run: mvn -B deploy -Dchangelist= -Dsha1= -Dmaven.test.skip=true -DskipITs -fae -Psonatype -Prelease -P\!combinedtest -DautoReleaseAfterClose=true
         env:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
