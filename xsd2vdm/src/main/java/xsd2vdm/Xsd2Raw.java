@@ -100,11 +100,12 @@ public class Xsd2Raw
 		vdmFile.println(" * DO NOT EDIT!");
 		vdmFile.println(" */");
 		vdmFile.println("values");
-		int file = 1;
 		
 		for (XSDElement root: roots)
 		{
-			vdmFile.print("  file" + file++ + " =\n");
+			String varname = root.getFile().getName().replaceAll("\\.", "_");
+			
+			vdmFile.print("  " + varname + " =\n");
 			vdmFile.print(root.toVDM());
 			vdmFile.println(";\n");
 		}

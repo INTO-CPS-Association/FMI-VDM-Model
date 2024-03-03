@@ -3,7 +3,7 @@
 # Script to launch the installed XSD2VDM jar.
 #
 
-VERSION=1.1.3-SNAPSHOT
+VERSION=1.1.4-SNAPSHOT
 JAR=$HOME/.m2/repository/org/into-cps/vdmcheck/xsd2vdm/$VERSION/xsd2vdm-$VERSION.jar
 JVMARGS=""
 ARGS=""
