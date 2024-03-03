@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
@@ -288,9 +290,59 @@ public class XSDElement
 				sb.append(indent3);
 				sb.append("mk_Attribute(\"");
 				sb.append(pair.getKey());
-				sb.append("\", \"");
-				sb.append(pair.getValue());
-				sb.append("\")");
+				sb.append("\", ");
+				
+				String value = pair.getValue();
+				
+				try
+				{
+					if (value.matches("(\\d+ ?)+"))
+					{
+						List<String> nums = new Vector<String>();
+
+						Pattern p = Pattern.compile("\\d+");
+						Matcher m = p.matcher(value);
+						
+						while (m.find())
+						{
+							nums.add(m.group());
+						}
+						
+						if (nums.size() == 1)
+						{
+							sb.append(nums.get(0));
+						}
+						else
+						{
+							String comma = "";
+							sb.append("[");
+							
+							for (String num: nums)
+							{
+								sb.append(comma);
+								sb.append(num);
+								comma = ", ";
+							}
+							
+							sb.append("]");
+						}
+
+						sb.append(")");
+					}
+					else
+					{
+						double num = Double.parseDouble(value);
+						sb.append(num);
+						sb.append(")");
+					}
+				}
+				catch (NumberFormatException e)
+				{
+					sb.append("\"");
+					sb.append(value);
+					sb.append("\")");
+				}
+				
 				sep = ",\n";
 			}
 	
