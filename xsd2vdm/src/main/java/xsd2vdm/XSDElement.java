@@ -296,11 +296,11 @@ public class XSDElement
 				
 				try
 				{
-					if (value.matches("([0123456789.+-eE]+ ?)+"))
+					if (value.matches("^([+-.0123456789eE]+\\s*)+$"))
 					{
 						List<String> nums = new Vector<String>();
 
-						Pattern p = Pattern.compile("[0123456789.+-eE]+");
+						Pattern p = Pattern.compile("[+-.0123456789eE]+");
 						Matcher m = p.matcher(value);
 						
 						while (m.find())
