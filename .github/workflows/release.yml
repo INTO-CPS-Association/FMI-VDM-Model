@@ -234,7 +234,7 @@ jobs:
 
             ### Things that changed in this release
             ${{ steps.changelog.outputs.changelog }}
-          draft: true
+          draft: false
           prerelease: false
 
       - name: Upload Release Asset - VDMCheck2
