@@ -98,49 +98,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-source-plugin</artifactId>-->
-            <!--                <version>3.2.1</version>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>attach-sources</id>-->
-            <!--                        <phase>package</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>jar</goal>-->
-            <!--                        </goals>-->
-            <!--                        <configuration>-->
-            <!--                            <includes>-->
-            <!--                                <include>${project.basedir}/*.vdmsl</include>-->
-            <!--                            </includes>-->
-            <!--                            <useDefaultExcludes>false</useDefaultExcludes>-->
-            <!--                        </configuration>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-javadoc-plugin</artifactId>-->
-            <!--                <version>3.1.1</version>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>attach-javadocs</id>-->
-            <!--                        <goals>-->
-            <!--                            <goal>jar</goal>-->
-            <!--                        </goals>-->
-            <!--                        <phase>package</phase>-->
-            <!--                        <configuration>-->
-
-            <!--                            <failOnError>false</failOnError>-->
-            <!--                            <sourcepath>src/main/java</sourcepath>-->
-            <!--                            <quiet>true</quiet>-->
-            <!--                        </configuration>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--                <configuration>-->
-            <!--                    <failOnError>false</failOnError>-->
-            <!--                </configuration>-->
-            <!--            </plugin>-->
         </plugins>
     </build>
 </project>
