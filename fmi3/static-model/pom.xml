@@ -45,8 +45,7 @@
                             <outputDirectory>target</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../..</directory>
-                                    <filtering>false</filtering>
+                                    <directory>..</directory>
                                     <include>MIT-LICENCE</include>
                                 </resource>
                             </resources>

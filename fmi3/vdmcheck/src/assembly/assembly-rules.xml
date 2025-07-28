@@ -16,15 +16,15 @@
 			<filtered>true</filtered>
 		</file>
 		<file>
-			<source>../../GPL3-LICENCE</source>
+			<source>../GPL3-LICENCE</source>
 			<destName>GPL3-LICENCE</destName>
 		</file>
 		<file>
-			<source>../../MIT-LICENCE</source>
+			<source>../MIT-LICENCE</source>
 			<destName>MIT-LICENCE</destName>
 		</file>
 		<file>
-			<source>../../LICENCE</source>
+			<source>../LICENCE</source>
 			<destName>LICENCE</destName>
 		</file>
 	</files>

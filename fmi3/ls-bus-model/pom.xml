@@ -32,8 +32,7 @@
                                     <exclude>pom.xml</exclude>
                                 </resource>
                                 <resource>
-                                    <directory>${project.basedir}/../..</directory>
-                                    <filtering>false</filtering>
+                                    <directory>..</directory>
                                     <include>LICENCE</include>
                                 </resource>
                             </resources>
